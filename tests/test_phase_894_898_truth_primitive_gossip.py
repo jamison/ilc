@@ -48,6 +48,7 @@ from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGr
 PHASE_896_COMMIT_SUBJECT = "feat(g8): phase 892-896 cdl-076 truth primitive announcement gossip"
 MODULE_PATH = Path("ilc_core/network/d2d/truth_primitive_gossip_runtime.py")
 SUBMIT_CLI_PATH = Path("ilc_core/cli/d2e_submit_cli.py")
+VALID_AGENT_ID = "a" * 96
 
 
 # ---------------------------------------------------------------------------
@@ -59,7 +60,7 @@ def _truth_envelope(body: str = "gossip test claim", epoch: int = 1) -> dict:
     return {
         "v": 1,
         "primitive": "assert.truth",
-        "agent_id": "agent-gossip-test",
+        "agent_id": VALID_AGENT_ID,
         "epoch": epoch,
         "payload": {
             "content": {"body": body},
@@ -156,7 +157,7 @@ def test_gossip_channel_constant_non_empty() -> None:
 
 def test_announcement_payload_has_exactly_five_fields() -> None:
     write_receipt = {"node_id": "bafytest123", "primitive": "assert.truth"}
-    envelope = {"agent_id": "agent-001", "epoch": 5}
+    envelope = {"agent_id": VALID_AGENT_ID, "epoch": 5}
     payload_bytes = _build_announcement_payload(write_receipt, envelope)
     payload = json.loads(payload_bytes)
     assert set(payload.keys()) == {"node_id", "primitive", "agent_id", "epoch", "cdl_version"}
@@ -187,7 +188,7 @@ def test_announcement_payload_no_full_record_content(tmp_path: Path) -> None:
 
 def test_announcement_payload_cdl_version_matches_dependency() -> None:
     write_receipt = {"node_id": "bafytest123", "primitive": "assert.truth"}
-    envelope = {"agent_id": "agent-001", "epoch": 1}
+    envelope = {"agent_id": VALID_AGENT_ID, "epoch": 1}
     payload_bytes = _build_announcement_payload(write_receipt, envelope)
     payload = json.loads(payload_bytes)
     assert payload["cdl_version"] == CDL_076_DEPENDENCY
@@ -202,7 +203,7 @@ def test_absent_peers_returns_deferred_receipt(monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.delenv("ILC_D2D_GOSSIP_PEERS", raising=False)
     receipt = announce_truth_primitive(
         {"node_id": "bafytest", "primitive": "assert.truth"},
-        {"agent_id": "agent-001", "epoch": 1},
+        {"agent_id": VALID_AGENT_ID, "epoch": 1},
     )
     assert receipt["gossip_delivery"] == "deferred — gossip peers not configured"
     assert receipt["peers_attempted"] == 0
@@ -213,7 +214,7 @@ def test_empty_peers_env_returns_deferred_receipt(monkeypatch: pytest.MonkeyPatc
     monkeypatch.setenv("ILC_D2D_GOSSIP_PEERS", "   ")
     receipt = announce_truth_primitive(
         {"node_id": "bafytest", "primitive": "assert.truth"},
-        {"agent_id": "agent-001", "epoch": 1},
+        {"agent_id": VALID_AGENT_ID, "epoch": 1},
     )
     assert receipt["gossip_delivery"] == "deferred — gossip peers not configured"
 
@@ -222,7 +223,7 @@ def test_no_node_id_returns_deferred_receipt(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch.setenv("ILC_D2D_GOSSIP_PEERS", "https://peer1.example.com")
     receipt = announce_truth_primitive(
         {"node_id": None, "primitive": "validate.claim"},
-        {"agent_id": "agent-001", "epoch": 1},
+        {"agent_id": VALID_AGENT_ID, "epoch": 1},
     )
     assert "edge-only" in receipt["gossip_delivery"]
     assert receipt["peers_attempted"] == 0
@@ -238,7 +239,7 @@ def test_submit_cli_result_has_gossip_delivery_field(monkeypatch: pytest.MonkeyP
     monkeypatch.delenv("ILC_TRUTH_GRAPH_STORE_PATH", raising=False)
     monkeypatch.delenv("ILC_D2D_GOSSIP_PEERS", raising=False)
     ns = argparse.Namespace(
-        primitive="assert.truth", agent_id="agent-001", epoch=1,
+        primitive="assert.truth", agent_id=VALID_AGENT_ID, epoch=1,
         payload_json='{"content":{"body":"test"},"primitive_type":"observation",'
                      '"epistemic_type":"objective","parent_node_ids":[]}',
         payload_file=None, sig="UNSIGNED",
@@ -257,7 +258,7 @@ def test_submit_result_gossip_delivery_deferred_when_no_peers(monkeypatch: pytes
     monkeypatch.delenv("ILC_TRUTH_GRAPH_STORE_PATH", raising=False)
     monkeypatch.delenv("ILC_D2D_GOSSIP_PEERS", raising=False)
     ns = argparse.Namespace(
-        primitive="assert.truth", agent_id="agent-001", epoch=1,
+        primitive="assert.truth", agent_id=VALID_AGENT_ID, epoch=1,
         payload_json='{"content":{"body":"test"},"primitive_type":"observation",'
                      '"epistemic_type":"objective","parent_node_ids":[]}',
         payload_file=None, sig="UNSIGNED",
@@ -276,7 +277,7 @@ def test_gossip_not_attempted_when_no_store_path(monkeypatch: pytest.MonkeyPatch
     monkeypatch.delenv("ILC_TRUTH_GRAPH_STORE_PATH", raising=False)
     monkeypatch.setenv("ILC_D2D_GOSSIP_PEERS", "https://peer1.example.com")
     ns = argparse.Namespace(
-        primitive="assert.truth", agent_id="agent-001", epoch=1,
+        primitive="assert.truth", agent_id=VALID_AGENT_ID, epoch=1,
         payload_json='{"content":{"body":"test"},"primitive_type":"observation",'
                      '"epistemic_type":"objective","parent_node_ids":[]}',
         payload_file=None, sig="UNSIGNED",
@@ -306,7 +307,7 @@ def test_announce_calls_send_to_peer_once_per_peer(monkeypatch: pytest.MonkeyPat
     with patch("ilc_core.network.d2d.truth_primitive_gossip_runtime._send_to_peer", mock_send):
         receipt = announce_truth_primitive(
             {"node_id": "bafytest123", "primitive": "assert.truth"},
-            {"agent_id": "agent-001", "epoch": 3},
+            {"agent_id": VALID_AGENT_ID, "epoch": 3},
         )
 
     assert len(call_log) == 2
@@ -330,7 +331,7 @@ def test_announce_partial_failure_counted_correctly(monkeypatch: pytest.MonkeyPa
     with patch("ilc_core.network.d2d.truth_primitive_gossip_runtime._send_to_peer", mock_send):
         receipt = announce_truth_primitive(
             {"node_id": "bafytest123", "primitive": "assert.truth"},
-            {"agent_id": "agent-001", "epoch": 1},
+            {"agent_id": VALID_AGENT_ID, "epoch": 1},
         )
 
     assert receipt["peers_attempted"] == 2
@@ -382,7 +383,7 @@ def test_submit_via_subprocess_includes_gossip_delivery(tmp_path: Path) -> None:
     result = _run_cli(
         "submit", "--primitive", "assert.truth",
         "--payload-json", payload,
-        "--agent-id", "agent-subprocess",
+        "--agent-id", VALID_AGENT_ID,
         "--epoch", "1",
         store_path=str(store_dir),
         graph_path=graph_path,
@@ -406,7 +407,7 @@ def test_submit_subprocess_gossip_deferred_when_no_peers(tmp_path: Path) -> None
     result = _run_cli(
         "submit", "--primitive", "assert.truth",
         "--payload-json", payload,
-        "--agent-id", "agent-subprocess",
+        "--agent-id", VALID_AGENT_ID,
         "--epoch", "1",
         store_path=str(store_dir),
         gossip_peers=None,

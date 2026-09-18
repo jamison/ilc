@@ -20,7 +20,7 @@ from ilc_core.epistemic.truth_primitive_submission_runtime import (
 )
 
 
-AGENT_ID_HEX = "a" * 64
+AGENT_ID_HEX = "a" * 96
 TARGET_NODE_ID = "cid_" + "b" * 59
 EVIDENCE_NODE_ID = "cid_" + "c" * 59
 
@@ -69,7 +69,7 @@ def test_build_graph_submit_envelope_happy_path_verifies() -> None:
     assert verify_truth_primitive_sig(_signed_record(envelope)) is True
 
 
-@pytest.mark.parametrize("bad_agent_id", ["a" * 63, "g" * 64, "A" * 64])
+@pytest.mark.parametrize("bad_agent_id", ["a" * 95, "a" * 97, "g" * 96, "A" * 96])
 def test_build_graph_submit_envelope_rejects_invalid_agent_id_hex(
     bad_agent_id: str,
 ) -> None:

@@ -300,6 +300,29 @@ def test_handle_submit_missing_agent_id_raises() -> None:
     assert exc_info.value.token == "submit_agent_id_missing"
 
 
+@pytest.mark.parametrize(
+    "bad_agent_id",
+    [
+        "a" * 95,
+        "a" * 97,
+        "a" * 64,
+        "A" * 96,
+        "agent-test-874",
+        b"a" * 96,
+    ],
+)
+def test_handle_submit_rejects_noncanonical_agent_id(bad_agent_id: object) -> None:
+    ns = _ns(
+        primitive="assert.truth",
+        payload_json=_ASSERT_TRUTH_PAYLOAD,
+        agent_id=bad_agent_id,
+        epoch=1,
+    )
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+    assert exc_info.value.token == "submit_agent_id_invalid"
+
+
 def test_handle_submit_invalid_epoch_raises() -> None:
     ns = _ns(primitive="assert.truth", payload_json=_ASSERT_TRUTH_PAYLOAD, agent_id=VALID_AGENT_ID, epoch=-1)
     with pytest.raises(SubmitCommandError) as exc_info:
@@ -383,6 +406,32 @@ def test_handle_submit_rejects_oversized_payload() -> None:
     assert exc_info.value.token == "submit_payload_too_large"
 
 
+def test_handle_submit_rejects_oversized_payload_file_before_read(tmp_path: Path) -> None:
+    payload_file = tmp_path / "oversized.json"
+    payload_file.write_text(" " * (256 * 1024 + 1), encoding="utf-8")
+    ns = _ns(
+        primitive="assert.truth",
+        payload_file=str(payload_file),
+        agent_id=VALID_AGENT_ID,
+        epoch=1,
+    )
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+    assert exc_info.value.token == "submit_payload_too_large"
+
+
+def test_handle_submit_rejects_payload_directory(tmp_path: Path) -> None:
+    ns = _ns(
+        primitive="assert.truth",
+        payload_file=str(tmp_path),
+        agent_id=VALID_AGENT_ID,
+        epoch=1,
+    )
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+    assert exc_info.value.token == "submit_payload_file_not_regular"
+
+
 # ---------------------------------------------------------------------------
 # 11. main.py structural checks
 # ---------------------------------------------------------------------------
@@ -420,7 +469,7 @@ def test_submit_assert_truth_via_subprocess_does_not_mutate_graph_state(tmp_path
         "submit",
         "--primitive", "assert.truth",
         "--payload-json", _ASSERT_TRUTH_PAYLOAD,
-        "--agent-id", "agent-test-874",
+        "--agent-id", VALID_AGENT_ID,
         "--epoch", "1",
         graph_path=graph_path,
     )
@@ -438,6 +487,22 @@ def test_submit_assert_truth_via_subprocess_does_not_mutate_graph_state(tmp_path
         assert isinstance(state, dict)
         # graph persistence is deferred — no nodes added
         assert state.get("nodes") in ([], None, []) or "nodes" not in state or state["nodes"] == []
+
+
+def test_submit_assert_truth_via_subprocess_rejects_legacy_agent_id(tmp_path: Path) -> None:
+    graph_path = tmp_path / "graph.json"
+    result = _run_cli(
+        "submit",
+        "--primitive", "assert.truth",
+        "--payload-json", _ASSERT_TRUTH_PAYLOAD,
+        "--agent-id", "agent-test-874",
+        "--epoch", "1",
+        graph_path=graph_path,
+    )
+    assert result.returncode == 1
+    err = json.loads(result.stderr)
+    assert err["ok"] is False
+    assert "submit_agent_id_invalid" in err["message"]
 
 
 def test_submit_commit_epoch_via_subprocess_returns_error(tmp_path: Path) -> None:

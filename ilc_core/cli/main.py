@@ -2360,7 +2360,10 @@ def _build_parser() -> JsonArgumentParser:
             agent_parser = subparsers.add_parser("agent", help="D2e agent identity commands")
             agent_subparsers = agent_parser.add_subparsers(dest="agent_subcommand", required=True)
 
-            p_derive = agent_subparsers.add_parser("derive", help="Derive agent_id from root key hex")
+            p_derive = agent_subparsers.add_parser(
+                "derive",
+                help="Derive legacy agent-prefixed agent_id from root key hex",
+            )
             p_derive.add_argument(
                 "--root-key-hex",
                 required=True,
@@ -4259,7 +4262,7 @@ def _run_top_level_command(
         try:
             data = handle_submit(args)
         except SubmitCommandError as exc:
-            raise ValueError(exc.message) from exc
+            raise ValueError(f"{exc.token}: {exc.message}") from exc
         return _success_payload(command, data)
 
     data = _prototype_data_for_command(command)

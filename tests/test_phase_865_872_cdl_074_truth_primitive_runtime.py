@@ -250,6 +250,25 @@ def test_missing_agent_id_rejected():
     assert "agent_id_missing" in exc_info.value.token
 
 
+@pytest.mark.parametrize(
+    "bad_agent_id",
+    [
+        "a" * 95,
+        "a" * 97,
+        "a" * 64,
+        "A" * 96,
+        "agent-test-874",
+        b"a" * 96,
+    ],
+)
+def test_noncanonical_agent_id_rejected(bad_agent_id):
+    envelope = _outer("assert.truth", _assert_truth_payload())
+    envelope["agent_id"] = bad_agent_id
+    with pytest.raises(EpistemicSubmissionError) as exc_info:
+        validate_truth_primitive_submission(envelope)
+    assert "agent_id_invalid" in exc_info.value.token
+
+
 def test_negative_epoch_rejected():
     envelope = _outer("assert.truth", _assert_truth_payload(), epoch=-1)
     with pytest.raises(EpistemicSubmissionError) as exc_info:

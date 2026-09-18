@@ -42,6 +42,9 @@ from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGr
 PHASE_882_COMMIT_SUBJECT = "feat(g8): phase 877-882 cdl-075 truth primitive graph store"
 MODULE_PATH = Path("ilc_core/epistemic/truth_primitive_graph_store.py")
 SUBMIT_CLI_PATH = Path("ilc_core/cli/d2e_submit_cli.py")
+VALID_AGENT_ID = "a" * 96
+CLI_AGENT_ID = "b" * 96
+READBACK_AGENT_ID = "c" * 96
 
 
 # ---------------------------------------------------------------------------
@@ -53,7 +56,7 @@ def _envelope(primitive: str, payload: dict) -> dict:
     return {
         "v": 1,
         "primitive": primitive,
-        "agent_id": "agent-test-875",
+        "agent_id": VALID_AGENT_ID,
         "epoch": 3,
         "payload": payload,
         "sig": "UNSIGNED",
@@ -190,7 +193,7 @@ def test_node_record_assert_truth_has_required_fields() -> None:
     assert record["primitive"] == "assert.truth"
     assert record["primitive_type"] == "observation"
     assert record["epoch"] == 3
-    assert record["agent_id"] == "agent-test-875"
+    assert record["agent_id"] == VALID_AGENT_ID
 
 
 def test_node_record_revise_assert_has_required_fields() -> None:
@@ -430,7 +433,7 @@ def test_submit_cli_with_store_path_returns_node_id(tmp_path: Path) -> None:
         "submit",
         "--primitive", "assert.truth",
         "--payload-json", payload,
-        "--agent-id", "agent-cli-test",
+        "--agent-id", CLI_AGENT_ID,
         "--epoch", "5",
         graph_path=graph_path,
         store_path=str(store_dir),
@@ -455,7 +458,7 @@ def test_submit_cli_without_store_path_defers_persistence(tmp_path: Path) -> Non
         "submit",
         "--primitive", "assert.truth",
         "--payload-json", payload,
-        "--agent-id", "agent-cli-test",
+        "--agent-id", CLI_AGENT_ID,
         "--epoch", "1",
         graph_path=graph_path,
         store_path=None,
@@ -480,7 +483,7 @@ def test_submit_cli_store_path_persisted_node_readable(tmp_path: Path) -> None:
         "submit",
         "--primitive", "assert.truth",
         "--payload-json", payload,
-        "--agent-id", "agent-rb-test",
+        "--agent-id", READBACK_AGENT_ID,
         "--epoch", "7",
         graph_path=graph_path,
         store_path=str(store_dir),
@@ -494,7 +497,7 @@ def test_submit_cli_store_path_persisted_node_readable(tmp_path: Path) -> None:
         node = store.get_node(node_id)
         assert node is not None
         assert node["primitive"] == "assert.truth"
-        assert node["agent_id"] == "agent-rb-test"
+        assert node["agent_id"] == READBACK_AGENT_ID
         assert node["epoch"] == 7
     finally:
         store.close()

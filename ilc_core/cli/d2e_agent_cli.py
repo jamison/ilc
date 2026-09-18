@@ -38,6 +38,9 @@ def handle_agent_derive(root_key_hex: str) -> dict[str, Any]:
     return {
         "subcommand": "derive",
         "agent_id": derive_agent_id(key_bytes),
+        "agent_id_format": "legacy_agent_prefixed_sha256",
+        "deprecated": True,
+        "public_rc_submit_compatible": False,
         "version": D2E_AGENT_CLI_VERSION,
     }
 

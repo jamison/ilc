@@ -2,13 +2,13 @@
   "artifacts": {
     "python_sdist": {
       "path": "dist/ilc_core-0.4.27.tar.gz",
-      "sha256": "a140653a40c3dccb50943b27a54d3d439508a32508d3f159f18519d79b06998a",
-      "size_bytes": 1229957
+      "sha256": "8b5362186bf66afcf79e72079bd5c1b37681c03466adc89cc991aab2fd392b2d",
+      "size_bytes": 1230187
     },
     "python_wheel": {
       "path": "dist/ilc_core-0.4.27-py3-none-any.whl",
-      "sha256": "23ed327062084a1f9904c152d937264be9684f9f0015fabbe8d87be8bb4121ee",
-      "size_bytes": 1505525
+      "sha256": "358fadb54cfac73243517c00d7bb6db08b6429220bdbc5ab0b888b4199cbf823",
+      "size_bytes": 1505829
     }
   },
   "cbor2_dep_resolution_proof": {
@@ -26,14 +26,18 @@
     "ilc_core/__init__.py: __version__ 0.4.26 -> 0.4.27",
     "ilc_core/cli/d2e_submit_cli.py: AgentID regex {64} -> {96} (CDL-017 BLS pubkey format; committed in GAP-SUBMIT-CLI-AGENT-ID-FIX1-00)",
     "ilc_core/economics/epoch_attribution_settle_runtime.py: stale PASSIVE_ECU comment corrected (committed in GAP-SUBMIT-CLI-AGENT-ID-FIX1-00)",
-    "tests/test_phase_874_d2e_submit_cli.py: real-format 96-char AgentID fixtures (committed in GAP-SUBMIT-CLI-AGENT-ID-FIX1-00)"
+    "tests/test_phase_874_d2e_submit_cli.py: real-format 96-char AgentID fixtures (committed in GAP-SUBMIT-CLI-AGENT-ID-FIX1-00)",
+    "ilc_core/epistemic/truth_primitive_submission_runtime.py: canonical 96-character lowercase hex AgentID enforcement added after pre-00b audit",
+    "ilc_core/cli/d2e_submit_cli.py: handle_submit now enforces 96-character lowercase hex AgentIDs and payload-file pre-read bounds after pre-00b audit",
+    "ilc_core/cli/d2e_agent_cli.py and ilc_core/cli/main.py: legacy agent derive output is marked non-public-RC-submit-compatible after pre-00b audit",
+    "tests: AgentID rejection and submit payload file-boundary coverage added after pre-00b audit"
   ],
   "dependency_risk_observation": {
     "cryptography_constraint_left_unchanged": "cryptography>=48.0.0",
     "dry_run_observed": "cryptography-50.0.1.tar.gz metadata preparation occurred during dry-run",
     "not_blocking_00a_reason": "The 00a cbor2 guard passed: cbor2-5.9.0 resolved, no cbor2 6.x resolved, and no cbor2 source build was attempted. The cryptography source-distribution observation is carried forward to the sensitive 00b public fetchback gate, consistent with the 0.4.26 release posture."
   },
-  "generated_at_utc": "2026-09-18T14:25:52Z",
+  "generated_at_utc": "2026-09-18T15:31:20Z",
   "non_claims": [
     "no_pypi_upload",
     "no_pypi_fetchback_verification",
@@ -61,15 +65,16 @@
   "schema_version": "ilc_package_build_receipt.v0.1",
   "signing_preimages": {
     "sdist_artifact_id": "ilc-artifact:ilc-core-python-sdist-0427@phase-1628",
-    "sdist_preimage": "4df78bd3b406751ddea3e815c0ff4ed8e82d99d48668db8bd9c60977e8f93f03",
+    "sdist_preimage": "0732543c784d6f6d93c3fff95f0c175928c6444374e2b304c2391e5963e430f1",
     "wheel_artifact_id": "ilc-artifact:ilc-core-python-wheel-0427@phase-1628",
-    "wheel_preimage": "92b23cafa444b7da8398f1bd8e03343cbcf68e689debd2534d241cb37dbbf5be"
+    "wheel_preimage": "0172f72398235fd8ab49c82da5c679492ba91c555d6e9efae3aa680ad3ed198d"
   },
   "source_private_commit_before_version_bump": "ac086cbf79eb7881618c03de06c06537a2f03671",
   "verification": {
     "agent_id_regex_in_wheel": "r'^[0-9a-f]{96}$'",
     "cbor2_dry_run_proof": "cbor2-5.9.0 resolved; no cbor2 6.x; no cbor2 source build",
-    "focused_tests": "132 passed, 1 warning in 27.46s",
+    "agent_id_runtime_rejection_probes": "legacy agent-test-874 rejected with submit_agent_id_invalid; 96-character lowercase hex AgentID accepted",
+    "focused_tests": "affected AgentID/runtime suite: 200 passed, 12 skipped in 21.60s; package/signature/installer focused suite: 141 passed, 1 warning in 29.49s",
     "prompt_validator_00a": "VALID",
     "prompt_validator_00b": "VALID",
     "twine_check": "PASSED",
@@ -79,6 +84,6 @@
       "status": "passed",
       "venv_boundary_check": "passed"
     },
-    "wheel_content_inspection": "PASSED"
+    "wheel_content_inspection": "PASSED; wheel_content_hardened_agent_id_and_payload_guards_confirmed"
   }
 }

@@ -20,7 +20,7 @@ from ilc_core.epistemic.truth_primitive_sig_verifier import (
 from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 
-AGENT_ID = "agent-test-signed-graph"
+AGENT_ID = "a" * 96
 ASSERT_TRUTH_PAYLOAD = {
     "content": {"body": "signed graph submission test"},
     "epistemic_type": "objective",

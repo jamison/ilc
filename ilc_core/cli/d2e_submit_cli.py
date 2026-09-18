@@ -202,6 +202,23 @@ def _load_payload(args: argparse.Namespace) -> dict[str, Any]:
                 f"payload file not found: {file_path}",
             )
         try:
+            file_stat = path.stat()
+        except OSError as exc:
+            raise SubmitCommandError(
+                "submit_payload_file_read_error",
+                f"could not stat payload file: {exc}",
+            ) from exc
+        if not path.is_file():
+            raise SubmitCommandError(
+                "submit_payload_file_not_regular",
+                "payload file must be a regular file",
+            )
+        if file_stat.st_size > _MAX_SUBMIT_PAYLOAD_BYTES:
+            raise SubmitCommandError(
+                "submit_payload_too_large",
+                "payload exceeds maximum submit payload size",
+            )
+        try:
             raw = path.read_text(encoding="utf-8")
         except OSError as exc:
             raise SubmitCommandError(
@@ -273,6 +290,13 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     agent_id = getattr(args, "agent_id", None)
     if not agent_id:
         raise SubmitCommandError("submit_agent_id_missing", "--agent-id is required")
+    try:
+        _require_graph_submit_agent_id(agent_id)
+    except ValueError as exc:
+        raise SubmitCommandError(
+            "submit_agent_id_invalid",
+            "--agent-id must be a 96-character lowercase hex AgentID",
+        ) from exc
 
     epoch = getattr(args, "epoch", None)
     if epoch is None or isinstance(epoch, bool) or not isinstance(epoch, int) or epoch < 0:

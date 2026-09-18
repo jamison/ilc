@@ -26,6 +26,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
+import re
 from typing import Any
 
 from ilc_core.protocol.primitive_type_registry import (
@@ -79,6 +80,7 @@ _KNOWN_PRIMITIVE_TYPES: frozenset[str] = (
 )
 
 _PROTOCOL_VERSION = 1
+_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 
 # ---------------------------------------------------------------------------
 # Result types
@@ -208,10 +210,20 @@ def _validate_outer_envelope(submission: Any) -> dict:
             f"agent-issuable set: {sorted(AGENT_ISSUABLE_PRIMITIVES)}",
         )
     agent_id = submission.get("agent_id")
-    if not isinstance(agent_id, str) or not agent_id:
+    if agent_id in (None, ""):
         raise EpistemicSubmissionError(
             "agent_id_missing",
             "submission.agent_id must be a non-empty string",
+        )
+    if not isinstance(agent_id, str):
+        raise EpistemicSubmissionError(
+            "agent_id_invalid",
+            "submission.agent_id must be a 96-character lowercase hex AgentID",
+        )
+    if _AGENT_ID_RE.fullmatch(agent_id) is None:
+        raise EpistemicSubmissionError(
+            "agent_id_invalid",
+            "submission.agent_id must be a 96-character lowercase hex AgentID",
         )
     epoch = submission.get("epoch")
     if not isinstance(epoch, int) or isinstance(epoch, bool) or epoch < 0:
