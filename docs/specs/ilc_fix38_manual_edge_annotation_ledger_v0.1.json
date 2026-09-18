@@ -82930,6 +82930,238 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PACKAGE-0427-00a prompt was hardened so the local 0.4.27 build phase uses the actual release preimage helper and a dependency-free installed-wheel regex check.",
+      "manual_read_summary": "Prompt scopes non-sensitive local build of ilc-core 0.4.27, artifact hashing, cbor2 dry-run proof, no-deps wheel-boundary smoke, signing preimage computation, receipt creation, Fix38 ledger entries, and non-claims excluding PyPI upload, signing, installer retarget, mirror push, and runtime mutation.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PACKAGE-0427-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_release_pipeline_template_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:release_pipeline_template_committed_GAP_RELEASE_PIPELINE_TEMPLATE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:submit_cli_agent_id_fix_committed_GAP_SUBMIT_CLI_AGENT_ID_FIX1_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0427_00a_g10_local_build_agent_id_fix.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PACKAGE-0427-00b prompt was hardened in tandem with 00a so the publish/fetchback phase imports lifecycle runtime from the actual ledger module path.",
+      "manual_read_summary": "Sensitive publish prompt consumes the 0427 00a build receipt, requires exact GO phrase, verifies Phase 1335 signatures, uploads and fetchback-verifies 0.4.27, yanks 0.4.26, retargets installer, publishes helper tarball at the post-mirror head, and refreshes the sanitized public mirror.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PACKAGE-0427-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_release_pipeline_template_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:package_0427_local_build_complete_GAP_PACKAGE_0427_00a"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0427_00b_g10_pypi_upload_sign_mirror.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PACKAGE-0427-00a bumped pyproject.toml from ilc-core 0.4.26 to 0.4.27 for local build only.",
+      "manual_read_summary": "Package metadata version sentinel for the local 0.4.27 wheel and sdist build; cbor2 constraints remain cbor2>=5.9.0,<6.",
+      "node_kind": "package_metadata",
+      "phase_ref": "GAP-PACKAGE-0427-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0427_local_build_complete_GAP_PACKAGE_0427_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "pyproject.toml"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PACKAGE-0427-00a bumped the ilc_core package runtime version sentinel from 0.4.26 to 0.4.27.",
+      "manual_read_summary": "Runtime version sentinel used by package smoke tests and public install verification.",
+      "node_kind": "runtime_source",
+      "phase_ref": "GAP-PACKAGE-0427-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:package_0427_local_build_complete_GAP_PACKAGE_0427_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_changed",
+      "repo_path": "ilc_core/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PACKAGE-0427-00a produced the local 0.4.27 package build receipt.",
+      "manual_read_summary": "Receipt records wheel and sdist hashes and sizes, cbor2 5.x dry-run proof, wheel-boundary smoke, focused tests, signing preimages for 00b, source baseline, output token, and non-claims.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PACKAGE-0427-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_release_pipeline_template_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:package_0427_local_build_complete_GAP_PACKAGE_0427_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0427_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00a_2026_09_18",
+      "chronology_note": "2026-09-18 GAP-PACKAGE-0427-00a walkthrough records token audit, prompt hardening, build/test evidence, hashes, preimages, output token, carry-forward, and non-claims.",
+      "manual_read_summary": "Walkthrough is the phase execution evidence for the local 0.4.27 package build carrying the 96-character AgentID submit fix.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PACKAGE-0427-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0427_00a_g10_local_build_agent_id_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00a"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_0427_00a_v0.1.json"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:package_0427_local_build_complete_GAP_PACKAGE_0427_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0427_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00a_2026_09_18",
+      "chronology_note": "2026-09-18 PLANNING_INDEX Rev 92 records GAP-PACKAGE-0427-00a complete and moves the frontier to sensitive GAP-PACKAGE-0427-00b.",
+      "manual_read_summary": "Planning update records artifact hashes, sizes, signing preimages, verification summary, output token, non-claims, and exact 00b GO phrase.",
+      "node_kind": "planning_index",
+      "phase_ref": "GAP-PACKAGE-0427-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00a"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-PACKAGE-0427-00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0427_00a_2026_09_18",
+      "chronology_note": "2026-09-18 STATUS records GAP-PACKAGE-0427-00a completion and output token emission.",
+      "manual_read_summary": "Phase status entry records package build evidence, output token, 00b carry-forward, dependency observation, and non-claims.",
+      "node_kind": "phase_status_log",
+      "phase_ref": "GAP-PACKAGE-0427-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0427-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:package_0427_local_build_complete_GAP_PACKAGE_0427_00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     }
   ],
   "boundary": {

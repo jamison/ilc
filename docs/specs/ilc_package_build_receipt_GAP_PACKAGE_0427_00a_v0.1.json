@@ -1,0 +1,84 @@
+{
+  "artifacts": {
+    "python_sdist": {
+      "path": "dist/ilc_core-0.4.27.tar.gz",
+      "sha256": "a140653a40c3dccb50943b27a54d3d439508a32508d3f159f18519d79b06998a",
+      "size_bytes": 1229957
+    },
+    "python_wheel": {
+      "path": "dist/ilc_core-0.4.27-py3-none-any.whl",
+      "sha256": "23ed327062084a1f9904c152d937264be9684f9f0015fabbe8d87be8bb4121ee",
+      "size_bytes": 1505525
+    }
+  },
+  "cbor2_dep_resolution_proof": {
+    "dry_run_cbor2_lines": [
+      "Collecting cbor2<6,>=5.9.0 (from ilc-core==0.4.27)",
+      "Downloading cbor2-5.9.0-py3-none-any.whl.metadata (5.5 kB)",
+      "Would install ... cbor2-5.9.0 ... ilc-core-0.4.27 ..."
+    ],
+    "resolved_version": "cbor2-5.9.0",
+    "source_build_required_for_cbor2": false,
+    "wheel_type": "py3-none-any"
+  },
+  "changes_from_0426": [
+    "pyproject.toml: version 0.4.26 -> 0.4.27",
+    "ilc_core/__init__.py: __version__ 0.4.26 -> 0.4.27",
+    "ilc_core/cli/d2e_submit_cli.py: AgentID regex {64} -> {96} (CDL-017 BLS pubkey format; committed in GAP-SUBMIT-CLI-AGENT-ID-FIX1-00)",
+    "ilc_core/economics/epoch_attribution_settle_runtime.py: stale PASSIVE_ECU comment corrected (committed in GAP-SUBMIT-CLI-AGENT-ID-FIX1-00)",
+    "tests/test_phase_874_d2e_submit_cli.py: real-format 96-char AgentID fixtures (committed in GAP-SUBMIT-CLI-AGENT-ID-FIX1-00)"
+  ],
+  "dependency_risk_observation": {
+    "cryptography_constraint_left_unchanged": "cryptography>=48.0.0",
+    "dry_run_observed": "cryptography-50.0.1.tar.gz metadata preparation occurred during dry-run",
+    "not_blocking_00a_reason": "The 00a cbor2 guard passed: cbor2-5.9.0 resolved, no cbor2 6.x resolved, and no cbor2 source build was attempted. The cryptography source-distribution observation is carried forward to the sensitive 00b public fetchback gate, consistent with the 0.4.26 release posture."
+  },
+  "generated_at_utc": "2026-09-18T14:25:52Z",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_tools_install_sh_retarget",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_epoch_advance",
+    "no_guard_flip",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_full_dependency_install_claim"
+  ],
+  "output_token": "package_0427_local_build_complete_GAP_PACKAGE_0427_00a",
+  "phase": "GAP-PACKAGE-0427-00a",
+  "phase_completion_commit": "recorded by this completion commit",
+  "predecessor_release_id": "ilc-core-0.4.26",
+  "release_id": "ilc-core-0.4.27",
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "signing_preimages": {
+    "sdist_artifact_id": "ilc-artifact:ilc-core-python-sdist-0427@phase-1628",
+    "sdist_preimage": "4df78bd3b406751ddea3e815c0ff4ed8e82d99d48668db8bd9c60977e8f93f03",
+    "wheel_artifact_id": "ilc-artifact:ilc-core-python-wheel-0427@phase-1628",
+    "wheel_preimage": "92b23cafa444b7da8398f1bd8e03343cbcf68e689debd2534d241cb37dbbf5be"
+  },
+  "source_private_commit_before_version_bump": "ac086cbf79eb7881618c03de06c06537a2f03671",
+  "verification": {
+    "agent_id_regex_in_wheel": "r'^[0-9a-f]{96}$'",
+    "cbor2_dry_run_proof": "cbor2-5.9.0 resolved; no cbor2 6.x; no cbor2 source build",
+    "focused_tests": "132 passed, 1 warning in 27.46s",
+    "prompt_validator_00a": "VALID",
+    "prompt_validator_00b": "VALID",
+    "twine_check": "PASSED",
+    "wheel_boundary_smoke_no_deps": {
+      "dependency_install_claim": false,
+      "ilc_core_version": "0.4.27",
+      "status": "passed",
+      "venv_boundary_check": "passed"
+    },
+    "wheel_content_inspection": "PASSED"
+  }
+}
