@@ -83354,6 +83354,198 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00b_2026_09_19",
+      "chronology_note": "2026-09-19 GAP-PUBLIC-RC-HELLO-WORLD-00b prompt authorized and executed after exact GO.",
+      "manual_read_summary": "Sensitive phase prompt for live artifact:hello_world assert.truth submission; requires local CDL-074 validation, CDL-075 persistence, node retrieval, evidence, and strict source_refs metadata-only non-claim.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00b",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:hello_world_node_spec_committed_GAP_PUBLIC_RC_HELLO_WORLD_00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:hello_world_submission_mechanism_confirmed_GAP_PUBLIC_RC_HELLO_WORLD_00a"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:package_0427_published_GAP_PACKAGE_0427_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "ROUTES_TO",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_hello_world_00b_g10_live_node_submission.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00b_2026_09_19",
+      "chronology_note": "2026-09-19 artifact:hello_world live truth-primitive node persisted through CDL-075.",
+      "manual_read_summary": "Live graph node artifact:hello_world persisted as CIDv1 node bafyreihqyyhtogvgz6ndvkkkurdhz45n5jv3ovtgo56oqcrpariwx46dji with assert.truth, Genesis AgentID author, LAUNCH-00 anchor-file canonical_external_id, empty parent_node_ids, and source_refs metadata.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_hello_world_node_spec_GAP_PUBLIC_RC_HELLO_WORLD_00a_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_activation_certificate_v1_design_1424_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "out/gap_public_rc_launch_00/public_rc_issuance_epoch_0_opening_anchor.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "artifact:hello_world"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_node_submitted_GAP_PUBLIC_RC_HELLO_WORLD_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "IMPLEMENTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "artifact:hello_world (live graph node bafyreihqyyhtogvgz6ndvkkkurdhz45n5jv3ovtgo56oqcrpariwx46dji)"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00b_2026_09_19",
+      "chronology_note": "2026-09-19 GAP-PUBLIC-RC-HELLO-WORLD-00b walkthrough records completion evidence.",
+      "manual_read_summary": "Walkthrough records GO confirmation, token audit, local validation, submit CLI output, retrieval confirmation, evidence JSON, verification results, graph-store boundary, and non-claims for hello-world 00b.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_hello_world_00b_g10_live_node_submission.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "artifact:hello_world"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_node_submitted_GAP_PUBLIC_RC_HELLO_WORLD_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_hello_world_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00b_2026_09_19",
+      "chronology_note": "2026-09-19 PLANNING_INDEX frontier advanced to GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00.",
+      "manual_read_summary": "PLANNING_INDEX Rev 96 records GAP-PUBLIC-RC-HELLO-WORLD-00b completion and routes frontier to sensitive ECU attribution pipeline smoke.",
+      "node_kind": "planning_index",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00b",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00b_2026_09_19",
+      "chronology_note": "2026-09-19 STATUS emits hello-world 00b output token.",
+      "manual_read_summary": "STATUS records GAP-PUBLIC-RC-HELLO-WORLD-00b completion, output token, carry-forward GO phrase, and non-claims.",
+      "node_kind": "phase_status_log",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00b",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:hello_world_node_submitted_GAP_PUBLIC_RC_HELLO_WORLD_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_public_rc_hello_world_00b_2026_09_19",
+      "chronology_note": "2026-09-19 forward plan Rev 96 inserted.",
+      "manual_read_summary": "Reconciled forward plan Rev 96 records hello-world 00b completion and moves table arrow to ECU attribution pipeline smoke.",
+      "node_kind": "forward_plan",
+      "phase_ref": "GAP-PUBLIC-RC-HELLO-WORLD-00b",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
     }
   ],
   "boundary": {
