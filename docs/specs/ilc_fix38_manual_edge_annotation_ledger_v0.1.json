@@ -83546,6 +83546,171 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+    },
+    {
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_attribution_pipeline_smoke_00_g10_attribution_smoke.md",
+      "node_kind": "phase_prompt",
+      "manual_read_summary": "Sensitive ECU attribution pipeline smoke prompt defining direct quote-only settlement-engine smoke against the hello-world node, passive ECU empty-centrality confirmation, wallet LMDB integrity check, and no live source_refs bridge claim.",
+      "chronology_note": "2026-09-19 prompt consumed after exact GO for GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-PUBLIC-RC-HELLO-WORLD-00b"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "phase:GAP-PUBLIC-RC-EPOCH-00d"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "repo_path": "docs/phases/phase_gap_ecu_attribution_pipeline_smoke_00_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "manual_read_summary": "Walkthrough records current-session GO phrase, token audit, direct reads, quote-only REUSE payout evidence, passive ECU zero reason, unchanged wallet LMDB hash, evidence JSON, verification output, output tokens, and non-claims.",
+      "chronology_note": "2026-09-19 walkthrough for sensitive ECU attribution pipeline smoke completion.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ecu_attribution_pipeline_smoke_pass_GAP_ECU_ATTRIBUTION_PIPELINE_SMOKE_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:ecu_settlement_quote_nonzero_GAP_ECU_ATTRIBUTION_PIPELINE_SMOKE_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "claim:passive_ecu_zero_centrality_confirmed_GAP_ECU_ATTRIBUTION_PIPELINE_SMOKE_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "node_kind": "planning_index",
+      "manual_read_summary": "PLANNING_INDEX Rev 97 records ECU attribution pipeline smoke completion and advances frontier to time-gated OBSERVE-00.",
+      "chronology_note": "2026-09-19 planning index frontier advanced to GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "repo_path": "docs/phases/STATUS.md",
+      "node_kind": "phase_status_log",
+      "manual_read_summary": "STATUS records GO receipt, ECU attribution smoke completion, three output tokens, OBSERVE-00 carry-forward, and non-claims.",
+      "chronology_note": "2026-09-19 STATUS emits ECU attribution pipeline smoke output tokens.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:ecu_attribution_pipeline_smoke_pass_GAP_ECU_ATTRIBUTION_PIPELINE_SMOKE_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:ecu_settlement_quote_nonzero_GAP_ECU_ATTRIBUTION_PIPELINE_SMOKE_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:passive_ecu_zero_centrality_confirmed_GAP_ECU_ATTRIBUTION_PIPELINE_SMOKE_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
+      "node_kind": "forward_plan",
+      "manual_read_summary": "Reconciled forward plan Rev 97 records ECU attribution pipeline smoke completion and moves the execution table arrow to OBSERVE-00.",
+      "chronology_note": "2026-09-19 forward plan Rev 97 inserted.",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00"
+        },
+        {
+          "edge_type": "ROUTES_TO",
+          "target": "phase:GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "ROUTES_TO",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "boundary": {
