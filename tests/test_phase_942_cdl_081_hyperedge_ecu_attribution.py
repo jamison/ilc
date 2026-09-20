@@ -357,12 +357,17 @@ def test_23_refutation_conditional_on_cdl_v7():
 # TEST 24 — HyperEdge: edge_type field accepts EdgeType values
 # ===========================================================================
 def test_24_hyperedge_edge_type_field():
-    """HyperEdge.edge_type must accept EdgeType enum values (CDL-081 substrate)."""
+    """HyperEdge.edge_type must accept EdgeType enum values (CDL-081 substrate).
+
+    Root cause: float literals rejected by
+    WeightParams.__post_init__._coerce_weight_decimal (M-1 audit Phase 946).
+    Fixed Phase 1599.
+    """
     wp = WeightParams(
         stake=Decimal("1"),
         reuse_count=0,
-        decay_rate=0.95,
-        edge_type_coefficient=1.0,
+        decay_rate=Decimal("0.95"),
+        edge_type_coefficient=Decimal("1.0"),
     )
     he = HyperEdge(
         id="edge:001",
@@ -384,12 +389,17 @@ def test_24_hyperedge_edge_type_field():
 # TEST 25 — HyperEdge: edge_type defaults to None (backwards compatible)
 # ===========================================================================
 def test_25_hyperedge_edge_type_defaults_none():
-    """HyperEdge.edge_type=None is valid for legacy/untyped edges."""
+    """HyperEdge.edge_type=None is valid for legacy/untyped edges.
+
+    Root cause: float literals rejected by
+    WeightParams.__post_init__._coerce_weight_decimal (M-1 audit Phase 946).
+    Fixed Phase 1599.
+    """
     wp = WeightParams(
         stake=Decimal("1"),
         reuse_count=0,
-        decay_rate=0.95,
-        edge_type_coefficient=1.0,
+        decay_rate=Decimal("0.95"),
+        edge_type_coefficient=Decimal("1.0"),
     )
     he = HyperEdge(
         id="edge:legacy",
