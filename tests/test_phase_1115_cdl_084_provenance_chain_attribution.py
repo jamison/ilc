@@ -20,6 +20,7 @@ from ilc_core.economics.epoch_attribution_settle_runtime import (
     EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION,
     settle_attribution_batch,
 )
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.types import (
     CDL_084_TYPES_DEPENDENCY,
     EdgeType,
@@ -28,6 +29,25 @@ from ilc_core.types import (
     PROVENANCE_MAX_DEPTH,
     REUSE_ATTRIBUTION_RATE,
 )
+
+
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+def _node_id(index: int) -> str:
+    return node_id_from_obj({"phase": 1115, "node": index})
+
+
+REUSE_CREATOR = _agent_id(90)
+CREATOR_A = _agent_id(1)
+CREATOR_B = _agent_id(2)
+CREATOR_C = _agent_id(3)
+CREATOR_D = _agent_id(4)
+NODE_1 = _node_id(1)
+NODE_2 = _node_id(2)
+NODE_3 = _node_id(3)
+NODE_4 = _node_id(4)
 
 
 def _settle_event(event: AttributionEvent) -> list[tuple[str, Decimal]]:
@@ -44,7 +64,7 @@ def _provenance_event(
 ) -> AttributionEvent:
     return AttributionEvent(
         edge_type=EdgeType.PROVENANCE,
-        target_creator_id="unused_target_creator",
+        target_creator_id=REUSE_CREATOR,
         star_node_id=None,
         epoch=epoch,
         provenance_chain=chain,
@@ -92,7 +112,7 @@ def test_g2_types_dependency_token():
 
 
 def test_g2_runtime_version_token():
-    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_1129_fix1.v0.5"
+    assert EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION == "epoch_attribution_settle_runtime_GAP_CDL060.v0.8"
 
 
 # ---------------------------------------------------------------------------
@@ -141,8 +161,8 @@ def test_g4_empty_provenance_chain_raises_stable_error():
 
 def test_g5_duplicate_node_id_raises_stable_error():
     event = _provenance_event((
-        ("node_1", "creator_A"),
-        ("node_1", "creator_B"),
+        (NODE_1, CREATOR_A),
+        (NODE_1, CREATOR_B),
     ))
     with pytest.raises(ValueError, match="provenance_chain_contains_duplicate_node_id"):
         _settle_event(event)
@@ -154,19 +174,19 @@ def test_g5_duplicate_node_id_raises_stable_error():
 
 
 def test_g6_single_hop_payout_amount_uses_alpha_power_one():
-    payouts = _settle_event(_provenance_event((("node_1", "creator_A"),)))
+    payouts = _settle_event(_provenance_event(((NODE_1, CREATOR_A),)))
     expected = REUSE_ATTRIBUTION_RATE * PROVENANCE_DECAY_ALPHA
-    assert payouts == [("creator_A", expected)]
+    assert payouts == [(CREATOR_A, expected)]
 
 
 def test_g6_single_hop_payout_amount_is_decimal():
-    payouts = _settle_event(_provenance_event((("node_1", "creator_A"),)))
+    payouts = _settle_event(_provenance_event(((NODE_1, CREATOR_A),)))
     assert isinstance(payouts[0][1], Decimal)
 
 
 def test_g6_single_hop_pays_creator_from_chain_payload():
-    payouts = _settle_event(_provenance_event((("node_1", "creator_A"),)))
-    assert payouts[0][0] == "creator_A"
+    payouts = _settle_event(_provenance_event(((NODE_1, CREATOR_A),)))
+    assert payouts[0][0] == CREATOR_A
 
 
 # ---------------------------------------------------------------------------
@@ -176,33 +196,33 @@ def test_g6_single_hop_pays_creator_from_chain_payload():
 
 def test_g7_three_hop_payouts_use_alpha_powers_one_two_three():
     payouts = _settle_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
-        ("node_3", "creator_C"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
+        (NODE_3, CREATOR_C),
     )))
     assert payouts == [
-        ("creator_A", REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 1)),
-        ("creator_B", REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 2)),
-        ("creator_C", REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 3)),
+        (CREATOR_A, REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 1)),
+        (CREATOR_B, REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 2)),
+        (CREATOR_C, REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 3)),
     ]
 
 
 def test_g7_over_depth_chain_truncates_at_max_depth():
     payouts = _settle_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
-        ("node_3", "creator_C"),
-        ("node_4", "creator_D"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
+        (NODE_3, CREATOR_C),
+        (NODE_4, CREATOR_D),
     )))
     assert len(payouts) == PROVENANCE_MAX_DEPTH
-    assert [agent_id for agent_id, _ in payouts] == ["creator_A", "creator_B", "creator_C"]
+    assert [agent_id for agent_id, _ in payouts] == [CREATOR_A, CREATOR_B, CREATOR_C]
 
 
 def test_g7_multi_hop_payout_amounts_are_decimal():
     payouts = _settle_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
-        ("node_3", "creator_C"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
+        (NODE_3, CREATOR_C),
     )))
     assert all(isinstance(amount, Decimal) for _, amount in payouts)
 
@@ -214,24 +234,24 @@ def test_g7_multi_hop_payout_amounts_are_decimal():
 
 def test_g8_duplicate_creator_nearest_hop_wins():
     payouts = _settle_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
-        ("node_3", "creator_A"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
+        (NODE_3, CREATOR_A),
     )))
     assert payouts == [
-        ("creator_A", REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 1)),
-        ("creator_B", REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 2)),
+        (CREATOR_A, REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 1)),
+        (CREATOR_B, REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 2)),
     ]
-    assert [agent_id for agent_id, _ in payouts].count("creator_A") == 1
+    assert [agent_id for agent_id, _ in payouts].count(CREATOR_A) == 1
 
 
 def test_g8_distinct_creators_are_paid_independently():
     payouts = _settle_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
-        ("node_3", "creator_C"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
+        (NODE_3, CREATOR_C),
     )))
-    assert [agent_id for agent_id, _ in payouts] == ["creator_A", "creator_B", "creator_C"]
+    assert [agent_id for agent_id, _ in payouts] == [CREATOR_A, CREATOR_B, CREATOR_C]
 
 
 # ---------------------------------------------------------------------------
@@ -292,7 +312,7 @@ def test_g12_alpha_is_decimal_not_float():
 
 
 def test_g12_settlement_payout_is_decimal_not_float():
-    payouts = _settle_event(_provenance_event((("node_1", "creator_A"),)))
+    payouts = _settle_event(_provenance_event(((NODE_1, CREATOR_A),)))
     assert isinstance(payouts[0][1], Decimal)
     assert not isinstance(payouts[0][1], float)
 
@@ -304,25 +324,25 @@ def test_g12_settlement_payout_is_decimal_not_float():
 
 def test_g13_chain_length_exactly_three_produces_three_payouts():
     payouts = _settle_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
-        ("node_3", "creator_C"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
+        (NODE_3, CREATOR_C),
     )))
     assert len(payouts) == 3
 
 
 def test_g13_chain_length_four_produces_three_payouts():
     payouts = _settle_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
-        ("node_3", "creator_C"),
-        ("node_4", "creator_D"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
+        (NODE_3, CREATOR_C),
+        (NODE_4, CREATOR_D),
     )))
     assert len(payouts) == 3
 
 
 def test_g13_chain_length_one_produces_one_payout():
-    payouts = _settle_event(_provenance_event((("node_1", "creator_A"),)))
+    payouts = _settle_event(_provenance_event(((NODE_1, CREATOR_A),)))
     assert len(payouts) == 1
 
 
@@ -333,25 +353,25 @@ def test_g13_chain_length_one_produces_one_payout():
 
 def test_g14_mixed_reuse_and_provenance_batch_computes_both_payouts():
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "reuse_creator", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, REUSE_CREATOR, None, 1))
     batch.add_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
     )))
     batch.seal()
     payouts = settle_attribution_batch(batch, stake_map={})
     assert payouts == [
-        ("reuse_creator", REUSE_ATTRIBUTION_RATE),
-        ("creator_A", REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 1)),
-        ("creator_B", REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 2)),
+        (REUSE_CREATOR, REUSE_ATTRIBUTION_RATE),
+        (CREATOR_A, REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 1)),
+        (CREATOR_B, REUSE_ATTRIBUTION_RATE * (PROVENANCE_DECAY_ALPHA ** 2)),
     ]
 
 
 def test_g14_max_depth_batch_returns_str_decimal_tuples():
     payouts = _settle_event(_provenance_event((
-        ("node_1", "creator_A"),
-        ("node_2", "creator_B"),
-        ("node_3", "creator_C"),
+        (NODE_1, CREATOR_A),
+        (NODE_2, CREATOR_B),
+        (NODE_3, CREATOR_C),
     )))
     assert len(payouts) == 3
     assert all(isinstance(agent_id, str) for agent_id, _ in payouts)

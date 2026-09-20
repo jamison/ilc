@@ -57,8 +57,12 @@ class WeightParams:
     """
     stake: Decimal               # ECU stake at edge creation — basis for decay
     reuse_count: int             # Traversal counter; incremented on each access
-    decay_rate: Decimal          # CDL-V1 decay rate (0 = no decay; 1 = full decay per epoch)
-    edge_type_coefficient: Decimal # α — per-type weight multiplier; provisional until CDL
+    # CDL-bounded normalized decay parameter. compute_weight() does not consume
+    # this field directly; caller/runtime policy applies the ratified semantics.
+    decay_rate: Decimal
+    # α — per-type weight multiplier; no [0,1] guard because CDL-ratified
+    # edge coefficients may exceed a unit interval or carry domain-specific sign.
+    edge_type_coefficient: Decimal
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "stake", _coerce_weight_decimal(self.stake, "weight_stake_invalid"))

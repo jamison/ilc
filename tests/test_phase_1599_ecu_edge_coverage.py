@@ -348,8 +348,8 @@ def test_provenance_rejects_chain_longer_than_input_bound() -> None:
 @pytest.mark.parametrize(
     "chain,error_token",
     [
-        ((("legacy-node", _agent_id(1)),), "provenance_chain_node_id_must_be_non_empty_string"),
-        (((_node_id("bad-agent"), "legacy-creator"),), "provenance_chain_creator_id_must_be_non_empty_string"),
+        ((("legacy-node", _agent_id(1)),), "provenance_chain_node_id_must_be_cidv1_nodeid"),
+        (((_node_id("bad-agent"), "legacy-creator"),), "provenance_chain_creator_id_must_be_agent_id"),
     ],
 )
 def test_provenance_rejects_malformed_node_or_creator_ids(
@@ -452,6 +452,54 @@ def test_weight_params_decay_rate_rejects_out_of_range_values(value: Decimal) ->
         )
 
     assert str(exc_info.value) == "weight_decay_rate_out_of_range"
+
+
+@pytest.mark.parametrize("value", [Decimal("0"), Decimal("1")])
+def test_weight_params_decay_rate_accepts_closed_interval_boundaries(value: Decimal) -> None:
+    params = WeightParams(
+        stake=Decimal("1"),
+        reuse_count=0,
+        decay_rate=value,
+        edge_type_coefficient=Decimal("1.0"),
+    )
+
+    assert params.decay_rate == value
+
+
+@pytest.mark.parametrize(
+    "field,value,error_token",
+    [
+        ("stake", Decimal("NaN"), "weight_stake_invalid_non_finite"),
+        ("stake", Decimal("Infinity"), "weight_stake_invalid_non_finite"),
+        (
+            "edge_type_coefficient",
+            Decimal("NaN"),
+            "weight_edge_type_coefficient_invalid_non_finite",
+        ),
+        (
+            "edge_type_coefficient",
+            Decimal("Infinity"),
+            "weight_edge_type_coefficient_invalid_non_finite",
+        ),
+    ],
+)
+def test_weight_params_rejects_non_finite_stake_and_edge_coefficient(
+    field: str,
+    value: Decimal,
+    error_token: str,
+) -> None:
+    kwargs = {
+        "stake": Decimal("1"),
+        "reuse_count": 0,
+        "decay_rate": Decimal("0.95"),
+        "edge_type_coefficient": Decimal("1.0"),
+    }
+    kwargs[field] = value
+
+    with pytest.raises(ValueError) as exc_info:
+        WeightParams(**kwargs)
+
+    assert str(exc_info.value) == error_token
 
 
 @pytest.mark.parametrize("edge_type", [EdgeType.ATTESTATION, EdgeType.EPOCH_BOUNDARY])

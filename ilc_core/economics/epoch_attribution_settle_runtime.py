@@ -233,7 +233,7 @@ def _get_centrality_score(
     """Return the bounded per-node, per-epoch centrality score for passive ECU."""
     normalized_node = _require_node_id(
         node_id,
-        "passive_ecu_node_id_must_be_non_empty_string",
+        "passive_ecu_node_id_must_be_cidv1_nodeid",
     )
     normalized_epoch = _require_non_negative_int(
         epoch,
@@ -298,10 +298,11 @@ def _normalize_distribution_member_stakes(members: object) -> dict[str, Decimal]
             member_id,
             "ejected_stake_member_id_must_be_non_empty_string",
         )
-        normalized[member_id] = _require_decimal_amount(
-            stake,
-            "ejected_stake_member_stake",
-        )
+        if not isinstance(stake, Decimal):
+            raise ValueError("ejected_stake_member_stake_must_be_decimal")
+        if not stake.is_finite() or stake < _ZERO:
+            raise ValueError("ejected_stake_member_stake_must_be_non_negative_finite_decimal")
+        normalized[member_id] = stake
     return normalized
 
 
@@ -410,9 +411,9 @@ def require_production_ejected_stake_distribution_activation(
 
 
 def _require_non_empty_string(value: object, error_token: str) -> str:
-    if not isinstance(value, str) or not value.strip():
+    if not isinstance(value, str) or not value or value != value.strip():
         raise ValueError(error_token)
-    return value.strip()
+    return value
 
 
 def _require_agent_id(value: object, error_token: str) -> str:
@@ -457,11 +458,11 @@ def _validate_provenance_chain(chain: object) -> tuple[tuple[str, str], ...]:
             raise ValueError("provenance_chain_entry_must_be_node_creator_pair")
         node_id = _require_node_id(
             entry[0],
-            "provenance_chain_node_id_must_be_non_empty_string",
+            "provenance_chain_node_id_must_be_cidv1_nodeid",
         )
         creator_id = _require_agent_id(
             entry[1],
-            "provenance_chain_creator_id_must_be_non_empty_string",
+            "provenance_chain_creator_id_must_be_agent_id",
         )
         if node_id in seen_node_ids:
             raise ValueError("provenance_chain_contains_duplicate_node_id")
@@ -476,8 +477,6 @@ def _normalize_member_stakes(members: object) -> dict[str, Decimal]:
         raise ValueError("stake_map_members_must_be_dict")
     normalized: dict[str, Decimal] = {}
     for member_id, stake in members.items():
-        if not isinstance(member_id, str):
-            raise ValueError("stake_map_member_id_must_be_string")
         _validate_member_id(member_id, "stake_map_member_id_must_be_non_empty_string")
         if not isinstance(stake, Decimal):
             raise ValueError("stake_map_member_stake_must_be_decimal")
@@ -602,6 +601,10 @@ def settle_attribution_batch(
     """
     if not getattr(batch, "sealed", False):
         raise ValueError("epoch_attribution_batch_must_be_sealed_before_settlement")
+    if not isinstance(stake_map, dict):
+        raise ValueError("stake_map_must_be_dict")
+    if emitted_tokens is not None and not isinstance(emitted_tokens, list):
+        raise ValueError("emitted_tokens_must_be_list")
     if type(epoch_node_mint_count) is not int or epoch_node_mint_count < 0:
         raise ValueError("epoch_node_mint_count_must_be_non_negative")
 
@@ -614,8 +617,9 @@ def settle_attribution_batch(
         # CDL-081 §4.1: fresh visited_set per event — no cross-event contamination.
         visited_set: set[str] = set()
 
-        # Cast to AttributionEvent — callers are responsible for event construction.
-        attr_event: AttributionEvent = event  # type: ignore[assignment]
+        if not isinstance(event, AttributionEvent):
+            raise ValueError("attribution_event_must_be_attribution_event")
+        attr_event = event
 
         if attr_event.edge_type == EdgeType.REUSE:
             # §4.1 REUSE attribution — creator of target node receives REUSE_ATTRIBUTION_RATE.

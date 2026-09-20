@@ -27,6 +27,7 @@ from ilc_core.economics.epoch_attribution_settle_runtime import (
     AttributionEvent,
     settle_attribution_batch,
 )
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.ledger.cdl048_conversion_sweeper_runtime import (
     CDL048_ACTIVATED_PHASE_1388_TOKEN,
     CDL048_ACTIVATION_RUNTIME_VERSION,
@@ -215,7 +216,9 @@ def build_epoch_attribution_batch(
     manifest_events: list[dict[str, Any]] = []
 
     for index, agent_id in enumerate(agent_ids):
-        star_node_id = f"phase1575r_reuse_star_{index:02d}"
+        star_node_id = node_id_from_obj(
+            {"phase": PHASE, "kind": "reuse_star", "index": index}
+        )
         batch.add_event(
             AttributionEvent(
                 edge_type=EdgeType.REUSE,
@@ -236,16 +239,26 @@ def build_epoch_attribution_batch(
     for index in range(len(agent_ids)):
         chain = tuple(
             (
-                f"phase1575r_provenance_node_{index:02d}_{hop:02d}",
+                node_id_from_obj(
+                    {
+                        "phase": PHASE,
+                        "kind": "provenance_node",
+                        "index": index,
+                        "hop": hop,
+                    }
+                ),
                 agent_ids[(index + hop) % len(agent_ids)],
             )
             for hop in range(3)
+        )
+        provenance_star_node_id = node_id_from_obj(
+            {"phase": PHASE, "kind": "provenance_star", "index": index}
         )
         batch.add_event(
             AttributionEvent(
                 edge_type=EdgeType.PROVENANCE,
                 target_creator_id=agent_ids[index],
-                star_node_id=f"phase1575r_provenance_star_{index:02d}",
+                star_node_id=provenance_star_node_id,
                 epoch=epoch,
                 provenance_chain=chain,
             )
@@ -258,13 +271,14 @@ def build_epoch_attribution_batch(
                     {"creator_id": creator_id, "node_id": node_id}
                     for node_id, creator_id in chain
                 ],
-                "star_node_id": f"phase1575r_provenance_star_{index:02d}",
+                "star_node_id": provenance_star_node_id,
                 "target_creator_id": agent_ids[index],
             }
         )
 
+    coauth_star_node_id = node_id_from_obj({"phase": PHASE, "kind": "coauth_star"})
     stake_map = {
-        "phase1575r_coauth_star": {
+        coauth_star_node_id: {
             agent_ids[0]: Decimal("1"),
             agent_ids[1]: Decimal("2"),
             agent_ids[2]: Decimal("3"),
@@ -275,7 +289,7 @@ def build_epoch_attribution_batch(
         AttributionEvent(
             edge_type=EdgeType.CO_AUTHORSHIP,
             target_creator_id=agent_ids[0],
-            star_node_id="phase1575r_coauth_star",
+            star_node_id=coauth_star_node_id,
             epoch=epoch,
         )
     )
@@ -283,7 +297,7 @@ def build_epoch_attribution_batch(
         {
             "edge_type": EdgeType.CO_AUTHORSHIP.value,
             "epoch": epoch,
-            "star_node_id": "phase1575r_coauth_star",
+            "star_node_id": coauth_star_node_id,
             "target_creator_id": agent_ids[0],
         }
     )

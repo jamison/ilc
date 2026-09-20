@@ -6,16 +6,22 @@ import pytest
 
 from ilc_core.economics import epoch_attribution_settle_runtime as settle_runtime
 from ilc_core.economics import passive_ecu_attribution_runtime as passive_runtime
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.network.d2d import centrality_delta_gossip_runtime as centrality_runtime
 from ilc_core.types import EdgeType, EpochAttributionBatch
 
 
-def _reuse_batch(node_id: str | None = "node-alpha") -> EpochAttributionBatch:
+VALID_NODE_ID = node_id_from_obj({"phase": 1577, "label": "node-alpha"})
+MISSING_NODE_ID = node_id_from_obj({"phase": 1577, "label": "node-missing"})
+VALID_CREATOR_ID = "a" * 96
+
+
+def _reuse_batch(node_id: str | None = VALID_NODE_ID) -> EpochAttributionBatch:
     batch = EpochAttributionBatch(epoch=1)
     batch.add_event(
         settle_runtime.AttributionEvent(
             edge_type=EdgeType.REUSE,
-            target_creator_id="creator-alpha",
+            target_creator_id=VALID_CREATOR_ID,
             star_node_id=node_id,
             epoch=1,
         )
@@ -104,13 +110,13 @@ def test_centrality_delta_gossip_rejects_finite_float_ingress() -> None:
 
 
 def test_centrality_score_zero_for_unknown_node() -> None:
-    assert settle_runtime._get_centrality_score("node-missing", 1, {}) == Decimal("0")
+    assert settle_runtime._get_centrality_score(MISSING_NODE_ID, 1, {}) == Decimal("0")
 
 
 def test_centrality_score_is_capped_to_epoch_passive_ecu_bound() -> None:
-    state = {"_pending": {1: {"node-alpha": Decimal("0.50")}}}
+    state = {"_pending": {1: {VALID_NODE_ID: Decimal("0.50")}}}
 
-    assert settle_runtime._get_centrality_score("node-alpha", 1, state) == Decimal("0.100000000000")
+    assert settle_runtime._get_centrality_score(VALID_NODE_ID, 1, state) == Decimal("0.100000000000")
 
 
 def test_historical_passive_ecu_guard_disabled_returns_zero(
@@ -121,12 +127,12 @@ def test_historical_passive_ecu_guard_disabled_returns_zero(
     payouts = settle_runtime.settle_attribution_batch(
         _reuse_batch(),
         stake_map={},
-        passive_ecu_centrality_state={"_pending": {1: {"node-alpha": Decimal("0.10")}}},
-        passive_ecu_quality_scores={"node-alpha": Decimal("0.5")},
+        passive_ecu_centrality_state={"_pending": {1: {VALID_NODE_ID: Decimal("0.10")}}},
+        passive_ecu_quality_scores={VALID_NODE_ID: Decimal("0.5")},
     )
 
     assert settle_runtime.PASSIVE_ECU_WIRING_NOT_ACTIVATED is True
-    assert payouts == [("creator-alpha", Decimal("0.20"))]
+    assert payouts == [(VALID_CREATOR_ID, Decimal("0.20"))]
 
 
 def test_passive_ecu_wiring_active_nonzero(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -135,13 +141,13 @@ def test_passive_ecu_wiring_active_nonzero(monkeypatch: pytest.MonkeyPatch) -> N
     payouts = settle_runtime.settle_attribution_batch(
         _reuse_batch(),
         stake_map={},
-        passive_ecu_centrality_state={"_pending": {1: {"node-alpha": Decimal("0.10")}}},
-        passive_ecu_quality_scores={"node-alpha": Decimal("0.5")},
+        passive_ecu_centrality_state={"_pending": {1: {VALID_NODE_ID: Decimal("0.10")}}},
+        passive_ecu_quality_scores={VALID_NODE_ID: Decimal("0.5")},
     )
 
     assert payouts == [
-        ("creator-alpha", Decimal("0.20")),
-        ("creator-alpha", Decimal("0.004000000000")),
+        (VALID_CREATOR_ID, Decimal("0.20")),
+        (VALID_CREATOR_ID, Decimal("0.004000000000")),
     ]
 
 
@@ -225,8 +231,8 @@ def test_epoch_attribution_batch_settle_forwards_passive_ecu_inputs(
 
     payouts = _reuse_batch().settle(
         {},
-        passive_ecu_centrality_state={"_pending": {1: {"node-alpha": Decimal("0.10")}}},
-        passive_ecu_quality_scores={"node-alpha": Decimal("0.5")},
+        passive_ecu_centrality_state={"_pending": {1: {VALID_NODE_ID: Decimal("0.10")}}},
+        passive_ecu_quality_scores={VALID_NODE_ID: Decimal("0.5")},
     )
 
-    assert payouts[-1] == ("creator-alpha", Decimal("0.004000000000"))
+    assert payouts[-1] == (VALID_CREATOR_ID, Decimal("0.004000000000"))
