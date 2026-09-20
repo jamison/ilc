@@ -276,7 +276,7 @@ fn checked_total(batch: &AttributionBatch) -> Result<u64, String> {
 
 fn parse_agent_id_hex(value: &str) -> Result<AgentID, String> {
     let normalized = value.trim();
-    if normalized.len() != 96 {
+    if normalized != value || normalized.len() != 96 {
         return Err("agent_id_hex_must_be_96_lower_hex".to_string());
     }
     if !normalized
@@ -365,6 +365,8 @@ mod tests {
         let err = parse_agent_id_hex(&"0".repeat(95)).unwrap_err();
         assert_eq!(err, "agent_id_hex_must_be_96_lower_hex");
         let err = parse_agent_id_hex(&"AA".repeat(48)).unwrap_err();
+        assert_eq!(err, "agent_id_hex_must_be_96_lower_hex");
+        let err = parse_agent_id_hex(&format!(" {} ", "0".repeat(96))).unwrap_err();
         assert_eq!(err, "agent_id_hex_must_be_96_lower_hex");
     }
 

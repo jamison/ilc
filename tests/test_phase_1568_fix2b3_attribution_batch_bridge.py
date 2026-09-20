@@ -163,6 +163,24 @@ def test_bridge_rejects_malformed_agent_id() -> None:
     assert excinfo.value.token == "agent_id_hex_must_be_96_lower_hex"
 
 
+@pytest.mark.parametrize(
+    "agent_id",
+    [
+        "A" * 96,
+        f" {'a' * 96}",
+        f"{'a' * 96} ",
+    ],
+)
+def test_bridge_rejects_noncanonical_agent_id(agent_id: str) -> None:
+    claim_payload = _simple_claim_payload()
+    claim_payload["claims"][0]["agent_id"] = agent_id
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(claim_payload)
+
+    assert excinfo.value.token == "agent_id_hex_must_be_96_lower_hex"
+
+
 def test_bridge_rejects_duplicate_claim_id_in_same_batch() -> None:
     claim_payload = _passing_claim_payload()
     claim_payload["claims"][1]["claim_id"] = claim_payload["claims"][0]["claim_id"]
@@ -331,6 +349,7 @@ def test_bridge_wraps_rust_ingest_timeout(
 
     fake_binary = tmp_path / "attribution_batch_ingest"
     fake_binary.touch()
+    fake_binary.chmod(0o755)
     monkeypatch.setattr(subprocess, "run", _timeout_run)
 
     with pytest.raises(AttributionBatchBridgeError) as excinfo:
@@ -343,6 +362,37 @@ def test_bridge_wraps_rust_ingest_timeout(
         )
 
     assert excinfo.value.token == "rust_attribution_batch_ingest_timeout"
+
+
+def test_apply_attribution_batch_with_rust_rejects_non_file_binary(tmp_path: Path) -> None:
+    fake_binary_dir = tmp_path / "attribution_batch_ingest"
+    fake_binary_dir.mkdir()
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        apply_attribution_batch_with_rust(
+            build_attribution_batch_from_claims(_simple_claim_payload()),
+            consensus_lmdb=tmp_path / "store.lmdb",
+            rust_binary=fake_binary_dir,
+            dry_run=True,
+        )
+
+    assert excinfo.value.token == "rust_attribution_batch_ingest_binary_missing"
+
+
+def test_apply_attribution_batch_with_rust_rejects_non_executable_binary(tmp_path: Path) -> None:
+    fake_binary = tmp_path / "attribution_batch_ingest"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_binary.chmod(0o644)
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        apply_attribution_batch_with_rust(
+            build_attribution_batch_from_claims(_simple_claim_payload()),
+            consensus_lmdb=tmp_path / "store.lmdb",
+            rust_binary=fake_binary,
+            dry_run=True,
+        )
+
+    assert excinfo.value.token == "rust_attribution_batch_ingest_binary_not_executable"
 
 
 def test_agent_loop_cli_builds_attribution_batch(tmp_path: Path) -> None:

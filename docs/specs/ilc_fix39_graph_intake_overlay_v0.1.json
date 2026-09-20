@@ -79,6 +79,12 @@
       "target": "tools/ecu/ecu_balance_write_smoke.py"
     },
     {
+      "annotation_method": "phase1597_audit_hardening_overlay_record",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_phase_1568_fix2b3_attribution_batch_bridge.py",
+      "target": "ilc_core/consensus/attribution_batch_bridge.py"
+    },
+    {
       "annotation_method": "phase1597_overlay_record",
       "edge_role": "PHASE_WALKTHROUGH",
       "repo_path": "docs/phases/phase_1597_ecu_balance_write_smoke_walkthrough.md",

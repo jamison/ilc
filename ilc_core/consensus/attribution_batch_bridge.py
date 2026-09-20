@@ -98,13 +98,12 @@ def _require_epoch(value: Any) -> int:
 def _require_agent_id(value: Any) -> str:
     if not isinstance(value, str):
         raise AttributionBatchBridgeError("agent_id_hex_must_be_96_lower_hex", "agent_id must be a hex string")
-    normalized = value.strip().lower()
-    if not _AGENT_ID_RE.fullmatch(normalized):
+    if value != value.strip() or value != value.lower() or not _AGENT_ID_RE.fullmatch(value):
         raise AttributionBatchBridgeError(
             "agent_id_hex_must_be_96_lower_hex",
             "agent_id must be 96 lowercase hex characters",
         )
-    return normalized
+    return value
 
 
 def _require_optional_sha256_hex(value: Any, token: str) -> str | None:
@@ -673,14 +672,21 @@ def apply_attribution_batch_with_rust(
     """Apply a bridge batch through the Rust `attribution_batch_ingest` binary."""
 
     binary_path = Path(rust_binary)
-    if not binary_path.exists():
+    if not binary_path.exists() or not binary_path.is_file():
         raise AttributionBatchBridgeError(
             "rust_attribution_batch_ingest_binary_missing",
             f"Rust attribution binary not found: {binary_path}",
         )
+    if not os.access(binary_path, os.X_OK):
+        raise AttributionBatchBridgeError(
+            "rust_attribution_batch_ingest_binary_not_executable",
+            f"Rust attribution binary is not executable: {binary_path}",
+        )
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".json", delete=False) as handle:
         json.dump(batch_payload, handle, sort_keys=True, separators=(",", ":"), allow_nan=False)
         handle.write("\n")
+        handle.flush()
+        os.fsync(handle.fileno())
         input_path = Path(handle.name)
     try:
         command = [

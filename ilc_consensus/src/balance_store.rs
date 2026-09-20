@@ -248,8 +248,9 @@ impl BalanceStore {
 
     /// Epoch-boundary global reconciliation where identical attribution rules are universally applied.
     pub fn apply_attribution(&self, batch: AttributionBatch) -> Result<(), ILCConsensusError> {
-        // Reject batches with duplicate AgentIDs — a second entry would silently overwrite
-        // the first instead of summing, producing incorrect balances.
+        // Reject batches with duplicate AgentIDs. The current loop would otherwise
+        // sum duplicate entries, but each batch must contain one canonical row per
+        // recipient AgentID to keep attribution evidence unambiguous.
         let mut seen = HashSet::new();
         for (agent_id, _) in &batch.attributions {
             if !seen.insert(agent_id.0) {
@@ -292,11 +293,13 @@ impl BalanceStore {
                 Err(e) => return Err(ILCConsensusError::Other(format!("DB Error: {}", e))),
             };
 
-            // Replay guard: reject same-epoch or older-epoch attribution for existing agents.
-            // `<=` (not `<`) prevents a replay of the exact same batch from double-minting.
+            // Replay guard: reject older-epoch attribution for existing agents.
+            // Same-epoch attribution is valid when an agent first received a transfer in
+            // that epoch. Replay of an attribution batch for the same epoch is prevented
+            // above by the epoch commit marker, before any per-agent mutation occurs.
             // New agents are exempt: they have no prior epoch record and their initial
             // epoch field is set to batch.epoch as part of construction above.
-            if !is_new && batch.epoch.0 <= agent_bal.epoch.0 {
+            if !is_new && batch.epoch.0 < agent_bal.epoch.0 {
                 return Err(ILCConsensusError::InvalidEpoch);
             }
 
@@ -481,6 +484,53 @@ mod tests {
 
         assert_eq!(store.get_balance(&agent1).unwrap().epoch, EpochSeq(2));
         assert_eq!(store.get_balance(&agent2).unwrap().epoch, EpochSeq(2));
+    }
+
+    #[test]
+    fn test_apply_attribution_allows_same_epoch_after_transfer() {
+        let (env, _dir) = setup_env();
+        let store = BalanceStore::new(env).unwrap();
+
+        let agent1 = AgentID([21; 48]);
+        let agent2 = AgentID([22; 48]);
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(1),
+                attributions: vec![(agent1, 1_000_000)],
+                backward_attribution_batch_root: None,
+                agent_reputation_root: None,
+            })
+            .unwrap();
+
+        let cert = TransferCertificate {
+            transfer: ECUTransfer {
+                object_ref: ObjectRef {
+                    agent: agent1,
+                    version: 0,
+                },
+                to: agent2,
+                amount_micro_ecu: 400_000,
+                transfer_class: crate::types::TransferClass::Contribution,
+                sender_sig: dummy_agent_sig(),
+            },
+            sigs: Vec::new(),
+            epoch: EpochSeq(2),
+        };
+        store.apply_transfer(cert).unwrap();
+
+        store
+            .apply_attribution(AttributionBatch {
+                epoch: EpochSeq(2),
+                attributions: vec![(agent2, 200_000)],
+                backward_attribution_batch_root: None,
+                agent_reputation_root: None,
+            })
+            .unwrap();
+
+        let bal = store.get_balance(&agent2).unwrap();
+        assert_eq!(bal.amount_micro_ecu, 600_000);
+        assert_eq!(bal.epoch, EpochSeq(2));
     }
 
     #[test]
