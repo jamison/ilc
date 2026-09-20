@@ -16,9 +16,11 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_DOWN, localcontext
+import re
 from typing import TYPE_CHECKING, Any, Optional
 
 from ilc_core.economics.passive_ecu_attribution_runtime import compute_passive_ecu
+from ilc_core.encoding.cidv1 import parse_nodeid_strict
 from ilc_core.network.d2d.centrality_delta_gossip_constants import CENTRALITY_QUANTUM
 from ilc_core.types import (
     EDGE_MINT_PHI_BOUND,
@@ -67,6 +69,7 @@ _ZERO = Decimal("0")
 _PAYOUT_QUANTUM = Decimal("0.000000001")
 MAX_PAYOUT_QUANTIZE_ADJUSTED_EXPONENT = 18
 INVALID_AMOUNT_MAGNITUDE_TOKEN = "invalid_amount_magnitude"
+_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 
 
 def _quantize_payout(amount: Decimal) -> Decimal:
@@ -228,7 +231,7 @@ def _get_centrality_score(
     centrality_state: Optional[dict[str, Any]] = None,
 ) -> Decimal:
     """Return the bounded per-node, per-epoch centrality score for passive ECU."""
-    normalized_node = _require_non_empty_string(
+    normalized_node = _require_node_id(
         node_id,
         "passive_ecu_node_id_must_be_non_empty_string",
     )
@@ -412,8 +415,26 @@ def _require_non_empty_string(value: object, error_token: str) -> str:
     return value.strip()
 
 
+def _require_agent_id(value: object, error_token: str) -> str:
+    normalized = _require_non_empty_string(value, error_token)
+    if _AGENT_ID_RE.fullmatch(normalized) is None:
+        raise ValueError(error_token)
+    return normalized
+
+
+def _require_node_id(value: object, error_token: str) -> str:
+    normalized = _require_non_empty_string(value, error_token)
+    try:
+        parse_nodeid_strict(normalized)
+    except ValueError as exc:
+        raise ValueError(error_token) from exc
+    return normalized
+
+
 def _validate_member_id(value: object, error_token: str) -> str:
     if not isinstance(value, str) or not value.strip() or value != value.strip():
+        raise ValueError(error_token)
+    if _AGENT_ID_RE.fullmatch(value) is None:
         raise ValueError(error_token)
     return value
 
@@ -434,11 +455,11 @@ def _validate_provenance_chain(chain: object) -> tuple[tuple[str, str], ...]:
     for entry in chain:
         if not isinstance(entry, tuple) or len(entry) != 2:
             raise ValueError("provenance_chain_entry_must_be_node_creator_pair")
-        node_id = _require_non_empty_string(
+        node_id = _require_node_id(
             entry[0],
             "provenance_chain_node_id_must_be_non_empty_string",
         )
-        creator_id = _require_non_empty_string(
+        creator_id = _require_agent_id(
             entry[1],
             "provenance_chain_creator_id_must_be_non_empty_string",
         )
@@ -587,6 +608,7 @@ def settle_attribution_batch(
     payouts: list[tuple[str, Decimal]] = []
     provenance_events_processed = 0
     zero_count_skip_token_emitted = False
+    phi_bound_exceeded_token_emitted = False
 
     for event in batch.events:
         # CDL-081 §4.1: fresh visited_set per event — no cross-event contamination.
@@ -598,7 +620,7 @@ def settle_attribution_batch(
         if attr_event.edge_type == EdgeType.REUSE:
             # §4.1 REUSE attribution — creator of target node receives REUSE_ATTRIBUTION_RATE.
             # visited_set deduplication: same creator cannot receive twice per event.
-            recipient_id = _require_non_empty_string(
+            recipient_id = _require_agent_id(
                 attr_event.target_creator_id,
                 "target_creator_id_must_be_non_empty_string",
             )
@@ -621,7 +643,11 @@ def settle_attribution_batch(
 
         elif attr_event.edge_type == EdgeType.CO_AUTHORSHIP:
             # §4.2 CO_AUTHORSHIP proportional split among star node members.
-            members = _normalize_member_stakes(stake_map.get(attr_event.star_node_id or "", {}))
+            star_node_id = _require_node_id(
+                attr_event.star_node_id,
+                "co_authorship_star_node_id_must_be_cidv1_nodeid",
+            )
+            members = _normalize_member_stakes(stake_map.get(star_node_id, {}))
             if not members:
                 # §4.6 Zero-member commons: attribution suspended.
                 if emitted_tokens is not None:
@@ -630,6 +656,8 @@ def settle_attribution_batch(
             total_stake = sum(members.values(), _ZERO)
             if total_stake == _ZERO:
                 # Pathological: members present but all zero stakes — safe skip.
+                if emitted_tokens is not None:
+                    emitted_tokens.append("cdl_081_zero_stake_commons_transition")
                 continue
             payouts.extend(
                 _stake_proportional_payouts(
@@ -646,7 +674,7 @@ def settle_attribution_batch(
             recipient_id = attr_event.refuting_agent_id
             if recipient_id is None:
                 raise ValueError("refutation_event_missing_refuting_agent_id")
-            recipient_id = _require_non_empty_string(
+            recipient_id = _require_agent_id(
                 recipient_id,
                 "refuting_agent_id_must_be_non_empty_string",
             )
@@ -669,8 +697,13 @@ def settle_attribution_batch(
                     Decimal(provenance_events_processed) / Decimal(epoch_node_mint_count)
                 )
                 phi_bound_exceeded = provenance_ratio >= EDGE_MINT_PHI_BOUND
-                if phi_bound_exceeded and emitted_tokens is not None:
+                if (
+                    phi_bound_exceeded
+                    and emitted_tokens is not None
+                    and not phi_bound_exceeded_token_emitted
+                ):
                     emitted_tokens.append("edge_mint_phi_bound_exceeded")
+                    phi_bound_exceeded_token_emitted = True
 
             # Q5/Q7: pay each creator at most once per event; nearest hop wins.
             visited_creators: set[str] = set()

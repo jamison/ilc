@@ -69,6 +69,8 @@ class WeightParams:
             "decay_rate",
             _coerce_weight_decimal(self.decay_rate, "weight_decay_rate_invalid"),
         )
+        if self.decay_rate < Decimal("0") or self.decay_rate > Decimal("1"):
+            raise ValueError("weight_decay_rate_out_of_range")
         object.__setattr__(
             self,
             "edge_type_coefficient",

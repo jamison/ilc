@@ -33,6 +33,14 @@ from ilc_core.types import (
 )
 
 
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+TARGET_CREATOR = _agent_id(1)
+REFUTING_AGENT = _agent_id(2)
+
+
 def _settle_single_event(event: AttributionEvent) -> list[tuple[str, Decimal]]:
     batch = EpochAttributionBatch(epoch=event.epoch)
     batch.add_event(event)
@@ -88,14 +96,14 @@ def test_g2_hcon02_historical_marker_retained():
 def test_g3a_refutation_payout_correct_recipient():
     event = AttributionEvent(
         edge_type=EdgeType.REFUTATION,
-        target_creator_id="creator_of_refuted_node",
+        target_creator_id=TARGET_CREATOR,
         star_node_id=None,
         epoch=1,
-        refuting_agent_id="refuting_agent",
+        refuting_agent_id=REFUTING_AGENT,
     )
     payouts = _settle_single_event(event)
     assert len(payouts) == 1
-    assert payouts[0][0] == "refuting_agent"
+    assert payouts[0][0] == REFUTING_AGENT
     assert payouts[0][1] == REUSE_ATTRIBUTION_RATE
     assert isinstance(payouts[0][1], Decimal)
 
@@ -103,20 +111,20 @@ def test_g3a_refutation_payout_correct_recipient():
 def test_g3b_refuted_target_creator_not_paid():
     event = AttributionEvent(
         edge_type=EdgeType.REFUTATION,
-        target_creator_id="creator_of_refuted_node",
+        target_creator_id=TARGET_CREATOR,
         star_node_id=None,
         epoch=1,
-        refuting_agent_id="refuting_agent",
+        refuting_agent_id=REFUTING_AGENT,
     )
     payouts = _settle_single_event(event)
     payout_recipients = [p[0] for p in payouts]
-    assert "creator_of_refuted_node" not in payout_recipients
+    assert TARGET_CREATOR not in payout_recipients
 
 
 def test_g3c_missing_refuting_agent_id_raises_value_error():
     bad_event = AttributionEvent(
         edge_type=EdgeType.REFUTATION,
-        target_creator_id="someone",
+        target_creator_id=TARGET_CREATOR,
         star_node_id=None,
         epoch=1,
         refuting_agent_id=None,
@@ -148,14 +156,14 @@ def test_g4_attribution_event_has_no_upheld_field():
 def test_g4b_refuting_agent_id_is_payout_recipient():
     event = AttributionEvent(
         edge_type=EdgeType.REFUTATION,
-        target_creator_id="TARGET_CREATOR",
+        target_creator_id=TARGET_CREATOR,
         star_node_id=None,
         epoch=5,
-        refuting_agent_id="REFUTING_AGENT",
+        refuting_agent_id=REFUTING_AGENT,
     )
     payouts = _settle_single_event(event)
-    assert payouts[0][0] == "REFUTING_AGENT"
-    assert payouts[0][0] != "TARGET_CREATOR"
+    assert payouts[0][0] == REFUTING_AGENT
+    assert payouts[0][0] != TARGET_CREATOR
 
 
 # ---------------------------------------------------------------------------
@@ -211,7 +219,7 @@ def test_g8a_exact_2_of_3_passes_threshold():
     # 3 remaining members, 3 participate (100% quorum), 2 approve (2/3 >= threshold).
     ok, payouts = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50"), "c": Decimal("50")},
+        {_agent_id(10): Decimal("50"), _agent_id(11): Decimal("50"), _agent_id(12): Decimal("50")},
         approve_votes=2,
         participating_voters=3,
     )
@@ -223,7 +231,7 @@ def test_g8b_exact_4_of_6_passes_threshold():
     # 6 remaining members, 6 participate (100% quorum), 4 approve (4/6 = 2/3 >= threshold).
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {k: Decimal("50") for k in "abcdef"},
+        {_agent_id(20 + index): Decimal("50") for index in range(6)},
         approve_votes=4,
         participating_voters=6,
     )
@@ -234,7 +242,7 @@ def test_g8c_exact_6_of_9_passes_threshold():
     # 9 remaining members, 9 participate (100% quorum), 6 approve (6/9 = 2/3 >= threshold).
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {k: Decimal("50") for k in "abcdefghi"},
+        {_agent_id(30 + index): Decimal("50") for index in range(9)},
         approve_votes=6,
         participating_voters=9,
     )
@@ -244,7 +252,7 @@ def test_g8c_exact_6_of_9_passes_threshold():
 def test_g8d_quorum_floor_failure_one_of_four():
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("25"), "b": Decimal("25"), "c": Decimal("25"), "d": Decimal("25")},
+        {_agent_id(40): Decimal("25"), _agent_id(41): Decimal("25"), _agent_id(42): Decimal("25"), _agent_id(43): Decimal("25")},
         approve_votes=1,
         participating_voters=1,
     )
@@ -254,7 +262,7 @@ def test_g8d_quorum_floor_failure_one_of_four():
 def test_g8e_hard_minimum_two_voters_blocks_one_voter():
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50")},
+        {_agent_id(50): Decimal("50"), _agent_id(51): Decimal("50")},
         approve_votes=1,
         participating_voters=1,
     )
@@ -265,7 +273,7 @@ def test_g8f_threshold_failure_one_of_three():
     # 3 remaining members, 3 participate, only 1 approves (1/3 < 2/3 threshold).
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50"), "c": Decimal("50")},
+        {_agent_id(60): Decimal("50"), _agent_id(61): Decimal("50"), _agent_id(62): Decimal("50")},
         approve_votes=1,
         participating_voters=3,
     )
@@ -285,7 +293,7 @@ def test_g9_quorum_floor_constant_no_float_leakage():
 def test_g9_ejected_stake_vote_payouts_are_decimal():
     _, payouts = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50")},
+        {_agent_id(70): Decimal("50"), _agent_id(71): Decimal("50")},
         approve_votes=2,
         participating_voters=2,
     )
@@ -297,7 +305,7 @@ def test_g9_ejected_stake_vote_payouts_are_decimal():
 def test_g9_ejected_stake_repeating_decimal_payouts_conserve_with_explicit_precision():
     _, payouts = evaluate_ejected_stake_vote(
         Decimal("1"),
-        {"a": Decimal("1"), "b": Decimal("1"), "c": Decimal("1")},
+        {_agent_id(80): Decimal("1"), _agent_id(81): Decimal("1"), _agent_id(82): Decimal("1")},
         approve_votes=3,
         participating_voters=3,
     )
@@ -332,27 +340,27 @@ def test_g10_cdl_083_was_open_at_phase_1103_introducing_commit():
 def test_g11_distribution_50_50_exact():
     ok, payouts = evaluate_ejected_stake_vote(
         Decimal("200"),
-        {"a": Decimal("50"), "b": Decimal("50")},
+        {_agent_id(90): Decimal("50"), _agent_id(91): Decimal("50")},
         approve_votes=2,
         participating_voters=2,
     )
     assert ok
     payout_map = dict(payouts)
-    assert payout_map["a"] == Decimal("100")
-    assert payout_map["b"] == Decimal("100")
+    assert payout_map[_agent_id(90)] == Decimal("100.000000000")
+    assert payout_map[_agent_id(91)] == Decimal("100.000000000")
 
 
 def test_g11_distribution_25_75_exact():
     ok, payouts = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("25"), "b": Decimal("75")},
+        {_agent_id(100): Decimal("25"), _agent_id(101): Decimal("75")},
         approve_votes=2,
         participating_voters=2,
     )
     assert ok
     payout_map = dict(payouts)
-    assert payout_map["a"] == Decimal("25")
-    assert payout_map["b"] == Decimal("75")
+    assert payout_map[_agent_id(100)] == Decimal("25.000000000")
+    assert payout_map[_agent_id(101)] == Decimal("75.000000000")
 
 
 def test_g11_distribution_no_remaining_members_is_invalid():
@@ -375,7 +383,7 @@ def test_g12_negative_ejected_stake_rejected():
     with pytest.raises(ValueError, match="ejected_stake_must_be_positive_finite_decimal"):
         evaluate_ejected_stake_vote(
             Decimal("-1"),
-            {"a": Decimal("50")},
+            {_agent_id(110): Decimal("50")},
             approve_votes=1,
             participating_voters=1,
         )
@@ -385,7 +393,7 @@ def test_g12_approve_votes_must_not_exceed_participating_voters():
     with pytest.raises(ValueError, match="approve_votes_must_not_exceed_participating_voters"):
         evaluate_ejected_stake_vote(
             Decimal("100"),
-            {"a": Decimal("50")},
+            {_agent_id(111): Decimal("50")},
             approve_votes=3,
             participating_voters=2,
         )
@@ -395,7 +403,7 @@ def test_g12_non_decimal_member_stake_rejected():
     with pytest.raises(ValueError, match="stake_map_member_stake_must_be_decimal"):
         evaluate_ejected_stake_vote(
             Decimal("100"),
-            {"a": 0.5},
+            {_agent_id(112): 0.5},
             approve_votes=1,
             participating_voters=1,
         )
@@ -408,7 +416,7 @@ def test_g12_participating_voters_must_not_exceed_total_members():
     with pytest.raises(ValueError, match="participating_voters_must_not_exceed_total_members"):
         evaluate_ejected_stake_vote(
             Decimal("100"),
-            {"a": Decimal("50"), "b": Decimal("50"), "c": Decimal("50")},
+            {_agent_id(113): Decimal("50"), _agent_id(114): Decimal("50"), _agent_id(115): Decimal("50")},
             approve_votes=2,
             participating_voters=10,  # 10 voters, only 3 members — invalid
         )
@@ -418,7 +426,7 @@ def test_g12_participating_voters_equal_to_total_members_is_valid():
     # Boundary: participating_voters == len(members) must be accepted.
     ok, _ = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"a": Decimal("50"), "b": Decimal("50")},
+        {_agent_id(116): Decimal("50"), _agent_id(117): Decimal("50")},
         approve_votes=2,
         participating_voters=2,  # all members voted — valid
     )

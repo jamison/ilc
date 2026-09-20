@@ -6,6 +6,7 @@ from ilc_core.economics.epoch_attribution_settle_runtime import (
     PASSIVE_ECU_WIRING_NOT_ACTIVATED,
     AttributionEvent,
 )
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.types import (
     EDGE_MINT_PHI_BOUND,
     PROVENANCE_DECAY_ALPHA,
@@ -22,6 +23,20 @@ SPEC = Path(
 WALKTHROUGH = Path("docs/phases/phase_gap_ecu_00_ecu_canon_reconciliation_walkthrough.md")
 STATUS = Path("docs/phases/STATUS.md")
 LEDGER = Path("docs/specs/ilc_fix38_manual_edge_annotation_ledger_v0.1.json")
+
+
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+def _node_id(label: str) -> str:
+    return node_id_from_obj({"phase": "gap_ecu_00", "label": label})
+
+
+AGENT_A = _agent_id(1)
+CREATOR_A = _agent_id(2)
+CREATOR_B = _agent_id(3)
+STAR_A = _node_id("star-a")
 
 
 def _status_block(heading: str) -> str:
@@ -101,7 +116,7 @@ def test_gap_ecu_00_passive_ecu_requires_star_node_id_even_when_guard_active():
     no_star_batch.add_event(
         AttributionEvent(
             edge_type=EdgeType.REUSE,
-            target_creator_id="agent_a",
+            target_creator_id=AGENT_A,
             star_node_id=None,
             epoch=1,
         )
@@ -109,38 +124,38 @@ def test_gap_ecu_00_passive_ecu_requires_star_node_id_even_when_guard_active():
     no_star_batch.seal()
     assert no_star_batch.settle(
         stake_map={},
-        passive_ecu_centrality_state={"star_a": Decimal("0.10")},
-    ) == [("agent_a", Decimal("0.20"))]
+        passive_ecu_centrality_state={STAR_A: Decimal("0.10")},
+    ) == [(AGENT_A, Decimal("0.20"))]
 
     with_star_batch = EpochAttributionBatch(epoch=1)
     with_star_batch.add_event(
         AttributionEvent(
             edge_type=EdgeType.REUSE,
-            target_creator_id="agent_a",
-            star_node_id="star_a",
+            target_creator_id=AGENT_A,
+            star_node_id=STAR_A,
             epoch=1,
         )
     )
     with_star_batch.seal()
     assert with_star_batch.settle(
         stake_map={},
-        passive_ecu_centrality_state={"star_a": Decimal("0.10")},
+        passive_ecu_centrality_state={STAR_A: Decimal("0.10")},
     ) == [
-        ("agent_a", Decimal("0.20")),
-        ("agent_a", Decimal("0.004000000000")),
+        (AGENT_A, Decimal("0.20")),
+        (AGENT_A, Decimal("0.004000000000")),
     ]
 
 
 def test_gap_ecu_00_provenance_phi_bound_suppresses_payout_after_threshold():
     batch = EpochAttributionBatch(epoch=1)
-    for event_id in ("a", "b"):
+    for event_id, creator_id in (("a", CREATOR_A), ("b", CREATOR_B)):
         batch.add_event(
             AttributionEvent(
                 edge_type=EdgeType.PROVENANCE,
-                target_creator_id=f"target_{event_id}",
+                target_creator_id=AGENT_A,
                 star_node_id=None,
                 epoch=1,
-                provenance_chain=((f"node_{event_id}", f"creator_{event_id}"),),
+                provenance_chain=((_node_id(f"node-{event_id}"), creator_id),),
             )
         )
     batch.seal()
@@ -152,7 +167,7 @@ def test_gap_ecu_00_provenance_phi_bound_suppresses_payout_after_threshold():
         epoch_node_mint_count=1,
     )
 
-    assert payouts == [("creator_a", Decimal("0.090000000"))]
+    assert payouts == [(CREATOR_A, Decimal("0.090000000"))]
     assert emitted_tokens == ["edge_mint_phi_bound_exceeded"]
 
 

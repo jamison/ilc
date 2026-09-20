@@ -1,0 +1,141 @@
+{
+  "overlay_id": "ilc_fix_phase_1600_ecu_adversarial_negative_tests_graph_intake_overlay_v0.1",
+  "phase": "1600",
+  "created_at": "2026-09-20",
+  "purpose": "Graph-intake coverage for Phase 1600 ECU adversarial negative tests and settlement validation hardening.",
+  "output_tokens": [
+    "ecu_adversarial_negative_tests_complete_phase_1600",
+    "settlement_fails_closed_coverage_phase_1600",
+    "settle_runtime_agentid_format_validated_phase_1600",
+    "settle_runtime_nodeid_format_validated_phase_1600",
+    "weight_params_decay_rate_range_guard_phase_1600"
+  ],
+  "files": [
+    {
+      "repo_path": "ilc_core/economics/epoch_attribution_settle_runtime.py",
+      "node_kind": "runtime_source",
+      "recommended_graph_action": "load_bearing_artifact_changed:ecu_settlement_validation_hardening",
+      "manual_read_summary": "Adds canonical AgentID validation for payout recipients/member IDs/provenance creators, strict CIDv1 NodeID validation for graph references, deduplicated phi-bound token emission, and all-zero CO_AUTHORSHIP stake observability."
+    },
+    {
+      "repo_path": "ilc_core/types.py",
+      "node_kind": "runtime_source",
+      "recommended_graph_action": "load_bearing_artifact_changed:weight_params_decay_range_guard",
+      "manual_read_summary": "Adds WeightParams.decay_rate range validation so temporal decay cannot amplify above one or flip sign below zero."
+    },
+    {
+      "repo_path": "tests/test_phase_1600_ecu_adversarial_settlement.py",
+      "node_kind": "test_file",
+      "recommended_graph_action": "load_bearing_artifact_added:ecu_adversarial_negative_tests",
+      "manual_read_summary": "Adds Phase 1600 adversarial tests for unsealed batches, bad epoch counts, malformed AgentIDs, malformed CIDv1 NodeIDs, invalid stakes, malformed provenance chains, phi-bound token deduplication, passive centrality state validation, WeightParams range/non-finite rejection, and ejected-stake member validation."
+    },
+    {
+      "repo_path": "tests/test_phase_1599_ecu_edge_coverage.py",
+      "node_kind": "test_file",
+      "recommended_graph_action": "load_bearing_artifact_changed:phase_1599_regression_hardening",
+      "manual_read_summary": "Updates Phase 1599 edge coverage to production-shaped AgentIDs and CIDv1 NodeIDs, literal provenance payout checks, mixed edge-type coverage, chain-length bound coverage, phi-bound boundary coverage, and all-zero stake token coverage."
+    },
+    {
+      "repo_path": "tests/test_phase_1210_phi_bound_enforcement.py",
+      "node_kind": "test_file",
+      "recommended_graph_action": "load_bearing_artifact_changed:phi_bound_fixture_namespace_hardening",
+      "manual_read_summary": "Updates historical phi-bound tests to canonical AgentID and CIDv1 NodeID fixtures and exact token expectations."
+    },
+    {
+      "repo_path": "tests/test_phase_0947_h012_epoch_attribution_settle.py",
+      "node_kind": "test_file",
+      "recommended_graph_action": "load_bearing_artifact_changed:historical_attribution_fixture_namespace_hardening",
+      "manual_read_summary": "Updates historical H-012 settlement tests to use canonical AgentID and CIDv1 NodeID fixtures under the hardened settlement validation boundary."
+    },
+    {
+      "repo_path": "tests/test_phase_1107_h_con_02_panel_quorum_settle.py",
+      "node_kind": "test_file",
+      "recommended_graph_action": "load_bearing_artifact_changed:hcon02_member_namespace_hardening",
+      "manual_read_summary": "Updates REFUTATION and ejected-stake quorum tests to use canonical 96-hex AgentID fixtures."
+    },
+    {
+      "repo_path": "tests/test_gap_ecu_00_canon_reconciliation.py",
+      "node_kind": "test_file",
+      "recommended_graph_action": "load_bearing_artifact_changed:gap_ecu_00_fixture_namespace_hardening",
+      "manual_read_summary": "Updates GAP-ECU-00 runtime sanity tests to use canonical AgentID and CIDv1 NodeID fixtures under strict settle-runtime validation."
+    },
+    {
+      "repo_path": "tests/test_phase_1598_passive_ecu_nonzero_proof.py",
+      "node_kind": "test_file",
+      "recommended_graph_action": "load_bearing_artifact_changed:passive_ecu_missing_node_fixture_hardening",
+      "manual_read_summary": "Uses a valid but absent CIDv1 NodeID for passive centrality missing-node lookup coverage."
+    },
+    {
+      "repo_path": "tools/ecu/passive_ecu_nonzero_proof.py",
+      "node_kind": "tool",
+      "recommended_graph_action": "load_bearing_artifact_changed:passive_ecu_evidence_namespace_hardening",
+      "manual_read_summary": "Uses a valid but absent CIDv1 NodeID for the passive ECU centrality missing-node evidence path."
+    },
+    {
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1600_g10_ecu_adversarial_negative_tests.md",
+      "node_kind": "phase_prompt",
+      "recommended_graph_action": "load_bearing_artifact_changed:phase_1600_prompt_hardened",
+      "manual_read_summary": "Prompt hardened to treat Phase 1600 as runtime validation closure, not documentation-only gap recording."
+    },
+    {
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1601_g10_cdl_114_sybil_diversity_guard.md",
+      "node_kind": "phase_prompt",
+      "recommended_graph_action": "load_bearing_artifact_changed:phase_1601_prompt_carry_forward_hardened",
+      "manual_read_summary": "Updates Phase 1601 carry-forward language to treat settlement AgentID validation as closed by Phase 1600, not as an open CDL-114 issue."
+    },
+    {
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1602_g10_source_refs_attribution_bridge.md",
+      "node_kind": "phase_prompt",
+      "recommended_graph_action": "load_bearing_artifact_changed:phase_1602_prompt_validation_boundary_hardened",
+      "manual_read_summary": "Updates Phase 1602 bridge instructions to preserve Phase 1600 settle-runtime AgentID/NodeID guards and add bridge-specific input validation tests without reopening the old settle-runtime gap."
+    },
+    {
+      "repo_path": "docs/phases/phase_1600_ecu_adversarial_negative_tests_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "recommended_graph_action": "load_bearing_artifact_added:phase_1600_walkthrough",
+      "manual_read_summary": "Records Phase 1600 execution, audit reconciliation, verification outputs, output tokens, carry-forwards, and non-claims."
+    },
+    {
+      "repo_path": "docs/phases/STATUS.md",
+      "node_kind": "phase_status_log",
+      "recommended_graph_action": "load_bearing_artifact_changed:phase_1600_status_appended",
+      "manual_read_summary": "Appends Phase 1600 completion entry, output tokens, carry-forward state, and Phase 1601 frontier."
+    },
+    {
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "node_kind": "planning_index",
+      "recommended_graph_action": "load_bearing_artifact_changed:rev105_phase_1600_complete",
+      "manual_read_summary": "Adds Rev 105, records Phase 1600 completion, and advances frontier to sensitive Phase 1601."
+    },
+    {
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
+      "node_kind": "planning_spec",
+      "recommended_graph_action": "load_bearing_artifact_changed:rev105_phase_1600_complete",
+      "manual_read_summary": "Adds Rev 105 restatement and updates ECU lane rows to mark Phase 1600 complete and Phase 1601 as frontier."
+    },
+    {
+      "repo_path": "docs/specs/ilc_ecu_confidence_matrix_and_validation_lane_v0.1.md",
+      "node_kind": "planning_spec",
+      "recommended_graph_action": "load_bearing_artifact_changed:ecu_negative_column_closed",
+      "manual_read_summary": "Updates ECU confidence matrix to mark negative-test coverage closed by Phase 1600 while preserving bridge, commit/readback, public install, and live-validator gaps."
+    },
+    {
+      "repo_path": "docs/specs/ilc_window_1596_1616_candidate_phase_grouping_v0.1.md",
+      "node_kind": "planning_spec",
+      "recommended_graph_action": "load_bearing_artifact_changed:window_phase_1600_complete",
+      "manual_read_summary": "Records Phase 1600 completion in the active window guidance and sets Phase 1601 as sensitive frontier."
+    },
+    {
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "node_kind": "archival_planning_spec",
+      "recommended_graph_action": "supporting_artifact_changed:superseded_banner_updated",
+      "manual_read_summary": "Updates superseded banner to point at Rev 105 and current Phase 1601 frontier."
+    },
+    {
+      "repo_path": "out/phase_1600_ecu_adversarial_negative_tests/evidence.json",
+      "node_kind": "phase_evidence",
+      "recommended_graph_action": "load_bearing_artifact_added:phase_1600_evidence",
+      "manual_read_summary": "Records Phase 1600 source hashes, runtime hardening summary, verification commands, output tokens, and non-claims."
+    }
+  ]
+}

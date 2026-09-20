@@ -7,12 +7,24 @@ from ilc_core.economics.epoch_attribution_settle_runtime import (
     EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION,
     settle_attribution_batch,
 )
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.types import (
     EDGE_MINT_PHI_BOUND,
     EdgeType,
     EpochAttributionBatch,
     REUSE_ATTRIBUTION_RATE,
 )
+
+
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+def _node_id(label: str) -> str:
+    return node_id_from_obj({"phase": 1210, "label": label})
+
+
+COAUTHOR_NODE_ID = _node_id("coauthor")
 
 
 def _batch(events: list[AttributionEvent]) -> EpochAttributionBatch:
@@ -26,17 +38,17 @@ def _batch(events: list[AttributionEvent]) -> EpochAttributionBatch:
 def _provenance_event(index: int) -> AttributionEvent:
     return AttributionEvent(
         edge_type=EdgeType.PROVENANCE,
-        target_creator_id="unused_target_creator",
+        target_creator_id=_agent_id(900),
         star_node_id=None,
         epoch=1,
-        provenance_chain=((f"node_{index}", f"creator_{index}"),),
+        provenance_chain=((_node_id(f"node-{index}"), _agent_id(index)),),
     )
 
 
 def _reuse_event(index: int) -> AttributionEvent:
     return AttributionEvent(
         edge_type=EdgeType.REUSE,
-        target_creator_id=f"reuse_creator_{index}",
+        target_creator_id=_agent_id(index),
         star_node_id=None,
         epoch=1,
     )
@@ -45,8 +57,8 @@ def _reuse_event(index: int) -> AttributionEvent:
 def _co_authorship_event() -> AttributionEvent:
     return AttributionEvent(
         edge_type=EdgeType.CO_AUTHORSHIP,
-        target_creator_id="unused_target_creator",
-        star_node_id="star:one",
+        target_creator_id=_agent_id(900),
+        star_node_id=COAUTHOR_NODE_ID,
         epoch=1,
     )
 
@@ -60,8 +72,8 @@ def test_phi_bound_skips_enforcement_when_node_mint_count_zero_emits_token() -> 
         epoch_node_mint_count=0,
     )
 
-    assert [amount for _, amount in payouts] == [Decimal("0.0900"), Decimal("0.0900")]
-    assert "edge_mint_phi_bound_enforcement_skipped_no_node_mints" in emitted_tokens
+    assert [amount for _, amount in payouts] == [Decimal("0.090000000"), Decimal("0.090000000")]
+    assert emitted_tokens == ["edge_mint_phi_bound_enforcement_skipped_no_node_mints"]
 
 
 def test_phi_bound_allows_events_below_threshold() -> None:
@@ -72,7 +84,7 @@ def test_phi_bound_allows_events_below_threshold() -> None:
     )
 
     assert len(payouts) == 3
-    assert all(amount == Decimal("0.0900") for _, amount in payouts)
+    assert all(amount == Decimal("0.090000000") for _, amount in payouts)
 
 
 def test_phi_bound_strips_ecu_at_threshold() -> None:
@@ -90,11 +102,11 @@ def test_phi_bound_strips_ecu_at_threshold() -> None:
     )
 
     assert [amount for _, amount in payouts] == [
-        Decimal("0.0900"),
-        Decimal("0.0900"),
-        Decimal("0.0900"),
+        Decimal("0.090000000"),
+        Decimal("0.090000000"),
+        Decimal("0.090000000"),
     ]
-    assert "edge_mint_phi_bound_exceeded" in emitted_tokens
+    assert emitted_tokens == ["edge_mint_phi_bound_exceeded"]
 
 
 def test_phi_bound_strips_ecu_above_threshold() -> None:
@@ -105,7 +117,7 @@ def test_phi_bound_strips_ecu_above_threshold() -> None:
     )
 
     assert len(payouts) == 3
-    assert all(amount == Decimal("0.0900") for _, amount in payouts)
+    assert all(amount == Decimal("0.090000000") for _, amount in payouts)
 
 
 def test_phi_bound_does_not_affect_reuse_events() -> None:
@@ -122,15 +134,15 @@ def test_phi_bound_does_not_affect_reuse_events() -> None:
 def test_phi_bound_does_not_affect_co_authorship_events() -> None:
     payouts = settle_attribution_batch(
         _batch([_co_authorship_event(), _co_authorship_event()]),
-        stake_map={"star:one": {"member_a": Decimal("1"), "member_b": Decimal("1")}},
+        stake_map={COAUTHOR_NODE_ID: {_agent_id(101): Decimal("1"), _agent_id(102): Decimal("1")}},
         epoch_node_mint_count=1,
     )
 
     assert payouts == [
-        ("member_a", Decimal("0.10")),
-        ("member_b", Decimal("0.10")),
-        ("member_a", Decimal("0.10")),
-        ("member_b", Decimal("0.10")),
+        (_agent_id(101), Decimal("0.100000000")),
+        (_agent_id(102), Decimal("0.100000000")),
+        (_agent_id(101), Decimal("0.100000000")),
+        (_agent_id(102), Decimal("0.100000000")),
     ]
 
 
@@ -159,9 +171,9 @@ def test_batch_settle_method_forwards_epoch_node_mint_count() -> None:
         epoch_node_mint_count=5,
     )
 
-    assert ("creator_4", Decimal("0")) not in payouts
-    assert [creator_id for creator_id, _ in payouts] == ["creator_1", "creator_2", "creator_3"]
-    assert "edge_mint_phi_bound_exceeded" in emitted_tokens
+    assert (_agent_id(4), Decimal("0")) not in payouts
+    assert [creator_id for creator_id, _ in payouts] == [_agent_id(1), _agent_id(2), _agent_id(3)]
+    assert emitted_tokens == ["edge_mint_phi_bound_exceeded"]
 
 
 def test_negative_epoch_node_mint_count_raises() -> None:

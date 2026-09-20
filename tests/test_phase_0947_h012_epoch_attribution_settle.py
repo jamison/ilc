@@ -22,12 +22,34 @@ from ilc_core.economics.epoch_attribution_settle_runtime import (
     _decimal_to_string,
     settle_attribution_batch,
 )
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.types import (
     EPOCH_ATTRIBUTION_BATCH_VERSION,
     REUSE_ATTRIBUTION_RATE,
     EdgeType,
     EpochAttributionBatch,
 )
+
+
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+def _node_id(label: str) -> str:
+    return node_id_from_obj({"phase": 947, "label": label})
+
+
+ALICE = _agent_id(1)
+BOB = _agent_id(2)
+CAROL = _agent_id(3)
+DAVE = _agent_id(4)
+EVE = _agent_id(5)
+SHARED = _agent_id(6)
+REFUTED = _agent_id(7)
+REFUTING = _agent_id(8)
+STAR_1 = _node_id("star-1")
+STAR_EMPTY = _node_id("star-empty")
+STAR_UNKNOWN = _node_id("star-unknown")
 
 
 # ---------------------------------------------------------------------------
@@ -38,19 +60,19 @@ from ilc_core.types import (
 def test_g1_reuse_single_creator_payout_amount():
     """§4.1 REUSE: single traversal yields REUSE_ATTRIBUTION_RATE to creator."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_alice", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, ALICE, None, 1))
     batch.seal()
     payouts = batch.settle({})
     assert len(payouts) == 1
     agent_id, amount = payouts[0]
-    assert agent_id == "creator_alice"
+    assert agent_id == ALICE
     assert amount == Decimal("0.20")
 
 
 def test_g1_reuse_payout_type_is_decimal():
     """§4.1 REUSE: returned amount is Decimal, not float."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_bob", None, 2))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, BOB, None, 2))
     batch.seal()
     payouts = batch.settle({})
     _, amount = payouts[0]
@@ -69,7 +91,7 @@ def test_g1_reuse_rejects_whitespace_only_creator_id():
 def test_g1_reuse_payout_matches_reuse_attribution_rate():
     """§4.1 REUSE: payout equals REUSE_ATTRIBUTION_RATE constant exactly."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_carol", None, 5))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, CAROL, None, 5))
     batch.seal()
     payouts = batch.settle({})
     assert payouts[0][1] == REUSE_ATTRIBUTION_RATE
@@ -83,20 +105,20 @@ def test_canonical_decimal_to_string_rejects_non_finite_decimal():
 def test_g1_reuse_returns_creator_id():
     """§4.1 REUSE: target_creator_id is the payout recipient, not any other agent."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_dave", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, DAVE, None, 1))
     batch.seal()
     payouts = batch.settle({})
-    assert payouts[0][0] == "creator_dave"
+    assert payouts[0][0] == DAVE
 
 
 def test_g1_reuse_stake_map_not_accessed():
     """§4.1 REUSE: stake_map content irrelevant for REUSE events — empty map works."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_eve", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, EVE, None, 1))
     batch.seal()
     # Passing completely empty stake_map must not raise
     payouts = batch.settle({})
-    assert payouts[0][0] == "creator_eve"
+    assert payouts[0][0] == EVE
 
 
 # ---------------------------------------------------------------------------
@@ -107,14 +129,14 @@ def test_g1_reuse_stake_map_not_accessed():
 def test_g2_reuse_two_events_accumulate():
     """§4.1 REUSE: two distinct traversal events each produce one payout."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_a", None, 1))
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_b", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, ALICE, None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, BOB, None, 1))
     batch.seal()
     payouts = batch.settle({})
     assert len(payouts) == 2
     agents = {p[0] for p in payouts}
-    assert "creator_a" in agents
-    assert "creator_b" in agents
+    assert ALICE in agents
+    assert BOB in agents
 
 
 def test_g2_reuse_same_creator_two_events():
@@ -124,8 +146,8 @@ def test_g2_reuse_same_creator_two_events():
     The same creator may receive in both events.
     """
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_shared", None, 1))
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_shared", None, 2))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, SHARED, None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, SHARED, None, 2))
     batch.seal()
     payouts = batch.settle({})
     # Two events → two payouts (fresh visited_set per event allows same creator twice)
@@ -138,7 +160,7 @@ def test_g2_reuse_batch_returns_list():
     """§4.1 REUSE: batch with multiple events returns a list (not None or tuple)."""
     batch = EpochAttributionBatch(epoch=1)
     for i in range(3):
-        batch.add_event(AttributionEvent(EdgeType.REUSE, f"creator_{i}", None, 1))
+        batch.add_event(AttributionEvent(EdgeType.REUSE, _agent_id(20 + i), None, 1))
     batch.seal()
     result = batch.settle({})
     assert isinstance(result, list)
@@ -153,50 +175,50 @@ def test_g2_reuse_batch_returns_list():
 def test_g3_co_authorship_two_member_equal_split():
     """§4.2 CO_AUTHORSHIP: two equal-stake members split rate 50/50."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_1", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_1, 1))
     batch.seal()
-    stake_map = {"star_1": {"alice": Decimal("1"), "bob": Decimal("1")}}
+    stake_map = {STAR_1: {ALICE: Decimal("1"), BOB: Decimal("1")}}
     payouts = batch.settle(stake_map)
     total = sum(p[1] for p in payouts)
     assert total == Decimal("0.20")
     amounts = {p[0]: p[1] for p in payouts}
-    assert amounts["alice"] == amounts["bob"] == Decimal("0.10")
+    assert amounts[ALICE] == amounts[BOB] == Decimal("0.100000000")
 
 
 def test_g3_co_authorship_unequal_stake():
     """§4.2 CO_AUTHORSHIP: proportional split by stake — 3:1 ratio."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_1", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_1, 1))
     batch.seal()
-    stake_map = {"star_1": {"alice": Decimal("3"), "bob": Decimal("1")}}
+    stake_map = {STAR_1: {ALICE: Decimal("3"), BOB: Decimal("1")}}
     payouts = batch.settle(stake_map)
     amounts = {p[0]: p[1] for p in payouts}
-    assert amounts["alice"] == Decimal("0.15")
-    assert amounts["bob"] == Decimal("0.05")
+    assert amounts[ALICE] == Decimal("0.150000000")
+    assert amounts[BOB] == Decimal("0.050000000")
 
 
 def test_g3_co_authorship_three_member_split():
     """§4.2 CO_AUTHORSHIP: three-member star node splits proportionally."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_1", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_1, 1))
     batch.seal()
-    stake_map = {"star_1": {"a": Decimal("1"), "b": Decimal("1"), "c": Decimal("2")}}
+    stake_map = {STAR_1: {ALICE: Decimal("1"), BOB: Decimal("1"), CAROL: Decimal("2")}}
     payouts = batch.settle(stake_map)
     total = sum(p[1] for p in payouts)
     # Total must equal REUSE_ATTRIBUTION_RATE
     assert total == REUSE_ATTRIBUTION_RATE
     amounts = {p[0]: p[1] for p in payouts}
     # a and b each get 1/4, c gets 1/2
-    assert amounts["a"] == amounts["b"]
-    assert amounts["c"] == amounts["a"] * 2
+    assert amounts[ALICE] == amounts[BOB]
+    assert amounts[CAROL] == amounts[ALICE] * 2
 
 
 def test_g3_co_authorship_returns_decimal_amounts():
     """§4.2 CO_AUTHORSHIP: all payout amounts are Decimal (no float leakage)."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_1", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_1, 1))
     batch.seal()
-    stake_map = {"star_1": {"alice": Decimal("2"), "bob": Decimal("3")}}
+    stake_map = {STAR_1: {ALICE: Decimal("2"), BOB: Decimal("3")}}
     payouts = batch.settle(stake_map)
     for _, amount in payouts:
         assert isinstance(amount, Decimal), f"Float leak in CO_AUTHORSHIP: {type(amount)}"
@@ -205,9 +227,9 @@ def test_g3_co_authorship_returns_decimal_amounts():
 def test_g3_co_authorship_missing_star_node_is_zero_member():
     """§4.6 Zero-member commons: missing star_node_id in stake_map → no payouts."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_unknown", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_UNKNOWN, 1))
     batch.seal()
-    payouts = batch.settle({})  # star_unknown not in map → empty inner dict
+    payouts = batch.settle({})  # STAR_UNKNOWN not in map -> empty inner dict
     assert payouts == []
 
 
@@ -219,29 +241,29 @@ def test_g3_co_authorship_missing_star_node_is_zero_member():
 def test_g4_zero_member_commons_no_payouts():
     """§4.6: Empty member dict → attribution suspended, no ECU payouts."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_empty", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_EMPTY, 1))
     batch.seal()
-    payouts = batch.settle({"star_empty": {}})
+    payouts = batch.settle({STAR_EMPTY: {}})
     assert payouts == []
 
 
 def test_g4_zero_member_commons_emits_token():
     """§4.6: Empty member dict → cdl_081_zero_member_commons_transition token emitted."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_empty", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_EMPTY, 1))
     batch.seal()
     tokens: list[str] = []
-    batch.settle({"star_empty": {}}, tokens)
+    batch.settle({STAR_EMPTY: {}}, tokens)
     assert "cdl_081_zero_member_commons_transition" in tokens
 
 
 def test_g4_zero_member_commons_token_not_emitted_when_no_list():
     """§4.6: emitted_tokens is optional — no crash when not provided."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_empty", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_EMPTY, 1))
     batch.seal()
     # Must not raise even if emitted_tokens is not passed
-    payouts = batch.settle({"star_empty": {}})
+    payouts = batch.settle({STAR_EMPTY: {}})
     assert payouts == []
 
 
@@ -257,23 +279,23 @@ def test_g5_late_buy_in_lower_stake_gets_less():
     is smaller. The settle runtime uses whatever stake values are provided.
     """
     batch = EpochAttributionBatch(epoch=10)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_1", 10))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_1, 10))
     batch.seal()
     # alice has full stake; bob has decay-reduced stake (late buy-in)
-    stake_map = {"star_1": {"alice": Decimal("1"), "bob": Decimal("0.5")}}
+    stake_map = {STAR_1: {ALICE: Decimal("1"), BOB: Decimal("0.5")}}
     payouts = batch.settle(stake_map)
     amounts = {p[0]: p[1] for p in payouts}
     # alice should get more than bob
-    assert amounts["alice"] > amounts["bob"]
+    assert amounts[ALICE] > amounts[BOB]
 
 
 def test_g5_full_stake_equal_to_rate_total():
     """§4.4 CDL-V1 decay: full-stake (no decay) members get exactly REUSE_ATTRIBUTION_RATE total."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_1", 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_1, 1))
     batch.seal()
     # Both at full stake (no decay applied)
-    stake_map = {"star_1": {"alice": Decimal("10"), "bob": Decimal("10")}}
+    stake_map = {STAR_1: {ALICE: Decimal("10"), BOB: Decimal("10")}}
     payouts = batch.settle(stake_map)
     total = sum(p[1] for p in payouts)
     assert total == REUSE_ATTRIBUTION_RATE
@@ -282,9 +304,9 @@ def test_g5_full_stake_equal_to_rate_total():
 def test_g5_stake_map_with_high_precision_decimals():
     """§4.4 CDL-V1 decay: high-precision Decimal stakes work without float conversion."""
     batch = EpochAttributionBatch(epoch=5)
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_1", 5))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_1, 5))
     batch.seal()
-    stake_map = {"star_1": {"alice": Decimal("0.333333"), "bob": Decimal("0.666667")}}
+    stake_map = {STAR_1: {ALICE: Decimal("0.333333"), BOB: Decimal("0.666667")}}
     payouts = batch.settle(stake_map)
     for _, amount in payouts:
         assert isinstance(amount, Decimal)
@@ -304,22 +326,22 @@ def test_g6_refutation_pays_refuting_agent():
     batch.add_event(
         AttributionEvent(
             EdgeType.REFUTATION,
-            "refuted_creator",
+            REFUTED,
             None,
             1,
-            refuting_agent_id="refuting_agent",
+            refuting_agent_id=REFUTING,
         )
     )
     batch.seal()
     payouts = batch.settle({})
-    assert payouts == [("refuting_agent", REUSE_ATTRIBUTION_RATE)]
-    assert all(agent_id != "refuted_creator" for agent_id, _ in payouts)
+    assert payouts == [(REFUTING, REUSE_ATTRIBUTION_RATE)]
+    assert all(agent_id != REFUTED for agent_id, _ in payouts)
 
 
 def test_g6_refutation_requires_explicit_refuting_agent_id():
     """CDL-083 §5.4: REFUTATION cannot fall back to target_creator_id."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REFUTATION, "refuted_creator", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REFUTATION, REFUTED, None, 1))
     batch.seal()
     with pytest.raises(ValueError) as exc_info:
         batch.settle({})
@@ -348,7 +370,7 @@ def test_g7_no_float_in_reuse_payouts():
     """All payout amounts from REUSE events are Decimal (no float leakage)."""
     batch = EpochAttributionBatch(epoch=1)
     for i in range(5):
-        batch.add_event(AttributionEvent(EdgeType.REUSE, f"creator_{i}", None, 1))
+        batch.add_event(AttributionEvent(EdgeType.REUSE, _agent_id(30 + i), None, 1))
     batch.seal()
     payouts = batch.settle({})
     for _, amount in payouts:
@@ -359,9 +381,9 @@ def test_g7_no_float_in_co_authorship_payouts():
     """All payout amounts from CO_AUTHORSHIP events are Decimal (no float leakage)."""
     batch = EpochAttributionBatch(epoch=1)
     for i in range(3):
-        batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", f"star_{i}", 1))
+        batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, _node_id(f"star-{i}"), 1))
     batch.seal()
-    stake_map = {f"star_{i}": {"agent": Decimal("1")} for i in range(3)}
+    stake_map = {_node_id(f"star-{i}"): {_agent_id(40 + i): Decimal("1")} for i in range(3)}
     payouts = batch.settle(stake_map)
     for _, amount in payouts:
         assert isinstance(amount, Decimal), f"Float leak: {type(amount)}"
@@ -376,8 +398,8 @@ def test_g8_visited_set_fresh_per_event():
     """§4.1 visited_set is fresh per event — same creator can appear in two events."""
     batch = EpochAttributionBatch(epoch=1)
     # Same creator in two separate events must produce two payouts
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_shared", None, 1))
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "creator_shared", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, SHARED, None, 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, SHARED, None, 1))
     batch.seal()
     payouts = batch.settle({})
     assert len(payouts) == 2, (
@@ -388,24 +410,24 @@ def test_g8_visited_set_fresh_per_event():
 def test_g8_mixed_event_types_no_state_bleed():
     """No state bleeds between REUSE and CO_AUTHORSHIP events in the same batch."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.REUSE, "alice", None, 1))
-    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, "", "star_1", 1))
+    batch.add_event(AttributionEvent(EdgeType.REUSE, ALICE, None, 1))
+    batch.add_event(AttributionEvent(EdgeType.CO_AUTHORSHIP, ALICE, STAR_1, 1))
     batch.seal()
-    stake_map = {"star_1": {"bob": Decimal("1"), "carol": Decimal("1")}}
+    stake_map = {STAR_1: {BOB: Decimal("1"), CAROL: Decimal("1")}}
     payouts = batch.settle(stake_map)
     agents = [p[0] for p in payouts]
-    # alice from REUSE, bob and carol from CO_AUTHORSHIP
-    assert "alice" in agents
-    assert "bob" in agents
-    assert "carol" in agents
+    # ALICE from REUSE, BOB and CAROL from CO_AUTHORSHIP
+    assert ALICE in agents
+    assert BOB in agents
+    assert CAROL in agents
     assert len(payouts) == 3
 
 
 def test_g8_ignored_edge_types_produce_no_payouts():
     """§4.3 ATTESTATION and EPOCH_BOUNDARY are silently ignored."""
     batch = EpochAttributionBatch(epoch=1)
-    batch.add_event(AttributionEvent(EdgeType.ATTESTATION, "agent_x", None, 1))
-    batch.add_event(AttributionEvent(EdgeType.EPOCH_BOUNDARY, "agent_z", None, 1))
+    batch.add_event(AttributionEvent(EdgeType.ATTESTATION, _agent_id(70), None, 1))
+    batch.add_event(AttributionEvent(EdgeType.EPOCH_BOUNDARY, _agent_id(71), None, 1))
     batch.seal()
     payouts = batch.settle({})
     assert payouts == [], f"Ignored edge types must produce no payouts, got: {payouts}"

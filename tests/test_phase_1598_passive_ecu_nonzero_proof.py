@@ -287,7 +287,7 @@ def test_centrality_lookup_fallback_none_and_missing_node() -> None:
         None,
     ) == Decimal("0")
     assert settle_runtime._get_centrality_score(
-        "missing-node-id",
+        proof.MISSING_NODE_ID,
         proof.SEEDED_EPOCH,
         {"_pending": {proof.SEEDED_EPOCH: {proof.SEEDED_NODE_ID: "0.15"}}},
     ) == Decimal("0")
