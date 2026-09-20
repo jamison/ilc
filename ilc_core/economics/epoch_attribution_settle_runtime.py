@@ -413,7 +413,7 @@ def _require_non_empty_string(value: object, error_token: str) -> str:
 
 
 def _validate_member_id(value: object, error_token: str) -> str:
-    if not isinstance(value, str) or value == "":
+    if not isinstance(value, str) or not value.strip() or value != value.strip():
         raise ValueError(error_token)
     return value
 
@@ -606,6 +606,11 @@ def settle_attribution_batch(
                 continue
             visited_set.add(recipient_id)
             payouts.append((recipient_id, REUSE_ATTRIBUTION_RATE))
+            # CDL-052/060 passive ECU is currently an additive REUSE-recipient
+            # payout keyed by the reused star node's centrality. The event does
+            # not carry an independent star-node creator field; Phase 1598 audit
+            # hardening records this routing explicitly so future bridge work can
+            # reverify the semantics before broad public-user claims.
             passive_ecu = _compute_passive_ecu_for_event(
                 attr_event,
                 passive_ecu_centrality_state,

@@ -56,9 +56,39 @@
     },
     {
       "annotation_method": "phase1598_passive_ecu_nonzero_overlay_record",
+      "edge_role": "ARCHIVED_FORWARD_PLAN_POINTER",
+      "repo_path": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md",
+      "target": "phase:1598_audit_hardening"
+    },
+    {
+      "annotation_method": "phase1598_passive_ecu_nonzero_overlay_record",
       "edge_role": "ECU_CONFIDENCE_MATRIX",
       "repo_path": "docs/specs/ilc_ecu_confidence_matrix_and_validation_lane_v0.1.md",
       "target": "phase:1598_passive_ecu_nonzero_proof"
+    },
+    {
+      "annotation_method": "phase1598_passive_ecu_nonzero_overlay_record",
+      "edge_role": "RUNTIME_SOURCE",
+      "repo_path": "ilc_core/economics/passive_ecu_attribution_runtime.py",
+      "target": "phase:1598_audit_hardening"
+    },
+    {
+      "annotation_method": "phase1598_passive_ecu_nonzero_overlay_record",
+      "edge_role": "RUNTIME_SOURCE",
+      "repo_path": "ilc_core/economics/epoch_attribution_settle_runtime.py",
+      "target": "phase:1598_audit_hardening"
+    },
+    {
+      "annotation_method": "phase1598_passive_ecu_nonzero_overlay_record",
+      "edge_role": "NEXT_PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1599_g10_ecu_edge_coverage_weight_params_fix.md",
+      "target": "phase:1599_ecu_edge_coverage_weight_params_fix"
+    },
+    {
+      "annotation_method": "phase1598_passive_ecu_nonzero_overlay_record",
+      "edge_role": "NEXT_PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1600_g10_ecu_adversarial_negative_tests.md",
+      "target": "phase:1600_ecu_adversarial_negative_tests"
     }
   ],
   "schema_version": "ilc.graph_intake_overlay.v0.1",

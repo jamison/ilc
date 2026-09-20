@@ -70,8 +70,12 @@ def _coerce_decimal(value: object, token: str) -> Decimal:
     return amount
 
 
-def quality_factor(q_i: Decimal) -> Decimal:
-    """Compute the bounded quality multiplier for a normalized quality score."""
+def quality_factor(q_i: Decimal | int | str) -> Decimal:
+    """Compute the bounded quality multiplier for a normalized quality score.
+
+    Runtime callers may pass exact Decimal-like inputs (Decimal, int, or str);
+    floats and bools are rejected to preserve deterministic decimal arithmetic.
+    """
 
     normalized = _coerce_decimal(q_i, Q_I_DECIMAL_INTERVAL_TOKEN)
     if normalized < Decimal("0") or normalized > Decimal("1"):
@@ -83,11 +87,17 @@ def quality_factor(q_i: Decimal) -> Decimal:
 
 
 def compute_passive_ecu(
-    base_reward: Decimal,
-    centrality_score: Decimal,
-    q_i: Decimal,
+    base_reward: Decimal | int | str,
+    centrality_score: Decimal | int | str,
+    q_i: Decimal | int | str,
 ) -> Decimal:
-    """Compute passive ECU attribution for one reuse path."""
+    """Compute passive ECU attribution for one reuse path.
+
+    The formula-level ATTRIBUTION_CAP is a defense-in-depth output ceiling. In
+    the normal settlement path, _get_centrality_score() first applies
+    PASSIVE_ECU_EPOCH_CENTRALITY_CAP, so the formula cap is not reachable with
+    the current protocol constants unless governance raises the epoch cap.
+    """
 
     normalized_base_reward = _coerce_decimal(
         base_reward, BASE_REWARD_DECIMAL_TOKEN
