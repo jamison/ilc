@@ -1,0 +1,150 @@
+{
+  "artifact": "ilc_fix_window_1596_1616_prompt_hardening_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for hardened Window 1596-1616 phase prompts moved from draft walkthrough names into docs/antigravity_tasks."
+  },
+  "records": [
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_window_1596_1616_prompt_hardening_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1598_g10_passive_ecu_nonzero_proof.md",
+      "target": "phase:1598_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1599_g10_ecu_edge_coverage_weight_params_fix.md",
+      "target": "phase:1599_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1600_g10_ecu_adversarial_negative_tests.md",
+      "target": "phase:1600_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1601_g10_cdl_114_sybil_diversity_guard.md",
+      "target": "phase:1601_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1602_g10_source_refs_attribution_bridge.md",
+      "target": "phase:1602_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1603_g10_public_user_smoke.md",
+      "target": "phase:1603_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1604_g10_capproof_multiplier_reconcile.md",
+      "target": "phase:1604_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1605_g10_cdl_115_capproof_opening.md",
+      "target": "phase:1605_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1606_g10_capproof_v1_implementation.md",
+      "target": "phase:1606_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1607_g10_capproof_epoch_init_wiring.md",
+      "target": "phase:1607_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1608_g10_capproof_graphprobe_posk.md",
+      "target": "phase:1608_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1609_g10_capproof_gate_a.md",
+      "target": "phase:1609_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1610_g10_model_router_spec.md",
+      "target": "phase:1610_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1611_g10_harness_sidecar_05_fix1.md",
+      "target": "phase:1611_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md",
+      "target": "phase:1612_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1613_g10_model_router_provider_adapters.md",
+      "target": "phase:1613_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1614_g10_model_router_cli_smoke.md",
+      "target": "phase:1614_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1615_g10_cdl_116_model_router_opening.md",
+      "target": "phase:1615_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1616_g10_window_closure_gate.md",
+      "target": "phase:1616_window_1596_1616_prompt"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "HISTORICAL_SUPERSEDED_PROMPT",
+      "repo_path": "docs/antigravity_tasks/candidates/superseded_2026_09_20/antigravity_prompt__phase_1596_g10_gap_werner_03_cdl096_opening.md",
+      "target": "phase:1596_superseded_werner_prompt_archive"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "HISTORICAL_SUPERSEDED_PROMPT",
+      "repo_path": "docs/antigravity_tasks/candidates/superseded_2026_09_20/antigravity_prompt__phase_1597_g10_gap_werner_04_cdl096_ratification.md",
+      "target": "phase:1597_superseded_werner_prompt_archive"
+    },
+    {
+      "annotation_method": "window1596_1616_prompt_hardening_overlay_record",
+      "edge_role": "HISTORICAL_SUPERSEDED_PROMPT",
+      "repo_path": "docs/antigravity_tasks/candidates/superseded_2026_09_20/antigravity_prompt__phase_1598_g10_gap_werner_05_werner_production_activation.md",
+      "target": "phase:1598_superseded_werner_prompt_archive"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1",
+  "status": "review_queue_support_only"
+}
