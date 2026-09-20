@@ -65,6 +65,36 @@
       "edge_role": "IMPLEMENTS",
       "repo_path": "tools/check_new_file_graph_coverage.py",
       "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "phase1597_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "repo_path": "tools/ecu/ecu_balance_write_smoke.py",
+      "target": "phase:1597_ecu_balance_write_smoke"
+    },
+    {
+      "annotation_method": "phase1597_overlay_record",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_phase_1597_ecu_balance_write_smoke.py",
+      "target": "tools/ecu/ecu_balance_write_smoke.py"
+    },
+    {
+      "annotation_method": "phase1597_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_1597_ecu_balance_write_smoke_walkthrough.md",
+      "target": "phase:1597_ecu_balance_write_smoke"
+    },
+    {
+      "annotation_method": "phase1597_overlay_record",
+      "edge_role": "UPDATES_CONFIDENCE_MATRIX",
+      "repo_path": "docs/specs/ilc_ecu_confidence_matrix_and_validation_lane_v0.1.md",
+      "target": "phase:1597_ecu_balance_write_smoke"
+    },
+    {
+      "annotation_method": "phase1597_overlay_record",
+      "edge_role": "UPDATES_WINDOW_GUIDANCE",
+      "repo_path": "docs/specs/ilc_window_1596_1616_candidate_phase_grouping_v0.1.md",
+      "target": "phase:1597_ecu_balance_write_smoke"
     }
   ],
   "status": "review_queue_support_only"
