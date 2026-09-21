@@ -34,8 +34,10 @@ from decimal import Decimal, InvalidOperation, ROUND_FLOOR
 from pathlib import Path
 from typing import Any
 
+from ilc_core.encoding.cidv1 import parse_nodeid_strict
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 from ilc_core.economics.backward_attribution_traversal import (
+    BACKWARD_ATTRIBUTION_BACKWARD_POOL_SHARE_BETA,
     BACKWARD_ATTRIBUTION_CDL_VERSION,
     BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES,
     BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP,
@@ -58,6 +60,17 @@ MAX_U64 = 18_446_744_073_709_551_615
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 ATTRIBUTION_EVENT_LOG_KEY_PREFIX = b"attr_event:"
+CDL_114_SYBIL_DIVERSITY_SCOPE = "per_event"
+CDL_114_SYBIL_DIVERSITY_THRESHOLD = 3
+CDL_114_SYBIL_DIVERSITY_INSUFFICIENT_TOKEN = (
+    "cdl_114_sybil_diversity_guard_insufficient_distinct_creators"
+)
+CDL_114_SYBIL_DIVERSITY_PASSED_TOKEN = (
+    "cdl_114_sybil_diversity_guard_passed"
+)
+CDL_114_GENESIS_SINGLE_CREATOR_EXEMPTION_TOKEN = (
+    "genesis_single_creator_exemption"
+)
 
 
 class AttributionBatchBridgeError(ValueError):
@@ -103,6 +116,18 @@ def _require_agent_id(value: Any) -> str:
             "agent_id_hex_must_be_96_lower_hex",
             "agent_id must be 96 lowercase hex characters",
         )
+    return value
+
+
+def _require_cidv1_node_id(value: Any, token: str) -> str:
+    if not isinstance(value, str) or not value:
+        raise AttributionBatchBridgeError(token, token)
+    if value != value.strip():
+        raise AttributionBatchBridgeError(token, token)
+    try:
+        parse_nodeid_strict(value)
+    except ValueError as exc:
+        raise AttributionBatchBridgeError(token, token) from exc
     return value
 
 
@@ -281,6 +306,126 @@ def _require_backward_event(value: Any) -> dict[str, Any]:
     return event
 
 
+def _source_ref_node_ids(event: dict[str, Any]) -> list[str] | None:
+    raw_refs = event.get("source_refs")
+    if raw_refs is None:
+        raw_refs = event.get("source_ref_node_ids")
+    if raw_refs is None:
+        return None
+    if not isinstance(raw_refs, list) or not raw_refs:
+        raise AttributionBatchBridgeError(
+            "source_refs_must_be_non_empty_list",
+            "source_refs must be a non-empty list when present",
+        )
+    if len(raw_refs) > BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES:
+        raise AttributionBatchBridgeError(
+            "source_refs_count_exceeds_maximum",
+            "source_refs exceeds backward attribution traversal node bound",
+        )
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for raw_ref in raw_refs:
+        node_id = _require_cidv1_node_id(
+            raw_ref,
+            "source_ref_node_id_must_be_cidv1_nodeid",
+        )
+        if node_id in seen:
+            raise AttributionBatchBridgeError(
+                "source_refs_contains_duplicate_node_id",
+                "source_refs must not contain duplicate node IDs",
+            )
+        seen.add(node_id)
+        normalized.append(node_id)
+    return normalized
+
+
+def _source_ref_creator_ids(
+    nodes: dict[str, Any],
+    source_ref_node_ids: list[str],
+) -> list[str]:
+    creator_ids: list[str] = []
+    for node_id in source_ref_node_ids:
+        raw_node = nodes.get(node_id)
+        if raw_node is None:
+            raise AttributionBatchBridgeError(
+                "source_ref_node_missing_from_graph_context",
+                "source_refs must resolve to graph or receipt-derived node bindings",
+            )
+        node = _require_dict("source_ref_node", raw_node)
+        creator_ids.append(_require_agent_id(node.get("recipient_agent_id")))
+    return creator_ids
+
+
+def _require_submitting_agent_id(
+    event: dict[str, Any],
+    claim_agent_ids: set[str],
+) -> str:
+    for key in ("submitting_agent_id", "submitter_agent_id", "agent_id"):
+        if key in event:
+            return _require_agent_id(event[key])
+    if len(claim_agent_ids) == 1:
+        return next(iter(claim_agent_ids))
+    raise AttributionBatchBridgeError(
+        "source_refs_submitting_agent_id_required",
+        "source_refs events require an explicit submitting_agent_id when the batch has multiple claim agents",
+    )
+
+
+def _durable_genesis_exemption_token(event: dict[str, Any]) -> str | None:
+    if event.get("genesis_single_creator_exemption") is not True:
+        return None
+    token = event.get("genesis_single_creator_exemption_receipt_token")
+    if not isinstance(token, str) or not token or token != token.strip():
+        raise AttributionBatchBridgeError(
+            "genesis_single_creator_exemption_receipt_token_required",
+            "Genesis single-creator exemption requires a durable receipt token",
+        )
+    if not (
+        token.startswith("genesis_authority_assertion:")
+        or token.startswith("serving_receipt:")
+        or token.startswith("agent_init_ceremony:")
+        or token.startswith("public_rc_launch_anchor:")
+    ):
+        raise AttributionBatchBridgeError(
+            "genesis_single_creator_exemption_receipt_token_invalid",
+            "Genesis exemption receipt token must name a durable Genesis authority receipt",
+        )
+    return token
+
+
+def _check_sybil_diversity_guard(
+    source_ref_creators: list[str],
+    submitting_agent_id: str,
+    *,
+    genesis_exemption_receipt_token: str | None = None,
+) -> tuple[bool, str, int]:
+    submitter = _require_agent_id(submitting_agent_id)
+    distinct: set[str] = set()
+    for creator_id in source_ref_creators:
+        creator = _require_agent_id(creator_id)
+        if creator != submitter:
+            distinct.add(creator)
+    if genesis_exemption_receipt_token is not None:
+        if len(distinct) < 1:
+            return (
+                False,
+                CDL_114_SYBIL_DIVERSITY_INSUFFICIENT_TOKEN,
+                len(distinct),
+            )
+        return (
+            True,
+            CDL_114_GENESIS_SINGLE_CREATOR_EXEMPTION_TOKEN,
+            len(distinct),
+        )
+    if len(distinct) < CDL_114_SYBIL_DIVERSITY_THRESHOLD:
+        return (
+            False,
+            CDL_114_SYBIL_DIVERSITY_INSUFFICIENT_TOKEN,
+            len(distinct),
+        )
+    return (True, CDL_114_SYBIL_DIVERSITY_PASSED_TOKEN, len(distinct))
+
+
 def _require_non_empty_bridge_string(value: Any, token: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise AttributionBatchBridgeError(token, token)
@@ -398,6 +543,7 @@ def build_attribution_batch_from_claims(
     selected_epoch: int | None = epoch
     aggregated: dict[str, dict[str, Any]] = {}
     seen_claim_ids: set[str] = set()
+    claim_agent_ids: set[str] = set()
     total_source = Decimal("0")
     total_dust = Decimal("0")
     for claim in claims:
@@ -410,6 +556,7 @@ def build_attribution_batch_from_claims(
                 "all accepted claims must share the attribution batch epoch",
             )
         agent_id = _require_agent_id(claim.get("agent_id"))
+        claim_agent_ids.add(agent_id)
         amount = _require_decimal_amount(claim.get("amount"))
         total_source += amount
         claim_id = claim.get("claim_id")
@@ -431,16 +578,19 @@ def build_attribution_batch_from_claims(
 
     backward_entries: list[dict[str, Any]] = []
     attribution_event_log: list[dict[str, Any]] = []
+    source_refs_guard_event_count = 0
+    source_refs_guard_pass_count = 0
+    source_refs_guard_block_count = 0
     total_backward_final = Decimal("0")
     total_backward_unissued = Decimal("0")
     if backward_attribution_graph_context is not None:
         context = _require_backward_graph_context(backward_attribution_graph_context)
-        traversal = BackwardAttributionTraversal(context["nodes"], context["edges"])
         werner_contexts = _require_werner_context_by_agent_id(
             context.get("werner_context_by_agent_id"),
         )
         settled_ids = frozenset(cdl084_settled_event_ids or ())
         seen_backward_event_ids: set[str] = set()
+        traversal: BackwardAttributionTraversal | None = None
         for ordinal, raw_event in enumerate(context["events"]):
             event = _require_backward_event(raw_event)
             event_id = _require_non_empty_bridge_string(
@@ -466,6 +616,64 @@ def build_attribution_batch_from_claims(
             )
             event_budget = _require_decimal_amount(event["event_budget_ecu"])
             log_key = _attribution_event_log_key(event_epoch, ordinal)
+            source_ref_node_ids = _source_ref_node_ids(event)
+            source_refs_guard_token: str | None = None
+            source_refs_distinct_creator_count: int | None = None
+            if source_ref_node_ids is not None:
+                source_refs_guard_event_count += 1
+                source_node_id = _require_cidv1_node_id(
+                    source_node_id,
+                    "backward_source_node_id_must_be_cidv1_nodeid",
+                )
+                source_ref_creator_ids = _source_ref_creator_ids(
+                    context["nodes"],
+                    source_ref_node_ids,
+                )
+                submitting_agent_id = _require_submitting_agent_id(
+                    event,
+                    claim_agent_ids,
+                )
+                genesis_exemption_receipt_token = _durable_genesis_exemption_token(
+                    event,
+                )
+                (
+                    guard_passed,
+                    source_refs_guard_token,
+                    source_refs_distinct_creator_count,
+                ) = _check_sybil_diversity_guard(
+                    source_ref_creator_ids,
+                    submitting_agent_id,
+                    genesis_exemption_receipt_token=genesis_exemption_receipt_token,
+                )
+                if not guard_passed:
+                    source_refs_guard_block_count += 1
+                    total_backward_unissued += (
+                        event_budget * BACKWARD_ATTRIBUTION_BACKWARD_POOL_SHARE_BETA
+                    )
+                    attribution_event_log.append(
+                        {
+                            "cdl114_sybil_diversity_guard_applied": True,
+                            "credit_amount": "0",
+                            "dedup_reason": source_refs_guard_token,
+                            "distinct_source_ref_creator_count": (
+                                source_refs_distinct_creator_count
+                            ),
+                            "edge_type": "PROVENANCE",
+                            "epoch": event_epoch,
+                            "event_id": event_id,
+                            "lmdb_key_hex": log_key,
+                            "source_node_cid": source_node_id,
+                            "source_ref_count": len(source_ref_node_ids),
+                            "source_refs": source_ref_node_ids,
+                            "submitting_agent_id": submitting_agent_id,
+                            "sybil_diversity_scope": CDL_114_SYBIL_DIVERSITY_SCOPE,
+                            "sybil_diversity_threshold": (
+                                CDL_114_SYBIL_DIVERSITY_THRESHOLD
+                            ),
+                        }
+                    )
+                    continue
+                source_refs_guard_pass_count += 1
             if event_id in settled_ids or event.get("already_settled_by_cdl084") is True:
                 log_record = {
                     "cdl084_explicit_chain_preserved": True,
@@ -480,6 +688,8 @@ def build_attribution_batch_from_claims(
                 attribution_event_log.append(log_record)
                 continue
 
+            if traversal is None:
+                traversal = BackwardAttributionTraversal(context["nodes"], context["edges"])
             result = traversal.traverse(
                 source_node_id,
                 event_id=event_id,
@@ -552,6 +762,22 @@ def build_attribution_batch_from_claims(
                         final_credit.werner_multiplier
                     ),
                 }
+                if source_ref_node_ids is not None:
+                    entry.update(
+                        {
+                            "cdl114_sybil_diversity_guard_applied": True,
+                            "distinct_source_ref_creator_count": (
+                                source_refs_distinct_creator_count
+                            ),
+                            "source_ref_count": len(source_ref_node_ids),
+                            "source_refs": source_ref_node_ids,
+                            "sybil_diversity_scope": CDL_114_SYBIL_DIVERSITY_SCOPE,
+                            "sybil_diversity_threshold": (
+                                CDL_114_SYBIL_DIVERSITY_THRESHOLD
+                            ),
+                            "sybil_diversity_token": source_refs_guard_token,
+                        }
+                    )
                 _require_agent_id(final_credit.recipient_agent_id)
                 attribution_event_log.append(entry)
                 backward_entries.append(entry)
@@ -656,6 +882,27 @@ def build_attribution_batch_from_claims(
                 "werner_context_count": len(werner_contexts),
             }
         )
+        if source_refs_guard_event_count:
+            batch.update(
+                {
+                    "source_refs_attribution_bridge": True,
+                    "source_refs_cdl114_guard_event_count": (
+                        source_refs_guard_event_count
+                    ),
+                    "source_refs_cdl114_guard_pass_count": (
+                        source_refs_guard_pass_count
+                    ),
+                    "source_refs_cdl114_guard_block_count": (
+                        source_refs_guard_block_count
+                    ),
+                    "source_refs_sybil_diversity_scope": (
+                        CDL_114_SYBIL_DIVERSITY_SCOPE
+                    ),
+                    "source_refs_sybil_diversity_threshold": (
+                        CDL_114_SYBIL_DIVERSITY_THRESHOLD
+                    ),
+                }
+            )
     if normalized_agent_reputation_root is not None:
         batch["agent_reputation_root"] = normalized_agent_reputation_root
     return batch

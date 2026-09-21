@@ -58,8 +58,7 @@ BACKWARD_ATTRIBUTION_REFUTATION_INTERACTION = (
 )
 BACKWARD_ATTRIBUTION_AUDIT_SURFACE = "hybrid_merkle_proof"
 BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP = (
-    "no CDL-108 locked threshold; omitted from Phase 1595h; requires governance "
-    "phase to define and lock threshold before implementation"
+    "cdl_114_sybil_diversity_threshold_locked"
 )
 
 ZERO = Decimal("0")

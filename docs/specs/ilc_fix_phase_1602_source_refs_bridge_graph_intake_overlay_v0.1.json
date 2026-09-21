@@ -1,0 +1,135 @@
+{
+  "phase": "1602",
+  "token": "source_refs_attribution_bridge_complete_phase_1602",
+  "created_utc": "2026-09-21T00:00:00Z",
+  "scope": "graph_intake_overlay_for_phase_1602_source_refs_attribution_bridge_artifacts",
+  "lmdb_mutated": false,
+  "public_mirror_pushed": false,
+  "entries": [
+    {
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1602_g10_source_refs_attribution_bridge.md",
+      "node_kind": "phase_prompt",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "GOVERNS_PHASE",
+          "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "ilc_core/consensus/attribution_batch_bridge.py",
+      "node_kind": "runtime_source",
+      "graph_delta": "load_bearing_artifact_modified",
+      "trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "cdl:114"
+        },
+        {
+          "edge_type": "WIRES",
+          "target": "source_refs_attribution_bridge"
+        }
+      ]
+    },
+    {
+      "repo_path": "ilc_core/economics/backward_attribution_traversal.py",
+      "node_kind": "runtime_source",
+      "graph_delta": "load_bearing_artifact_modified",
+      "trace_edges": [
+        {
+          "edge_type": "CLOSES_GAP_TOKEN",
+          "target": "BACKWARD_ATTRIBUTION_SYBIL_DIVERSITY_GUARD_CDL_GAP"
+        }
+      ]
+    },
+    {
+      "repo_path": "tests/test_phase_1602_source_refs_bridge.py",
+      "node_kind": "test_file",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "out/phase_1602_source_refs_bridge/evidence.json",
+      "node_kind": "phase_evidence",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/phases/phase_1602_source_refs_attribution_bridge_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/specs/ilc_fix_phase_1602_source_refs_bridge_graph_intake_overlay_v0.1.json",
+      "node_kind": "graph_intake_overlay",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "COVERS",
+          "target": "phase:1602_artifacts"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/phases/STATUS.md",
+      "node_kind": "phase_status_log",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "EMITS_TOKEN",
+          "target": "source_refs_attribution_bridge_complete_phase_1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "node_kind": "planning_index",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "ADVANCES_FRONTIER_TO",
+          "target": "phase:1603"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
+      "node_kind": "forward_plan",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "ADVANCES_FRONTIER_TO",
+          "target": "phase:1603"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/specs/ilc_window_1596_1616_candidate_phase_grouping_v0.1.md",
+      "node_kind": "window_guidance",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "ADVANCES_FRONTIER_TO",
+          "target": "phase:1603"
+        }
+      ]
+    }
+  ]
+}
