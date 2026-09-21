@@ -1,0 +1,54 @@
+{
+  "artifact": "ilc_fix_gap_agentid_namespace_reconcile_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-AGENTID-NAMESPACE-RECONCILE-00 documentation and prompt-hardening artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_agentid_namespace_reconcile_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_gap_agentid_namespace_reconcile_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_agentid_namespace_reconcile_overlay_record",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_agentid_namespace_reconcile_00_spec.md",
+      "target": "phase:GAP-AGENTID-NAMESPACE-RECONCILE-00"
+    },
+    {
+      "annotation_method": "gap_agentid_namespace_reconcile_overlay_record",
+      "edge_role": "SPEC_DOC",
+      "repo_path": "docs/specs/ilc_agentid_namespace_reconciliation_gap_00_v0.1.md",
+      "target": "phase:GAP-AGENTID-NAMESPACE-RECONCILE-00"
+    },
+    {
+      "annotation_method": "gap_agentid_namespace_reconcile_overlay_record",
+      "edge_role": "PHASE_PROMPT_MODIFIED",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1601_g10_cdl_114_sybil_diversity_guard.md",
+      "target": "phase:GAP-AGENTID-NAMESPACE-RECONCILE-00"
+    },
+    {
+      "annotation_method": "gap_agentid_namespace_reconcile_overlay_record",
+      "edge_role": "PHASE_PROMPT_MODIFIED",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1602_g10_source_refs_attribution_bridge.md",
+      "target": "phase:GAP-AGENTID-NAMESPACE-RECONCILE-00"
+    },
+    {
+      "annotation_method": "gap_agentid_namespace_reconcile_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_agentid_namespace_reconcile_00_walkthrough.md",
+      "target": "phase:GAP-AGENTID-NAMESPACE-RECONCILE-00"
+    },
+    {
+      "annotation_method": "gap_agentid_namespace_reconcile_overlay_record",
+      "edge_role": "STATUS_LOG",
+      "repo_path": "docs/phases/STATUS.md",
+      "target": "phase:GAP-AGENTID-NAMESPACE-RECONCILE-00"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1",
+  "status": "review_queue_support_only"
+}
