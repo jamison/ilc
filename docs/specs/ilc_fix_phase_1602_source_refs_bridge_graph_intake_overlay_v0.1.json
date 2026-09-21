@@ -1,6 +1,7 @@
 {
   "phase": "1602",
   "token": "source_refs_attribution_bridge_complete_phase_1602",
+  "audit_hardening_token": "phase_1602_audit_hardening_complete",
   "created_utc": "2026-09-21T00:00:00Z",
   "scope": "graph_intake_overlay_for_phase_1602_source_refs_attribution_bridge_artifacts",
   "lmdb_mutated": false,
@@ -66,6 +67,17 @@
       ]
     },
     {
+      "repo_path": "out/phase_1602_source_refs_bridge/audit_hardening_evidence.json",
+      "node_kind": "phase_evidence",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1602_audit_hardening"
+        }
+      ]
+    },
+    {
       "repo_path": "docs/phases/phase_1602_source_refs_attribution_bridge_walkthrough.md",
       "node_kind": "phase_walkthrough",
       "graph_delta": "support_only",
@@ -73,6 +85,17 @@
         {
           "edge_type": "EVIDENCES",
           "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1603_g10_public_user_smoke.md",
+      "node_kind": "phase_prompt",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "HARDENS",
+          "target": "phase:1603"
         }
       ]
     },

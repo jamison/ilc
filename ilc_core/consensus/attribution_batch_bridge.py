@@ -60,6 +60,15 @@ MAX_U64 = 18_446_744_073_709_551_615
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
 ATTRIBUTION_EVENT_LOG_KEY_PREFIX = b"attr_event:"
+_TRUTH_PRIMITIVE_ARTIFACT_TYPE_BY_PRIMITIVE = {
+    "assert.truth": "claim",
+    "validate.claim": "review",
+    "revise.assert": "revision_chain",
+    "link.claim": "hyperedge_entity",
+}
+_GENESIS_EXEMPTION_RECEIPT_TOKEN_RE = re.compile(
+    r"^(genesis_authority_assertion|agent_init_ceremony|public_rc_launch_anchor):[0-9a-f]{64}$"
+)
 CDL_114_SYBIL_DIVERSITY_SCOPE = "per_event"
 CDL_114_SYBIL_DIVERSITY_THRESHOLD = 3
 CDL_114_SYBIL_DIVERSITY_INSUFFICIENT_TOKEN = (
@@ -136,10 +145,9 @@ def _require_optional_sha256_hex(value: Any, token: str) -> str | None:
         return None
     if not isinstance(value, str):
         raise AttributionBatchBridgeError(token, "root must be a lowercase 64-hex string")
-    normalized = value.strip()
-    if not _SHA256_HEX_RE.fullmatch(normalized):
+    if value != value.strip() or not _SHA256_HEX_RE.fullmatch(value):
         raise AttributionBatchBridgeError(token, "root must be a lowercase 64-hex string")
-    return normalized
+    return value
 
 
 def _require_decimal_amount(value: Any) -> Decimal:
@@ -296,14 +304,18 @@ def _require_werner_context_by_agent_id(
 
 def _require_backward_event(value: Any) -> dict[str, Any]:
     event = _require_dict("backward_attribution_event", value)
-    _require_non_empty_bridge_string(event.get("event_id"), "backward_event_id_required")
-    _require_non_empty_bridge_string(
+    normalized = dict(event)
+    normalized["event_id"] = _require_non_empty_bridge_string(
+        event.get("event_id"),
+        "backward_event_id_required",
+    )
+    normalized["source_node_id"] = _require_non_empty_bridge_string(
         event.get("source_node_id"),
         "backward_source_node_id_required",
     )
-    _require_epoch(event.get("event_epoch"))
-    _require_decimal_amount(event.get("event_budget_ecu"))
-    return event
+    normalized["event_epoch"] = _require_epoch(event.get("event_epoch"))
+    normalized["event_budget_ecu"] = _require_decimal_amount(event.get("event_budget_ecu"))
+    return normalized
 
 
 def _source_ref_node_ids(event: dict[str, Any]) -> list[str] | None:
@@ -330,12 +342,53 @@ def _source_ref_node_ids(event: dict[str, Any]) -> list[str] | None:
             "source_ref_node_id_must_be_cidv1_nodeid",
         )
         if node_id in seen:
-            raise AttributionBatchBridgeError(
-                "source_refs_contains_duplicate_node_id",
-                "source_refs must not contain duplicate node IDs",
-            )
+            continue
         seen.add(node_id)
         normalized.append(node_id)
+    return normalized
+
+
+def _truth_primitive_artifact_type(node: dict[str, Any]) -> str:
+    primitive = node.get("primitive")
+    if not isinstance(primitive, str):
+        raise AttributionBatchBridgeError(
+            "source_ref_node_artifact_type_required",
+            "source_ref nodes require artifact_type or a supported truth primitive",
+        )
+    artifact_type = _TRUTH_PRIMITIVE_ARTIFACT_TYPE_BY_PRIMITIVE.get(primitive)
+    if artifact_type is None:
+        raise AttributionBatchBridgeError(
+            "source_ref_node_artifact_type_required",
+            "source_ref truth primitive is not in the CDL-108 artifact mask",
+        )
+    return artifact_type
+
+
+def _normalize_backward_node_record(node_id: str, raw_node: Any) -> dict[str, Any]:
+    node = dict(_require_dict("backward_node", raw_node))
+    node.setdefault("node_id", node_id)
+    if "recipient_agent_id" not in node and "agent_id" in node:
+        node["recipient_agent_id"] = node["agent_id"]
+    if "created_epoch" not in node and "epoch" in node:
+        node["created_epoch"] = node["epoch"]
+    if "artifact_type" not in node:
+        node["artifact_type"] = _truth_primitive_artifact_type(node)
+    node.setdefault("status_quality_weight", "1")
+    node.setdefault("novelty_score", "1")
+    return node
+
+
+def _normalize_backward_nodes(nodes: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    normalized: dict[str, dict[str, Any]] = {}
+    for node_id, raw_node in nodes.items():
+        checked_id = _require_non_empty_bridge_string(
+            node_id,
+            "backward_node_id_required",
+        )
+        normalized[checked_id] = _normalize_backward_node_record(
+            checked_id,
+            raw_node,
+        )
     return normalized
 
 
@@ -351,7 +404,7 @@ def _source_ref_creator_ids(
                 "source_ref_node_missing_from_graph_context",
                 "source_refs must resolve to graph or receipt-derived node bindings",
             )
-        node = _require_dict("source_ref_node", raw_node)
+        node = _normalize_backward_node_record(node_id, raw_node)
         creator_ids.append(_require_agent_id(node.get("recipient_agent_id")))
     return creator_ids
 
@@ -360,7 +413,7 @@ def _require_submitting_agent_id(
     event: dict[str, Any],
     claim_agent_ids: set[str],
 ) -> str:
-    for key in ("submitting_agent_id", "submitter_agent_id", "agent_id"):
+    for key in ("submitting_agent_id", "submitter_agent_id"):
         if key in event:
             return _require_agent_id(event[key])
     if len(claim_agent_ids) == 1:
@@ -380,12 +433,7 @@ def _durable_genesis_exemption_token(event: dict[str, Any]) -> str | None:
             "genesis_single_creator_exemption_receipt_token_required",
             "Genesis single-creator exemption requires a durable receipt token",
         )
-    if not (
-        token.startswith("genesis_authority_assertion:")
-        or token.startswith("serving_receipt:")
-        or token.startswith("agent_init_ceremony:")
-        or token.startswith("public_rc_launch_anchor:")
-    ):
+    if _GENESIS_EXEMPTION_RECEIPT_TOKEN_RE.fullmatch(token) is None:
         raise AttributionBatchBridgeError(
             "genesis_single_creator_exemption_receipt_token_invalid",
             "Genesis exemption receipt token must name a durable Genesis authority receipt",
@@ -406,7 +454,7 @@ def _check_sybil_diversity_guard(
         if creator != submitter:
             distinct.add(creator)
     if genesis_exemption_receipt_token is not None:
-        if len(distinct) < 1:
+        if len(distinct) != 1:
             return (
                 False,
                 CDL_114_SYBIL_DIVERSITY_INSUFFICIENT_TOKEN,
@@ -427,18 +475,58 @@ def _check_sybil_diversity_guard(
 
 
 def _require_non_empty_bridge_string(value: Any, token: str) -> str:
-    if not isinstance(value, str) or not value.strip():
+    if not isinstance(value, str) or not value:
         raise AttributionBatchBridgeError(token, token)
-    return value.strip()
+    if value != value.strip():
+        raise AttributionBatchBridgeError(token, token)
+    return value
 
 
-def _attribution_event_log_key(epoch: int, ordinal: int) -> str:
+def _attribution_event_log_key(
+    epoch: int,
+    ordinal: int,
+    credit_ordinal: int | None = None,
+) -> str:
     key = (
         ATTRIBUTION_EVENT_LOG_KEY_PREFIX
         + epoch.to_bytes(8, "big", signed=False)
         + ordinal.to_bytes(8, "big", signed=False)
     )
+    if credit_ordinal is not None:
+        key += credit_ordinal.to_bytes(8, "big", signed=False)
     return key.hex()
+
+
+def _source_ref_traversal_edges(
+    *,
+    source_node_id: str,
+    source_ref_node_ids: list[str] | None,
+    edges: list[Any],
+) -> list[dict[str, Any]]:
+    if source_ref_node_ids is None:
+        return list(edges)
+    allowed_targets = set(source_ref_node_ids)
+    selected: list[dict[str, Any]] = []
+    selected_targets: set[str] = set()
+    for raw_edge in edges:
+        edge = _require_dict("backward_edge", raw_edge)
+        if (
+            edge.get("source_node_id") == source_node_id
+            and edge.get("target_node_id") in allowed_targets
+        ):
+            selected.append(dict(edge))
+            selected_targets.add(edge["target_node_id"])
+    for target in source_ref_node_ids:
+        if target not in selected_targets:
+            selected.append(
+                {
+                    "edge_confidence": "1",
+                    "edge_type": "PROVENANCE",
+                    "source_node_id": source_node_id,
+                    "target_node_id": target,
+                }
+            )
+    return selected
 
 
 def _write_json_atomic(path: Path, payload: dict[str, Any]) -> None:
@@ -583,8 +671,10 @@ def build_attribution_batch_from_claims(
     source_refs_guard_block_count = 0
     total_backward_final = Decimal("0")
     total_backward_unissued = Decimal("0")
+    total_output_source = total_source
     if backward_attribution_graph_context is not None:
         context = _require_backward_graph_context(backward_attribution_graph_context)
+        normalized_nodes = _normalize_backward_nodes(context["nodes"])
         werner_contexts = _require_werner_context_by_agent_id(
             context.get("werner_context_by_agent_id"),
         )
@@ -626,7 +716,7 @@ def build_attribution_batch_from_claims(
                     "backward_source_node_id_must_be_cidv1_nodeid",
                 )
                 source_ref_creator_ids = _source_ref_creator_ids(
-                    context["nodes"],
+                    normalized_nodes,
                     source_ref_node_ids,
                 )
                 submitting_agent_id = _require_submitting_agent_id(
@@ -688,9 +778,24 @@ def build_attribution_batch_from_claims(
                 attribution_event_log.append(log_record)
                 continue
 
-            if traversal is None:
-                traversal = BackwardAttributionTraversal(context["nodes"], context["edges"])
-            result = traversal.traverse(
+            if source_ref_node_ids is not None:
+                traversal_edges = _source_ref_traversal_edges(
+                    source_node_id=source_node_id,
+                    source_ref_node_ids=source_ref_node_ids,
+                    edges=context["edges"],
+                )
+                active_traversal = BackwardAttributionTraversal(
+                    normalized_nodes,
+                    traversal_edges,
+                )
+            else:
+                if traversal is None:
+                    traversal = BackwardAttributionTraversal(
+                        normalized_nodes,
+                        context["edges"],
+                    )
+                active_traversal = traversal
+            result = active_traversal.traverse(
                 source_node_id,
                 event_id=event_id,
                 event_budget_ecu=event_budget,
@@ -699,7 +804,12 @@ def build_attribution_batch_from_claims(
                 werner_context_by_agent_id=werner_contexts,
             )
             total_backward_unissued += result.unissued_backward_pool_ecu
-            for final_credit in result.final_credits:
+            for credit_ordinal, final_credit in enumerate(result.final_credits):
+                credit_log_key = _attribution_event_log_key(
+                    event_epoch,
+                    ordinal,
+                    credit_ordinal,
+                )
                 cap_applied = (
                     final_credit.node_cap_applied
                     or final_credit.agent_cap_applied
@@ -743,7 +853,7 @@ def build_attribution_batch_from_claims(
                     "epoch": event_epoch,
                     "event_id": final_credit.event_id,
                     "hop_count": final_credit.depth,
-                    "lmdb_key_hex": log_key,
+                    "lmdb_key_hex": credit_log_key,
                     "node_cap_applied": final_credit.node_cap_applied,
                     "pre_cap_credit_ecu": decimal_to_canonical_string(
                         final_credit.pre_cap_credit_ecu
@@ -799,7 +909,7 @@ def build_attribution_batch_from_claims(
                 )
         if attribution_audit_store is not None:
             attribution_audit_store.write_epoch_events(selected_epoch, attribution_event_log)
-        total_source += total_backward_final
+        total_output_source = total_source + total_backward_final
 
     if selected_epoch is None:
         raise AttributionBatchBridgeError("attribution_epoch_required", "attribution epoch is required")
@@ -828,7 +938,9 @@ def build_attribution_batch_from_claims(
         "rounding": "floor_to_micro_ecu_no_over_credit",
         "source_claim_count": len(claims),
         "attribution_count": len(attributions),
-        "total_source_ecu": decimal_to_canonical_string(total_source),
+        "total_forward_claim_ecu": decimal_to_canonical_string(total_source),
+        "total_source_ecu": decimal_to_canonical_string(total_output_source),
+        "total_output_ecu": decimal_to_canonical_string(total_output_source),
         "total_micro_ecu": sum(item["amount_micro_ecu"] for item in attributions),
         "total_dust_ecu": decimal_to_canonical_string(total_dust),
         "attributions": attributions,

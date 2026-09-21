@@ -41,6 +41,26 @@ def _claim_payload(agent_id: str = SUBMITTER) -> dict[str, object]:
     }
 
 
+def _multi_claim_payload() -> dict[str, object]:
+    return {
+        "claims": [
+            {
+                "agent_id": SUBMITTER,
+                "amount": "1",
+                "claim_id": "claim-source-refs-a",
+                "epoch": 10,
+            },
+            {
+                "agent_id": CREATOR_4,
+                "amount": "1",
+                "claim_id": "claim-source-refs-b",
+                "epoch": 10,
+            },
+        ],
+        "marker": "agent_loop_claims_ok",
+    }
+
+
 def _node(agent_id: str) -> dict[str, object]:
     return {
         "artifact_type": "claim",
@@ -228,7 +248,7 @@ def test_genesis_single_creator_exemption_requires_durable_receipt_token() -> No
             event_overrides={
                 "genesis_single_creator_exemption": True,
                 "genesis_single_creator_exemption_receipt_token": (
-                    "serving_receipt:"
+                    "public_rc_launch_anchor:"
                     "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
                 ),
             },
@@ -240,3 +260,161 @@ def test_genesis_single_creator_exemption_requires_durable_receipt_token() -> No
     assert batch["backward_attribution_entries"][0]["sybil_diversity_token"] == (
         "genesis_single_creator_exemption"
     )
+
+
+@pytest.mark.parametrize(
+    ("event_overrides", "token"),
+    [
+        (
+            {"event_id": " event-source-refs"},
+            "backward_event_id_required",
+        ),
+        (
+            {"source_node_id": f"{NEW_NODE_ID} "},
+            "backward_source_node_id_required",
+        ),
+    ],
+)
+def test_backward_event_strings_reject_whitespace(
+    event_overrides: dict[str, object],
+    token: str,
+) -> None:
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _claim_payload(),
+            backward_attribution_graph_context=_source_refs_context(
+                event_overrides=event_overrides,
+            ),
+        )
+
+    assert excinfo.value.token == token
+
+
+@pytest.mark.parametrize(
+    "receipt_token",
+    [
+        "serving_receipt:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        "public_rc_launch_anchor:",
+        "public_rc_launch_anchor:not-hex",
+    ],
+)
+def test_genesis_single_creator_exemption_rejects_overbroad_receipt_tokens(
+    receipt_token: str,
+) -> None:
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _claim_payload(),
+            backward_attribution_graph_context=_source_refs_context(
+                source_refs=[REF_1_ID],
+                event_overrides={
+                    "genesis_single_creator_exemption": True,
+                    "genesis_single_creator_exemption_receipt_token": receipt_token,
+                },
+            ),
+        )
+
+    assert excinfo.value.token == "genesis_single_creator_exemption_receipt_token_invalid"
+
+
+def test_genesis_single_creator_exemption_rejects_multi_creator_refs() -> None:
+    batch = build_attribution_batch_from_claims(
+        _claim_payload(),
+        backward_attribution_graph_context=_source_refs_context(
+            source_refs=[REF_1_ID, REF_2_ID],
+            event_overrides={
+                "genesis_single_creator_exemption": True,
+                "genesis_single_creator_exemption_receipt_token": (
+                    "agent_init_ceremony:"
+                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                ),
+            },
+        ),
+    )
+
+    assert batch["source_refs_cdl114_guard_block_count"] == 1
+    assert batch["backward_attribution_entry_count"] == 0
+    assert batch["attribution_event_log"][0]["distinct_source_ref_creator_count"] == 2
+
+
+def test_source_refs_submitter_agent_id_does_not_fallback_to_agent_id_field() -> None:
+    context = _source_refs_context(event_overrides={"agent_id": SUBMITTER})
+    del context["events"][0]["submitting_agent_id"]
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _multi_claim_payload(),
+            backward_attribution_graph_context=context,
+        )
+
+    assert excinfo.value.token == "source_refs_submitting_agent_id_required"
+
+
+def test_duplicate_source_ref_node_ids_are_deduped_before_guard_and_credit() -> None:
+    batch = build_attribution_batch_from_claims(
+        _claim_payload(),
+        backward_attribution_graph_context=_source_refs_context(
+            source_refs=[REF_1_ID, REF_1_ID, REF_2_ID, REF_3_ID],
+        ),
+    )
+
+    assert batch["source_refs_cdl114_guard_pass_count"] == 1
+    assert batch["backward_attribution_entry_count"] == 3
+    assert batch["attribution_event_log"][0]["source_ref_count"] == 3
+
+
+def test_source_refs_traversal_cannot_credit_unreferenced_edges() -> None:
+    context = _source_refs_context(source_refs=[REF_1_ID, REF_2_ID, REF_3_ID])
+    context["edges"] = [_edge(NEW_NODE_ID, REF_4_ID)]
+
+    batch = build_attribution_batch_from_claims(
+        _claim_payload(),
+        backward_attribution_graph_context=context,
+    )
+
+    assert {
+        entry["recipient_agent_id"]
+        for entry in batch["backward_attribution_entries"]
+    } == {CREATOR_1, CREATOR_2, CREATOR_3}
+    assert CREATOR_4 not in {
+        entry["recipient_agent_id"]
+        for entry in batch["backward_attribution_entries"]
+    }
+
+
+def test_raw_cdl075_truth_node_records_are_normalized_for_source_refs() -> None:
+    raw_ref = {
+        "agent_id": CREATOR_1,
+        "epoch": 0,
+        "payload": {"content": {"text": "upstream"}},
+        "primitive": "assert.truth",
+    }
+    batch = build_attribution_batch_from_claims(
+        _claim_payload(),
+        backward_attribution_graph_context=_source_refs_context(
+            source_refs=[REF_1_ID],
+            nodes={REF_1_ID: raw_ref},
+            event_overrides={
+                "genesis_single_creator_exemption": True,
+                "genesis_single_creator_exemption_receipt_token": (
+                    "genesis_authority_assertion:"
+                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                ),
+            },
+        ),
+    )
+
+    assert batch["backward_attribution_entry_count"] == 1
+    assert batch["backward_attribution_entries"][0]["recipient_agent_id"] == CREATOR_1
+
+
+def test_attribution_event_lmdb_keys_are_unique_per_credit() -> None:
+    batch = build_attribution_batch_from_claims(
+        _claim_payload(),
+        backward_attribution_graph_context=_source_refs_context(),
+    )
+
+    keys = [
+        entry["lmdb_key_hex"]
+        for entry in batch["backward_attribution_entries"]
+    ]
+    assert len(keys) == len(set(keys))
+    assert all(key.startswith(b"attr_event:".hex()) for key in keys)

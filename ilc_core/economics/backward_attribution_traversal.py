@@ -193,9 +193,11 @@ class BackwardAttributionResult:
 
 
 def _require_non_empty_string(value: object, token: str) -> str:
-    if not isinstance(value, str) or not value.strip():
+    if not isinstance(value, str) or not value:
         raise ValueError(token)
-    return value.strip()
+    if value != value.strip():
+        raise ValueError(token)
+    return value
 
 
 def _require_non_negative_int(value: object, token: str) -> int:
@@ -238,7 +240,7 @@ def _require_bool(value: object, token: str) -> bool:
 
 def _canonical_edge_type(value: object) -> str:
     raw = _require_non_empty_string(value, "backward_attribution_edge_type_required")
-    return raw.strip().upper()
+    return raw.upper()
 
 
 def collapse_event_ids(event_ids: tuple[str, ...] | list[str]) -> tuple[str, ...]:
