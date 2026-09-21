@@ -1,0 +1,60 @@
+{
+  "artifact": "ilc_fix_gap_whitepaper_appendix_i_j_hardening_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-WHITEPAPER-APPENDIX-I-J-HARDENING-00 whitepaper-draft hardening artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_whitepaper_appendix_i_j_hardening_overlay_record",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_whitepaper_appendix_i_j_hardening_00_g10_appendix_i_v03_j_v02.md",
+      "target": "phase:GAP-WHITEPAPER-APPENDIX-I-J-HARDENING-00"
+    },
+    {
+      "annotation_method": "gap_whitepaper_appendix_i_j_hardening_overlay_record",
+      "edge_role": "WHITEPAPER_DRAFT",
+      "repo_path": "docs/whitepaper/ilc_whitepaper_appendix_i_epistemic_feature_geometry_v0.3.md",
+      "target": "phase:GAP-WHITEPAPER-APPENDIX-I-J-HARDENING-00"
+    },
+    {
+      "annotation_method": "gap_whitepaper_appendix_i_j_hardening_overlay_record",
+      "edge_role": "WHITEPAPER_DRAFT",
+      "repo_path": "docs/whitepaper/ilc_whitepaper_appendix_j_operation_relative_sufficiency_and_executable_star_maps_v0.2.md",
+      "target": "phase:GAP-WHITEPAPER-APPENDIX-I-J-HARDENING-00"
+    },
+    {
+      "annotation_method": "gap_whitepaper_appendix_i_j_hardening_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_gap_whitepaper_appendix_i_j_hardening_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_whitepaper_appendix_i_j_hardening_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_whitepaper_appendix_i_j_hardening_00_walkthrough.md",
+      "target": "phase:GAP-WHITEPAPER-APPENDIX-I-J-HARDENING-00"
+    },
+    {
+      "annotation_method": "gap_whitepaper_appendix_i_j_hardening_overlay_record",
+      "edge_role": "STATUS_LOG",
+      "repo_path": "docs/phases/STATUS.md",
+      "target": "phase:GAP-WHITEPAPER-APPENDIX-I-J-HARDENING-00"
+    },
+    {
+      "annotation_method": "gap_whitepaper_appendix_i_j_hardening_overlay_record",
+      "edge_role": "PLANNING_INDEX",
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "target": "phase:GAP-WHITEPAPER-APPENDIX-I-J-HARDENING-00"
+    },
+    {
+      "annotation_method": "gap_whitepaper_appendix_i_j_hardening_overlay_record",
+      "edge_role": "FORWARD_PLAN",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
+      "target": "phase:GAP-WHITEPAPER-APPENDIX-I-J-HARDENING-00"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1",
+  "status": "review_queue_support_only"
+}
