@@ -59,6 +59,14 @@ _EXTERNAL_SIDECARS: list[dict[str, Any]] = [
         "install": "bash ilc-genesis-atlas-sidecar/install.sh",
         "module": "ilc_genesis_atlas.__main__",
     },
+    {
+        "sidecar_id": "typesafe",
+        "kind": "built-in",
+        "description": "TypeSafe Jev — probabilistic judgment engine for epistemic quality, attribution, and claim verification (advisory only; no ECU/ILC mutation)",
+        "invoke": "ilc sidecar typesafe {score,classify,verify,manifest} [OPTIONS]",
+        "install": "built-in (no additional install required)",
+        "module": "ilc_core.sidecars.typesafe_judgment",
+    },
 ]
 
 
