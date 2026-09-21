@@ -1,0 +1,113 @@
+{
+  "phase": "1601",
+  "token": "cdl_114_sybil_diversity_guard_ratified_phase_1601",
+  "created_utc": "2026-09-21T00:00:00Z",
+  "scope": "graph_intake_overlay_for_phase_1601_cdl_114_governance_artifacts",
+  "lmdb_mutated": false,
+  "public_mirror_pushed": false,
+  "entries": [
+    {
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1601_g10_cdl_114_sybil_diversity_guard.md",
+      "node_kind": "phase_prompt",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "GOVERNS_PHASE",
+          "target": "phase:1601"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/specs/ilc_cdl_114_sybil_diversity_backward_attribution_guard_v0.1.md",
+      "node_kind": "cdl_authority_doc",
+      "graph_delta": "load_bearing_artifact_added",
+      "trace_edges": [
+        {
+          "edge_type": "AMENDS",
+          "target": "cdl:108"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+      "node_kind": "cdl_register",
+      "graph_delta": "load_bearing_artifact_modified",
+      "trace_edges": [
+        {
+          "edge_type": "REGISTERS",
+          "target": "cdl:114"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "node_kind": "planning_index",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "ADVANCES_FRONTIER_TO",
+          "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
+      "node_kind": "forward_plan",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "ADVANCES_FRONTIER_TO",
+          "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/specs/ilc_window_1596_1616_candidate_phase_grouping_v0.1.md",
+      "node_kind": "window_guidance",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "ADVANCES_FRONTIER_TO",
+          "target": "phase:1602"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/phases/STATUS.md",
+      "node_kind": "phase_status_log",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "EMITS_TOKEN",
+          "target": "cdl_114_sybil_diversity_guard_ratified_phase_1601"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/phases/phase_1601_cdl_114_sybil_diversity_guard_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1601"
+        }
+      ]
+    },
+    {
+      "repo_path": "docs/specs/ilc_fix_phase_1601_cdl_114_graph_intake_overlay_v0.1.json",
+      "node_kind": "graph_intake_overlay",
+      "graph_delta": "support_only",
+      "trace_edges": [
+        {
+          "edge_type": "COVERS",
+          "target": "phase:1601_artifacts"
+        }
+      ]
+    }
+  ]
+}
