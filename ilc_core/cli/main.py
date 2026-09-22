@@ -4089,6 +4089,7 @@ def _run_top_level_command(
         "bundle",
         "ccss",
         "doctor",
+        "ecu",
         "install",
         "network-doctor",
         "node",

@@ -21,6 +21,7 @@ import argparse
 import json
 import os
 import re
+import stat
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -204,28 +205,45 @@ def _load_payload(args: argparse.Namespace) -> dict[str, Any]:
                 f"payload file not found: {file_path}",
             )
         try:
-            file_stat = path.stat()
+            flags = os.O_RDONLY
+            if hasattr(os, "O_NOFOLLOW"):
+                flags |= os.O_NOFOLLOW
+            fd = -1
+            fd = os.open(path, flags)
+            try:
+                file_stat = os.fstat(fd)
+                if not stat.S_ISREG(file_stat.st_mode):
+                    raise SubmitCommandError(
+                        "submit_payload_file_not_regular",
+                        "payload file must be a regular file",
+                    )
+                if file_stat.st_size > _MAX_SUBMIT_PAYLOAD_BYTES:
+                    raise SubmitCommandError(
+                        "submit_payload_too_large",
+                        "payload exceeds maximum submit payload size",
+                    )
+                with os.fdopen(fd, "rb") as handle:
+                    fd = -1
+                    raw_bytes = handle.read(_MAX_SUBMIT_PAYLOAD_BYTES + 1)
+            finally:
+                if fd >= 0:
+                    os.close(fd)
         except OSError as exc:
             raise SubmitCommandError(
                 "submit_payload_file_read_error",
-                f"could not stat payload file: {exc}",
+                f"could not read payload file: {exc}",
             ) from exc
-        if not path.is_file():
-            raise SubmitCommandError(
-                "submit_payload_file_not_regular",
-                "payload file must be a regular file",
-            )
-        if file_stat.st_size > _MAX_SUBMIT_PAYLOAD_BYTES:
+        if len(raw_bytes) > _MAX_SUBMIT_PAYLOAD_BYTES:
             raise SubmitCommandError(
                 "submit_payload_too_large",
                 "payload exceeds maximum submit payload size",
             )
         try:
-            raw = path.read_text(encoding="utf-8")
-        except OSError as exc:
+            raw = raw_bytes.decode("utf-8")
+        except UnicodeDecodeError as exc:
             raise SubmitCommandError(
                 "submit_payload_file_read_error",
-                f"could not read payload file: {exc}",
+                f"payload file is not valid UTF-8: {exc}",
             ) from exc
 
     if not isinstance(raw, str):
@@ -316,7 +334,7 @@ def _sign_submission_envelope(envelope: dict[str, Any], signing_key_uri: str | N
         return attach_truth_primitive_signature(envelope, private_key)
     except SubmitCommandError:
         raise
-    except ValueError as exc:
+    except (OSError, ValueError) as exc:
         raise SubmitCommandError("submit_signing_key_invalid", str(exc)) from exc
 
 
@@ -406,7 +424,7 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         gossip_receipt = announce_truth_primitive(write_receipt, envelope)
         gossip_delivery = gossip_receipt["gossip_delivery"]
 
-    return {
+    response: dict[str, Any] = {
         "subcommand": "submit",
         "primitive": result.primitive,
         "creates_node": result.creates_node,
@@ -417,3 +435,11 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         "gossip_delivery": gossip_delivery,
         "version": D2E_SUBMIT_CLI_VERSION,
     }
+    if envelope.get("sig") not in {None, "", "UNSIGNED"}:
+        response["signature"] = {
+            "sig": str(envelope.get("sig", "")),
+            "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
+            "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
+            "sig_scheme": str(envelope.get("sig_scheme", "")),
+        }
+    return response
