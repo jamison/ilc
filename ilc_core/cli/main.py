@@ -3761,6 +3761,11 @@ def _build_parser() -> JsonArgumentParser:
                 default=[],
                 help="Strict CIDv1 source reference to add to payload.content.source_refs; repeatable",
             )
+            submit_parser.add_argument(
+                "--endpoint",
+                default="",
+                help="Truth submit endpoint URL. Defaults to ILC_TRUTH_SUBMIT_ENDPOINT.",
+            )
             continue
 
         if command != "identity":

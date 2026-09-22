@@ -53,6 +53,13 @@ logger = logging.getLogger(__name__)
 
 MAX_GOSSIP_PAYLOAD_BYTES: int = 1_048_576
 MAX_APP_REQUEST_BODY_BYTES: int = 10_485_760
+MAX_PUBLIC_TRUTH_SUBMIT_BYTES: int = 256 * 1024
+PUBLIC_TRUTH_SUBMIT_GRAPH_STORE_ENV = "ILC_TRUTH_GRAPH_STORE_PATH"
+PUBLIC_TRUTH_SUBMIT_STORE_MISSING_TOKEN = (
+    "public_submit_graph_store_missing_phase_1603_fix1"
+)
+PUBLIC_TRUTH_SUBMIT_VERSION = "public_truth_submit_transport_phase_1603_fix1.v0.1"
+PUBLIC_ECU_STATUS_VERSION = "public_ecu_status_transport_phase_1603_fix1.v0.1"
 GOSSIP_SIGNATURE_VERIFICATION_NOT_WIRED_TOKEN = (
     "gossip_signature_verification_not_wired_phase_1575h_fix1"
 )
@@ -74,6 +81,8 @@ _ROUTE_CLASSIFICATION: dict[tuple[str, str], str] = {
     ("GET", "/v1/protocol/ep_task_schema"): "public_verifier",
     ("POST", "/v1/protocol/ep_task"): "local_dev_only",
     ("POST", "/api/v1/claimability/verify"): "public_verifier",
+    ("POST", "/api/v1/truth/submit"): "public_submit",
+    ("GET", "/api/v1/ecu/status"): "public_verifier",
 }
 
 
@@ -260,6 +269,45 @@ def _append_unique_tokens(tokens: object, extra_tokens: tuple[str, ...]) -> list
         if token not in merged:
             merged.append(token)
     return merged
+
+
+async def _read_json_body_bounded(
+    request: Request,
+    *,
+    max_bytes: int,
+    token_prefix: str,
+) -> dict[str, object]:
+    content_length = request.headers.get("content-length")
+    if content_length is not None:
+        try:
+            declared_size = int(content_length)
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=400,
+                detail=f"{token_prefix}_content_length_invalid",
+            ) from exc
+        if declared_size > max_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=f"{token_prefix}_payload_too_large",
+            )
+    body = await request.body()
+    if len(body) > max_bytes:
+        raise HTTPException(status_code=413, detail=f"{token_prefix}_payload_too_large")
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(status_code=400, detail=f"{token_prefix}_json_invalid") from exc
+    if not isinstance(payload, dict):
+        raise HTTPException(status_code=400, detail=f"{token_prefix}_payload_not_object")
+    return payload
+
+
+def _configured_truth_graph_store_path() -> Path:
+    raw_path = os.environ.get(PUBLIC_TRUTH_SUBMIT_GRAPH_STORE_ENV, "").strip()
+    if not raw_path:
+        raise HTTPException(status_code=503, detail=PUBLIC_TRUTH_SUBMIT_STORE_MISSING_TOKEN)
+    return Path(raw_path)
 
 
 def _sha256_payload(payload: dict[str, object]) -> str:
@@ -611,6 +659,122 @@ def _json_safe(value: object) -> object:
     if isinstance(value, tuple):
         return [_json_safe(item) for item in value]
     return value
+
+
+@router.post("/api/v1/truth/submit")
+async def submit_truth_public_api(request: Request):
+    """
+    Access class: public_submit.
+
+    Validate and persist a CDL-073 truth primitive envelope through the
+    existing CDL-074/CDL-075 stack. This route is intentionally narrow:
+    it requires an operator-configured CDL-075 graph store and does not mint,
+    settle, gossip, or write wallets.
+    """
+    payload = await _read_json_body_bounded(
+        request,
+        max_bytes=MAX_PUBLIC_TRUTH_SUBMIT_BYTES,
+        token_prefix="public_truth_submit",
+    )
+    try:
+        from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
+        from ilc_core.epistemic.truth_primitive_graph_store import (
+            write_truth_primitive_result,
+        )
+        from ilc_core.epistemic.truth_primitive_submission_runtime import (
+            validate_truth_primitive_submission,
+        )
+        from ilc_core.storage.truth_primitive_graph_lmdb_adapter import (
+            TruthPrimitiveGraphStore,
+        )
+
+        result = validate_truth_primitive_submission(payload)
+    except EpistemicSubmissionError as exc:
+        raise HTTPException(
+            status_code=400,
+            detail={"token": exc.token, "message": str(exc)},
+        ) from exc
+
+    store_path = _configured_truth_graph_store_path()
+    store = TruthPrimitiveGraphStore(store_path)
+    try:
+        receipt = write_truth_primitive_result(store, payload, result)
+    finally:
+        store.close()
+
+    edges_out = [
+        {"edge_type": edge.edge_type, "source": edge.source, "target": edge.target}
+        for edge in result.edges
+    ]
+    data = {
+        "subcommand": "submit",
+        "primitive": result.primitive,
+        "creates_node": result.creates_node,
+        "node_primitive_type": result.node_primitive_type,
+        "node_id": receipt["node_id"],
+        "edges": edges_out,
+        "graph_persistence": "persisted",
+        "gossip_delivery": "deferred — public submit transport does not perform gossip",
+        "nodes_written": receipt["nodes_written"],
+        "edges_written": receipt["edges_written"],
+        "store_env": PUBLIC_TRUTH_SUBMIT_GRAPH_STORE_ENV,
+        "version": PUBLIC_TRUTH_SUBMIT_VERSION,
+        "non_claims": [
+            "no_ecu_mint",
+            "no_ilc_mint",
+            "no_wallet_write",
+            "no_epoch_transition",
+            "no_settlement_commit",
+        ],
+    }
+    return JSONResponse({"ok": True, "data": data})
+
+
+@router.get("/api/v1/ecu/status")
+def ecu_status_public_api(agent_id: str, request: Request):
+    """
+    Access class: public_verifier.
+
+    Read-only public-RC ECU status shape for clean installed clients. Pending
+    attribution remains zero until a separate attribution worker/status binding
+    consumes accepted graph submissions.
+    """
+    state = _state(request)
+    try:
+        from ilc_core.protocol.public_wallet_runtime import PublicWalletRuntimeError
+
+        wallet_status = state.public_wallet_runtime.wallet_status(agent_id=agent_id)
+    except PublicWalletRuntimeError as exc:
+        raise HTTPException(status_code=400, detail=exc.token) from exc
+    data = wallet_status["data"]
+    balance = str(data.get("ecu_accrual", "0"))
+    return {
+        "agent_id": agent_id,
+        "pending_attribution_quote": "0",
+        "pending_attribution_quote_source": (
+            "public_status_transport_no_attribution_worker_consumed_events"
+        ),
+        "committed_ecu_balance": balance,
+        "balance_ecu": balance,
+        "balance_ecu_source": "public_wallet_runtime_ecu_accrual",
+        "pressure_model_boundary": (
+            "inverted_ecu_pressure_read_model_not_spendable_balance"
+        ),
+        "status": "reachable_no_pending_attribution_events",
+        "quote_epoch": 1,
+        "wallet_store_kind": data.get("wallet_store_kind", "lmdb_wallet_store"),
+        "claimability_state": data.get("claimability_state", "deferred"),
+        "version": PUBLIC_ECU_STATUS_VERSION,
+        "non_claim": "quote_zero_until_attribution_worker_consumes_events",
+        "non_claims": [
+            "no_ecu_mint",
+            "no_ilc_mint",
+            "no_wallet_write",
+            "no_settlement_commit",
+            "no_spendable_balance_claim",
+            "no_inverted_ecu_spend_to_keep_activation",
+        ],
+    }
 
 
 @router.post("/api/v1/claimability/verify")

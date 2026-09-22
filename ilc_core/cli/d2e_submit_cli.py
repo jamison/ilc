@@ -22,9 +22,13 @@ import json
 import os
 import re
 import stat
+import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError, URLError
+from urllib.parse import urlparse
+from urllib.request import Request
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
@@ -46,6 +50,8 @@ _MAX_SUBMIT_PAYLOAD_BYTES = 256 * 1024
 _GRAPH_SUBMIT_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _MAX_REFUTATION_CRITERION_BYTES = 500
 _MAX_SOURCE_REFS = 64
+_MAX_SUBMIT_ENDPOINT_RESPONSE_BYTES = 262_144
+_SUBMIT_ENDPOINT_READ_CHUNK_BYTES = 64 * 1024
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":
     raise ValueError("submit_cli_dependency_mismatch")
@@ -71,6 +77,22 @@ class SubmitCommandError(Exception):
         super().__init__(message)
         self.token = token
         self.message = message
+
+
+class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
+    def redirect_request(
+        self,
+        req: Request,
+        fp: object,
+        code: int,
+        msg: str,
+        headers: object,
+        newurl: str,
+    ) -> None:
+        raise SubmitCommandError(
+            "submit_endpoint_redirect_forbidden",
+            "submit endpoint redirects are forbidden",
+        )
 
 
 def _reject_non_finite_json_constant(value: str) -> None:
@@ -338,6 +360,145 @@ def _sign_submission_envelope(envelope: dict[str, Any], signing_key_uri: str | N
         raise SubmitCommandError("submit_signing_key_invalid", str(exc)) from exc
 
 
+def _submit_endpoint_from_args(args: argparse.Namespace) -> str:
+    endpoint = str(getattr(args, "endpoint", "") or "").strip()
+    if not endpoint:
+        endpoint = os.environ.get("ILC_TRUTH_SUBMIT_ENDPOINT", "").strip()
+    if not endpoint:
+        return ""
+    parsed = urlparse(endpoint)
+    if parsed.scheme != "https" or not parsed.netloc:
+        if parsed.scheme == "http":
+            raise SubmitCommandError(
+                "submit_endpoint_https_required",
+                "truth submit endpoint must use HTTPS",
+            )
+        raise SubmitCommandError(
+            "submit_endpoint_invalid",
+            "truth submit endpoint must be an absolute HTTPS URL",
+        )
+    if parsed.username or parsed.password:
+        raise SubmitCommandError(
+            "submit_endpoint_userinfo_forbidden",
+            "truth submit endpoint URL must not include userinfo",
+        )
+    return endpoint
+
+
+def _open_submit_request(request: Request, *, timeout: float) -> object:
+    opener = urllib.request.build_opener(_NoRedirectHandler())
+    return opener.open(request, timeout=timeout)
+
+
+def _load_submit_endpoint_response(
+    request: Request,
+    *,
+    timeout: float = 10.0,
+) -> dict[str, Any]:
+    try:
+        chunks: list[bytes] = []
+        total = 0
+        with _open_submit_request(request, timeout=timeout) as response:
+            while True:
+                chunk = response.read(_SUBMIT_ENDPOINT_READ_CHUNK_BYTES)
+                if not chunk:
+                    break
+                total += len(chunk)
+                if total > _MAX_SUBMIT_ENDPOINT_RESPONSE_BYTES:
+                    raise SubmitCommandError(
+                        "submit_endpoint_response_too_large",
+                        "truth submit endpoint response exceeds maximum size",
+                    )
+                chunks.append(chunk)
+    except SubmitCommandError:
+        raise
+    except (HTTPError, URLError, TimeoutError, OSError) as exc:
+        raise SubmitCommandError(
+            "submit_endpoint_unreachable",
+            "truth submit endpoint could not be reached",
+        ) from exc
+    raw = b"".join(chunks)
+    try:
+        payload = json.loads(raw.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise SubmitCommandError(
+            "submit_endpoint_response_invalid_json",
+            "truth submit endpoint response was not valid JSON",
+        ) from exc
+    if not isinstance(payload, dict):
+        raise SubmitCommandError(
+            "submit_endpoint_response_not_object",
+            "truth submit endpoint response must be a JSON object",
+        )
+    return payload
+
+
+def _normalize_submit_endpoint_response(
+    payload: dict[str, Any],
+    *,
+    fallback_edges: list[dict[str, Any]],
+) -> dict[str, Any]:
+    ok = payload.get("ok")
+    if not isinstance(ok, bool) or ok != True:
+        raise SubmitCommandError(
+            "submit_endpoint_rejected",
+            "truth submit endpoint did not return ok=true",
+        )
+    data = payload.get("data")
+    if not isinstance(data, dict):
+        raise SubmitCommandError(
+            "submit_endpoint_data_missing",
+            "truth submit endpoint response must include a data object",
+        )
+    node_id = data.get("node_id")
+    if not isinstance(node_id, str) or not node_id:
+        raise SubmitCommandError(
+            "submit_endpoint_node_id_missing",
+            "truth submit endpoint did not return a node_id",
+        )
+    try:
+        parse_nodeid_strict(node_id)
+    except ValueError as exc:
+        raise SubmitCommandError(
+            "submit_endpoint_node_id_invalid",
+            "truth submit endpoint returned a non-CIDv1 node_id",
+        ) from exc
+    edges = data.get("edges", fallback_edges)
+    if not isinstance(edges, list):
+        raise SubmitCommandError(
+            "submit_endpoint_edges_invalid",
+            "truth submit endpoint returned invalid edges",
+        )
+    normalized = dict(data)
+    normalized["node_id"] = node_id
+    normalized["edges"] = edges
+    return normalized
+
+
+def _post_submit_envelope(endpoint: str, envelope: dict[str, Any]) -> dict[str, Any]:
+    body = json.dumps(
+        envelope,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    if len(body) > _MAX_SUBMIT_PAYLOAD_BYTES:
+        raise SubmitCommandError(
+            "submit_payload_too_large",
+            "payload exceeds maximum submit payload size",
+        )
+    request = Request(
+        endpoint,
+        data=body,
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+        },
+        method="POST",
+    )
+    return _load_submit_endpoint_response(request, timeout=10.0)
+
+
 def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     """Execute the submit command.
 
@@ -391,6 +552,34 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         {"edge_type": e.edge_type, "source": e.source, "target": e.target}
         for e in result.edges
     ]
+
+    submit_endpoint = _submit_endpoint_from_args(args)
+    if submit_endpoint:
+        endpoint_payload = _post_submit_envelope(submit_endpoint, envelope)
+        endpoint_data = _normalize_submit_endpoint_response(
+            endpoint_payload,
+            fallback_edges=edges_out,
+        )
+        response = {
+            "subcommand": "submit",
+            "primitive": result.primitive,
+            "creates_node": result.creates_node,
+            "node_primitive_type": result.node_primitive_type,
+            "node_id": endpoint_data["node_id"],
+            "edges": endpoint_data["edges"],
+            "graph_persistence": endpoint_data.get("graph_persistence", "persisted"),
+            "gossip_delivery": endpoint_data.get("gossip_delivery", "deferred"),
+            "public_submit_endpoint": submit_endpoint,
+            "version": D2E_SUBMIT_CLI_VERSION,
+        }
+        if envelope.get("sig") not in {None, "", "UNSIGNED"}:
+            response["signature"] = {
+                "sig": str(envelope.get("sig", "")),
+                "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
+                "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
+                "sig_scheme": str(envelope.get("sig_scheme", "")),
+            }
+        return response
 
     # CDL-075: persist to LMDB graph store when ILC_TRUTH_GRAPH_STORE_PATH is set.
     node_id: str | None = None
