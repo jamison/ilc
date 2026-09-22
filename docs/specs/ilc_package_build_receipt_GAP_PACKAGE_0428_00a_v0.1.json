@@ -1,0 +1,77 @@
+{
+  "artifacts": {
+    "python_sdist": {
+      "path": "dist/ilc_core-0.4.28.tar.gz",
+      "sha256": "4a94d650d90119ff699dfda3ea0c96e589702a6ff6642b8e05f9e4005e451ac5",
+      "size_bytes": 1246006
+    },
+    "python_wheel": {
+      "path": "dist/ilc_core-0.4.28-py3-none-any.whl",
+      "sha256": "c940dcb64b27e34e77e28b697a326655a9a67a3079b1a14751de1d5eadf96369",
+      "size_bytes": 1522421
+    }
+  },
+  "changes_from_0427": [
+    "pyproject.toml: version 0.4.27 -> 0.4.28",
+    "ilc_core/__init__.py: __version__ 0.4.27 -> 0.4.28",
+    "ilc_core/consensus/attribution_batch_bridge.py: CDL-114 source_refs attribution bridge + audit hardening (Phase 1602, commits 3fd8d13a + 5798680c6)",
+    "ilc_core/economics/backward_attribution_traversal.py: CDL-114 sybil diversity guard constant and audit hardening (Phase 1602)",
+    "tests/test_phase_1602_source_refs_bridge.py: Phase 1602 test suite",
+    "ilc_core/cli/d2e_agent_cli.py: ilc agent generate command and FIX1 hardening (GAP-ECU-CLI-SURFACE-00)",
+    "ilc_core/cli/d2e_submit_cli.py: --source-refs flag and FIX1 hardening (GAP-ECU-CLI-SURFACE-00)",
+    "ilc_core/cli/ecu_status_cli.py: ilc ecu status command and HTTPS/read-boundary hardening (GAP-ECU-CLI-SURFACE-00)",
+    "ilc_core/cli/main.py: ecu subparser registration as stateless command (GAP-ECU-CLI-SURFACE-00)",
+    "tests/test_gap_ecu_cli_surface_00.py: ECU CLI surface and audit-hardening coverage"
+  ],
+  "generated_at_utc": "2026-09-22T12:45:28Z",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_tools_install_sh_retarget",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_github_release_action",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_production_lmdb_mutation",
+    "no_epoch_advance",
+    "no_guard_flip",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_full_dependency_install_claim"
+  ],
+  "output_token": "package_0428_local_build_complete_GAP_PACKAGE_0428_00a",
+  "phase": "GAP-PACKAGE-0428-00a",
+  "phase_completion_commit": "recorded by this completion commit",
+  "predecessor_release_id": "ilc-core-0.4.27",
+  "release_id": "ilc-core-0.4.28",
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "signing_preimages": {
+    "sdist_artifact_id": "ilc-artifact:ilc-core-python-sdist-0428@phase-1628",
+    "sdist_preimage": "560b462edf8eaaedcdba08cfc2a4eca45e60d3adfd834041dd128d5a8c68a81e",
+    "wheel_artifact_id": "ilc-artifact:ilc-core-python-wheel-0428@phase-1628",
+    "wheel_preimage": "a0f557ed7383cc54d7a913e2a4b46ec9328466b3a57a122043f4125e1cd52f43"
+  },
+  "source_private_commit_before_version_bump": "a9ec4dff919bcdeffb8a638ad7acb33c51207b7a",
+  "verification": {
+    "agents_package_gate_a": "PASSED: 1 passed, 12 deselected in 0.69s",
+    "cbor2_dry_run_proof": "cbor2-5.9.0 resolved; no cbor2 6.x; no cbor2 source build",
+    "dependency_risk_observation": "cryptography-50.0.1.tar.gz metadata preparation observed during dry-run; 00b public fetchback must hard-stop on real install failure",
+    "ecu_cli_surface_in_wheel": "ecu_status_cli.py present; handle_agent_generate wired with CDL-017 namespace metadata and secret/public consistency check; source_refs wired with content-object guard; run_ecu_command dispatch present",
+    "focused_tests": "191 passed, 1 warning in 43.64s",
+    "phase_1602_bridge_in_wheel": "source_refs_attribution_bridge token present; cdl_114_sybil_diversity token present",
+    "prompt_validator_00a": "VALID",
+    "prompt_validator_00b": "VALID",
+    "twine_check": "PASSED",
+    "wheel_boundary_smoke_no_deps": {
+      "ilc_core_version": "0.4.28",
+      "status": "passed",
+      "venv_boundary_check": "passed"
+    },
+    "wheel_content_inspection": "PASSED: Phase 1602 bridge modules, ECU CLI modules, and 0.4.27 carry-forward modules present"
+  }
+}
