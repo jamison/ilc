@@ -27,6 +27,7 @@ from typing import Any
 
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
+from ilc_core.encoding.cidv1 import parse_nodeid_strict
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     CDL_074_DEPENDENCY as RUNTIME_CDL_074_DEPENDENCY,
     AGENT_ISSUABLE_PRIMITIVES,
@@ -43,6 +44,7 @@ CDL_076_DEPENDENCY = "cdl_076_truth_primitive_announcement_gossip.v0.1"
 _MAX_SUBMIT_PAYLOAD_BYTES = 256 * 1024
 _GRAPH_SUBMIT_AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _MAX_REFUTATION_CRITERION_BYTES = 500
+_MAX_SOURCE_REFS = 64
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":
     raise ValueError("submit_cli_dependency_mismatch")
@@ -258,6 +260,47 @@ def _load_payload(args: argparse.Namespace) -> dict[str, Any]:
     return payload
 
 
+def _apply_source_refs(payload: dict[str, Any], source_refs: list[str] | None) -> dict[str, Any]:
+    """Inject strict CIDv1 source refs into payload.content.source_refs."""
+
+    if not source_refs:
+        return payload
+    if len(source_refs) > _MAX_SOURCE_REFS:
+        raise SubmitCommandError(
+            "source_refs_count_exceeded",
+            f"--source-refs accepts at most {_MAX_SOURCE_REFS} values",
+        )
+
+    content = payload.get("content")
+    if not isinstance(content, dict):
+        raise SubmitCommandError(
+            "source_refs_content_object_required",
+            "payload.content must be an object when --source-refs is supplied",
+        )
+
+    validated: list[str] = []
+    for raw_ref in source_refs:
+        if not isinstance(raw_ref, str) or raw_ref != raw_ref.strip():
+            raise SubmitCommandError(
+                "source_refs_cid_invalid",
+                "--source-refs values must be strict CIDv1 NodeIDs",
+            )
+        try:
+            parse_nodeid_strict(raw_ref)
+        except ValueError as exc:
+            raise SubmitCommandError(
+                "source_refs_cid_invalid",
+                "--source-refs values must be strict CIDv1 NodeIDs",
+            ) from exc
+        validated.append(raw_ref)
+
+    patched_payload = dict(payload)
+    patched_content = dict(content)
+    patched_content["source_refs"] = validated
+    patched_payload["content"] = patched_content
+    return patched_payload
+
+
 def _sign_submission_envelope(envelope: dict[str, Any], signing_key_uri: str | None) -> dict[str, Any]:
     """Attach optional Ed25519 hotkey signature metadata to a submission envelope."""
 
@@ -305,7 +348,10 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
             "--epoch must be a non-negative integer",
         )
 
-    payload = _load_payload(args)
+    payload = _apply_source_refs(
+        _load_payload(args),
+        list(getattr(args, "source_refs", None) or []),
+    )
 
     envelope: dict[str, Any] = {
         "v": 1,

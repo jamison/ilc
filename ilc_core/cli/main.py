@@ -59,6 +59,7 @@ OPERATIONAL_COMMANDS = (
     "query",
     "verify",
     "balance",
+    "ecu",
     "identity",
     "install",
     "update",
@@ -2386,6 +2387,21 @@ def _build_parser() -> JsonArgumentParser:
                 default=None,
                 help="Optional output path for the PKCS8 PEM hotkey",
             )
+
+            p_generate = agent_subparsers.add_parser(
+                "generate",
+                help="Generate a CDL-017 public-RC BLS AgentID",
+            )
+            p_generate.add_argument(
+                "--output",
+                default=None,
+                help="Optional output path for the BLS signing key hex file",
+            )
+            p_generate.add_argument(
+                "--keygen-binary",
+                default=None,
+                help=argparse.SUPPRESS,
+            )
             continue
 
         if command == "agent-bootstrap":
@@ -3666,6 +3682,34 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "ecu":
+            ecu_parser = subparsers.add_parser(
+                "ecu",
+                help="Read ECU quote/status surfaces",
+            )
+            ecu_subparsers = ecu_parser.add_subparsers(dest="ecu_subcommand", required=True)
+            p_ecu_status = ecu_subparsers.add_parser(
+                "status",
+                help="Query a public-RC ECU quote/status endpoint",
+            )
+            p_ecu_status.add_argument(
+                "--agent-id",
+                required=True,
+                help="96-char lowercase hex AgentID to query",
+            )
+            p_ecu_status.add_argument(
+                "--endpoint",
+                default="",
+                help="ECU status endpoint URL. Defaults to ILC_ECU_STATUS_ENDPOINT.",
+            )
+            p_ecu_status.add_argument(
+                "--timeout",
+                type=float,
+                default=10.0,
+                help="HTTP timeout in seconds (1 to 30).",
+            )
+            continue
+
         if command == "submit":
             submit_parser = subparsers.add_parser(
                 "submit",
@@ -3709,6 +3753,13 @@ def _build_parser() -> JsonArgumentParser:
                 dest="signing_key",
                 default=None,
                 help="Optional file:// Ed25519 hotkey URI for signing the truth primitive payload",
+            )
+            submit_parser.add_argument(
+                "--source-refs",
+                dest="source_refs",
+                action="append",
+                default=[],
+                help="Strict CIDv1 source reference to add to payload.content.source_refs; repeatable",
             )
             continue
 
@@ -4071,6 +4122,14 @@ def _run_top_level_command(
         from ilc_core.cli.d2e_agent_cli import run_agent_command
 
         data = run_agent_command(args)
+        return _success_payload(command, data)
+    if command == "ecu":
+        from ilc_core.cli.ecu_status_cli import EcuStatusCliError, run_ecu_command
+
+        try:
+            data = run_ecu_command(args)
+        except EcuStatusCliError as exc:
+            raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "agent-bootstrap":
         subcommand = getattr(args, "agent_bootstrap_subcommand", None)

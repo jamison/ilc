@@ -1,0 +1,66 @@
+{
+  "artifact": "ilc_fix_gap_ecu_cli_surface_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-ECU-CLI-SURFACE-00 public ECU CLI surface artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_cli_surface_00_g10_agent_generate_submit_source_refs_ecu_status.md",
+      "target": "phase:GAP-ECU-CLI-SURFACE-00"
+    },
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "RUNTIME_SOURCE",
+      "repo_path": "ilc_core/cli/d2e_agent_cli.py",
+      "target": "cli:ilc_agent_generate"
+    },
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "RUNTIME_SOURCE",
+      "repo_path": "ilc_core/cli/d2e_submit_cli.py",
+      "target": "cli:ilc_submit_source_refs"
+    },
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "RUNTIME_SOURCE",
+      "repo_path": "ilc_core/cli/ecu_status_cli.py",
+      "target": "cli:ilc_ecu_status"
+    },
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "RUNTIME_SOURCE",
+      "repo_path": "ilc_core/cli/main.py",
+      "target": "cli:top_level_parser_dispatch"
+    },
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "TEST_FILE",
+      "repo_path": "tests/test_gap_ecu_cli_surface_00.py",
+      "target": "phase:GAP-ECU-CLI-SURFACE-00"
+    },
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_ecu_cli_surface_00_walkthrough.md",
+      "target": "phase:GAP-ECU-CLI-SURFACE-00"
+    },
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "STATUS_LOG",
+      "repo_path": "docs/phases/STATUS.md",
+      "target": "phase:GAP-ECU-CLI-SURFACE-00"
+    },
+    {
+      "annotation_method": "gap_ecu_cli_surface_00_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_gap_ecu_cli_surface_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1",
+  "status": "review_queue_support_only"
+}
