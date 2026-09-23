@@ -7,8 +7,10 @@ import hashlib
 import json
 import re
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
+from ilc_core.consensus.attribution_batch_bridge import read_rust_balance_store_ecu
 from ilc_core.economic_constants import C_MAX_ILC, ILC_QUANTUM
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.exact_numeric import (
@@ -42,9 +44,15 @@ class EcuIlcLifecycleRuntime:
         *,
         wallet_store: LmdbWalletStore,
         ecu_runtime: EcuActiveLayerRuntime,
+        consensus_lmdb: str | Path | None = None,
+        rust_balance_binary: str | Path | None = None,
     ) -> None:
         self.wallet_store = wallet_store
         self.ecu_runtime = ecu_runtime
+        self.consensus_lmdb = Path(consensus_lmdb) if consensus_lmdb is not None else None
+        self.rust_balance_binary = (
+            Path(rust_balance_binary) if rust_balance_binary is not None else None
+        )
 
     def lifecycle_status(self, *, agent_id: str) -> dict[str, Any]:
         snapshot = self.lifecycle_snapshot(agent_id=agent_id)
@@ -60,18 +68,34 @@ class EcuIlcLifecycleRuntime:
         latest_balance_receipt = wallet_row.get("latest_balance_receipt")
         if not isinstance(latest_balance_receipt, dict):
             latest_balance_receipt = None
+        pending_balance_ecu = self.ecu_runtime.get_accrued_ecu(agent_id)
+        balance_ecu = pending_balance_ecu
+        balance_ecu_source = "python_in_memory_ecu_python_rust_balance_bridge_missing_phase_1597"
+        snapshot_extra: dict[str, Any] = {}
+        if self.consensus_lmdb is not None:
+            balance_ecu = decimal_to_canonical_string(
+                read_rust_balance_store_ecu(
+                    self.consensus_lmdb,
+                    agent_id,
+                    rust_binary=self.rust_balance_binary,
+                )
+            )
+            balance_ecu_source = "rust_balance_store_committed_aggregate"
+            snapshot_extra["balance_ecu_pending"] = pending_balance_ecu
         return {
             "wallet_row": wallet_row,
             "wallet_history": wallet_history,
             "data": {
                 "agent_id": agent_id,
-                "balance_ecu": self.ecu_runtime.get_accrued_ecu(agent_id),
+                "balance_ecu": balance_ecu,
+                "balance_ecu_source": balance_ecu_source,
                 "balance_ilc": _wallet_decimal_string(wallet_row.get("balance_ilc", "0")),
                 "last_settled_epoch_id": wallet_row.get("last_settled_epoch_id"),
                 "reward_status": wallet_row.get("reward_status", "not_rewarded"),
                 "history_digest": wallet_history.get("history_digest"),
                 "latest_balance_receipt": latest_balance_receipt,
                 "claimability_state": _claimability_state(wallet_row),
+                **snapshot_extra,
             },
         }
 

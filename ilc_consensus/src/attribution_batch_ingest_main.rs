@@ -11,15 +11,16 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use ilc_consensus::balance_store::BalanceStore;
-use ilc_consensus::types::{AgentID, AttributionBatch, EpochSeq};
-use lmdb_rkv::Environment;
+use ilc_consensus::types::{AgentID, AttributionBatch, ECUBalance, EpochSeq};
+use lmdb_rkv::{Environment, EnvironmentFlags, Transaction};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
 #[derive(Debug)]
 struct CliArgs {
     lmdb_path: Option<PathBuf>,
-    input_file: PathBuf,
+    input_file: Option<PathBuf>,
+    query_balance_agent_id_hex: Option<String>,
     dry_run: bool,
 }
 
@@ -60,6 +61,22 @@ struct BalanceReport {
     version: u64,
 }
 
+#[derive(Debug, Serialize)]
+struct QueryBalanceReport {
+    marker: &'static str,
+    agent_id_hex: String,
+    amount_micro_ecu: u64,
+    epoch: u64,
+    version: u64,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(untagged)]
+enum CommandReport {
+    Ingest(IngestReport),
+    QueryBalance(QueryBalanceReport),
+}
+
 fn main() {
     match run() {
         Ok(report) => {
@@ -75,10 +92,16 @@ fn main() {
     }
 }
 
-fn run() -> Result<IngestReport, String> {
+fn run() -> Result<CommandReport, String> {
     let args = parse_args(&std::env::args().collect::<Vec<_>>())?;
+    if let Some(agent_id_hex) = args.query_balance_agent_id_hex {
+        return query_balance(args.lmdb_path, &agent_id_hex).map(CommandReport::QueryBalance);
+    }
+    let Some(input_file) = args.input_file else {
+        return Err("--input-file is required".to_string());
+    };
     let input_bytes =
-        fs::read(&args.input_file).map_err(|err| format!("input_file_read_failed: {err}"))?;
+        fs::read(&input_file).map_err(|err| format!("input_file_read_failed: {err}"))?;
     let input_sha256 = hex_encode(&Sha256::digest(&input_bytes));
     let json_batch: JsonAttributionBatch =
         serde_json::from_slice(&input_bytes).map_err(|err| format!("input_json_invalid: {err}"))?;
@@ -86,7 +109,7 @@ fn run() -> Result<IngestReport, String> {
     let total_micro_ecu = checked_total(&batch)?;
 
     if args.dry_run {
-        return Ok(IngestReport {
+        return Ok(CommandReport::Ingest(IngestReport {
             marker: "attribution_batch_ingest_ok",
             dry_run: true,
             epoch: batch.epoch.0,
@@ -98,7 +121,7 @@ fn run() -> Result<IngestReport, String> {
                 .map(|root| hex_encode(&root)),
             agent_reputation_root: batch.agent_reputation_root.map(|root| hex_encode(&root)),
             balances: vec![],
-        });
+        }));
     }
 
     let Some(lmdb_path) = args.lmdb_path else {
@@ -141,7 +164,7 @@ fn run() -> Result<IngestReport, String> {
             version: balance.version,
         });
     }
-    Ok(IngestReport {
+    Ok(CommandReport::Ingest(IngestReport {
         marker: "attribution_batch_ingest_ok",
         dry_run: false,
         epoch: balances.first().map(|item| item.epoch).unwrap_or(0),
@@ -151,13 +174,14 @@ fn run() -> Result<IngestReport, String> {
         backward_attribution_batch_root,
         agent_reputation_root,
         balances,
-    })
+    }))
 }
 
 fn parse_args(args: &[String]) -> Result<CliArgs, String> {
     let mut idx = 1;
     let mut lmdb_path: Option<PathBuf> = None;
     let mut input_file: Option<PathBuf> = None;
+    let mut query_balance_agent_id_hex: Option<String> = None;
     let mut dry_run = false;
     while idx < args.len() {
         match args[idx].as_str() {
@@ -178,6 +202,13 @@ fn parse_args(args: &[String]) -> Result<CliArgs, String> {
             "--dry-run" => {
                 dry_run = true;
             }
+            "--query-balance" => {
+                idx += 1;
+                let Some(value) = args.get(idx) else {
+                    return Err("--query-balance requires a value".to_string());
+                };
+                query_balance_agent_id_hex = Some(value.clone());
+            }
             "--help" | "-h" => {
                 return Err(usage());
             }
@@ -187,18 +218,65 @@ fn parse_args(args: &[String]) -> Result<CliArgs, String> {
         }
         idx += 1;
     }
-    let Some(input_file) = input_file else {
-        return Err("--input-file is required".to_string());
-    };
+    if query_balance_agent_id_hex.is_some() && input_file.is_some() {
+        return Err("--query-balance cannot be combined with --input-file".to_string());
+    }
+    if query_balance_agent_id_hex.is_some() && dry_run {
+        return Err("--query-balance cannot be combined with --dry-run".to_string());
+    }
     Ok(CliArgs {
         lmdb_path,
         input_file,
+        query_balance_agent_id_hex,
         dry_run,
     })
 }
 
 fn usage() -> String {
-    "Usage: attribution_batch_ingest --input-file <json> [--lmdb <path>] [--dry-run]".to_string()
+    concat!(
+        "Usage: attribution_batch_ingest --input-file <json> [--lmdb <path>] [--dry-run]\n",
+        "       attribution_batch_ingest --lmdb <path> --query-balance <agent_id_hex>"
+    )
+    .to_string()
+}
+
+fn query_balance(
+    lmdb_path: Option<PathBuf>,
+    agent_id_hex: &str,
+) -> Result<QueryBalanceReport, String> {
+    let Some(lmdb_path) = lmdb_path else {
+        return Err("--lmdb is required for --query-balance".to_string());
+    };
+    let agent_id = parse_agent_id_hex(agent_id_hex)?;
+    let env = Environment::new()
+        .set_max_dbs(1)
+        .set_flags(EnvironmentFlags::READ_ONLY | EnvironmentFlags::NO_LOCK)
+        .open(&lmdb_path)
+        .map_err(|err| format!("lmdb_open_read_only_failed: {err}"))?;
+    let db = env
+        .open_db(Some("ecu_balances"))
+        .map_err(|err| format!("balance_store_open_db_failed: {err}"))?;
+    let txn = env
+        .begin_ro_txn()
+        .map_err(|err| format!("balance_store_ro_txn_failed: {err}"))?;
+    let balance = match txn.get(db, &agent_id.0) {
+        Ok(bytes) => bincode::deserialize::<ECUBalance>(bytes)
+            .map_err(|err| format!("balance_store_deserialize_failed: {err}"))?,
+        Err(lmdb_rkv::Error::NotFound) => ECUBalance {
+            agent: agent_id,
+            amount_micro_ecu: 0,
+            epoch: EpochSeq(0),
+            version: 0,
+        },
+        Err(err) => return Err(format!("balance_store_get_balance_failed: {err}")),
+    };
+    Ok(QueryBalanceReport {
+        marker: "attribution_balance_query_ok",
+        agent_id_hex: hex_encode(&agent_id.0),
+        amount_micro_ecu: balance.amount_micro_ecu,
+        epoch: balance.epoch.0,
+        version: balance.version,
+    })
 }
 
 fn to_attribution_batch(json_batch: JsonAttributionBatch) -> Result<AttributionBatch, String> {

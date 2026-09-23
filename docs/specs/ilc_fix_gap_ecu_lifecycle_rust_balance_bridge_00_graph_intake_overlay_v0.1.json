@@ -1,0 +1,123 @@
+{
+  "graph_delta": "phase_gap_ecu_lifecycle_rust_balance_bridge_00",
+  "phase": "GAP-ECU-LIFECYCLE-RUST-BALANCE-BRIDGE-00",
+  "schema_version": "ilc_fix38_manual_edge_annotation_overlay.v0.1",
+  "candidate_nodes": [
+    {
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_lifecycle_rust_balance_bridge_00_g10_lifecycle_rust_readback.md",
+      "node_kind": "phase_prompt",
+      "graph_delta": "support_only",
+      "edges": [
+        {
+          "type": "SOURCE_TREE_MEMBER",
+          "target": "repo:ilc-core-private"
+        }
+      ]
+    },
+    {
+      "path": "ilc_consensus/src/attribution_batch_ingest_main.rs",
+      "node_kind": "runtime_module",
+      "graph_delta": "load_bearing_artifact_modified",
+      "edges": [
+        {
+          "type": "IMPLEMENTS",
+          "target": "GAP-ECU-LIFECYCLE-RUST-BALANCE-BRIDGE-00"
+        },
+        {
+          "type": "SOURCE_TREE_MEMBER",
+          "target": "repo:ilc-core-private"
+        }
+      ]
+    },
+    {
+      "path": "ilc_core/consensus/attribution_batch_bridge.py",
+      "node_kind": "runtime_module",
+      "graph_delta": "load_bearing_artifact_modified",
+      "edges": [
+        {
+          "type": "CONSUMES",
+          "target": "ilc_consensus/src/attribution_batch_ingest_main.rs"
+        },
+        {
+          "type": "IMPLEMENTS",
+          "target": "GAP-ECU-LIFECYCLE-RUST-BALANCE-BRIDGE-00"
+        },
+        {
+          "type": "SOURCE_TREE_MEMBER",
+          "target": "repo:ilc-core-private"
+        }
+      ]
+    },
+    {
+      "path": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py",
+      "node_kind": "runtime_module",
+      "graph_delta": "load_bearing_artifact_modified",
+      "edges": [
+        {
+          "type": "CONSUMES",
+          "target": "ilc_core/consensus/attribution_batch_bridge.py"
+        },
+        {
+          "type": "IMPLEMENTS",
+          "target": "GAP-ECU-LIFECYCLE-RUST-BALANCE-BRIDGE-00"
+        },
+        {
+          "type": "SOURCE_TREE_MEMBER",
+          "target": "repo:ilc-core-private"
+        }
+      ]
+    },
+    {
+      "path": "tests/test_gap_ecu_lifecycle_rust_balance_bridge_00.py",
+      "node_kind": "test_file",
+      "graph_delta": "support_only",
+      "edges": [
+        {
+          "type": "TESTS",
+          "target": "ilc_core/consensus/attribution_batch_bridge.py"
+        },
+        {
+          "type": "TESTS",
+          "target": "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py"
+        },
+        {
+          "type": "TESTS",
+          "target": "ilc_consensus/src/attribution_batch_ingest_main.rs"
+        }
+      ]
+    },
+    {
+      "path": "docs/phases/phase_gap_ecu_lifecycle_rust_balance_bridge_00_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "graph_delta": "support_only",
+      "edges": [
+        {
+          "type": "EVIDENCES",
+          "target": "GAP-ECU-LIFECYCLE-RUST-BALANCE-BRIDGE-00"
+        }
+      ]
+    },
+    {
+      "path": "docs/specs/ilc_ecu_confidence_matrix_and_validation_lane_v0.1.md",
+      "node_kind": "planning_doc",
+      "graph_delta": "support_only",
+      "edges": [
+        {
+          "type": "REFERENCES",
+          "target": "GAP-ECU-LIFECYCLE-RUST-BALANCE-BRIDGE-00"
+        }
+      ]
+    },
+    {
+      "path": "docs/specs/ilc_fix_gap_ecu_lifecycle_rust_balance_bridge_00_graph_intake_overlay_v0.1.json",
+      "node_kind": "graph_intake_overlay",
+      "graph_delta": "support_only",
+      "edges": [
+        {
+          "type": "EVIDENCES",
+          "target": "GAP-ECU-LIFECYCLE-RUST-BALANCE-BRIDGE-00"
+        }
+      ]
+    }
+  ]
+}

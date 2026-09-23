@@ -53,6 +53,9 @@ from ilc_core.economics.werner_attribution_bridge import (
 
 ATTRIBUTION_BATCH_BRIDGE_VERSION = "attribution_batch_bridge_1568_fix2b3.v0.1"
 MICRO_ECU_PER_ECU = Decimal("1000000")
+DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY = Path(
+    "ilc_consensus/target/release/attribution_batch_ingest"
+)
 MAX_CLAIMS_PER_BATCH = 10_000
 MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH = 1_000
 MAX_WERNER_CONTEXTS_PER_BATCH = BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES
@@ -1125,3 +1128,85 @@ def apply_attribution_batch_with_rust(
                 ),
             ) from exc
     return report
+
+
+def read_rust_balance_store_ecu(
+    consensus_lmdb: str | Path,
+    agent_id_hex: str,
+    *,
+    rust_binary: str | Path | None = None,
+    timeout_seconds: int = 30,
+) -> Decimal:
+    """Read committed ECU balance from Rust BalanceStore via the Rust query mode.
+
+    Missing or never-initialized LMDB paths are treated as an unconfigured source
+    and return ``Decimal("0")``. Once an LMDB path is configured, reader,
+    subprocess, JSON, ABI, and numeric-format failures fail closed with stable
+    ``lifecycle_balance_readback_*`` tokens.
+    """
+
+    try:
+        agent_id = _require_agent_id(agent_id_hex)
+    except AttributionBatchBridgeError as exc:
+        raise ValueError("lifecycle_balance_readback_agent_id_invalid") from exc
+
+    lmdb_path = Path(consensus_lmdb)
+    if not lmdb_path.exists():
+        return Decimal("0")
+    if not lmdb_path.is_dir():
+        raise ValueError("lifecycle_balance_readback_lmdb_path_invalid")
+    if not (lmdb_path / "data.mdb").exists():
+        return Decimal("0")
+
+    binary_path = (
+        Path(rust_binary)
+        if rust_binary is not None
+        else DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY
+    )
+    if not binary_path.exists() or not binary_path.is_file():
+        raise ValueError("lifecycle_balance_readback_binary_missing")
+    if not os.access(binary_path, os.X_OK):
+        raise ValueError("lifecycle_balance_readback_binary_not_executable")
+
+    command = [
+        str(binary_path),
+        "--lmdb",
+        str(lmdb_path),
+        "--query-balance",
+        agent_id,
+    ]
+    try:
+        result = subprocess.run(
+            command,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ValueError("lifecycle_balance_readback_timeout") from exc
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout).strip()
+        raise ValueError(f"lifecycle_balance_readback_failed: {detail}")
+    try:
+        payload = _require_dict("rust_balance_query_report", json.loads(result.stdout))
+    except (json.JSONDecodeError, AttributionBatchBridgeError) as exc:
+        raise ValueError("lifecycle_balance_readback_invalid_json") from exc
+    if payload.get("marker") != "attribution_balance_query_ok":
+        raise ValueError("lifecycle_balance_readback_marker_invalid")
+    if payload.get("agent_id_hex") != agent_id:
+        raise ValueError("lifecycle_balance_readback_agent_id_mismatch")
+    amount_micro_ecu = payload.get("amount_micro_ecu")
+    if (
+        isinstance(amount_micro_ecu, bool)
+        or not isinstance(amount_micro_ecu, int)
+        or amount_micro_ecu < 0
+        or amount_micro_ecu > MAX_U64
+    ):
+        raise ValueError("lifecycle_balance_readback_amount_micro_ecu_invalid")
+    balance_ecu = Decimal(amount_micro_ecu) / MICRO_ECU_PER_ECU
+    if not balance_ecu.is_finite():
+        raise ValueError("lifecycle_balance_readback_non_finite")
+    if balance_ecu < 0:
+        raise ValueError("lifecycle_balance_readback_negative")
+    return balance_ecu
