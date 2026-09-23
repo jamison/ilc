@@ -1,0 +1,66 @@
+{
+  "artifacts": [
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-0429@phase-1628",
+      "artifact_type": "python_wheel",
+      "canonical_hash": "sha256:8789d162228b259174da0b8966ac31a27d164cb22e385d5dd63e85d7b413ff61",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/31/f6/611f5b7a73ec9f234a4ceadb7b3e1f1c9b001fad24ccdb211bea6cf16a7f/ilc_core-0.4.29-py3-none-any.whl",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1628,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "signed",
+      "size_bytes": 1532200
+    },
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-0429@phase-1628",
+      "artifact_type": "python_sdist",
+      "canonical_hash": "sha256:37be67a954081e116eec647329a6922cf1f33d5e9ae704228ff5e7a2730956ca",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/89/36/25e5fb79367abaf1b262325849c2d0dcb08eee56c9aae97dffbfe89a5883/ilc_core-0.4.29.tar.gz",
+      "lineage_reference": "artifact:ilc-artifact:source-release-tarball@phase-1334@sha256:60a2f404576e5abbc45bc29ab4ae106368a764aa3d37f2ca458d35363cc45a47",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1628,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "signed",
+      "size_bytes": 1253524
+    },
+    {
+      "arch": "amd64",
+      "artifact_id": "ilc-artifact:ilc-consensus-linux-x86-64-tarball-0429@phase-1628",
+      "artifact_type": "cli_binary",
+      "canonical_hash": "sha256:ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9",
+      "channel": "rc",
+      "download_url": "https://github.com/jamison/ilc/releases/download/v0.4.29/ilc-consensus-linux-x86_64-v0.4.29.tar.gz",
+      "lineage_reference": "genesis:v0.4.29",
+      "platform": "linux",
+      "produced_phase": 1628,
+      "ratification_token": "cdl_086_ratified_phase_1220",
+      "signing_status": "unsigned",
+      "size_bytes": 4560519
+    }
+  ],
+  "channel": "rc",
+  "manifest_produced_phase": 1628,
+  "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
+  "non_claims": [
+    "no_validator_venv_sync",
+    "no_relay_mutation",
+    "no_validator_admission_activation",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_phase_1603_public_user_smoke",
+    "cli_binary_not_ed25519_signed_sha256_size_verified_instead",
+    "no_endpoint_deployment"
+  ],
+  "release_envelope_ref": "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0429_release_envelopes_GAP_PACKAGE_0429_00b_v0.1.json",
+  "release_id": "ilc-core-0.4.29",
+  "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
+}
