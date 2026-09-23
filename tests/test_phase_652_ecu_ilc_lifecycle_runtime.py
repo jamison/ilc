@@ -319,6 +319,19 @@ def test_claimability_remains_deferred_and_non_finite_inputs_fail_closed() -> No
         assert getattr(exc_info.value, "token", None) == "lifecycle_reward_delta_invalid"
 
 
+def test_direct_lifecycle_commit_rejects_zero_reward_delta() -> None:
+    app = create_app()
+    with TestClient(app):
+        with pytest.raises(Exception) as exc_info:
+            app.state.public_lifecycle_runtime.commit_settled_epoch(
+                agent_id=AGENT_ID,
+                epoch_id="epoch-001",
+                reward_delta_ilc="0",
+            )
+
+    assert getattr(exc_info.value, "token", None) == "lifecycle_reward_delta_must_be_positive"
+
+
 def test_no_wallet_widening_or_governance_lock_claim_is_made() -> None:
     text = _read(DOC_PATH)
     assert "It is not a claim that the" in text

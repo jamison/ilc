@@ -177,7 +177,7 @@ def test_ecu_accrual_evidence_build_roundtrip(tmp_path) -> None:
     loaded = read_ecu_accrual_evidence(path)
 
     assert loaded == evidence
-    assert loaded.agent_ecu_weights == {AGENT_A: "2.5", AGENT_B: "0"}
+    assert loaded.agent_ecu_weights == {AGENT_A: "2.5"}
 
 
 def test_ecu_accrual_evidence_sha256_mismatch_rejected(tmp_path) -> None:
@@ -364,7 +364,7 @@ def test_ecu_accrual_evidence_rejects_float_weight() -> None:
         )
 
 
-def test_zero_accrual_agents_remain_valid_evidence() -> None:
+def test_zero_accrual_agents_are_filtered_from_evidence() -> None:
     runtime = EcuActiveLayerRuntime()
     evidence = build_ecu_accrual_evidence(
         runtime,
@@ -373,7 +373,7 @@ def test_zero_accrual_agents_remain_valid_evidence() -> None:
         agent_ids=[AGENT_A],
     )
 
-    assert evidence.agent_ecu_weights == {AGENT_A: "0"}
+    assert evidence.agent_ecu_weights == {}
     distribution_input = build_settlement_input_from_ecu_accrual(
         evidence,
         distribution_issuance_epoch=1,

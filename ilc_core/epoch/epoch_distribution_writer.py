@@ -135,6 +135,8 @@ class EpochDistributionInput:
     eligible_agents: Mapping[str, Decimal | int | str]
     prior_carry_forward_records: tuple[PoolCarryForwardRecord, ...] | list[PoolCarryForwardRecord]
     cumulative_issued_before_epoch_ilc: Decimal | int | str = ZERO
+    # None means reuse performer weights for the auditor pool. An explicit empty
+    # mapping means no auditor recipients and carries the auditor pool forward.
     eligible_auditor_agents: Mapping[str, Decimal | int | str] | None = None
     source_settlement_root_hex: str = DEFAULT_SOURCE_SETTLEMENT_ROOT_HEX
     allow_default_source_settlement_root: bool = True
@@ -987,7 +989,10 @@ def _current_lmdb_epoch_number(batch: Any) -> int | None:
     for _, wallet_row in batch.iter_wallet_rows():
         last_epoch = wallet_row.get("last_settled_epoch_id")
         if not isinstance(last_epoch, str) or len(last_epoch) != 10 or not last_epoch.isdecimal():
-            continue
+            raise EcuIlcLifecycleRuntimeError(
+                "lifecycle_last_settled_epoch_id_invalid",
+                "wallet row last_settled_epoch_id must be a 10-digit epoch id",
+            )
         epoch_number = int(last_epoch)
         current = epoch_number if current is None else max(current, epoch_number)
     return current

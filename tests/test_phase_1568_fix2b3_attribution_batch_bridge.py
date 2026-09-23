@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import shutil
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,7 @@ from ilc_core.consensus.attribution_batch_bridge import (
     apply_attribution_batch_with_rust,
     build_attribution_batch_from_claims,
 )
+from ilc_core.epoch.ecu_attribution_receipt_store import AttributionOriginAccrualRuntime
 from tools import agent_loop_v1
 from tests.test_agent_loop_v1_runtime import _cdl069_seed, _legacy_seed, _submission, _task
 
@@ -446,12 +448,18 @@ def test_rust_ingest_applies_batch_and_rejects_same_epoch_replay(
         batch,
         consensus_lmdb=lmdb_path,
         rust_binary=attribution_binary,
+        attribution_receipt_store=tmp_path / "attribution-receipts",
     )
     assert applied["marker"] == "attribution_batch_ingest_ok"
     assert applied["dry_run"] is False
     assert applied["attribution_count"] == 6
     assert sum(item["amount_micro_ecu"] for item in applied["balances"]) == 5817378
     assert all(item["epoch"] == 574 for item in applied["balances"])
+    receipt_runtime = AttributionOriginAccrualRuntime(tmp_path / "attribution-receipts")
+    assert sum(
+        Decimal(receipt_runtime.get_accrued_ecu(item["agent_id_hex"]))
+        for item in batch["attributions"]
+    ) == Decimal("5.817378")
 
     with pytest.raises(AttributionBatchBridgeError) as excinfo:
         apply_attribution_batch_with_rust(

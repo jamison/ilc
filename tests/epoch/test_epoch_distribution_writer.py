@@ -687,6 +687,34 @@ def test_real_lmdb_lifecycle_commit_is_idempotent(tmp_path) -> None:  # type: ig
     assert Decimal(wallet_store.get_wallet(GENESIS_AGENT1_AGENT_ID)["balance_ilc"]) > Decimal("4.5")  # type: ignore[index]
 
 
+def test_lmdb_epoch_sequence_rejects_corrupt_last_settled_epoch_id(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    wallet_store.put_wallet(
+        AGENT_B,
+        {
+            "agent_id": AGENT_B,
+            "balance_ilc": "1",
+            "last_settled_epoch_id": "corrupt",
+        },
+    )
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+
+    with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
+        commit_epoch_distribution(
+            _inputs(
+                issuance_epoch=1,
+                total_epoch_fees_ilc=Decimal("100"),
+                eligible_agents={AGENT_A: Decimal("1")},
+            ),
+            lifecycle,
+        )
+
+    assert exc_info.value.token == "lifecycle_last_settled_epoch_id_invalid"
+
+
 def test_lmdb_idempotent_replay_preserves_empty_wallet_row(tmp_path) -> None:  # type: ignore[no-untyped-def]
     wallet_store = LmdbWalletStore(tmp_path / "wallets")
     epoch_id = "0000000001"

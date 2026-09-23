@@ -1026,6 +1026,7 @@ def apply_attribution_batch_with_rust(
     consensus_lmdb: str | Path,
     rust_binary: str | Path,
     dry_run: bool = False,
+    attribution_receipt_store: str | Path | None = None,
     timeout_seconds: int = 30,
 ) -> dict[str, Any]:
     """Apply a bridge batch through the Rust `attribution_batch_ingest` binary."""
@@ -1079,9 +1080,20 @@ def apply_attribution_batch_with_rust(
             detail,
         )
     try:
-        return _require_dict("rust_ingest_report", json.loads(result.stdout))
+        report = _require_dict("rust_ingest_report", json.loads(result.stdout))
     except json.JSONDecodeError as exc:
         raise AttributionBatchBridgeError(
             "rust_attribution_batch_ingest_invalid_json",
             "Rust attribution binary emitted invalid JSON",
         ) from exc
+    if attribution_receipt_store is not None and not dry_run:
+        from ilc_core.epoch.ecu_attribution_receipt_store import (
+            record_attribution_ingest_report,
+        )
+
+        record_attribution_ingest_report(
+            attribution_receipt_store,
+            report,
+            batch_payload=batch_payload,
+        )
+    return report

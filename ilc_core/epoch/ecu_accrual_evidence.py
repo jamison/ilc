@@ -11,11 +11,12 @@ import tempfile
 from dataclasses import dataclass
 from decimal import Decimal
 from pathlib import Path
+from types import MappingProxyType
 from typing import Any, Mapping, Protocol
 
 from ilc_core.epoch.epoch_distribution_writer import MAX_ELIGIBLE_AGENTS
 from ilc_core.epoch.ecu_attribution_receipt_store import (
-    compute_attribution_receipt_state_root_sha256,
+    ATTRIBUTION_RECEIPT_STORE_SCHEMA_VERSION,
 )
 from ilc_core.epoch.protocol_account_boundary import is_reserved_protocol_account
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string, parse_non_negative_decimal
@@ -36,14 +37,39 @@ _EVIDENCE_HASH_FIELDS = frozenset(
         "schema_version",
     }
 )
-EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256 = compute_attribution_receipt_state_root_sha256(
-    "__empty_attribution_receipt_store__"
-)
+EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256 = hashlib.sha256(
+    json.dumps(
+        {
+            "cumulative_agent_ecu": {},
+            "schema_version": ATTRIBUTION_RECEIPT_STORE_SCHEMA_VERSION,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+).hexdigest()
+UNBOUND_ECU_ACCRUAL_RUNTIME_STATE_ROOT_SHA256 = hashlib.sha256(
+    json.dumps(
+        {
+            "runtime_state_root": "unbound_ecu_accrual_runtime_without_state_root",
+            "schema_version": ECU_ACCRUAL_EVIDENCE_SCHEMA_VERSION,
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+).hexdigest()
 _HEX_64_RE = re.compile(r"^[0-9a-f]{64}$")
+_ZERO = Decimal("0")
 
 
 class EcuAccrualRuntime(Protocol):
     def get_accrued_ecu(self, agent_id: str) -> str:
+        ...
+
+
+class EnumerableEcuAccrualRuntime(EcuAccrualRuntime, Protocol):
+    def list_agents_with_attribution_receipts(self) -> list[str] | tuple[str, ...]:
         ...
 
 
@@ -56,7 +82,7 @@ class EcuAccrualEvidence:
     """
 
     issuance_interval_id: int
-    agent_ecu_weights: dict[str, str]
+    agent_ecu_weights: Mapping[str, str]
     accrual_close_validation_epoch: int
     lmdb_state_root_sha256: str = EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256
     schema_version: str = ECU_ACCRUAL_EVIDENCE_SCHEMA_VERSION
@@ -92,7 +118,7 @@ class EcuAccrualEvidence:
         object.__setattr__(self, "issuance_interval_id", interval_id)
         object.__setattr__(self, "accrual_close_validation_epoch", close_epoch)
         object.__setattr__(self, "schema_version", schema)
-        object.__setattr__(self, "agent_ecu_weights", weights)
+        object.__setattr__(self, "agent_ecu_weights", MappingProxyType(weights))
         object.__setattr__(self, "lmdb_state_root_sha256", lmdb_state_root)
         object.__setattr__(self, "evidence_sha256", expected_hash)
 
@@ -119,10 +145,11 @@ def build_ecu_accrual_evidence(
     normalized_ids = _require_agent_id_sequence(
         _enumerate_agent_ids(runtime) if agent_ids is None else agent_ids
     )
-    weights = {
-        agent_id: _canonical_ecu_weight(runtime.get_accrued_ecu(agent_id))
-        for agent_id in normalized_ids
-    }
+    weights: dict[str, str] = {}
+    for agent_id in normalized_ids:
+        weight = _canonical_ecu_weight(runtime.get_accrued_ecu(agent_id))
+        if parse_non_negative_decimal(weight) > _ZERO:
+            weights[agent_id] = weight
     return EcuAccrualEvidence(
         issuance_interval_id=issuance_interval_id,
         agent_ecu_weights=weights,
@@ -227,7 +254,7 @@ def _require_exact_schema(value: object) -> str:
 def _runtime_lmdb_state_root_sha256(runtime: EcuAccrualRuntime) -> str:
     provider = getattr(runtime, "lmdb_state_root_sha256", None)
     if provider is None:
-        return EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256
+        return UNBOUND_ECU_ACCRUAL_RUNTIME_STATE_ROOT_SHA256
     value = provider() if callable(provider) else provider
     return _require_sha256_hex(value, "ecu_accrual_runtime_lmdb_state_root_sha256_invalid")
 
@@ -271,7 +298,7 @@ def _require_agent_id_sequence(value: object) -> tuple[str, ...]:
 
 
 def _require_agent_weight_mapping(value: object) -> dict[str, str]:
-    if not isinstance(value, dict):
+    if not isinstance(value, Mapping):
         raise ValueError("ecu_accrual_agent_weights_must_be_dict")
     if len(value) > MAX_ELIGIBLE_AGENTS:
         raise ValueError("ecu_accrual_agent_weights_exceeds_max_count")
@@ -319,9 +346,11 @@ def _hash_evidence_payload(payload: Mapping[str, Any]) -> str:
 __all__ = [
     "ECU_ACCRUAL_EVIDENCE_SCHEMA_VERSION",
     "EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256",
+    "EnumerableEcuAccrualRuntime",
     "EcuAccrualEvidence",
     "MAX_ECU_ACCRUAL_AGENT_ID_BYTES",
     "MAX_ECU_ACCRUAL_EVIDENCE_BYTES",
+    "UNBOUND_ECU_ACCRUAL_RUNTIME_STATE_ROOT_SHA256",
     "build_ecu_accrual_evidence",
     "is_replay_safe",
     "read_ecu_accrual_evidence",

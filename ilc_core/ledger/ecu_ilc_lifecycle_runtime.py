@@ -106,6 +106,11 @@ class EcuIlcLifecycleRuntime:
                 "lifecycle_reward_delta_invalid",
                 "reward delta must align to ILC quantum",
             )
+        if reward_delta_decimal == ZERO:
+            raise EcuIlcLifecycleRuntimeError(
+                "lifecycle_reward_delta_must_be_positive",
+                "reward delta must be positive for direct lifecycle commits",
+            )
 
         wallet_row = self.wallet_store.get_wallet(agent_id) or {}
         wallet_history = self.wallet_store.get_wallet_history(agent_id) or {}
