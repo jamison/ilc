@@ -14,12 +14,15 @@ from pathlib import Path
 from typing import Any, Mapping, Protocol
 
 from ilc_core.epoch.epoch_distribution_writer import MAX_ELIGIBLE_AGENTS
+from ilc_core.epoch.ecu_attribution_receipt_store import (
+    compute_attribution_receipt_state_root_sha256,
+)
 from ilc_core.epoch.protocol_account_boundary import is_reserved_protocol_account
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string, parse_non_negative_decimal
 
 
 ECU_ACCRUAL_EVIDENCE_SCHEMA_VERSION = (
-    "ecu_accrual_evidence_GAP_MONTHLY_ISSUANCE_CLOSE_ORCHESTRATOR_00a.v0.1"
+    "ecu_accrual_evidence_GAP_ECU_ACCRUAL_EVIDENCE_SOURCE_BRIDGE_00.v0.2"
 )
 MAX_ECU_ACCRUAL_EVIDENCE_BYTES = 1_048_576
 MAX_ECU_ACCRUAL_AGENT_ID_BYTES = 256
@@ -29,9 +32,14 @@ _EVIDENCE_HASH_FIELDS = frozenset(
         "accrual_close_validation_epoch",
         "agent_ecu_weights",
         "issuance_interval_id",
+        "lmdb_state_root_sha256",
         "schema_version",
     }
 )
+EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256 = compute_attribution_receipt_state_root_sha256(
+    "__empty_attribution_receipt_store__"
+)
+_HEX_64_RE = re.compile(r"^[0-9a-f]{64}$")
 
 
 class EcuAccrualRuntime(Protocol):
@@ -50,6 +58,7 @@ class EcuAccrualEvidence:
     issuance_interval_id: int
     agent_ecu_weights: dict[str, str]
     accrual_close_validation_epoch: int
+    lmdb_state_root_sha256: str = EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256
     schema_version: str = ECU_ACCRUAL_EVIDENCE_SCHEMA_VERSION
     evidence_sha256: str = ""
 
@@ -64,11 +73,16 @@ class EcuAccrualEvidence:
         )
         schema = _require_exact_schema(self.schema_version)
         weights = _require_agent_weight_mapping(self.agent_ecu_weights)
+        lmdb_state_root = _require_sha256_hex(
+            self.lmdb_state_root_sha256,
+            "ecu_accrual_evidence_lmdb_state_root_sha256_invalid",
+        )
         expected_hash = _hash_evidence_payload(
             {
                 "accrual_close_validation_epoch": close_epoch,
                 "agent_ecu_weights": weights,
                 "issuance_interval_id": interval_id,
+                "lmdb_state_root_sha256": lmdb_state_root,
                 "schema_version": schema,
             }
         )
@@ -79,6 +93,7 @@ class EcuAccrualEvidence:
         object.__setattr__(self, "accrual_close_validation_epoch", close_epoch)
         object.__setattr__(self, "schema_version", schema)
         object.__setattr__(self, "agent_ecu_weights", weights)
+        object.__setattr__(self, "lmdb_state_root_sha256", lmdb_state_root)
         object.__setattr__(self, "evidence_sha256", expected_hash)
 
     def to_canonical_record(self) -> dict[str, Any]:
@@ -87,6 +102,7 @@ class EcuAccrualEvidence:
             "agent_ecu_weights": dict(self.agent_ecu_weights),
             "evidence_sha256": self.evidence_sha256,
             "issuance_interval_id": self.issuance_interval_id,
+            "lmdb_state_root_sha256": self.lmdb_state_root_sha256,
             "schema_version": self.schema_version,
         }
 
@@ -96,11 +112,13 @@ def build_ecu_accrual_evidence(
     *,
     issuance_interval_id: int,
     accrual_close_validation_epoch: int,
-    agent_ids: list[str] | tuple[str, ...],
+    agent_ids: list[str] | tuple[str, ...] | None = None,
 ) -> EcuAccrualEvidence:
     if not hasattr(runtime, "get_accrued_ecu"):
         raise ValueError("ecu_accrual_runtime_required")
-    normalized_ids = _require_agent_id_sequence(agent_ids)
+    normalized_ids = _require_agent_id_sequence(
+        _enumerate_agent_ids(runtime) if agent_ids is None else agent_ids
+    )
     weights = {
         agent_id: _canonical_ecu_weight(runtime.get_accrued_ecu(agent_id))
         for agent_id in normalized_ids
@@ -109,6 +127,7 @@ def build_ecu_accrual_evidence(
         issuance_interval_id=issuance_interval_id,
         agent_ecu_weights=weights,
         accrual_close_validation_epoch=accrual_close_validation_epoch,
+        lmdb_state_root_sha256=_runtime_lmdb_state_root_sha256(runtime),
     )
 
 
@@ -178,6 +197,7 @@ def _coerce_evidence_mapping(payload: Mapping[str, Any]) -> EcuAccrualEvidence:
         issuance_interval_id=payload["issuance_interval_id"],
         agent_ecu_weights=payload["agent_ecu_weights"],
         accrual_close_validation_epoch=payload["accrual_close_validation_epoch"],
+        lmdb_state_root_sha256=payload["lmdb_state_root_sha256"],
         schema_version=payload["schema_version"],
         evidence_sha256=payload["evidence_sha256"],
     )
@@ -204,8 +224,32 @@ def _require_exact_schema(value: object) -> str:
     return value
 
 
+def _runtime_lmdb_state_root_sha256(runtime: EcuAccrualRuntime) -> str:
+    provider = getattr(runtime, "lmdb_state_root_sha256", None)
+    if provider is None:
+        return EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256
+    value = provider() if callable(provider) else provider
+    return _require_sha256_hex(value, "ecu_accrual_runtime_lmdb_state_root_sha256_invalid")
+
+
+def _enumerate_agent_ids(runtime: EcuAccrualRuntime) -> list[str] | tuple[str, ...]:
+    provider = getattr(runtime, "list_agents_with_attribution_receipts", None)
+    if provider is None or not callable(provider):
+        raise ValueError("ecu_accrual_agent_ids_required_without_enumerator")
+    agent_ids = provider()
+    if not isinstance(agent_ids, (list, tuple)):
+        raise ValueError("ecu_accrual_agent_enumerator_must_return_sequence")
+    return agent_ids
+
+
 def _require_non_negative_int(value: object, token: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(token)
+    return value
+
+
+def _require_sha256_hex(value: object, token: str) -> str:
+    if not isinstance(value, str) or _HEX_64_RE.fullmatch(value) is None:
         raise ValueError(token)
     return value
 
@@ -274,6 +318,7 @@ def _hash_evidence_payload(payload: Mapping[str, Any]) -> str:
 
 __all__ = [
     "ECU_ACCRUAL_EVIDENCE_SCHEMA_VERSION",
+    "EMPTY_ATTRIBUTION_RECEIPT_STATE_ROOT_SHA256",
     "EcuAccrualEvidence",
     "MAX_ECU_ACCRUAL_AGENT_ID_BYTES",
     "MAX_ECU_ACCRUAL_EVIDENCE_BYTES",

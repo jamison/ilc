@@ -1,0 +1,74 @@
+{
+  "graph_delta": "phase_gap_ecu_accrual_evidence_source_bridge_00",
+  "phase": "GAP-ECU-ACCRUAL-EVIDENCE-SOURCE-BRIDGE-00",
+  "schema_version": "ilc_fix38_manual_edge_annotation_overlay.v0.1",
+  "candidate_nodes": [
+    {
+      "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_accrual_evidence_source_bridge_00_g10_attribution_origin_enumeration.md",
+      "node_kind": "phase_prompt",
+      "graph_delta": "support_only",
+      "edges": [
+        {
+          "type": "SOURCE_TREE_MEMBER",
+          "target": "repo:ilc-core-private"
+        }
+      ]
+    },
+    {
+      "path": "ilc_core/epoch/ecu_attribution_receipt_store.py",
+      "node_kind": "runtime_module",
+      "graph_delta": "load_bearing_artifact_added",
+      "edges": [
+        {
+          "type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_ecu_lifecycle_state_machine_disposition_matrix_v0.1.md"
+        },
+        {
+          "type": "SOURCE_TREE_MEMBER",
+          "target": "repo:ilc-core-private"
+        }
+      ]
+    },
+    {
+      "path": "ilc_core/epoch/ecu_accrual_evidence.py",
+      "node_kind": "runtime_module",
+      "graph_delta": "load_bearing_artifact_modified",
+      "edges": [
+        {
+          "type": "CONSUMES",
+          "target": "ilc_core/epoch/ecu_attribution_receipt_store.py"
+        },
+        {
+          "type": "SOURCE_TREE_MEMBER",
+          "target": "repo:ilc-core-private"
+        }
+      ]
+    },
+    {
+      "path": "tests/test_phase_gap_ecu_accrual_evidence_source_bridge_00.py",
+      "node_kind": "test_file",
+      "graph_delta": "support_only",
+      "edges": [
+        {
+          "type": "TESTS",
+          "target": "ilc_core/epoch/ecu_attribution_receipt_store.py"
+        },
+        {
+          "type": "TESTS",
+          "target": "ilc_core/epoch/ecu_accrual_evidence.py"
+        }
+      ]
+    },
+    {
+      "path": "docs/phases/phase_gap_ecu_accrual_evidence_source_bridge_00_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "graph_delta": "support_only",
+      "edges": [
+        {
+          "type": "EVIDENCES",
+          "target": "GAP-ECU-ACCRUAL-EVIDENCE-SOURCE-BRIDGE-00"
+        }
+      ]
+    }
+  ]
+}
