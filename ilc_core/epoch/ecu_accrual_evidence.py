@@ -187,15 +187,15 @@ def write_ecu_accrual_evidence(evidence: EcuAccrualEvidence, path: str | Path) -
 
 def read_ecu_accrual_evidence(path: str | Path) -> EcuAccrualEvidence:
     source = Path(path)
-    size = source.stat().st_size
-    if size > MAX_ECU_ACCRUAL_EVIDENCE_BYTES:
+    data = source.read_bytes()
+    if len(data) > MAX_ECU_ACCRUAL_EVIDENCE_BYTES:
         raise ValueError("ecu_accrual_evidence_exceeds_max_bytes")
     try:
         payload = json.loads(
-            source.read_text(encoding="utf-8"),
+            data.decode("utf-8"),
             object_pairs_hook=_reject_duplicate_json_keys,
         )
-    except json.JSONDecodeError as exc:
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ValueError("ecu_accrual_evidence_json_invalid") from exc
     if not isinstance(payload, Mapping):
         raise ValueError("ecu_accrual_evidence_record_required")

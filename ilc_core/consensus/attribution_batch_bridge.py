@@ -1029,7 +1029,14 @@ def apply_attribution_batch_with_rust(
     attribution_receipt_store: str | Path | None = None,
     timeout_seconds: int = 30,
 ) -> dict[str, Any]:
-    """Apply a bridge batch through the Rust `attribution_batch_ingest` binary."""
+    """Apply a bridge batch through the Rust `attribution_batch_ingest` binary.
+
+    If ``attribution_receipt_store`` is supplied, the original batch is
+    preflight-validated before Rust runs and the sidecar write is attempted only
+    after Rust acceptance. A post-Rust sidecar failure is reported with
+    ``attribution_receipt_sidecar_record_failed``; the Rust LMDB write may have
+    succeeded and the caller must repair/retry the sidecar before monthly close.
+    """
 
     binary_path = Path(rust_binary)
     if not binary_path.exists() or not binary_path.is_file():
@@ -1042,6 +1049,18 @@ def apply_attribution_batch_with_rust(
             "rust_attribution_batch_ingest_binary_not_executable",
             f"Rust attribution binary is not executable: {binary_path}",
         )
+    if attribution_receipt_store is not None and not dry_run:
+        from ilc_core.epoch.ecu_attribution_receipt_store import (
+            validate_attribution_receipt_batch_payload,
+        )
+
+        try:
+            validate_attribution_receipt_batch_payload(batch_payload)
+        except ValueError as exc:
+            raise AttributionBatchBridgeError(
+                "attribution_receipt_sidecar_batch_invalid",
+                str(exc),
+            ) from exc
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", suffix=".json", delete=False) as handle:
         json.dump(batch_payload, handle, sort_keys=True, separators=(",", ":"), allow_nan=False)
         handle.write("\n")
@@ -1091,9 +1110,18 @@ def apply_attribution_batch_with_rust(
             record_attribution_ingest_report,
         )
 
-        record_attribution_ingest_report(
-            attribution_receipt_store,
-            report,
-            batch_payload=batch_payload,
-        )
+        try:
+            record_attribution_ingest_report(
+                attribution_receipt_store,
+                report,
+                batch_payload=batch_payload,
+            )
+        except Exception as exc:
+            raise AttributionBatchBridgeError(
+                "attribution_receipt_sidecar_record_failed",
+                (
+                    "Rust attribution ingest succeeded but sidecar receipt recording "
+                    f"failed; retry sidecar repair before monthly close: {exc}"
+                ),
+            ) from exc
     return report

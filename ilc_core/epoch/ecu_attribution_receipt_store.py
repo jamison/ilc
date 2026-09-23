@@ -70,7 +70,7 @@ def record_attribution_origin_receipt(
     store_path: str | Path,
     *,
     agent_id: str,
-    amount_ecu: str | int | Decimal,
+    amount_ecu: str | Decimal,
     epoch: int,
     receipt_ref: str,
 ) -> AttributionOriginReceipt:
@@ -150,6 +150,12 @@ def record_attribution_ingest_report(
         receipts.append(receipt)
     _write_receipt_records(store_path, records)
     return receipts
+
+
+def validate_attribution_receipt_batch_payload(batch_payload: Mapping[str, Any]) -> None:
+    """Validate the attribution batch shape used to derive receipt deltas."""
+
+    _require_attribution_batch_payload(batch_payload)
 
 
 def list_agents_with_attribution_receipts(lmdb_path: str | Path) -> list[str]:
@@ -328,7 +334,7 @@ def _require_receipt_ref(value: object) -> str:
 
 
 def _canonical_amount(value: object) -> str:
-    if isinstance(value, float):
+    if isinstance(value, bool) or isinstance(value, int) or isinstance(value, float):
         raise ValueError("attribution_receipt_amount_must_be_exact_decimal")
     amount = parse_non_negative_decimal(
         value,  # type: ignore[arg-type]
@@ -376,4 +382,5 @@ __all__ = [
     "list_agents_with_attribution_receipts",
     "record_attribution_ingest_report",
     "record_attribution_origin_receipt",
+    "validate_attribution_receipt_batch_payload",
 ]

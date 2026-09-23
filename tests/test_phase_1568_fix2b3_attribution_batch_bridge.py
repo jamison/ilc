@@ -397,6 +397,75 @@ def test_apply_attribution_batch_with_rust_rejects_non_executable_binary(tmp_pat
     assert excinfo.value.token == "rust_attribution_batch_ingest_binary_not_executable"
 
 
+def test_apply_attribution_batch_with_sidecar_preflights_before_rust(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    calls: list[object] = []
+
+    def _unexpected_run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        calls.append((args, kwargs))
+        return subprocess.CompletedProcess(args=["unexpected"], returncode=0)
+
+    fake_binary = tmp_path / "attribution_batch_ingest"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_binary.chmod(0o755)
+    bad_batch = build_attribution_batch_from_claims(_simple_claim_payload())
+    bad_batch["marker"] = "wrong"
+    monkeypatch.setattr(subprocess, "run", _unexpected_run)
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        apply_attribution_batch_with_rust(
+            bad_batch,
+            consensus_lmdb=tmp_path / "store.lmdb",
+            rust_binary=fake_binary,
+            attribution_receipt_store=tmp_path / "attribution-receipts",
+        )
+
+    assert excinfo.value.token == "attribution_receipt_sidecar_batch_invalid"
+    assert calls == []
+
+
+def test_apply_attribution_batch_wraps_sidecar_record_failure(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    fake_binary = tmp_path / "attribution_batch_ingest"
+    fake_binary.write_text("#!/bin/sh\n", encoding="utf-8")
+    fake_binary.chmod(0o755)
+    batch = build_attribution_batch_from_claims(_simple_claim_payload())
+    bad_report = {
+        "attribution_count": 1,
+        "balances": [],
+        "dry_run": False,
+        "epoch": batch["epoch"],
+        "input_sha256": "1" * 64,
+        "marker": "attribution_batch_ingest_ok",
+        "total_micro_ecu": batch["total_micro_ecu"] + 1,
+    }
+
+    def _run(*args: object, **kwargs: object) -> subprocess.CompletedProcess[str]:
+        return subprocess.CompletedProcess(
+            args=["attribution_batch_ingest"],
+            returncode=0,
+            stdout=json.dumps(bad_report),
+            stderr="",
+        )
+
+    monkeypatch.setattr(subprocess, "run", _run)
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        apply_attribution_batch_with_rust(
+            batch,
+            consensus_lmdb=tmp_path / "store.lmdb",
+            rust_binary=fake_binary,
+            attribution_receipt_store=tmp_path / "attribution-receipts",
+        )
+
+    assert excinfo.value.token == "attribution_receipt_sidecar_record_failed"
+    assert isinstance(excinfo.value.__cause__, ValueError)
+
+
 def test_agent_loop_cli_builds_attribution_batch(tmp_path: Path) -> None:
     claims_path = tmp_path / "ecu_claims.json"
     claims_path.write_text(

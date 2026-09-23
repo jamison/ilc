@@ -346,6 +346,17 @@ def test_float_ban_enforced(tmp_path: Path) -> None:
         )
 
 
+def test_int_amount_ban_enforced(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="attribution_receipt_amount_must_be_exact_decimal"):
+        record_attribution_origin_receipt(
+            _store(tmp_path),
+            agent_id=AGENT_A,
+            amount_ecu=1,  # type: ignore[arg-type]
+            epoch=1,
+            receipt_ref="int-test",
+        )
+
+
 def test_decimal_canonical_form_enforced_symmetrically(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="attribution_receipt_amount_must_be_canonical_decimal"):
         record_attribution_origin_receipt(
@@ -424,6 +435,14 @@ def test_evidence_read_rejects_tampered_hash(tmp_path: Path) -> None:
     target.write_text(json.dumps(payload, sort_keys=True) + "\n", encoding="utf-8")
 
     with pytest.raises(ValueError, match="ecu_accrual_evidence_sha256_mismatch"):
+        read_ecu_accrual_evidence(target)
+
+
+def test_evidence_read_rejects_invalid_utf8(tmp_path: Path) -> None:
+    target = tmp_path / "evidence.json"
+    target.write_bytes(b"\xff")
+
+    with pytest.raises(ValueError, match="ecu_accrual_evidence_json_invalid"):
         read_ecu_accrual_evidence(target)
 
 
