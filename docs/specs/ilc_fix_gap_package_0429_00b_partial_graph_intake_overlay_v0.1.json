@@ -1,0 +1,48 @@
+{
+  "artifact": "ilc_fix_gap_package_0429_00b_partial_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-PACKAGE-0429-00b post-upload blocked receipt and walkthrough."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_package_0429_00b_partial_overlay_record",
+      "edge_role": "PARTIAL_UPLOAD_RECEIPT",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0429_00b.partial.json",
+      "target": "phase:GAP-PACKAGE-0429-00b"
+    },
+    {
+      "annotation_method": "gap_package_0429_00b_partial_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_package_0429_00b_blocked_post_upload_walkthrough.md",
+      "target": "phase:GAP-PACKAGE-0429-00b"
+    },
+    {
+      "annotation_method": "gap_package_0429_00b_partial_overlay_record",
+      "edge_role": "STATUS_LOG",
+      "repo_path": "docs/phases/STATUS.md",
+      "target": "phase:GAP-PACKAGE-0429-00b"
+    },
+    {
+      "annotation_method": "gap_package_0429_00b_partial_overlay_record",
+      "edge_role": "PLANNING_INDEX",
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "target": "phase:GAP-PACKAGE-0429-00b"
+    },
+    {
+      "annotation_method": "gap_package_0429_00b_partial_overlay_record",
+      "edge_role": "FORWARD_PLAN",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
+      "target": "phase:GAP-PACKAGE-0429-00b"
+    },
+    {
+      "annotation_method": "gap_package_0429_00b_partial_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_gap_package_0429_00b_partial_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1",
+  "status": "review_queue_support_only"
+}
