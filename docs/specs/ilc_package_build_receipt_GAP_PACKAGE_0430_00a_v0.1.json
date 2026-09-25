@@ -1,0 +1,74 @@
+{
+  "artifacts": {
+    "python_sdist": {
+      "path": "dist/ilc_core-0.4.30.tar.gz",
+      "sha256": "9f011f716deb1c8fcc7898eecb5e15751e3289f47c6b0e5546f438b017eeb2f8",
+      "size_bytes": 1255658
+    },
+    "python_wheel": {
+      "path": "dist/ilc_core-0.4.30-py3-none-any.whl",
+      "sha256": "31d5836b6a1a956086bdb54eb0d7884bd279a4ace8dc0ed6acd65f51363dc681",
+      "size_bytes": 1534340
+    }
+  },
+  "changes_from_0429": [
+    "pyproject.toml: version 0.4.29 -> 0.4.30",
+    "ilc_core/__init__.py: __version__ 0.4.29 -> 0.4.30",
+    "ilc_core/cli/ecu_status_cli.py: Rust-backed local ECU status through ILC_CONSENSUS_LMDB_PATH",
+    "ilc_core/server.py: configured Rust BalanceStore lifecycle wiring and fail-closed status handling",
+    "ilc_core/consensus/attribution_batch_bridge.py: hardened attribution_batch_ingest resolver, initialize_rust_balance_store, and uninitialized LMDB fail-closed token",
+    "ilc_core/ledger/ecu_ilc_lifecycle_runtime.py: canonical pending balance and Rust committed aggregate source reporting",
+    "ilc_core/protocol/public_wallet_runtime.py: ECU accrual source propagation"
+  ],
+  "generated_at_utc": "2026-09-25T07:45:00Z",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_pypi_fetchback_verification",
+    "no_predecessor_yank",
+    "no_release_signing",
+    "no_tools_install_sh_retarget",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_github_release_action",
+    "no_vps_mutation",
+    "no_validator_venv_sync",
+    "no_endpoint_deployment",
+    "no_phase_1603_retry",
+    "no_production_lmdb_mutation",
+    "no_live_wallet_write",
+    "no_epoch_advance",
+    "no_guard_flip",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_mainnet_claim"
+  ],
+  "output_token": "package_0430_local_build_complete_GAP_PACKAGE_0430_00a",
+  "phase": "GAP-PACKAGE-0430-00a",
+  "phase_completion_commit": "recorded by this completion commit",
+  "predecessor_release_id": "ilc-core-0.4.29",
+  "release_id": "ilc-core-0.4.30",
+  "schema_version": "ilc_package_build_receipt.v0.1",
+  "signing_preimages": {
+    "sdist_artifact_id": "ilc-artifact:ilc-core-python-sdist-0430@phase-1628",
+    "sdist_preimage": "c565276b09a602b52ad7d8e98631c1f9442c068e4e7fd638105e8df3ed7326aa",
+    "wheel_artifact_id": "ilc-artifact:ilc-core-python-wheel-0430@phase-1628",
+    "wheel_preimage": "aaf614628c3ce4c43e38eda0019ba124ece35b60cf8c5e3023af5fd0df410937"
+  },
+  "source_private_commit_before_version_bump": "e69ab62fbdf250b1dac4d9d0ce69802d31bdd5ca",
+  "verification": {
+    "agents_package_gate_a": "PASSED: 1 passed, 12 deselected in 0.64s",
+    "cbor2_dry_run_proof": "cbor2-5.9.0 resolved; no cbor2 6.x; no cbor2 source build",
+    "focused_tests": "146 passed, 1 warning in 21.97s",
+    "installed_wheel_rust_status_smoke": {
+      "balance_ecu_source": "rust_balance_store_committed_aggregate",
+      "committed_ecu_balance": "0",
+      "ilc_core_version": "0.4.30",
+      "status": "local_rust_balance_store_committed_aggregate",
+      "venv_boundary": true
+    },
+    "prompt_validator_00a": "VALID",
+    "twine_check": "PASSED",
+    "wheel_content_inspection": "PASSED: ECU status local path, server lifecycle wiring, Rust helper resolver, lifecycle readback, and public wallet source propagation present"
+  }
+}
