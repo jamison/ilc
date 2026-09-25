@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-PACKAGE-0429-00b"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/31/f6/611f5b7a73ec9f234a4ceadb7b3e1f1c9b001fad24ccdb211bea6cf16a7f/ilc_core-0.4.29-py3-none-any.whl"
-RC_WHEEL_SHA256="8789d162228b259174da0b8966ac31a27d164cb22e385d5dd63e85d7b413ff61"
-RC_WHEEL_SIZE="1532200"
+INSTALLER_VERSION="GAP-PACKAGE-0431-00b"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/0a/9f/3fd0f80bbb7d42adcfae53ecd3fbd2c5b9b555820808b9f6e75e952ae54c/ilc_core-0.4.31-py3-none-any.whl"
+RC_WHEEL_SHA256="362e6be6c3be596010d02e37c94b66570507e67b590716114eaaf5f2dd63dae1"
+RC_WHEEL_SIZE="1534395"
 RC_MIN_PYTHON_MINOR="10"
-RC_RELEASE_ID="ilc-core-0.4.29"
-RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0429@phase-1628"
-RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0429@phase-1628"
-RC_SDIST_SHA256="37be67a954081e116eec647329a6922cf1f33d5e9ae704228ff5e7a2730956ca"
-RC_SDIST_SIZE="1253524"
-DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0429_release_envelopes_GAP_PACKAGE_0429_00b_v0.1.json"
+RC_RELEASE_ID="ilc-core-0.4.31"
+RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0431@phase-1628"
+RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0431@phase-1628"
+RC_SDIST_SHA256="646854df1eb3a75346d962a7a790e71f667d4edbcc11d81f87fe5bc791dc2d31"
+RC_SDIST_SIZE="1255698"
+DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0431_release_envelopes_GAP_PACKAGE_0431_00b_v0.1.json"
 RC_RELEASE_ENVELOPE_REF="${ILC_INSTALL_RELEASE_ENVELOPE_REF:-${DEFAULT_RC_RELEASE_ENVELOPE_REF}}"
 RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
-CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.29/ilc-consensus-linux-x86_64-v0.4.29.tar.gz"
-CONSENSUS_BIN_SHA256="ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9"
-CONSENSUS_BIN_SIZE="4560519"
+CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.31/ilc-consensus-linux-x86_64-v0.4.31.tar.gz"
+CONSENSUS_BIN_SHA256="f493ae06732b5a0e55576aaf86dbeb20ce4a742d3488579e73933a6ac1721036"
+CONSENSUS_BIN_SIZE="5045081"
 CONSENSUS_BIN_INSTALL_DIR="${ILC_CONSENSUS_BIN_INSTALL_DIR:-${HOME:-}/.ilc/bin}"
 
 CHANNEL="rc"
@@ -583,6 +583,7 @@ from pathlib import Path
 
 tarball, output_dir = sys.argv[1], Path(sys.argv[2])
 expected = {
+    "attribution_batch_ingest",
     "bls_verify_digest",
     "ilc_p2p_bridge",
     "invite_pop_bls",

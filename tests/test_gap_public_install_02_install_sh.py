@@ -20,33 +20,33 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0429_GAP_PACKAGE_0429_00b_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0431_GAP_PACKAGE_0431_00b_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/31/f6/"
-    "611f5b7a73ec9f234a4ceadb7b3e1f1c9b001fad24ccdb211bea6cf16a7f/"
-    "ilc_core-0.4.29-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/0a/9f/"
+    "3fd0f80bbb7d42adcfae53ecd3fbd2c5b9b555820808b9f6e75e952ae54c/"
+    "ilc_core-0.4.31-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "8789d162228b259174da0b8966ac31a27d164cb22e385d5dd63e85d7b413ff61"
-EXPECTED_SIZE = "1532200"
-EXPECTED_RELEASE_ID = "ilc-core-0.4.29"
-EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0429@phase-1628"
-EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0429@phase-1628"
-EXPECTED_SDIST_SHA256 = "37be67a954081e116eec647329a6922cf1f33d5e9ae704228ff5e7a2730956ca"
-EXPECTED_SDIST_SIZE = "1253524"
+EXPECTED_SHA256 = "362e6be6c3be596010d02e37c94b66570507e67b590716114eaaf5f2dd63dae1"
+EXPECTED_SIZE = "1534395"
+EXPECTED_RELEASE_ID = "ilc-core-0.4.31"
+EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0431@phase-1628"
+EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0431@phase-1628"
+EXPECTED_SDIST_SHA256 = "646854df1eb3a75346d962a7a790e71f667d4edbcc11d81f87fe5bc791dc2d31"
+EXPECTED_SDIST_SIZE = "1255698"
 EXPECTED_RELEASE_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0429_release_envelopes_GAP_PACKAGE_0429_00b_v0.1.json"
+    "ilc_core_0431_release_envelopes_GAP_PACKAGE_0431_00b_v0.1.json"
 )
 EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX = (
     "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 )
 EXPECTED_CONSENSUS_URL = (
-    "https://github.com/jamison/ilc/releases/download/v0.4.29/"
-    "ilc-consensus-linux-x86_64-v0.4.29.tar.gz"
+    "https://github.com/jamison/ilc/releases/download/v0.4.31/"
+    "ilc-consensus-linux-x86_64-v0.4.31.tar.gz"
 )
-EXPECTED_CONSENSUS_SHA256 = "ced6fcb008d45efe8c9361fb5ee4de52a11c99e195f7279367bd0c43746d63a9"
-EXPECTED_CONSENSUS_SIZE = "4560519"
+EXPECTED_CONSENSUS_SHA256 = "f493ae06732b5a0e55576aaf86dbeb20ce4a742d3488579e73933a6ac1721036"
+EXPECTED_CONSENSUS_SIZE = "5045081"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -295,6 +295,7 @@ def _run_consensus_extractor(tmp_path: Path, members: list[tuple[str, bytes, str
 
 def _valid_consensus_members() -> list[tuple[str, bytes, str]]:
     return [
+        ("attribution_batch_ingest", b"#!/bin/sh\nexit 0\n", "file"),
         ("bls_verify_digest", b"#!/bin/sh\nexit 0\n", "file"),
         ("ilc_p2p_bridge", b"#!/bin/sh\nexit 0\n", "file"),
         ("invite_pop_bls", b"#!/bin/sh\nexit 0\n", "file"),
@@ -325,7 +326,7 @@ def test_install_sh_consensus_extractor_rejects_nested_member(tmp_path: Path) ->
 
 def test_install_sh_consensus_extractor_rejects_symlink_member(tmp_path: Path) -> None:
     members = _valid_consensus_members()
-    members[0] = ("bls_verify_digest", b"", "symlink")
+    members[0] = ("attribution_batch_ingest", b"", "symlink")
 
     result = _run_consensus_extractor(tmp_path, members)
 
