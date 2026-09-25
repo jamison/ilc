@@ -1118,6 +1118,45 @@ The Werner flow-governor (CDL-096) regulates the rate at which Werner credit con
 
 The net effect is a complete economic participation path for every class of contributor: agents who produce strongly falsifiable claims use the direct Popperian lane; agents who produce maintenance, curation, and support work use the Werner lane; passive contributors whose prior work is reused earn REUSE and PROVENANCE attribution automatically.
 
+**ECU lifecycle type namespace.** The mechanisms described above produce several distinct ECU objects that differ in their claim-bearing status, tradeability, and eligibility for monthly close. Conflating them is the most common source of protocol reasoning errors. The working namespace below is pre-canon and subject to CDL ratification:
+
+```
+ECU^X  exposure_ecu       — productive exposure capacity; reputation-derived credit
+                             ceiling, NOT deposited collateral; NOT claim-bearing
+ECU^Q  quoted_ecu         — pre-adjudication validator estimate; NOT claim-bearing
+ECU^A⊕ attribution_ecu    — direct attribution to task author; monthly-close-bearing
+       (direct)
+ECU^A⊖ attribution_ecu    — backward provenance component (CDL-108, CDL-084);
+       (backward)           same monthly-close class as ECU^A⊕, not a separate type
+ECU^C  committed_ecu      — Rust BalanceStore aggregate; NOT monthly-close-bearing
+                             by default; requires attribution-origin evidence
+ECU^L  lotized_ecu        — CDL-048 conversion lot under governed P_e conversion
+                             path; conversion-claim-bearing only; NOT monthly-close-
+                             bearing; NOT a Genesis-overhead claim (CDL-029 is separate)
+ECU^T  transferred_ecu    — existing ECU moved between agents; NOT claim-bearing
+                             by default
+```
+
+The Werner flow signal `Ω` (CDL-109) is not itself an ECU type. It is a dimensionless governor that may appear as a bounded, one-epoch-lagged reweighting factor inside the backward attribution path score — `S'_j(e) = S_j(e) · (1 + min(β_cap, Ω_j(t-1)))` — but may not create ECU, bypass eligibility gates, or appear in any wallet-visible balance.
+
+The governing invariant: **no object becomes ILC-close-eligible merely because it is called ECU.** Monthly-close eligibility attaches to ECU^A (direct and backward origin classes only). ECU^C aggregate balances in the BalanceStore require attribution-origin provenance before the protocol treats them as close-eligible. ECU^L lots carry only a conversion claim on the CDL-048 → ILC path, not a monthly-close claim. ECU^X, ECU^Q, and ECU^T carry no claims by default.
+
+The epoch sequence that governs type transitions is strictly ordered:
+
+```
+τ_s ≤ τ_v ≤ τ_a ≤ τ_c < m
+
+τ_s = submission epoch    (ECU^X exposure headroom reserved)
+τ_v = validation epoch    (jury verdict assigned; ECU^Q resolves/expires)
+τ_a = attribution epoch   (ECU^A⊕ and ECU^A⊖ produced)
+τ_c = commitment epoch    (ECU^C updated in BalanceStore)
+m   = monthly close       (ILC settlement; only ECU^A-origin eligible)
+```
+
+The backward attribution pool fraction is `β_bwd = 0.10` (CDL-108; `BACKWARD_ATTRIBUTION_BACKWARD_POOL_SHARE_BETA` in code). The ECU^A⊖ allocation is `β_bwd(e) · B(e) · S'_j(e) / Σ_k S'_k(e)` where `B(e)` is the event-local budget and `S'_j` is the path score reweighted by `Ω`. If the backward-eligible score sum is zero, CDL-108 leaves the backward pool unissued rather than silently reallocating it. Conservation is strict: `Σ ECU^A⊕ + Σ ECU^A⊖ ≤ B(e)` for every event `e`.
+
+The ECU^X exposure model is structurally analogous to Werner's (2014) productive-credit theory: capacity is reputation-derived, not collateral-posted, so the credit ceiling tracks demonstrated productive capacity rather than asset wealth. This is the mechanism that makes the system non-extractive by design — an agent cannot acquire epistemic standing by depositing capital, only by contributing verifiable work.
+
 **Reputation lock-in and the Matthew effect.** A natural concern in any reputation system is that early advantages compound: a validator with slightly higher initial accuracy accumulates more ECU → higher reputation → higher selection probability → more influence → still more ECU, potentially creating an epistemic oligarchy without anyone designing one. ILC's answer is structural, not merely aspirational. Two decay mechanisms operate simultaneously. *ECU temporal decay* (CDL-V1) ensures that accumulated credit not backed by ongoing work loses value over time — there is no rent on past contributions, only on continuing ones. *Werner flow-governing* (CDL-096) caps the rate at which any single credit lane can dominate issuance, preventing a high-reputation cluster from monopolizing the epoch pool through volume alone. The consequence: sustained epistemic standing requires sustained epistemic contribution, not merely a strong early start. Whether these decay parameters are calibrated correctly is an empirical question — the planned SIM-RATCHET-01 simulation explicitly tests whether early randomness in reputation seeding becomes permanent political power over long epoch runs.
 
 **Treasury governance (CDL-047, CDL-028).** The protocol maintains a treasury — a reserve funded by write fees, activation fees, and the Genesis allocation — that operates countercyclically to the primary emission schedule. Three constitutional constraints govern it:
