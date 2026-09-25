@@ -35,6 +35,7 @@ from decimal import Decimal, InvalidOperation, ROUND_FLOOR
 from pathlib import Path
 from typing import Any
 
+from ilc_core.consensus.binary_paths import installed_consensus_binary_path
 from ilc_core.encoding.cidv1 import parse_nodeid_strict
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 from ilc_core.economics.backward_attribution_traversal import (
@@ -109,6 +110,9 @@ def resolve_attribution_batch_ingest_binary(configured: str | Path | None = None
         return Path(configured)
     if _PACKAGE_ATTRIBUTION_BATCH_INGEST_BINARY.exists():
         return _PACKAGE_ATTRIBUTION_BATCH_INGEST_BINARY
+    installed = installed_consensus_binary_path(_ATTRIBUTION_BATCH_INGEST_BINARY_NAME)
+    if installed is not None:
+        return installed
     discovered = shutil.which(_ATTRIBUTION_BATCH_INGEST_BINARY_NAME)
     if discovered:
         return Path(discovered)

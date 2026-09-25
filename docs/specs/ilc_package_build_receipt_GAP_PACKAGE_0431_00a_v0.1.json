@@ -1,0 +1,93 @@
+{
+  "schema": "ilc.package_build_receipt.v0.1",
+  "phase": "GAP-PACKAGE-0431-00a",
+  "date": "2026-09-25",
+  "status": "complete",
+  "source_private_commit_before_version_bump": "d7ff8f78717e48702a1b9befcc87b05650394362",
+  "version": {
+    "from": "0.4.30",
+    "to": "0.4.31"
+  },
+  "pypi_state_prebuild": {
+    "ilc_core_0_4_29_yanked": [
+      false,
+      false
+    ],
+    "ilc_core_0_4_30_yanked": [
+      true,
+      true
+    ],
+    "ilc_core_0_4_31_exists": false
+  },
+  "runtime_fixes": {
+    "binary_paths_allowlist_added": "attribution_batch_ingest",
+    "bridge_resolver_step_added": "installed_consensus_binary_path(\"attribution_batch_ingest\")",
+    "resolver_precedence": [
+      "configured",
+      "package_binary",
+      "installed_consensus_binary_path",
+      "PATH",
+      "source_default"
+    ]
+  },
+  "python_artifacts": {
+    "wheel": {
+      "path": "dist/ilc_core-0.4.31-py3-none-any.whl",
+      "sha256": "362e6be6c3be596010d02e37c94b66570507e67b590716114eaaf5f2dd63dae1",
+      "size_bytes": 1534395,
+      "signed_preimage_sha256": "ce2c3d160f2ce851056d580b1089179c9c6a40ca8827a601325b6f2411273756"
+    },
+    "sdist": {
+      "path": "dist/ilc_core-0.4.31.tar.gz",
+      "sha256": "646854df1eb3a75346d962a7a790e71f667d4edbcc11d81f87fe5bc791dc2d31",
+      "size_bytes": 1255698,
+      "signed_preimage_sha256": "5f5ab57a2258f06c8f0543058f26d67c0466433a8a7c2a873c7fe7d35f749a48"
+    }
+  },
+  "consensus_helper_tarball": {
+    "path": "out/gap_package_0431_00a/ilc-consensus-linux-x86_64-v0.4.31.tar.gz",
+    "sha256": "f493ae06732b5a0e55576aaf86dbeb20ce4a742d3488579e73933a6ac1721036",
+    "size_bytes": 5045081,
+    "members_sorted": [
+      "attribution_batch_ingest",
+      "bls_verify_digest",
+      "ilc_p2p_bridge",
+      "invite_pop_bls",
+      "keygen",
+      "validator_endpoint_assertion_bls",
+      "validator_harness"
+    ],
+    "attribution_batch_ingest": {
+      "sha256": "3d75b168a234684a309f85d77cc8631f594a3cf69cad39772d8e45b29e977453",
+      "size_bytes": 1223232
+    },
+    "remote_build_dir": "/tmp/gap0431_00a_20260925T152700Z",
+    "remote_build_host": "ilc-node-2",
+    "remote_toolchain": "cargo 1.97.1; rustc 1.97.1"
+  },
+  "verification": {
+    "focused_tests": "5 passed",
+    "gate_a": "1 passed, 12 deselected",
+    "twine_check": "PASSED for wheel and sdist",
+    "wheel_content_inspection": "passed",
+    "outside_repo_installed_wheel_resolver_smoke": "passed",
+    "resolved_binary_source": "ILC_CONSENSUS_BIN_DIR",
+    "resolved_binary_execution": "attribution_balance_store_init_ok"
+  },
+  "next_phase_prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0431_00b_g10_pypi_upload_sign_mirror.md",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_release_signing_ceremony",
+    "no_github_release_upload",
+    "no_tools_install_sh_retarget",
+    "no_public_mirror_push",
+    "no_validator_sync",
+    "no_phase_1603_retry",
+    "no_darwin_helper_binary",
+    "no_epoch_transition",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_mainnet_claim"
+  ],
+  "output_token": "package_0431_local_build_complete_GAP_PACKAGE_0431_00a"
+}
