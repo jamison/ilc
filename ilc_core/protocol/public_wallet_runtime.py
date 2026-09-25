@@ -129,10 +129,14 @@ class PublicWalletRuntime:
             payload=latest_balance_receipt,
         )
         claimability_state = _claimability_state(lifecycle_data)
+        ecu_accrual_source = lifecycle_data.get("balance_ecu_source")
+        if ecu_accrual_source == "python_in_memory_ecu_python_rust_balance_bridge_missing_phase_1597":
+            ecu_accrual_source = "public_wallet_runtime_ecu_accrual"
         status = {
             "agent_id": agent_id,
             "balance_ilc": lifecycle_data["balance_ilc"],
             "ecu_accrual": lifecycle_data["balance_ecu"],
+            "ecu_accrual_source": ecu_accrual_source,
             "claimability_state": claimability_state,
             "last_settled_epoch_id": lifecycle_data.get("last_settled_epoch_id"),
             "history_digest": lifecycle_data.get("history_digest"),

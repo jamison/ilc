@@ -245,9 +245,13 @@ def test_ecu_status_normalizes_endpoint_response() -> None:
     assert result["non_claim"] == "ecu_committed_balance_zero_until_observe_00"
 
 
-def test_ecu_status_requires_endpoint() -> None:
-    with pytest.raises(EcuStatusCliError, match="ecu_status_endpoint_missing"):
-        handle_ecu_status(argparse.Namespace(agent_id=VALID_AGENT_ID, endpoint="", timeout=10.0))
+def test_ecu_status_without_endpoint_returns_diagnostic_zero() -> None:
+    result = handle_ecu_status(argparse.Namespace(agent_id=VALID_AGENT_ID, endpoint="", timeout=10.0))
+
+    assert result["pending_attribution_quote"] == "0"
+    assert result["committed_ecu_balance"] == "0"
+    assert result["balance_ecu_source"] == "local_zero_state_no_source_configured"
+    assert result["status"] == "no_endpoint_or_wallet_store_configured"
 
 
 def test_ecu_status_does_not_accept_invalid_agent_id() -> None:
@@ -373,7 +377,7 @@ def test_ecu_status_redirect_handler_forbids_redirects() -> None:
         )
 
 
-def test_ecu_status_is_stateless_on_endpoint_missing(tmp_path: Path) -> None:
+def test_ecu_status_local_zero_is_stateless_without_endpoint(tmp_path: Path) -> None:
     graph_path = tmp_path / "graph.json"
     proc = subprocess.run(
         [
@@ -392,8 +396,10 @@ def test_ecu_status_is_stateless_on_endpoint_missing(tmp_path: Path) -> None:
         text=True,
     )
 
-    assert proc.returncode == 1
-    assert "ecu_status_endpoint_missing_GAP_ECU_CLI_SURFACE_00" in proc.stderr
+    assert proc.returncode == 0
+    payload = json.loads(proc.stdout)
+    assert payload["ok"] is True
+    assert payload["data"]["balance_ecu_source"] == "local_zero_state_no_source_configured"
     assert not graph_path.exists()
 
 

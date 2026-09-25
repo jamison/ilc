@@ -1210,3 +1210,54 @@ def read_rust_balance_store_ecu(
     if balance_ecu < 0:
         raise ValueError("lifecycle_balance_readback_negative")
     return balance_ecu
+
+
+def initialize_rust_balance_store(
+    consensus_lmdb: str | Path,
+    *,
+    rust_binary: str | Path | None = None,
+    timeout_seconds: int = 30,
+) -> dict[str, Any]:
+    """Initialize/open an empty Rust BalanceStore without attribution credit."""
+
+    lmdb_path = Path(consensus_lmdb)
+    if lmdb_path.exists() and not lmdb_path.is_dir():
+        raise ValueError("lifecycle_balance_store_init_lmdb_path_invalid")
+    binary_path = (
+        Path(rust_binary)
+        if rust_binary is not None
+        else DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY
+    )
+    if not binary_path.exists() or not binary_path.is_file():
+        raise ValueError("lifecycle_balance_store_init_binary_missing")
+    if not os.access(binary_path, os.X_OK):
+        raise ValueError("lifecycle_balance_store_init_binary_not_executable")
+
+    command = [
+        str(binary_path),
+        "--lmdb",
+        str(lmdb_path),
+        "--init-balance-store",
+    ]
+    try:
+        result = subprocess.run(
+            command,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise ValueError("lifecycle_balance_store_init_timeout") from exc
+    if result.returncode != 0:
+        detail = (result.stderr or result.stdout).strip()
+        raise ValueError(f"lifecycle_balance_store_init_failed: {detail}")
+    try:
+        payload = _require_dict("rust_balance_store_init_report", json.loads(result.stdout))
+    except (json.JSONDecodeError, AttributionBatchBridgeError) as exc:
+        raise ValueError("lifecycle_balance_store_init_invalid_json") from exc
+    if payload.get("marker") != "attribution_balance_store_init_ok":
+        raise ValueError("lifecycle_balance_store_init_marker_invalid")
+    if payload.get("initialized") is not True:
+        raise ValueError("lifecycle_balance_store_init_flag_invalid")
+    return payload

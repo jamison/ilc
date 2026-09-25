@@ -3708,6 +3708,14 @@ def _build_parser() -> JsonArgumentParser:
                 default=10.0,
                 help="HTTP timeout in seconds (1 to 30).",
             )
+            p_ecu_status.add_argument(
+                "--wallet-store",
+                default="",
+                help=(
+                    "Diagnostic local LMDB wallet store for no-endpoint status; "
+                    "defaults to ILC_WALLET_STORE_PATH when set."
+                ),
+            )
             continue
 
         if command == "submit":

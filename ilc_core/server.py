@@ -47,6 +47,10 @@ from ilc_core.sidecars.public_verifier_api_activation import (
 )
 from ilc_core.work.task_queue import TaskDescriptor
 from ilc_core.network.d2d.gossip_peer_registry import reject_private_address_literal
+from ilc_core.consensus.attribution_batch_bridge import (
+    DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY,
+    initialize_rust_balance_store,
+)
 
 configure_logging()
 logger = logging.getLogger(__name__)
@@ -171,11 +175,28 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     peer_manager = PeerManager(local_port=8000)
     public_runtime_root = Path(tempfile.mkdtemp(prefix="ilc-public-runtime-"))
     public_admission_store = LmdbAdmissionStore(public_runtime_root / "admission")
-    public_wallet_store = LmdbWalletStore(public_runtime_root / "wallet")
+    configured_wallet_store = os.environ.get("ILC_WALLET_STORE_PATH", "").strip()
+    public_wallet_store_path = (
+        Path(configured_wallet_store)
+        if configured_wallet_store
+        else public_runtime_root / "wallet"
+    )
+    configured_consensus_lmdb = os.environ.get("ILC_CONSENSUS_LMDB_PATH", "").strip()
+    configured_rust_binary = os.environ.get("ILC_ATTRIBUTION_BATCH_INGEST_BINARY", "").strip()
+    rust_balance_binary = Path(configured_rust_binary) if configured_rust_binary else None
+    consensus_lmdb_path = Path(configured_consensus_lmdb) if configured_consensus_lmdb else None
+    if consensus_lmdb_path is not None:
+        initialize_rust_balance_store(
+            consensus_lmdb_path,
+            rust_binary=rust_balance_binary or DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY,
+        )
     ecu_active_layer_runtime = EcuActiveLayerRuntime()
+    public_wallet_store = LmdbWalletStore(public_wallet_store_path)
     public_lifecycle_runtime = EcuIlcLifecycleRuntime(
         wallet_store=public_wallet_store,
         ecu_runtime=ecu_active_layer_runtime,
+        consensus_lmdb=consensus_lmdb_path,
+        rust_balance_binary=rust_balance_binary,
     )
     claimability_registry = ClaimNullifierRegistry()
     public_wallet_runtime = PublicWalletRuntime(
@@ -187,6 +208,8 @@ def _init_runtime_state(app_obj: FastAPI) -> None:
     app_obj.state.agent = agent
     app_obj.state.peer_manager = peer_manager
     app_obj.state.public_runtime_root = public_runtime_root
+    app_obj.state.public_wallet_store_path = public_wallet_store_path
+    app_obj.state.public_consensus_lmdb_path = configured_consensus_lmdb or None
     app_obj.state.public_receipt_store = public_admission_store
     app_obj.state.public_admission_store = public_admission_store
     app_obj.state.public_wallet_store = public_wallet_store
@@ -748,6 +771,7 @@ def ecu_status_public_api(agent_id: str, request: Request):
         raise HTTPException(status_code=400, detail=exc.token) from exc
     data = wallet_status["data"]
     balance = str(data.get("ecu_accrual", "0"))
+    balance_source = data.get("ecu_accrual_source") or "public_wallet_runtime_ecu_accrual"
     return {
         "agent_id": agent_id,
         "pending_attribution_quote": "0",
@@ -756,7 +780,7 @@ def ecu_status_public_api(agent_id: str, request: Request):
         ),
         "committed_ecu_balance": balance,
         "balance_ecu": balance,
-        "balance_ecu_source": "public_wallet_runtime_ecu_accrual",
+        "balance_ecu_source": balance_source,
         "pressure_model_boundary": (
             "inverted_ecu_pressure_read_model_not_spendable_balance"
         ),

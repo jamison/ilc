@@ -21,6 +21,7 @@ struct CliArgs {
     lmdb_path: Option<PathBuf>,
     input_file: Option<PathBuf>,
     query_balance_agent_id_hex: Option<String>,
+    init_balance_store: bool,
     dry_run: bool,
 }
 
@@ -71,10 +72,17 @@ struct QueryBalanceReport {
 }
 
 #[derive(Debug, Serialize)]
+struct InitBalanceStoreReport {
+    marker: &'static str,
+    initialized: bool,
+}
+
+#[derive(Debug, Serialize)]
 #[serde(untagged)]
 enum CommandReport {
     Ingest(IngestReport),
     QueryBalance(QueryBalanceReport),
+    InitBalanceStore(InitBalanceStoreReport),
 }
 
 fn main() {
@@ -94,6 +102,9 @@ fn main() {
 
 fn run() -> Result<CommandReport, String> {
     let args = parse_args(&std::env::args().collect::<Vec<_>>())?;
+    if args.init_balance_store {
+        return init_balance_store(args.lmdb_path).map(CommandReport::InitBalanceStore);
+    }
     if let Some(agent_id_hex) = args.query_balance_agent_id_hex {
         return query_balance(args.lmdb_path, &agent_id_hex).map(CommandReport::QueryBalance);
     }
@@ -182,6 +193,7 @@ fn parse_args(args: &[String]) -> Result<CliArgs, String> {
     let mut lmdb_path: Option<PathBuf> = None;
     let mut input_file: Option<PathBuf> = None;
     let mut query_balance_agent_id_hex: Option<String> = None;
+    let mut init_balance_store = false;
     let mut dry_run = false;
     while idx < args.len() {
         match args[idx].as_str() {
@@ -209,6 +221,9 @@ fn parse_args(args: &[String]) -> Result<CliArgs, String> {
                 };
                 query_balance_agent_id_hex = Some(value.clone());
             }
+            "--init-balance-store" => {
+                init_balance_store = true;
+            }
             "--help" | "-h" => {
                 return Err(usage());
             }
@@ -217,6 +232,15 @@ fn parse_args(args: &[String]) -> Result<CliArgs, String> {
             }
         }
         idx += 1;
+    }
+    if init_balance_store && input_file.is_some() {
+        return Err("--init-balance-store cannot be combined with --input-file".to_string());
+    }
+    if init_balance_store && query_balance_agent_id_hex.is_some() {
+        return Err("--init-balance-store cannot be combined with --query-balance".to_string());
+    }
+    if init_balance_store && dry_run {
+        return Err("--init-balance-store cannot be combined with --dry-run".to_string());
     }
     if query_balance_agent_id_hex.is_some() && input_file.is_some() {
         return Err("--query-balance cannot be combined with --input-file".to_string());
@@ -228,6 +252,7 @@ fn parse_args(args: &[String]) -> Result<CliArgs, String> {
         lmdb_path,
         input_file,
         query_balance_agent_id_hex,
+        init_balance_store,
         dry_run,
     })
 }
@@ -235,9 +260,28 @@ fn parse_args(args: &[String]) -> Result<CliArgs, String> {
 fn usage() -> String {
     concat!(
         "Usage: attribution_batch_ingest --input-file <json> [--lmdb <path>] [--dry-run]\n",
-        "       attribution_batch_ingest --lmdb <path> --query-balance <agent_id_hex>"
+        "       attribution_batch_ingest --lmdb <path> --query-balance <agent_id_hex>\n",
+        "       attribution_batch_ingest --lmdb <path> --init-balance-store"
     )
     .to_string()
+}
+
+fn init_balance_store(lmdb_path: Option<PathBuf>) -> Result<InitBalanceStoreReport, String> {
+    let Some(lmdb_path) = lmdb_path else {
+        return Err("--lmdb is required for --init-balance-store".to_string());
+    };
+    fs::create_dir_all(&lmdb_path).map_err(|err| format!("lmdb_dir_create_failed: {err}"))?;
+    let env = Arc::new(
+        Environment::new()
+            .set_max_dbs(1)
+            .open(&lmdb_path)
+            .map_err(|err| format!("lmdb_open_failed: {err}"))?,
+    );
+    BalanceStore::new(env).map_err(|err| format!("balance_store_open_failed: {err}"))?;
+    Ok(InitBalanceStoreReport {
+        marker: "attribution_balance_store_init_ok",
+        initialized: true,
+    })
 }
 
 fn query_balance(
