@@ -28,6 +28,7 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import subprocess
 import tempfile
 from decimal import Decimal, InvalidOperation, ROUND_FLOOR
@@ -53,8 +54,18 @@ from ilc_core.economics.werner_attribution_bridge import (
 
 ATTRIBUTION_BATCH_BRIDGE_VERSION = "attribution_batch_bridge_1568_fix2b3.v0.1"
 MICRO_ECU_PER_ECU = Decimal("1000000")
-DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY = Path(
-    "ilc_consensus/target/release/attribution_batch_ingest"
+_ATTRIBUTION_BATCH_INGEST_BINARY_NAME = "attribution_batch_ingest"
+_PACKAGE_ATTRIBUTION_BATCH_INGEST_BINARY = (
+    Path(__file__).resolve().parents[1]
+    / "bin"
+    / _ATTRIBUTION_BATCH_INGEST_BINARY_NAME
+)
+DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY = (
+    Path(__file__).resolve().parents[2]
+    / "ilc_consensus"
+    / "target"
+    / "release"
+    / _ATTRIBUTION_BATCH_INGEST_BINARY_NAME
 )
 MAX_CLAIMS_PER_BATCH = 10_000
 MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH = 1_000
@@ -89,6 +100,19 @@ class AttributionBatchBridgeError(ValueError):
     def __init__(self, token: str, message: str) -> None:
         super().__init__(message)
         self.token = token
+
+
+def resolve_attribution_batch_ingest_binary(configured: str | Path | None = None) -> Path:
+    """Resolve the Rust attribution helper in source-tree and installed contexts."""
+
+    if configured is not None and str(configured).strip():
+        return Path(configured)
+    if _PACKAGE_ATTRIBUTION_BATCH_INGEST_BINARY.exists():
+        return _PACKAGE_ATTRIBUTION_BATCH_INGEST_BINARY
+    discovered = shutil.which(_ATTRIBUTION_BATCH_INGEST_BINARY_NAME)
+    if discovered:
+        return Path(discovered)
+    return DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY
 
 
 def _require_dict(name: str, value: Any) -> dict[str, Any]:
@@ -1139,10 +1163,9 @@ def read_rust_balance_store_ecu(
 ) -> Decimal:
     """Read committed ECU balance from Rust BalanceStore via the Rust query mode.
 
-    Missing or never-initialized LMDB paths are treated as an unconfigured source
-    and return ``Decimal("0")``. Once an LMDB path is configured, reader,
-    subprocess, JSON, ABI, and numeric-format failures fail closed with stable
-    ``lifecycle_balance_readback_*`` tokens.
+    Missing LMDB paths are treated as an unconfigured source and return
+    ``Decimal("0")``. Existing but uninitialized directories fail closed so a
+    partial store cannot be mislabeled as a committed Rust aggregate.
     """
 
     try:
@@ -1156,13 +1179,9 @@ def read_rust_balance_store_ecu(
     if not lmdb_path.is_dir():
         raise ValueError("lifecycle_balance_readback_lmdb_path_invalid")
     if not (lmdb_path / "data.mdb").exists():
-        return Decimal("0")
+        raise ValueError("lifecycle_balance_readback_lmdb_uninitialized")
 
-    binary_path = (
-        Path(rust_binary)
-        if rust_binary is not None
-        else DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY
-    )
+    binary_path = resolve_attribution_batch_ingest_binary(rust_binary)
     if not binary_path.exists() or not binary_path.is_file():
         raise ValueError("lifecycle_balance_readback_binary_missing")
     if not os.access(binary_path, os.X_OK):
@@ -1223,11 +1242,7 @@ def initialize_rust_balance_store(
     lmdb_path = Path(consensus_lmdb)
     if lmdb_path.exists() and not lmdb_path.is_dir():
         raise ValueError("lifecycle_balance_store_init_lmdb_path_invalid")
-    binary_path = (
-        Path(rust_binary)
-        if rust_binary is not None
-        else DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY
-    )
+    binary_path = resolve_attribution_batch_ingest_binary(rust_binary)
     if not binary_path.exists() or not binary_path.is_file():
         raise ValueError("lifecycle_balance_store_init_binary_missing")
     if not os.access(binary_path, os.X_OK):

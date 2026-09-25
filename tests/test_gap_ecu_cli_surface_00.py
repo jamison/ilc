@@ -232,6 +232,7 @@ def test_ecu_status_normalizes_endpoint_response() -> None:
             "agent_id": VALID_AGENT_ID,
             "pending_attribution_quote": "0.20",
             "committed_ecu_balance": "0",
+            "balance_ecu_source": "endpoint_response",
             "status": "quote_visible",
             "quote_epoch": 1,
         },
@@ -240,7 +241,7 @@ def test_ecu_status_normalizes_endpoint_response() -> None:
     )
 
     assert result["version"] == ECU_STATUS_CLI_VERSION
-    assert result["pending_attribution_quote"] == "0.20"
+    assert result["pending_attribution_quote"] == "0.2"
     assert result["committed_ecu_balance"] == "0"
     assert result["non_claim"] == "ecu_committed_balance_zero_until_observe_00"
 
@@ -281,6 +282,7 @@ def test_ecu_status_fetches_json_from_endpoint(monkeypatch: pytest.MonkeyPatch) 
                     "agent_id": VALID_AGENT_ID,
                     "pending_attribution_quote": "1.25",
                     "committed_ecu_balance": "0",
+                    "balance_ecu_source": "endpoint_response",
                     "status": "quote_visible",
                 }
             ).encode("utf-8")
@@ -321,6 +323,19 @@ def test_ecu_status_requires_agent_id_in_response() -> None:
         )
 
 
+def test_ecu_status_requires_explicit_balance_source() -> None:
+    with pytest.raises(EcuStatusCliError, match="ecu_status_balance_ecu_source_invalid"):
+        normalize_ecu_status_payload(
+            {
+                "agent_id": VALID_AGENT_ID,
+                "pending_attribution_quote": "0",
+                "committed_ecu_balance": "0",
+            },
+            agent_id=VALID_AGENT_ID,
+            endpoint="https://validator.example/ecu/status",
+        )
+
+
 @pytest.mark.parametrize(
     "payload",
     [
@@ -344,6 +359,7 @@ def test_ecu_status_rejects_invalid_quote_epoch() -> None:
                 "agent_id": VALID_AGENT_ID,
                 "pending_attribution_quote": "0",
                 "committed_ecu_balance": "0",
+                "balance_ecu_source": "endpoint_response",
                 "quote_epoch": {"nested": "bad"},
             },
             agent_id=VALID_AGENT_ID,

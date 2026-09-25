@@ -238,15 +238,15 @@ def _payload_ref(*, prefix: str, payload: Any) -> str | None:
     return f"{prefix}:{digest}"
 
 
-def _epoch_sort_key(epoch_id: str) -> tuple[int, int | str]:
-    if len(epoch_id) == 10 and epoch_id.isdecimal():
-        return (0, int(epoch_id))
+def _epoch_sort_key(epoch_id: str) -> tuple[int, int, str]:
+    if epoch_id.isdecimal():
+        return (0, int(epoch_id), epoch_id)
     prefix = "epoch_"
     if epoch_id.startswith(prefix):
         suffix = epoch_id[len(prefix):]
-        if suffix.isdigit():
-            return (1, int(suffix))
-    return (2, epoch_id)
+        if suffix.isdecimal():
+            return (1, int(suffix), epoch_id)
+    return (2, 0, epoch_id)
 
 
 __all__ = [

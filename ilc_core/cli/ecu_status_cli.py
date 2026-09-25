@@ -21,11 +21,15 @@ from ilc_core.cli.wallet_cli import (
     _wallet_store_path,
 )
 from ilc_core.consensus.attribution_batch_bridge import (
-    DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY,
     initialize_rust_balance_store,
+    resolve_attribution_batch_ingest_binary,
 )
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
-from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
+from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
+    EcuIlcLifecycleRuntime,
+    EcuIlcLifecycleRuntimeError,
+)
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 
 ECU_STATUS_CLI_VERSION = "ecu_status_cli_GAP_ECU_CLI_SURFACE_00.v0.1"
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
@@ -122,7 +126,7 @@ def _require_decimal_string(value: Any, *, field_name: str) -> str:
         raise EcuStatusCliError(f"ecu_status_{field_name}_invalid")
     if parsed < 0:
         raise EcuStatusCliError(f"ecu_status_{field_name}_invalid")
-    return value
+    return decimal_to_canonical_string(parsed)
 
 
 def _open_status_request(request: Request, *, timeout: float) -> object:
@@ -173,7 +177,7 @@ def normalize_ecu_status_payload(payload: dict[str, Any], *, agent_id: str, endp
     status = payload.get("status", payload.get("quote_status", "endpoint_response"))
     if not isinstance(status, str) or not status:
         raise EcuStatusCliError("ecu_status_status_invalid")
-    balance_ecu_source = payload.get("balance_ecu_source", "endpoint_response")
+    balance_ecu_source = payload.get("balance_ecu_source")
     if not isinstance(balance_ecu_source, str) or not balance_ecu_source:
         raise EcuStatusCliError("ecu_status_balance_ecu_source_invalid")
     quote_epoch = payload.get("quote_epoch")
@@ -209,7 +213,7 @@ def _consensus_lmdb_path() -> Path | None:
 
 def _rust_balance_binary_path() -> Path:
     configured = os.environ.get(_RUST_BINARY_ENV, "").strip()
-    return Path(configured) if configured else DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY
+    return resolve_attribution_batch_ingest_binary(configured or None)
 
 
 def _zero_local_status(agent_id: str) -> dict[str, Any]:
@@ -255,12 +259,17 @@ def _local_wallet_status(args: argparse.Namespace, *, agent_id: str) -> dict[str
         wallet_row.get("balance_ecu", wallet_row.get("ecu_accrual", "0")),
         field_name="committed_ecu_balance",
     )
+    settled_ilc_balance = _require_decimal_string(
+        wallet_row.get("balance_ilc", "0"),
+        field_name="settled_ilc_balance",
+    )
     return {
         "subcommand": "status",
         "agent_id": agent_id,
         "endpoint": None,
         "pending_attribution_quote": "0",
         "committed_ecu_balance": balance,
+        "settled_ilc_balance": settled_ilc_balance,
         "balance_ecu_source": "local_wallet_store_read_model",
         "status": "local_wallet_store_read_model",
         "quote_epoch": None,
@@ -286,6 +295,8 @@ def _local_rust_status(args: argparse.Namespace, *, agent_id: str, consensus_lmd
             rust_balance_binary=rust_binary,
         )
         snapshot = lifecycle_runtime.lifecycle_snapshot(agent_id=agent_id)
+    except EcuIlcLifecycleRuntimeError as exc:
+        raise EcuStatusCliError(exc.token) from exc
     except ValueError as exc:
         token = str(exc).split(":", 1)[0]
         raise EcuStatusCliError(token) from exc

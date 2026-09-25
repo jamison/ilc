@@ -5,6 +5,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -18,6 +19,7 @@ from ilc_core.consensus.attribution_batch_bridge import (
 )
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntime
+from ilc_core import server as server_module
 from ilc_core.server import create_app
 from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 
@@ -110,8 +112,36 @@ def test_wallet_store_argument_returns_diagnostic_wallet_source(
     result = handle_ecu_status(_args(wallet_store=str(wallet_store)))
 
     assert result["committed_ecu_balance"] == "0"
+    assert result["settled_ilc_balance"] == "1.25"
     assert result["balance_ecu_source"] == "local_wallet_store_read_model"
     assert result["status"] == "local_wallet_store_read_model"
+
+
+def test_wallet_store_diagnostic_reads_explicit_ecu_field_only(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _clear_status_env(monkeypatch)
+    wallet_store = tmp_path / "wallet-with-ecu.lmdb"
+    store = LmdbWalletStore(wallet_store)
+    try:
+        store.put_wallet(
+            AGENT_ID,
+            {
+                "agent_id": AGENT_ID,
+                "balance_ecu": "2.5",
+                "balance_ilc": "7",
+                "claimability_state": "deferred",
+            },
+        )
+    finally:
+        store.close()
+
+    result = handle_ecu_status(_args(wallet_store=str(wallet_store)))
+
+    assert result["committed_ecu_balance"] == "2.5"
+    assert result["settled_ilc_balance"] == "7"
+    assert result["balance_ecu_source"] == "local_wallet_store_read_model"
 
 
 def test_wallet_store_env_returns_diagnostic_wallet_source(
@@ -178,6 +208,15 @@ def test_initialize_rust_balance_store_creates_readable_empty_store(tmp_path: Pa
     assert read_rust_balance_store_ecu(consensus_lmdb, AGENT_ID, rust_binary=binary) == 0
 
 
+def test_existing_uninitialized_rust_lmdb_directory_fails_closed(tmp_path: Path) -> None:
+    binary = _require_rust_binary()
+    consensus_lmdb = tmp_path / "empty-consensus.lmdb"
+    consensus_lmdb.mkdir()
+
+    with pytest.raises(ValueError, match="lifecycle_balance_readback_lmdb_uninitialized"):
+        read_rust_balance_store_ecu(consensus_lmdb, AGENT_ID, rust_binary=binary)
+
+
 def test_rust_configured_status_initializes_and_reads_zero(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -238,6 +277,32 @@ def test_configured_rust_lmdb_file_path_fails_closed(
 
     with pytest.raises(EcuStatusCliError, match="lifecycle_balance_store_init_lmdb_path_invalid"):
         handle_ecu_status(_args())
+
+
+def test_lifecycle_error_token_preserved_in_local_rust_status(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    binary = _require_rust_binary()
+    _clear_status_env(monkeypatch)
+    wallet_store = tmp_path / "bad-wallet.lmdb"
+    store = LmdbWalletStore(wallet_store)
+    try:
+        store.put_wallet(
+            AGENT_ID,
+            {
+                "agent_id": AGENT_ID,
+                "balance_ilc": "0",
+                "claimability_state": " padded ",
+            },
+        )
+    finally:
+        store.close()
+    monkeypatch.setenv("ILC_CONSENSUS_LMDB_PATH", str(tmp_path / "consensus.lmdb"))
+    monkeypatch.setenv("ILC_ATTRIBUTION_BATCH_INGEST_BINARY", str(binary))
+
+    with pytest.raises(EcuStatusCliError, match="lifecycle_claimability_state_invalid"):
+        handle_ecu_status(_args(wallet_store=str(wallet_store)))
 
 
 def test_endpoint_precedence_over_local_rust(
@@ -312,3 +377,23 @@ def test_server_uses_configured_wallet_store_path(
         pass
 
     assert app.state.public_wallet_store_path == wallet_store
+
+
+def test_server_startup_failure_cleans_temp_runtime_root(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _clear_status_env(monkeypatch)
+    runtime_root = tmp_path / "runtime-root"
+    monkeypatch.setenv("ILC_CONSENSUS_LMDB_PATH", str(tmp_path / "consensus.lmdb"))
+    monkeypatch.setattr(tempfile, "mkdtemp", lambda prefix: str(runtime_root))
+
+    def fail_init(*_args: object, **_kwargs: object) -> None:
+        raise ValueError("lifecycle_balance_store_init_binary_missing")
+
+    monkeypatch.setattr(server_module, "initialize_rust_balance_store", fail_init)
+
+    with pytest.raises(ValueError, match="lifecycle_balance_store_init_binary_missing"):
+        server_module._init_runtime_state(create_app())
+
+    assert not runtime_root.exists()

@@ -68,7 +68,10 @@ class EcuIlcLifecycleRuntime:
         latest_balance_receipt = wallet_row.get("latest_balance_receipt")
         if not isinstance(latest_balance_receipt, dict):
             latest_balance_receipt = None
-        pending_balance_ecu = self.ecu_runtime.get_accrued_ecu(agent_id)
+        pending_balance_ecu = _ecu_decimal_string(
+            self.ecu_runtime.get_accrued_ecu(agent_id),
+            token="lifecycle_balance_ecu_pending_invalid",
+        )
         balance_ecu = pending_balance_ecu
         balance_ecu_source = "python_in_memory_ecu_python_rust_balance_bridge_missing_phase_1597"
         snapshot_extra: dict[str, Any] = {}
@@ -256,7 +259,12 @@ def _epoch_history_sort_key(item: dict[str, Any]) -> tuple[int, int, str]:
     epoch_id = str(item.get("epoch_id", ""))
     if epoch_id.isdecimal():
         return (0, int(epoch_id), epoch_id)
-    return (1, 0, epoch_id)
+    prefix = "epoch_"
+    if epoch_id.startswith(prefix):
+        suffix = epoch_id[len(prefix):]
+        if suffix.isdecimal():
+            return (1, int(suffix), epoch_id)
+    return (2, 0, epoch_id)
 
 
 def _reject_decimal_tree(value: Any) -> None:
@@ -282,6 +290,12 @@ def _reject_decimal_tree(value: Any) -> None:
 def _wallet_decimal_string(value: object) -> str:
     return decimal_to_canonical_string(
         to_decimal(value if value is not None else "0", token="lifecycle_wallet_balance_invalid")
+    )
+
+
+def _ecu_decimal_string(value: object, *, token: str) -> str:
+    return decimal_to_canonical_string(
+        to_decimal(value if value is not None else "0", token=token)
     )
 
 
