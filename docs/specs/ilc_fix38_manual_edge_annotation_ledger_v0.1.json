@@ -1,4 +1,73 @@
 {
+  "_manual_additions": [
+    {
+      "annotation_batch": "manual_batch_139_phase_gap_ecu_status_local_path_00_ecu_lifecycle_flow_diagram",
+      "chronology_note": "2026-09-25 \u2014 ECU lifecycle flow diagram v0.1 produced by Sonnet with Codex corrections annotated",
+      "manual_read_summary": "ASCII ECU lifecycle flow diagram covering all ECU types (ECU^X/Q/A+/A-/C/L/T and omega), full lifecycle flow from agent work through attribution events to Rust BalanceStore to monthly close, with Codex corrections to stale frontier and misattributed CO_AUTHORSHIP wiring status",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_ecu_confidence_matrix_and_validation_lane_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "token:ecu_lifecycle_type_namespace_pre_canon"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ECU-STATUS-LOCAL-PATH-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_140_phase_gap_first_monthly_issuance_close_observe_00_prompt",
+      "chronology_note": "2026-09-25 \u2014 OBSERVE-00 phase prompt drafted; time-gated SENSITIVE settlement phase for first organic monthly close",
+      "manual_read_summary": "Phase prompt for GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00: observes and executes the first organic monthly issuance close, including time-gate verification, maturity counter bridge investigation, EcuAccrualEvidence construction from production LMDB, MonthlyIssuanceMaturityProof construction from live validator quorum, conservation verification, and commit_epoch_distribution() execution",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "ilc_core/epoch/monthly_close_orchestrator.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_monthly_issuance_close_observe_00_g10_first_monthly_close_settlement.md"
+    }
+  ],
   "annotations": [
     {
       "annotation_batch": "manual_batch_001_frontier_files_0001_0010",
@@ -83548,10 +83617,12 @@
       "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
     },
     {
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_attribution_pipeline_smoke_00_g10_attribution_smoke.md",
-      "node_kind": "phase_prompt",
-      "manual_read_summary": "Sensitive ECU attribution pipeline smoke prompt defining direct quote-only settlement-engine smoke against the hello-world node, passive ECU empty-centrality confirmation, wallet LMDB integrity check, and no live source_refs bridge claim.",
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
       "chronology_note": "2026-09-19 prompt consumed after exact GO for GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00.",
+      "manual_read_summary": "Sensitive ECU attribution pipeline smoke prompt defining direct quote-only settlement-engine smoke against the hello-world node, passive ECU empty-centrality confirmation, wallet LMDB integrity check, and no live source_refs bridge claim.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SUPPORTS",
@@ -83570,21 +83641,21 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
-      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "DEPENDS_ON",
         "SOURCE_TREE_MEMBER",
         "SUPPORTS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_attribution_pipeline_smoke_00_g10_attribution_smoke.md"
     },
     {
-      "repo_path": "docs/phases/phase_gap_ecu_attribution_pipeline_smoke_00_walkthrough.md",
-      "node_kind": "phase_walkthrough",
-      "manual_read_summary": "Walkthrough records current-session GO phrase, token audit, direct reads, quote-only REUSE payout evidence, passive ECU zero reason, unchanged wallet LMDB hash, evidence JSON, verification output, output tokens, and non-claims.",
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
       "chronology_note": "2026-09-19 walkthrough for sensitive ECU attribution pipeline smoke completion.",
+      "manual_read_summary": "Walkthrough records current-session GO phrase, token audit, direct reads, quote-only REUSE payout evidence, passive ECU zero reason, unchanged wallet LMDB hash, evidence JSON, verification output, output tokens, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83607,21 +83678,21 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
-      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "EVIDENCES",
         "SOURCE_TREE_MEMBER",
         "SUPPORTS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_attribution_pipeline_smoke_00_walkthrough.md"
     },
     {
-      "repo_path": "docs/PLANNING_INDEX.md",
-      "node_kind": "planning_index",
-      "manual_read_summary": "PLANNING_INDEX Rev 97 records ECU attribution pipeline smoke completion and advances frontier to time-gated OBSERVE-00.",
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
       "chronology_note": "2026-09-19 planning index frontier advanced to GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00.",
+      "manual_read_summary": "PLANNING_INDEX Rev 97 records ECU attribution pipeline smoke completion and advances frontier to time-gated OBSERVE-00.",
+      "node_kind": "planning_index",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83636,21 +83707,21 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
-      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "EVIDENCES",
         "ROUTES_TO",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
     },
     {
-      "repo_path": "docs/phases/STATUS.md",
-      "node_kind": "phase_status_log",
-      "manual_read_summary": "STATUS records GO receipt, ECU attribution smoke completion, three output tokens, OBSERVE-00 carry-forward, and non-claims.",
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
       "chronology_note": "2026-09-19 STATUS emits ECU attribution pipeline smoke output tokens.",
+      "manual_read_summary": "STATUS records GO receipt, ECU attribution smoke completion, three output tokens, OBSERVE-00 carry-forward, and non-claims.",
+      "node_kind": "phase_status_log",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83673,21 +83744,21 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
-      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "EVIDENCES",
         "SOURCE_TREE_MEMBER",
         "SUPPORTS"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
     },
     {
-      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
-      "node_kind": "forward_plan",
-      "manual_read_summary": "Reconciled forward plan Rev 97 records ECU attribution pipeline smoke completion and moves the execution table arrow to OBSERVE-00.",
+      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
       "chronology_note": "2026-09-19 forward plan Rev 97 inserted.",
+      "manual_read_summary": "Reconciled forward plan Rev 97 records ECU attribution pipeline smoke completion and moves the execution table arrow to OBSERVE-00.",
+      "node_kind": "forward_plan",
+      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83702,21 +83773,21 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_ecu_attribution_pipeline_smoke_00_2026_09_19",
-      "phase_ref": "GAP-ECU-ATTRIBUTION-PIPELINE-SMOKE-00",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "EVIDENCES",
         "ROUTES_TO",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
     },
     {
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0428_00b_g10_pypi_upload_sign_mirror.md",
-      "node_kind": "phase_prompt",
-      "manual_read_summary": "Sensitive 0.4.28 publish/sign/mirror prompt for PyPI upload, Phase 1335 release-envelope verification, predecessor yank, installer retarget, public mirror refresh, and helper tarball re-tag after mirror push.",
+      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
       "chronology_note": "2026-09-22 prompt consumed under exact GO for GAP-PACKAGE-0428-00b; source commit records release envelope and manifest before public mirror push.",
+      "manual_read_summary": "Sensitive 0.4.28 publish/sign/mirror prompt for PyPI upload, Phase 1335 release-envelope verification, predecessor yank, installer retarget, public mirror refresh, and helper tarball re-tag after mirror push.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SUPPORTS",
@@ -83731,50 +83802,21 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SUPPORTS",
         "DEPENDS_ON",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0428_00b_g10_pypi_upload_sign_mirror.md"
     },
     {
-      "repo_path": "docs/specs/ilc_core_0428_release_envelopes_GAP_PACKAGE_0428_00b_v0.1.json",
-      "node_kind": "spec_doc",
-      "manual_read_summary": "0.4.28 release envelope set containing Phase 1335 Ed25519 signatures for wheel and sdist artifacts and signed preimage hashes derived from the 00a receipt.",
+      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
       "chronology_note": "2026-09-22 generated after signature verification and PyPI fetchback for ilc-core 0.4.28.",
-      "proposed_semantic_edges": [
-        {
-          "edge_type": "EVIDENCES",
-          "target": "phase:GAP-PACKAGE-0428-00b"
-        },
-        {
-          "edge_type": "SUPPORTS",
-          "target": "artifact:ilc-core-0.4.28"
-        },
-        {
-          "edge_type": "SOURCE_TREE_MEMBER",
-          "target": "genesis:genesis_root_v0.4"
-        }
-      ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [],
-      "proposed_trace_roles": [
-        "EVIDENCES",
-        "SUPPORTS",
-        "SOURCE_TREE_MEMBER"
-      ],
-      "recommended_graph_action": "load_bearing_artifact_added"
-    },
-    {
-      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0428_GAP_PACKAGE_0428_00b_v0.1.json",
+      "manual_read_summary": "0.4.28 release envelope set containing Phase 1335 Ed25519 signatures for wheel and sdist artifacts and signed preimage hashes derived from the 00a receipt.",
       "node_kind": "spec_doc",
-      "manual_read_summary": "0.4.28 installable release manifest binding PyPI wheel/sdist URLs, hashes, sizes, release envelope reference, and unchanged helper tarball URL for public installer verification.",
-      "chronology_note": "2026-09-22 generated after PyPI hash/size fetchback and before tools/install.sh retarget verification.",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83789,21 +83831,50 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "EVIDENCES",
         "SUPPORTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_core_0428_release_envelopes_GAP_PACKAGE_0428_00b_v0.1.json"
     },
     {
-      "repo_path": "tools/install.sh",
-      "node_kind": "install_script",
-      "manual_read_summary": "Public installer retargeted from 0.4.27 to the verified 0.4.28 wheel, release envelope set, sdist signature metadata, and deterministic v0.4.28 helper tarball URL.",
+      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
+      "chronology_note": "2026-09-22 generated after PyPI hash/size fetchback and before tools/install.sh retarget verification.",
+      "manual_read_summary": "0.4.28 installable release manifest binding PyPI wheel/sdist URLs, hashes, sizes, release envelope reference, and unchanged helper tarball URL for public installer verification.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PACKAGE-0428-00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "artifact:ilc-core-0.4.28"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0428_GAP_PACKAGE_0428_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
       "chronology_note": "2026-09-22 installer retarget for GAP-PACKAGE-0428-00b source commit before public mirror push.",
+      "manual_read_summary": "Public installer retargeted from 0.4.27 to the verified 0.4.28 wheel, release envelope set, sdist signature metadata, and deterministic v0.4.28 helper tarball URL.",
+      "node_kind": "install_script",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SUPPORTS",
@@ -83818,20 +83889,20 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SUPPORTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_modified"
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "tools/install.sh"
     },
     {
-      "repo_path": "tests/test_gap_public_install_02_install_sh.py",
-      "node_kind": "test_file",
-      "manual_read_summary": "Installer regression tests retargeted to assert 0.4.28 wheel, release envelope, manifest, and helper tarball constants remain synchronized with tools/install.sh.",
+      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
       "chronology_note": "2026-09-22 focused release test update for GAP-PACKAGE-0428-00b.",
+      "manual_read_summary": "Installer regression tests retargeted to assert 0.4.28 wheel, release envelope, manifest, and helper tarball constants remain synchronized with tools/install.sh.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83846,21 +83917,21 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "EVIDENCES",
         "TESTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_install_02_install_sh.py"
     },
     {
-      "repo_path": "tests/test_gap_release_sign_00d_verify_integration.py",
-      "node_kind": "test_file",
-      "manual_read_summary": "Release-signature integration tests retargeted so install.sh inline verification uses the current 0.4.28 manifest, envelope set, wheel URL, hash, and size.",
+      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
       "chronology_note": "2026-09-22 focused release test update for GAP-PACKAGE-0428-00b.",
+      "manual_read_summary": "Release-signature integration tests retargeted so install.sh inline verification uses the current 0.4.28 manifest, envelope set, wheel URL, hash, and size.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83875,21 +83946,21 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "EVIDENCES",
         "TESTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_release_sign_00d_verify_integration.py"
     },
     {
-      "repo_path": "tests/test_gap_public_rc_package_refresh_00b.py",
-      "node_kind": "test_file",
-      "manual_read_summary": "Package-refresh release manifest tests extended for 0.4.28 envelope coverage and current installer-manifest sync.",
+      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
       "chronology_note": "2026-09-22 focused release test update for GAP-PACKAGE-0428-00b.",
+      "manual_read_summary": "Package-refresh release manifest tests extended for 0.4.28 envelope coverage and current installer-manifest sync.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83904,21 +83975,26 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_source_release_artifacts_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "EVIDENCES",
         "TESTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_rc_package_refresh_00b.py"
     },
     {
-      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0428_00b_v0.1.json",
-      "node_kind": "release_receipt",
-      "manual_read_summary": "Final GAP-PACKAGE-0428-00b upload receipt recording signature verification, PyPI artifact hashes and sizes, 0.4.27 yank evidence, public mirror full-regeneration scan results, public mirror head, GitHub Release v0.4.28 helper asset evidence, public raw-GitHub fetchback, output token, and non-claims.",
+      "annotation_batch": "manual_batch_gap_package_0428_00b_final_evidence_2026_09_22",
       "chronology_note": "2026-09-22 GAP-PACKAGE-0428-00b final receipt completed after manual 0.4.27 yank verification and full filtered public mirror regeneration.",
+      "manual_read_summary": "Final GAP-PACKAGE-0428-00b upload receipt recording signature verification, PyPI artifact hashes and sizes, 0.4.27 yank evidence, public mirror full-regeneration scan results, public mirror head, GitHub Release v0.4.28 helper asset evidence, public raw-GitHub fetchback, output token, and non-claims.",
+      "node_kind": "release_receipt",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_release_pipeline_template_v0.1.md"
+        }
+      ],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83941,14 +84017,6 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_final_evidence_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [
-        {
-          "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_release_pipeline_template_v0.1.md"
-        }
-      ],
       "proposed_trace_roles": [
         "DEPENDS_ON",
         "EVIDENCES",
@@ -83956,13 +84024,21 @@
         "SUPPORTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_0428_00b_v0.1.json"
     },
     {
-      "repo_path": "docs/phases/phase_gap_package_0428_00b_walkthrough.md",
-      "node_kind": "phase_walkthrough",
-      "manual_read_summary": "Walkthrough for the completed ilc-core 0.4.28 publish/sign/mirror phase, including full filtered public mirror regeneration, GitHub Release v0.4.28 helper tarball publication, public fetchback, focused tests, output token, and non-claims.",
+      "annotation_batch": "manual_batch_gap_package_0428_00b_final_evidence_2026_09_22",
       "chronology_note": "2026-09-22 GAP-PACKAGE-0428-00b walkthrough records final PyPI, yank, mirror, helper-release, raw-GitHub fetchback, verification, and frontier handoff evidence.",
+      "manual_read_summary": "Walkthrough for the completed ilc-core 0.4.28 publish/sign/mirror phase, including full filtered public mirror regeneration, GitHub Release v0.4.28 helper tarball publication, public fetchback, focused tests, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PACKAGE-0428-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0428_00b_g10_pypi_upload_sign_mirror.md"
+        }
+      ],
       "proposed_semantic_edges": [
         {
           "edge_type": "EVIDENCES",
@@ -83981,14 +84057,6 @@
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "annotation_batch": "manual_batch_gap_package_0428_00b_final_evidence_2026_09_22",
-      "phase_ref": "GAP-PACKAGE-0428-00b",
-      "proposed_authority_trace_edges": [
-        {
-          "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0428_00b_g10_pypi_upload_sign_mirror.md"
-        }
-      ],
       "proposed_trace_roles": [
         "EVIDENCES",
         "REFERENCES_AUTHORITY",
@@ -83996,7 +84064,8 @@
         "SUPPORTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_0428_00b_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_gap_validator_sync_0428_00_prompt_2026_09_22",
@@ -84116,6 +84185,179 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_validator_sync_0428_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_141_phase_gap_public_rc_native_submit_ingress_cdl_00_cdl117_opening",
+      "chronology_note": "2026-09-25 \u2014 GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-CDL-00 phase prompt created; SENSITIVE CDL-117 opening+ratification phase",
+      "manual_read_summary": "Phase prompt for CDL-117 opening and ratification: native public submit ingress. Replaces sig=UNSIGNED placeholder with native_submit_sig.v0.1 contract. Three guard strings remain True; no ilc_core/ mutations. Awaiting GO.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_public_rc_native_submit_ingress_spec_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-CDL-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_cdl_00_g10_cdl_117_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_142_ecu_lifecycle_flow_diagram_v0_3",
+      "chronology_note": "2026-09-26 \u2014 ECU lifecycle flow diagram v0.3 created; adds three-layer CURRENT/TARGET/DELTA convention, residual conservation, fail-closed over-debit, Werner pre-normalization note, ECU^L separation block, Pi target-state label, quantum/rounding delta, OBSERVE-00 time gate",
+      "manual_read_summary": "ECU lifecycle architecture roadmap v0.3: supersedes v0.2 with explicit CURRENT/TARGET/DELTA layering, corrected conservation equation with unissued backward residual accounting, fail-closed over-debit invariant (no clamp), Werner/z_i(e) pre-normalization note, ECU^L separate equation block, Pi clearly labeled TARGET-STATE ONLY, monthly close quantum gap, and OBSERVE-00 ~2026-10-16 time gate in gap table.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.2.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-CDL-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.3.md"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_cdl117_ratification",
+      "chronology_note": "2026-09-26 \u2014 GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-CDL-00 sensitive CDL-117 opening and ratification evidence document.",
+      "manual_read_summary": "CDL-117 ratification evidence for native public submit ingress: resolves all six SPEC-00 opening questions, locks graph-rooted endpoint assertion authority, BLS G1 public-submit transport key DST, TLS DER fingerprint binding, sig=UNSIGNED rejection contract, deferred native_submit_sig_profile identifier, revocation/supersession policy, pre-signer-binding advisory trust boundary, endpoint cardinality, epoch-zero semantics, and IMPL-00 blocking obligations.",
+      "node_kind": "cdl_authority_doc",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_rc_native_submit_ingress_spec_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_native_submit_ingress_opening_candidate_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-CDL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:cdl_117_native_submit_ingress_ratified_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "node_kind:public_submit_ingress_endpoint_assertion"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_runtime_guard_clearance_no_signer_binding_activation"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "GOVERNS",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_cdl117_ratification",
+      "chronology_note": "2026-09-26 \u2014 GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-CDL-00 walkthrough for sensitive CDL-117 opening and ratification phase.",
+      "manual_read_summary": "Walkthrough records exact GO phrase, direct source reads, MemPalace searches, six opening-question dispositions, produced artifacts, verification command outputs, output tokens, and non-claims for CDL-117 native public submit ingress ratification.",
+      "node_kind": "phase_walkthrough",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_cdl_00_g10_cdl_117_opening.md"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-CDL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:cdl_117_opening_questions_resolved_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_ilc_core_mutation_no_guard_clearance"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SUMMARIZES",
+        "REFERENCES_AUTHORITY",
+        "NEGATIVE_ASSERTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_native_submit_ingress_cdl_00_walkthrough.md"
     }
   ],
   "boundary": {
@@ -96697,6 +96939,59 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_vps_validator_teardown_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_gap_package_0431_00a_2026_09_25",
+      "chronology_note": "2026-09-25 GAP-PACKAGE-0431-00a phase prompt: binary resolver fix and ilc-core 0.4.31 local build",
+      "manual_read_summary": "Phase prompt for GAP-PACKAGE-0431-00a: fixes attribution_batch_ingest allowlist in binary_paths.py, adds installed-helper resolver step in attribution_batch_bridge.py, adds focused tests, builds 7-member consensus helper tarball on VPS, bumps 0.4.30 to 0.4.31, proves resolver smoke.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "PROMPTS",
+          "target": "phase:GAP-PACKAGE-0431-00a"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "PROMPTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_0431_00a_g10_binary_resolver_fix_local_build.md"
+    },
+    {
+      "annotation_batch": "manual_batch_289_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_cdl117_opening",
+      "chronology_note": "2026-09-25 \u2014 GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-CDL-00 \u2014 phase prompt for CDL-117 opening and ratification",
+      "manual_read_summary": "Phase prompt directing Codex to open and ratify CDL-117 (native public submit ingress), resolve 6 opening questions, add CDL register row, and confirm guards remain True.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_public_rc_native_submit_ingress_spec_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_native_submit_ingress_opening_candidate_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_cdl_00_g10_cdl_117_opening.md"
     }
   ],
   "nodes": [
