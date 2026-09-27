@@ -22,6 +22,7 @@ from ilc_core.consensus.validator_endpoint_assertion import (
     VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
     ValidatorEndpointAssertion,
     assertion_content_sha256,
+    assertion_is_superseded,
     assertion_valid_at,
     canonical_assertion_payload,
     load_from_atlas,
@@ -248,6 +249,71 @@ def test_iter_node_scan_selects_unsuperseded_current_head_for_same_epoch_revisio
         assert assertion_content_sha256(selected) == assertion_content_sha256(new_assertion)
 
 
+def test_iter_node_scan_fails_closed_when_all_candidates_are_superseded() -> None:
+    old_assertion = _assertion(tls_cert_sha256_fingerprint="1" * 64)
+    older_assertion = _assertion(tls_cert_sha256_fingerprint="0" * 64)
+
+    class AllSupersededAtlas(IterNodeAtlas):
+        def iter_edges(self) -> list[dict[str, object]]:
+            return [
+                {
+                    "edge_type": "revised_by",
+                    "source_assertion_sha256": assertion_content_sha256(old_assertion),
+                    "source_candidate_id": validator_assertion_candidate_id(AGENT),
+                    "target_assertion_sha256": "2" * 64,
+                    "target_candidate_id": validator_assertion_candidate_id(AGENT),
+                },
+                {
+                    "edge_type": "revised_by",
+                    "source_assertion_sha256": assertion_content_sha256(older_assertion),
+                    "source_candidate_id": validator_assertion_candidate_id(AGENT),
+                    "target_assertion_sha256": "3" * 64,
+                    "target_candidate_id": validator_assertion_candidate_id(AGENT),
+                },
+            ]
+
+    with pytest.raises(
+        ValueError,
+        match="validator_cert_assertion_all_candidates_superseded_phase_1577b_fix2",
+    ):
+        load_from_atlas(
+            AllSupersededAtlas([old_assertion.to_dict(), older_assertion.to_dict()]),
+            AGENT,
+        )
+
+
+def test_revision_edge_type_is_directional_not_bidirectional() -> None:
+    assertion = _assertion()
+    atlas = EdgeAtlas(
+        assertion,
+        [
+            {
+                "edge_type": "revision",
+                "source_candidate_id": validator_assertion_candidate_id(AGENT),
+                "target_candidate_id": "validator_grpc_endpoint_assertion:other",
+            }
+        ],
+    )
+
+    assert assertion_is_superseded(atlas, assertion) is False
+
+
+def test_supersession_ignores_generic_type_field_without_edge_type() -> None:
+    assertion = _assertion()
+    atlas = EdgeAtlas(
+        assertion,
+        [
+            {
+                "type": "revised_by",
+                "source_candidate_id": validator_assertion_candidate_id(AGENT),
+                "target_candidate_id": "validator_grpc_endpoint_assertion:other",
+            }
+        ],
+    )
+
+    assert assertion_is_superseded(atlas, assertion) is False
+
+
 def test_verify_expired_assertion_fails() -> None:
     with pytest.raises(ValueError, match="validator_cert_assertion_expired"):
         verify_validator_cert_against_graph(
@@ -429,7 +495,11 @@ def test_iter_node_scan_is_bounded() -> None:
 
 def test_verify_bls_signature_default_fails_closed_without_subprocess(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("ILC_VALIDATOR_ENDPOINT_ASSERTION_BLS_VERIFY_COMMAND", raising=False)
-    assert verify_bls_signature(_assertion(), network_id="ilc-testnet") is False
+    with pytest.raises(
+        ValueError,
+        match="validator_assertion_bls_command_missing_phase_1577b_fix2",
+    ):
+        verify_bls_signature(_assertion(), network_id="ilc-testnet")
 
 
 def test_generate_assertions_script_exists_and_is_importable() -> None:

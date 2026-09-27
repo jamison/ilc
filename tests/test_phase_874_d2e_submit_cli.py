@@ -330,6 +330,21 @@ def test_handle_submit_invalid_epoch_raises() -> None:
     assert exc_info.value.token == "submit_epoch_invalid"
 
 
+def test_handle_submit_rejects_native_sig_object_before_activation() -> None:
+    ns = _ns(
+        primitive="assert.truth",
+        payload_json=_ASSERT_TRUTH_PAYLOAD,
+        agent_id=VALID_AGENT_ID,
+        epoch=1,
+        sig={"schema_version": "native_submit_sig.v0.1"},
+    )
+
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+
+    assert exc_info.value.token == "sig_invalid_pre_native_ingress_activation"
+
+
 def test_handle_submit_payload_ambiguous_raises(tmp_path: Path) -> None:
     payload_file = tmp_path / "payload.json"
     payload_file.write_text(_ASSERT_TRUTH_PAYLOAD, encoding="utf-8")
@@ -384,6 +399,70 @@ def test_handle_submit_rejects_non_finite_json_constants() -> None:
     with pytest.raises(SubmitCommandError) as exc_info:
         handle_submit(ns)
     assert exc_info.value.token == "submit_payload_invalid_json"
+
+
+def test_handle_submit_rejects_non_finite_confidence_string() -> None:
+    payload = json.dumps(
+        {
+            "target_node_id": "bafy-node-abc",
+            "confidence": "NaN",
+            "evidence_summary": "non-finite confidence must fail closed",
+        }
+    )
+    ns = _ns(
+        primitive="validate.claim",
+        payload_json=payload,
+        agent_id=VALID_AGENT_ID,
+        epoch=1,
+    )
+
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+
+    assert exc_info.value.token == "field_out_of_range_confidence"
+
+
+def test_handle_submit_rejects_parent_node_fanout_above_bound() -> None:
+    payload = json.dumps(
+        {
+            "content": {"body": "too many parents"},
+            "epistemic_type": "objective",
+            "parent_node_ids": [f"bafy-parent-{index}" for index in range(65)],
+            "primitive_type": "observation",
+        }
+    )
+    ns = _ns(
+        primitive="assert.truth",
+        payload_json=payload,
+        agent_id=VALID_AGENT_ID,
+        epoch=1,
+    )
+
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+
+    assert exc_info.value.token == "parent_node_ids_count_exceeded"
+
+
+def test_handle_submit_rejects_evidence_node_fanout_above_bound() -> None:
+    payload = json.dumps(
+        {
+            "target_node_id": "bafy-target-claim",
+            "refutation_criterion": _REFUTATION_CRITERION,
+            "evidence_node_ids": [f"bafy-evidence-{index}" for index in range(65)],
+        }
+    )
+    ns = _ns(
+        primitive="refute.claim",
+        payload_json=payload,
+        agent_id=VALID_AGENT_ID,
+        epoch=1,
+    )
+
+    with pytest.raises(SubmitCommandError) as exc_info:
+        handle_submit(ns)
+
+    assert exc_info.value.token == "evidence_node_ids_count_exceeded"
 
 
 def test_handle_submit_rejects_oversized_payload() -> None:

@@ -419,8 +419,11 @@ def _load_submit_endpoint_response(
         ) from exc
     raw = b"".join(chunks)
     try:
-        payload = json.loads(raw.decode("utf-8"))
-    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        payload = json.loads(
+            raw.decode("utf-8"),
+            parse_constant=_reject_non_finite_json_constant,
+        )
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         raise SubmitCommandError(
             "submit_endpoint_response_invalid_json",
             "truth submit endpoint response was not valid JSON",
@@ -469,9 +472,34 @@ def _normalize_submit_endpoint_response(
             "submit_endpoint_edges_invalid",
             "truth submit endpoint returned invalid edges",
         )
+    normalized_edges: list[dict[str, str]] = []
+    for edge in edges:
+        if not isinstance(edge, dict):
+            raise SubmitCommandError(
+                "submit_endpoint_edges_invalid",
+                "truth submit endpoint returned invalid edges",
+            )
+        edge_type = edge.get("edge_type")
+        source = edge.get("source")
+        target = edge.get("target")
+        if (
+            not isinstance(edge_type, str)
+            or not edge_type
+            or not isinstance(source, str)
+            or not source
+            or not isinstance(target, str)
+            or not target
+        ):
+            raise SubmitCommandError(
+                "submit_endpoint_edges_invalid",
+                "truth submit endpoint returned invalid edges",
+            )
+        normalized_edges.append(
+            {"edge_type": edge_type, "source": source, "target": target}
+        )
     normalized = dict(data)
     normalized["node_id"] = node_id
-    normalized["edges"] = edges
+    normalized["edges"] = normalized_edges
     return normalized
 
 

@@ -188,6 +188,27 @@ def test_tampered_content_fails_verification(tmp_path: Path, monkeypatch: pytest
         verify_truth_primitive_sig(record)
 
 
+def test_tampered_uncertainty_declared_fails_verification() -> None:
+    record = {
+        "agent_id": AGENT_ID,
+        "epoch": 1,
+        "payload": dict(ASSERT_TRUTH_PAYLOAD),
+        "primitive": "assert.truth",
+        "uncertainty_declared": "measurement uncertainty recorded",
+        "v": 1,
+    }
+    signed = attach_truth_primitive_signature(
+        record,
+        ed25519.Ed25519PrivateKey.generate(),
+    )
+
+    assert verify_truth_primitive_sig(signed) is True
+
+    signed["uncertainty_declared"] = "tampered uncertainty"
+    with pytest.raises(ValueError, match="invalid_truth_primitive_signature"):
+        verify_truth_primitive_sig(signed)
+
+
 def test_tampered_sig_bytes_fails_verification(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Flipping a byte inside the sig field must fail Ed25519 verification.
 

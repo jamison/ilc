@@ -26,6 +26,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
+import hashlib
+import json
 import re
 from typing import Any
 
@@ -49,6 +51,9 @@ _TOKEN_UNCERTAINTY_DECLARED_FIELD = (
     "uncertainty_declared_field_reserved_GAP_SCHEMA_PREREQS_00"
 )
 _MAX_UNCERTAINTY_DECLARED_BYTES = 512
+_MAX_PARENT_NODE_IDS = 64
+_MAX_EVIDENCE_NODE_IDS = 64
+NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED = True
 
 # ---------------------------------------------------------------------------
 # Agent-issuable primitive set (commit.epoch excluded)
@@ -81,6 +86,8 @@ _KNOWN_PRIMITIVE_TYPES: frozenset[str] = (
 
 _PROTOCOL_VERSION = 1
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+_LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")
 
 # ---------------------------------------------------------------------------
 # Result types
@@ -171,7 +178,7 @@ def _validate_decimal_confidence(name: str, value: Any) -> None:
             f"field_invalid_{name}",
             f"'{name}' is not a valid decimal: {value!r}",
         )
-    if d <= 0 or d > 1:
+    if not d.is_finite() or d <= 0 or d > 1:
         raise EpistemicSubmissionError(
             f"field_out_of_range_{name}",
             f"'{name}' must satisfy 0 < value <= 1.0, got {value!r}",
@@ -237,6 +244,13 @@ def _validate_outer_envelope(submission: Any) -> dict:
             "payload_missing",
             "submission.payload must be a map/object",
         )
+    sig = submission.get("sig")
+    if sig is not None and not isinstance(sig, str):
+        if NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED:
+            raise EpistemicSubmissionError(
+                "sig_invalid_pre_native_ingress_activation",
+                "submission.sig must be a string until native ingress signature verification is activated",
+            )
     uncertainty_declared = submission.get("uncertainty_declared")
     if uncertainty_declared is not None:
         if not isinstance(uncertainty_declared, str):
@@ -269,6 +283,11 @@ def _validate_assert_truth(payload: dict) -> TruthPrimitiveResult:
     epistemic_type = _require_str("epistemic_type", payload)
     _require_in("epistemic_type", epistemic_type, _EPISTEMIC_TYPES)
     parent_node_ids = _require_list("parent_node_ids", payload)
+    if len(parent_node_ids) > _MAX_PARENT_NODE_IDS:
+        raise EpistemicSubmissionError(
+            "parent_node_ids_count_exceeded",
+            f"parent_node_ids accepts at most {_MAX_PARENT_NODE_IDS} entries",
+        )
     for i, pid in enumerate(parent_node_ids):
         if not isinstance(pid, str) or not pid:
             raise EpistemicSubmissionError(
@@ -397,6 +416,11 @@ def _validate_refute_claim(payload: dict) -> TruthPrimitiveResult:
         )
     _cdl_052_validate_criterion(criterion)
     evidence_node_ids = _require_list("evidence_node_ids", payload)
+    if len(evidence_node_ids) > _MAX_EVIDENCE_NODE_IDS:
+        raise EpistemicSubmissionError(
+            "evidence_node_ids_count_exceeded",
+            f"evidence_node_ids accepts at most {_MAX_EVIDENCE_NODE_IDS} entries",
+        )
     for i, eid in enumerate(evidence_node_ids):
         if not isinstance(eid, str) or not eid:
             raise EpistemicSubmissionError(
@@ -470,6 +494,80 @@ _HANDLERS = {
 }
 
 
+def verify_native_submit_sig_envelope(envelope: dict) -> None:
+    """Verify a CDL-117 native submit sig object.
+
+    Raises EpistemicSubmissionError on any rejection. Full BLS cryptographic
+    verification is deferred to the later SignerBinding activation CDL or
+    SignatureSchemeRegistry CDL, as deferred by Phase 1578d. IMPL-00 validates
+    shape and payload_sha256 only.
+    """
+    sig = envelope.get("sig")
+    if sig is None or sig == "UNSIGNED":
+        raise EpistemicSubmissionError(
+            "native_submit_sig_unsigned_placeholder_rejected",
+            "sig='UNSIGNED' is not accepted when native ingress signature verification is active",
+        )
+    if not isinstance(sig, dict):
+        raise EpistemicSubmissionError(
+            "native_submit_sig_not_object_IMPL_00",
+            "submission.sig must be a native sig object when native ingress is active",
+        )
+    if sig.get("schema_version") != "native_submit_sig.v0.1":
+        raise EpistemicSubmissionError(
+            "native_submit_sig_schema_version_invalid_IMPL_00",
+            "submission.sig.schema_version must be 'native_submit_sig.v0.1'",
+        )
+    if sig.get("verifier_profile") != "native_submit_sig_profile.v0.1":
+        raise EpistemicSubmissionError(
+            "native_submit_sig_verifier_profile_invalid_IMPL_00",
+            "submission.sig.verifier_profile must be 'native_submit_sig_profile.v0.1'",
+        )
+    dst = sig.get("dst")
+    if not isinstance(dst, str) or not dst.startswith("ILC_NATIVE_TRUTH_SUBMIT_V1:"):
+        raise EpistemicSubmissionError(
+            "native_submit_sig_dst_invalid_IMPL_00",
+            "submission.sig.dst must start with 'ILC_NATIVE_TRUTH_SUBMIT_V1:'",
+        )
+    payload_sha256 = sig.get("payload_sha256", "")
+    if not isinstance(payload_sha256, str) or not _SHA256_RE.fullmatch(payload_sha256):
+        raise EpistemicSubmissionError(
+            "native_submit_sig_payload_sha256_format_invalid_IMPL_00",
+            "submission.sig.payload_sha256 must be 64 lowercase hex",
+        )
+    signature_hex = sig.get("signature_hex", "")
+    if (
+        not isinstance(signature_hex, str)
+        or not signature_hex
+        or len(signature_hex) % 2 != 0
+        or not _LOWER_HEX_RE.fullmatch(signature_hex)
+    ):
+        raise EpistemicSubmissionError(
+            "native_submit_sig_signature_hex_invalid_IMPL_00",
+            "submission.sig.signature_hex must be non-empty even-length lowercase hex",
+        )
+    key_ref = sig.get("key_ref", "")
+    if not isinstance(key_ref, str) or not key_ref:
+        raise EpistemicSubmissionError(
+            "native_submit_sig_key_ref_missing_IMPL_00",
+            "submission.sig.key_ref must be a non-empty string",
+        )
+
+    preimage = {key: value for key, value in envelope.items() if key != "sig"}
+    canonical = json.dumps(
+        preimage,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    expected_sha256 = hashlib.sha256(canonical).hexdigest()
+    if payload_sha256 != expected_sha256:
+        raise EpistemicSubmissionError(
+            "native_submit_sig_payload_sha256_mismatch_IMPL_00",
+            "submission.sig.payload_sha256 does not match canonical envelope preimage",
+        )
+
+
 def validate_truth_primitive_submission(submission: Any) -> TruthPrimitiveResult:
     """Validate a CDL-073 wire-format truth primitive submission.
 
@@ -480,6 +578,8 @@ def validate_truth_primitive_submission(submission: Any) -> TruthPrimitiveResult
     commit.epoch is always rejected with token commit_epoch_agent_submission_rejected.
     """
     envelope = _validate_outer_envelope(submission)
+    if not NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED:
+        verify_native_submit_sig_envelope(envelope)
     primitive = envelope["primitive"]
     payload = envelope["payload"]
     handler = _HANDLERS[primitive]

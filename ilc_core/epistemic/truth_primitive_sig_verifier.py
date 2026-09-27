@@ -15,6 +15,7 @@ TRUTH_PRIMITIVE_SIG_VERIFIER_VERSION = "truth_primitive_sig_verifier_GAP_GRAPH_S
 TRUTH_PRIMITIVE_SIG_SCHEME = "ed25519_raw_hex_v1"
 
 _CONTENT_FIELD_NAMES = ("agent_id", "epoch", "payload", "primitive", "v")
+_OPTIONAL_CONTENT_FIELD_NAMES = ("uncertainty_declared",)
 
 
 def truth_primitive_pubkey_fingerprint(public_key_bytes: bytes) -> str:
@@ -33,7 +34,11 @@ def truth_primitive_signable_content(record: dict[str, Any]) -> dict[str, Any]:
     missing = [field for field in _CONTENT_FIELD_NAMES if field not in record]
     if missing:
         raise ValueError(f"invalid_truth_primitive_sig_missing_content_field:{missing[0]}")
-    return {field: record[field] for field in _CONTENT_FIELD_NAMES}
+    content = {field: record[field] for field in _CONTENT_FIELD_NAMES}
+    for field in _OPTIONAL_CONTENT_FIELD_NAMES:
+        if field in record:
+            content[field] = record[field]
+    return content
 
 
 def canonical_truth_primitive_sig_payload(record: dict[str, Any]) -> bytes:

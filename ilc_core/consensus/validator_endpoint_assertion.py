@@ -160,7 +160,7 @@ def verify_bls_signature(
 
     command = os.environ.get(VALIDATOR_ENDPOINT_ASSERTION_BLS_COMMAND_ENV)
     if not command:
-        return False
+        raise ValueError("validator_assertion_bls_command_missing_phase_1577b_fix2")
     try:
         result = subprocess.run(
             shlex.split(command)
@@ -180,7 +180,7 @@ def verify_bls_signature(
             timeout=10,
         )
     except (OSError, subprocess.SubprocessError):
-        return False
+        raise ValueError("validator_assertion_bls_command_failed_phase_1577b_fix2")
     return result.returncode == 0
 
 
@@ -372,16 +372,7 @@ def _edge_supersedes_assertion(
     candidate_id: str,
     content_sha256: str,
 ) -> bool:
-    source_assertion_sha256 = edge.get("source_assertion_sha256")
-    target_assertion_sha256 = edge.get("target_assertion_sha256")
-    if source_assertion_sha256 is not None:
-        if source_assertion_sha256 != content_sha256:
-            return False
-    if target_assertion_sha256 is not None:
-        if target_assertion_sha256 == content_sha256:
-            return False
-
-    edge_type = str(edge.get("edge_type") or edge.get("type") or "").lower()
+    edge_type = str(edge.get("edge_type") or "").lower()
     source = (
         edge.get("source_candidate_id")
         or edge.get("source")
@@ -394,11 +385,20 @@ def _edge_supersedes_assertion(
         or edge.get("to")
         or edge.get("new_candidate_id")
     )
+    source_assertion_sha256 = edge.get("source_assertion_sha256")
+    target_assertion_sha256 = edge.get("target_assertion_sha256")
+
     if edge_type in _SUPERCESSION_FORWARD_EDGE_TYPES and source == candidate_id:
+        if source_assertion_sha256 is not None and source_assertion_sha256 != content_sha256:
+            return False
+        if target_assertion_sha256 is not None and target_assertion_sha256 == content_sha256:
+            return False
         return True
     if edge_type in _SUPERCESSION_REVERSE_EDGE_TYPES and target == candidate_id:
-        return True
-    if edge_type == "revision" and (source == candidate_id or target == candidate_id):
+        if target_assertion_sha256 is not None and target_assertion_sha256 != content_sha256:
+            return False
+        if source_assertion_sha256 is not None and source_assertion_sha256 == content_sha256:
+            return False
         return True
     return False
 
@@ -412,7 +412,9 @@ def _select_current_assertion(
         for assertion in matches
         if not assertion_is_superseded(atlas_reader, assertion)
     ]
-    candidates = current if current else matches
+    if not current:
+        raise ValueError("validator_cert_assertion_all_candidates_superseded_phase_1577b_fix2")
+    candidates = current
     return sorted(
         candidates,
         key=lambda assertion: (

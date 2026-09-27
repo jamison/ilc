@@ -74,6 +74,10 @@ _UNSAFE_PEER_HOST_TOKEN = "peer_admin_unsafe_host_rejected_phase_1573ak"
 _PEER_PORT_INVALID_TOKEN = "peer_admin_port_invalid_phase_1573ak"
 _RUNTIME_STATE_INIT_LOCK = threading.Lock()
 
+
+def _reject_non_finite_json_constant(value: str) -> None:
+    raise ValueError(f"non_finite_json_constant:{value}")
+
 _ROUTE_CLASSIFICATION: dict[tuple[str, str], str] = {
     ("GET", "/"): "public_verifier",
     ("POST", "/mine"): "local_dev_only",
@@ -338,8 +342,8 @@ async def _read_json_body_bounded(
     if len(body) > max_bytes:
         raise HTTPException(status_code=413, detail=f"{token_prefix}_payload_too_large")
     try:
-        payload = json.loads(body)
-    except json.JSONDecodeError as exc:
+        payload = json.loads(body, parse_constant=_reject_non_finite_json_constant)
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=f"{token_prefix}_json_invalid") from exc
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail=f"{token_prefix}_payload_not_object")
