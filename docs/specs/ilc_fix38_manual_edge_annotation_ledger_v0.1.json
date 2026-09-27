@@ -382,6 +382,148 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_145_phase_gap_public_rc_native_agent_signer_binding_cdl_00_prompt",
+      "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00 phase prompt produced by Sonnet; opens CDL-118 defining native_submit_sig_profile.v0.1 full BLS verification policy",
+      "manual_read_summary": "Phase prompt for GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00: SENSITIVE CDL opening/ratification phase defining native_submit_sig_profile.v0.1 policy — AgentID BLS key base profile, key_ref==agent_id rule, compressed G1 public key / compressed G2 signature terminology, DST, replay boundary, fail-closed tokens, and install/CLI canonical signing path.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_agent_signer_binding_cdl_00_g10_signer_binding_cdl.md"
+    },
+    {
+      "annotation_batch": "manual_batch_146_phase_gap_public_rc_native_agent_signer_binding_cdl_00_ratification_doc",
+      "chronology_note": "2026-09-27 — CDL-118 native_submit_sig_profile.v0.1 signer-binding policy opened and ratified with network_id ilc-public-rc-01-testnet-harness.",
+      "manual_read_summary": "CDL-118 authority document for public-RC native submit signer binding: key_ref equals agent_id, AgentID BLS key base profile, compressed G1 public key / compressed G2 signature terminology, 192-hex signature requirement, DST ILC_NATIVE_TRUTH_SUBMIT_V1:ilc-public-rc-01-testnet-harness, canonical-envelope-bytes signing input, payload_sha256 replay fingerprint, fail-closed tokens, and SIGNER-BINDING-IMPL-00 obligations.",
+      "node_kind": "cdl_authority_doc",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_signer_binding_authority_spec_1578d_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "RATIFIES",
+          "target": "cdl:118"
+        },
+        {
+          "edge_type": "DEFINES",
+          "target": "native_submit_sig_profile.v0.1"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:native_submit_sig_profile_v0_1_policy_defined_CDL_118"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_guard_clearance_no_runtime_activation"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "RATIFIES",
+        "DEFINES",
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_118_native_submit_sig_signer_binding_profile_GAP_PUBLIC_RC_NATIVE_AGENT_SIGNER_BINDING_CDL_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_147_phase_gap_public_rc_native_agent_signer_binding_cdl_00_walkthrough",
+      "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00 walkthrough added with exact verification command outputs.",
+      "manual_read_summary": "Walkthrough for CDL-118 signer-binding policy phase records GO phrase, OQ-4 network_id, direct source reads, MemPalace/repo searches, CDL register mutation, verification command outputs, output tokens, carry-forwards, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_agent_signer_binding_cdl_00_g10_signer_binding_cdl.md"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_cdl_118_native_submit_sig_signer_binding_profile_GAP_PUBLIC_RC_NATIVE_AGENT_SIGNER_BINDING_CDL_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-CDL-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:cdl_118_native_submit_sig_profile_ratified_GAP_PUBLIC_RC_NATIVE_AGENT_SIGNER_BINDING_CDL_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_guard_clearance_no_runtime_activation"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "EVIDENCES",
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_native_agent_signer_binding_cdl_00_walkthrough.md"
     }
   ],
   "annotations": [
