@@ -196,6 +196,192 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_monthly_issuance_close_observe_00_g10_first_monthly_close_settlement.md"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_gap_public_rc_native_status_evidence_00a_prompt",
+      "chronology_note": "2026-09-27 — 00a phase prompt drafted; produces standalone derived evidence object from Phase 1603 graph receipt + BalanceStore; no ilc_core/ mutations",
+      "manual_read_summary": "Phase prompt for GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a: assembles a standalone verifier-facing evidence receipt from Phase 1603 durable evidence (SHA-256 bound), proving agent init, local graph persistence, and Rust-backed ECU status without touching ilc_core/ or claiming live network ingress.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_status_evidence_00a_g10_graph_balance_store_evidence.md",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md",
+          "review_status": "candidate"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_144_phase_gap_public_rc_native_status_evidence_00a_execution",
+      "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a schema spec added for standalone verifier-facing evidence derived from Phase 1603 durable graph receipt and Rust BalanceStore status.",
+      "manual_read_summary": "Schema specification for native_status_evidence_00a.v0.1: binds the derived evidence object to Phase 1603 evidence SHA-256, names required assertions and non-claims, and records the no-live-ingress/no-settlement boundary.",
+      "repo_path": "docs/specs/ilc_native_status_evidence_00a_v0.1.md",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_status_evidence_00a_g10_graph_balance_store_evidence.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "out/phase_1603_public_user_smoke/evidence.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:native_status_evidence_assembled_GAP_PUBLIC_RC_NATIVE_STATUS_EVIDENCE_00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_live_native_network_ingress_no_settlement_no_minting"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_144_phase_gap_public_rc_native_status_evidence_00a_execution",
+      "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a assembler added; verifies Phase 1603 evidence SHA-256 and writes derived evidence atomically.",
+      "manual_read_summary": "Assembler script for native status evidence 00a: reads only durable Phase 1603 evidence, hard-fails with named tokens on invariant drift, forbids dependence on transient /tmp stdout paths, and writes canonical JSON using mkstemp plus os.replace.",
+      "repo_path": "tools/native_status_evidence/assemble_00a.py",
+      "node_kind": "tool_script",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_native_status_evidence_00a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_native_status_evidence_00a_v0.1.md"
+        },
+        {
+          "edge_type": "PRODUCES",
+          "target": "out/gap_public_rc_native_status_evidence_00a/native_status_evidence_00a.json"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "PRODUCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_144_phase_gap_public_rc_native_status_evidence_00a_execution",
+      "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a verifier tests added for schema, field, assertion, non-claim, and adversarial invariant coverage.",
+      "manual_read_summary": "Offline verifier tests for native status evidence 00a: confirms schema/source binding, all eight assertions, all ten non-claims, graph node and ECU status values, plus adversarial failures for source result, AgentID, persistence, balance source, stale marker, source schema, primitive type, source-ref count, gossip, package identity, clean-venv check, and SHA mismatch.",
+      "repo_path": "tests/test_native_status_evidence_00a.py",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_native_status_evidence_00a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "tools/native_status_evidence/assemble_00a.py"
+        },
+        {
+          "edge_type": "VERIFIES",
+          "target": "out/gap_public_rc_native_status_evidence_00a/native_status_evidence_00a.json"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_144_phase_gap_public_rc_native_status_evidence_00a_execution",
+      "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a walkthrough added with exact verification outputs and V2 grep-discrepancy note.",
+      "manual_read_summary": "Walkthrough for native status evidence 00a records direct source reads, produced artifacts, derived evidence SHA-256, exact V1-V8 verification outputs, the overbroad prescribed V2 grep result and exact-token correction, output token, carry-forwards, and non-claims.",
+      "repo_path": "docs/phases/phase_gap_public_rc_native_status_evidence_00a_walkthrough.md",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_status_evidence_00a_g10_graph_balance_store_evidence.md"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_native_status_evidence_00a_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:native_status_evidence_assembled_GAP_PUBLIC_RC_NATIVE_STATUS_EVIDENCE_00a"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "nonclaim:no_live_native_network_ingress_no_settlement_no_minting"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "NEGATIVE_ASSERTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only"
     }
   ],
   "annotations": [
