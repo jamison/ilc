@@ -43,6 +43,17 @@ GENESIS_CAPSULE_SIGNING_PK_HEX = (
     "b0059ca0414826031257a556bcbfe2013224dc408c532893591a9b6973a267012b2989b9453e88c92e277aff66fdbd85"
 )
 
+# Purpose-scoped BLS G1 public key for public submit ingress endpoint assertions
+# (CDL-117 v0.1). Authority: ML-DSA delegation record
+# GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00. Distinct from
+# GENESIS_CAPSULE_SIGNING_PK_HEX (relay-bootstrap only) and
+# GENESIS_AGENT1_AGENT_ID (SHA-384 identity, not BLS). CDL-117 INV-A advisory
+# state is closed for this Genesis-operated protocol key by ML-DSA delegation
+# before GUARD-CLEAR-00.
+GENESIS_PUBLIC_SUBMIT_INGRESS_BLS_PK_HEX = (
+    "84e0eb6f7ec5ddbc5e33edff781e9bc0a2a38eb017d1bbbad1979878757c230e6434d88eb2d774b2f4df174e5b6decd4"
+)
+
 # The CDL-028 genesis_burn_pool is NOT routed to this agent. As amended in
 # GAP-PUBLIC-RC-CDL028-AMENDMENT-00, it is a non-circulating protocol reserve
 # distinct from the CDL-029 Genesis 5% tranche.
@@ -133,6 +144,7 @@ __all__ = [
     "GENESIS_BURN_POOL_NOT_ROUTED_TO_GENESIS_AGENT_TOKEN",
     "GENESIS_DESTINATION_BINDING_TOKEN",
     "GENESIS_MINTING_AUTHORIZED",
+    "GENESIS_PUBLIC_SUBMIT_INGRESS_BLS_PK_HEX",
     "GENESIS_SETTLEMENT_DESTINATION_RUNTIME_VERSION",
     "GENESIS_SETTLEMENT_WRITE_AUTHORIZED",
     "GENESIS_WALLET_WRITE_AUTHORIZED",
