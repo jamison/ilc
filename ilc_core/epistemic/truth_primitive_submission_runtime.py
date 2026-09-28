@@ -28,13 +28,15 @@ from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
 import hashlib
 import json
+import os
 import re
-from typing import Any
+from typing import Any, Final
 
 from ilc_core.protocol.primitive_type_registry import (
     ALLOWED_PRIMITIVE_TYPES,
     SYSTEM_PRIMITIVE_TYPES,
 )
+from ilc_core.identity.bls_backend import verify_native_submit_bytes
 from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
 from ilc_core.epistemic.node_submission_runtime import _validate_refutation_criterion as _cdl_052_validate_criterion
 
@@ -54,6 +56,8 @@ _MAX_UNCERTAINTY_DECLARED_BYTES = 512
 _MAX_PARENT_NODE_IDS = 64
 _MAX_EVIDENCE_NODE_IDS = 64
 NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED = True
+_NATIVE_SUBMIT_REPLAY_KEY_PREFIX: Final[str] = "native_submit_replay:v1:"
+_NATIVE_SUBMIT_REPLAY_FALLBACK: set[tuple[str, int, str]] = set()
 
 # ---------------------------------------------------------------------------
 # Agent-issuable primitive set (commit.epoch excluded)
@@ -88,6 +92,13 @@ _PROTOCOL_VERSION = 1
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _LOWER_HEX_RE = re.compile(r"^[0-9a-f]+$")
+
+
+def _replay_key_for_triple(agent_id: str, epoch: int, payload_sha256: str) -> str:
+    """Stable LMDB key for a native-submit replay triple."""
+
+    triple_bytes = f"{agent_id}:{epoch}:{payload_sha256}".encode("utf-8")
+    return _NATIVE_SUBMIT_REPLAY_KEY_PREFIX + hashlib.sha256(triple_bytes).hexdigest()
 
 # ---------------------------------------------------------------------------
 # Result types
@@ -497,10 +508,10 @@ _HANDLERS = {
 def verify_native_submit_sig_envelope(envelope: dict) -> None:
     """Verify a CDL-117 native submit sig object.
 
-    Raises EpistemicSubmissionError on any rejection. Full BLS cryptographic
-    verification is deferred to the later SignerBinding activation CDL or
-    SignatureSchemeRegistry CDL, as deferred by Phase 1578d. IMPL-00 validates
-    shape and payload_sha256 only.
+    Raises EpistemicSubmissionError on any rejection. This verifier implements
+    CDL-118's public-RC base profile: key_ref must equal agent_id, the BLS G2
+    signature is checked over canonical envelope bytes, and replay triples are
+    recorded atomically when an LMDB graph store path is configured.
     """
     sig = envelope.get("sig")
     if sig is None or sig == "UNSIGNED":
@@ -544,7 +555,12 @@ def verify_native_submit_sig_envelope(envelope: dict) -> None:
     ):
         raise EpistemicSubmissionError(
             "native_submit_sig_signature_hex_invalid_IMPL_00",
-            "submission.sig.signature_hex must be non-empty even-length lowercase hex",
+            "submission.sig.signature_hex must be lowercase hex",
+        )
+    if len(signature_hex) != 192:
+        raise EpistemicSubmissionError(
+            "native_submit_sig_signature_hex_length_invalid_CDL_118",
+            "submission.sig.signature_hex must be exactly 192 lowercase hex characters",
         )
     key_ref = sig.get("key_ref", "")
     if not isinstance(key_ref, str) or not key_ref:
@@ -566,6 +582,89 @@ def verify_native_submit_sig_envelope(envelope: dict) -> None:
             "native_submit_sig_payload_sha256_mismatch_IMPL_00",
             "submission.sig.payload_sha256 does not match canonical envelope preimage",
         )
+    agent_id = envelope.get("agent_id", "")
+    if key_ref != agent_id:
+        raise EpistemicSubmissionError(
+            "native_submit_sig_key_ref_agent_id_mismatch_CDL_118",
+            "submission.sig.key_ref must equal submission.agent_id for the public-RC base profile",
+        )
+
+    epoch = envelope.get("epoch")
+    if not isinstance(epoch, int) or isinstance(epoch, bool) or epoch < 0:
+        raise EpistemicSubmissionError(
+            "native_submit_sig_epoch_invalid_CDL_118",
+            "submission.epoch must be a non-negative integer for replay protection",
+        )
+    dst_prefix = "ILC_NATIVE_TRUTH_SUBMIT_V1:"
+    if not dst.startswith(dst_prefix):
+        raise EpistemicSubmissionError(
+            "native_submit_sig_dst_invalid_CDL_118",
+            "submission.sig.dst must start with 'ILC_NATIVE_TRUTH_SUBMIT_V1:'",
+        )
+    network_id = dst[len(dst_prefix):]
+    replay_tuple = (agent_id, epoch, payload_sha256)
+    lmdb_store_path = os.environ.get("ILC_TRUTH_GRAPH_STORE_PATH", "").strip()
+
+    def _verify_bls_or_raise() -> None:
+        ok = verify_native_submit_bytes(
+            public_key_hex=key_ref,
+            message_bytes=canonical,
+            signature_hex=signature_hex,
+            network_id=network_id,
+        )
+        if not ok:
+            raise EpistemicSubmissionError(
+                "native_submit_sig_bls_verification_failed_CDL_118",
+                "native submit BLS signature verification failed",
+            )
+
+    replay_payload = {
+        "kind": "native_submit_replay",
+        "agent_id": agent_id,
+        "epoch": epoch,
+        "payload_sha256": payload_sha256,
+    }
+    if lmdb_store_path:
+        from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore
+
+        replay_key = _replay_key_for_triple(agent_id, epoch, payload_sha256)
+        store = LmdbGraphStore(lmdb_store_path)
+        replay_seen = False
+        verification_ok = False
+        try:
+            with store.node_write_transaction() as txn:
+                if txn.get_node(replay_key) is not None:
+                    replay_seen = True
+                else:
+                    verification_ok = verify_native_submit_bytes(
+                        public_key_hex=key_ref,
+                        message_bytes=canonical,
+                        signature_hex=signature_hex,
+                        network_id=network_id,
+                    )
+                    if verification_ok:
+                        txn.put_node(replay_key, replay_payload)
+        finally:
+            store.close()
+        if replay_seen:
+            raise EpistemicSubmissionError(
+                "native_submit_sig_replay_rejected_CDL_118",
+                "native submit replay rejected: triple already seen",
+            )
+        if not verification_ok:
+            raise EpistemicSubmissionError(
+                "native_submit_sig_bls_verification_failed_CDL_118",
+                "native submit BLS signature verification failed",
+            )
+        return
+
+    if replay_tuple in _NATIVE_SUBMIT_REPLAY_FALLBACK:
+        raise EpistemicSubmissionError(
+            "native_submit_sig_replay_rejected_CDL_118",
+            "native submit replay rejected: triple already seen",
+        )
+    _verify_bls_or_raise()
+    _NATIVE_SUBMIT_REPLAY_FALLBACK.add(replay_tuple)
 
 
 def validate_truth_primitive_submission(submission: Any) -> TruthPrimitiveResult:

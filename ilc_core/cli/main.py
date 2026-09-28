@@ -3754,13 +3754,13 @@ def _build_parser() -> JsonArgumentParser:
             submit_parser.add_argument(
                 "--sig",
                 default="UNSIGNED",
-                help="COSE Sign1 signature (hex or placeholder). Default: UNSIGNED",
+                help="Signature object/placeholder. Native BLS auto-signs from ILC_AGENT_BLS_SIGNING_KEY or ~/.ilc/identity/signing_key.hex when configured.",
             )
             submit_parser.add_argument(
                 "--signing-key",
                 dest="signing_key",
                 default=None,
-                help="Optional file:// Ed25519 hotkey URI for signing the truth primitive payload",
+                help="Optional file:// Ed25519 advisory hotkey URI for pre-BLS compatibility only; native ingress requires the AgentID BLS key.",
             )
             submit_parser.add_argument(
                 "--source-refs",

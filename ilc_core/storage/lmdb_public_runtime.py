@@ -127,6 +127,21 @@ class WalletBatchRow:
     history: dict[str, Any]
 
 
+class GraphNodeWriteTransaction:
+    """Public atomic graph-node transaction facade for check-and-insert paths."""
+
+    def __init__(self, txn: lmdb.Transaction, nodes_db: object) -> None:
+        self._txn = txn
+        self._nodes_db = nodes_db
+
+    def get_node(self, node_id: str) -> dict[str, Any] | None:
+        payload = _decode_json(self._txn.get(_encode_key(node_id), db=self._nodes_db))
+        return payload if isinstance(payload, dict) else None
+
+    def put_node(self, node_id: str, payload: dict[str, Any]) -> None:
+        self._txn.put(_encode_key(node_id), _encode_json(payload), db=self._nodes_db)
+
+
 class WalletBatchTransaction:
     """Public atomic wallet/history transaction facade for lifecycle writers."""
 
@@ -175,6 +190,11 @@ class LmdbGraphStore(_LmdbRuntimeBase):
     def iter_nodes(self) -> list[dict[str, Any]]:
         rows = [row for row in self._iter_json(b"nodes") if isinstance(row, dict)]
         return sorted(rows, key=lambda row: str(row.get("id", "")))
+
+    @contextmanager
+    def node_write_transaction(self) -> Iterator[GraphNodeWriteTransaction]:
+        with self.env.begin(write=True) as txn:
+            yield GraphNodeWriteTransaction(txn=txn, nodes_db=self._dbs[b"nodes"])
 
     def put_link(self, link_id: str, payload: dict[str, Any]) -> None:
         self._put_json(b"links", link_id, payload)

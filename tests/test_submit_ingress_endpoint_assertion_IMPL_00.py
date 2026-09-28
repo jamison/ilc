@@ -106,7 +106,7 @@ def _native_sig_for(envelope_without_sig: dict[str, object], **overrides: object
         "schema_version": "native_submit_sig.v0.1",
         "dst": f"ILC_NATIVE_TRUTH_SUBMIT_V1:{NETWORK_ID}",
         "verifier_profile": "native_submit_sig_profile.v0.1",
-        "key_ref": f"agent:{AGENT_ID}",
+        "key_ref": AGENT_ID,
         "payload_sha256": hashlib.sha256(canonical).hexdigest(),
         "signature_hex": "ab" * 96,
     }
@@ -326,6 +326,7 @@ def test_native_sig_wiring_accepts_correct_payload_sha256(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _set_native_sig_guard(monkeypatch, False)
+    monkeypatch.setattr(truth_runtime, "verify_native_submit_bytes", lambda **_: True)
     envelope = _valid_envelope()
     envelope_without_sig = {key: value for key, value in envelope.items() if key != "sig"}
     envelope["sig"] = _native_sig_for(envelope_without_sig)

@@ -18,6 +18,7 @@ Command surface:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -52,6 +53,9 @@ _MAX_REFUTATION_CRITERION_BYTES = 500
 _MAX_SOURCE_REFS = 64
 _MAX_SUBMIT_ENDPOINT_RESPONSE_BYTES = 262_144
 _SUBMIT_ENDPOINT_READ_CHUNK_BYTES = 64 * 1024
+_ILC_AGENT_BLS_SIGNING_KEY_ENV = "ILC_AGENT_BLS_SIGNING_KEY"
+_ILC_AGENT_BLS_KEY_DEFAULT_PATH = Path.home() / ".ilc" / "identity" / "signing_key.hex"
+_NATIVE_SUBMIT_NETWORK_ID_DEFAULT = "ilc-public-rc-01-testnet-harness"
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":
     raise ValueError("submit_cli_dependency_mismatch")
@@ -346,7 +350,8 @@ def _sign_submission_envelope(envelope: dict[str, Any], signing_key_uri: str | N
 
     if not signing_key_uri:
         return envelope
-    if envelope.get("sig") not in {None, "", "UNSIGNED"}:
+    sig_value = envelope.get("sig")
+    if sig_value is not None and sig_value != "" and sig_value != "UNSIGNED":
         raise SubmitCommandError(
             "submit_signature_ambiguous",
             "provide --sig or --signing-key, not both",
@@ -358,6 +363,74 @@ def _sign_submission_envelope(envelope: dict[str, Any], signing_key_uri: str | N
         raise
     except (OSError, ValueError) as exc:
         raise SubmitCommandError("submit_signing_key_invalid", str(exc)) from exc
+
+
+def _load_bls_signing_key() -> str | None:
+    """Return configured native-submit BLS secret key hex, if present."""
+
+    loaded = _load_bls_signing_key_with_source()
+    return loaded[0] if loaded is not None else None
+
+
+def _load_bls_signing_key_with_source() -> tuple[str, str] | None:
+    """Return ``(secret_key_hex, source)`` for native-submit BLS signing."""
+
+    env_key = os.environ.get(_ILC_AGENT_BLS_SIGNING_KEY_ENV, "").strip()
+    if env_key:
+        if re.fullmatch(r"[0-9a-f]{64}", env_key) is None:
+            raise SubmitCommandError(
+                "submit_bls_signing_key_env_invalid",
+                f"{_ILC_AGENT_BLS_SIGNING_KEY_ENV} must be 64 lowercase hex chars",
+            )
+        return env_key, "env"
+
+    if _ILC_AGENT_BLS_KEY_DEFAULT_PATH.exists():
+        try:
+            secret = _ILC_AGENT_BLS_KEY_DEFAULT_PATH.read_text(encoding="ascii").strip()
+        except OSError as exc:
+            raise SubmitCommandError("submit_bls_signing_key_read_failed", str(exc)) from exc
+        if re.fullmatch(r"[0-9a-f]{64}", secret) is None:
+            raise SubmitCommandError(
+                "submit_bls_signing_key_file_invalid",
+                f"{_ILC_AGENT_BLS_KEY_DEFAULT_PATH} must contain 64 lowercase hex chars",
+            )
+        return secret, "file"
+    return None
+
+
+def _build_native_submit_sig_object(
+    envelope: dict[str, Any],
+    bls_secret_hex: str,
+    network_id: str = _NATIVE_SUBMIT_NETWORK_ID_DEFAULT,
+) -> dict[str, Any]:
+    """Build a CDL-118 native_submit_sig.v0.1 object for a submission envelope."""
+
+    from ilc_core.identity.bls_backend import (
+        public_key_from_secret_key_hex,
+        sign_native_submit_bytes,
+    )
+
+    envelope_for_signing = {key: value for key, value in envelope.items() if key != "sig"}
+    canonical_bytes = json.dumps(
+        envelope_for_signing,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    agent_id = public_key_from_secret_key_hex(bls_secret_hex)
+    signature_hex = sign_native_submit_bytes(
+        secret_key_hex=bls_secret_hex,
+        message_bytes=canonical_bytes,
+        network_id=network_id,
+    )
+    return {
+        "schema_version": "native_submit_sig.v0.1",
+        "verifier_profile": "native_submit_sig_profile.v0.1",
+        "dst": f"ILC_NATIVE_TRUTH_SUBMIT_V1:{network_id}",
+        "payload_sha256": hashlib.sha256(canonical_bytes).hexdigest(),
+        "signature_hex": signature_hex,
+        "key_ref": agent_id,
+    }
 
 
 def _submit_endpoint_from_args(args: argparse.Namespace) -> str:
@@ -569,10 +642,54 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         "sig": args.sig if hasattr(args, "sig") and args.sig else "UNSIGNED",
     }
 
+    loaded_bls_key = _load_bls_signing_key_with_source()
+    bls_secret_hex = loaded_bls_key[0] if loaded_bls_key is not None else None
+    bls_key_source = loaded_bls_key[1] if loaded_bls_key is not None else None
+    if getattr(args, "signing_key", None) and bls_secret_hex:
+        raise SubmitCommandError(
+            "submit_signature_ambiguous",
+            "--signing-key is an Ed25519 advisory key and cannot be combined with native BLS signing",
+        )
+    sig_value = envelope.get("sig")
+    should_native_sign = (
+        (sig_value is None or sig_value == "" or sig_value == "UNSIGNED")
+        and bls_secret_hex is not None
+    )
+
+    from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
+
+    if (
+        should_native_sign
+        and not truth_runtime.NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED
+    ):
+        native_sig = _build_native_submit_sig_object(envelope, bls_secret_hex)
+        if native_sig["key_ref"] != agent_id:
+            raise SubmitCommandError(
+                "submit_bls_key_agent_id_mismatch",
+                "native BLS signing key public key must equal --agent-id",
+            )
+        envelope["sig"] = native_sig
+
     try:
         result = validate_truth_primitive_submission(envelope)
     except EpistemicSubmissionError as exc:
         raise SubmitCommandError(exc.token, str(exc)) from exc
+
+    if (
+        should_native_sign
+        and truth_runtime.NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED
+    ):
+        native_sig = _build_native_submit_sig_object(envelope, bls_secret_hex)
+        if native_sig["key_ref"] != agent_id:
+            if bls_key_source == "file":
+                native_sig = None
+            else:
+                raise SubmitCommandError(
+                    "submit_bls_key_agent_id_mismatch",
+                    "native BLS signing key public key must equal --agent-id",
+                )
+        if native_sig is not None:
+            envelope["sig"] = native_sig
 
     envelope = _sign_submission_envelope(envelope, getattr(args, "signing_key", None))
 
@@ -600,13 +717,17 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
             "public_submit_endpoint": submit_endpoint,
             "version": D2E_SUBMIT_CLI_VERSION,
         }
-        if envelope.get("sig") not in {None, "", "UNSIGNED"}:
-            response["signature"] = {
-                "sig": str(envelope.get("sig", "")),
-                "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
-                "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
-                "sig_scheme": str(envelope.get("sig_scheme", "")),
-            }
+        sig_value = envelope.get("sig")
+        if sig_value is not None and sig_value != "" and sig_value != "UNSIGNED":
+            if isinstance(sig_value, dict):
+                response["native_submit_sig"] = dict(sig_value)
+            else:
+                response["signature"] = {
+                    "sig": str(envelope.get("sig", "")),
+                    "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
+                    "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
+                    "sig_scheme": str(envelope.get("sig_scheme", "")),
+                }
         return response
 
     # CDL-075: persist to LMDB graph store when ILC_TRUTH_GRAPH_STORE_PATH is set.
@@ -652,11 +773,15 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         "gossip_delivery": gossip_delivery,
         "version": D2E_SUBMIT_CLI_VERSION,
     }
-    if envelope.get("sig") not in {None, "", "UNSIGNED"}:
-        response["signature"] = {
-            "sig": str(envelope.get("sig", "")),
-            "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
-            "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
-            "sig_scheme": str(envelope.get("sig_scheme", "")),
-        }
+    sig_value = envelope.get("sig")
+    if sig_value is not None and sig_value != "" and sig_value != "UNSIGNED":
+        if isinstance(sig_value, dict):
+            response["native_submit_sig"] = dict(sig_value)
+        else:
+            response["signature"] = {
+                "sig": str(envelope.get("sig", "")),
+                "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
+                "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
+                "sig_scheme": str(envelope.get("sig_scheme", "")),
+            }
     return response

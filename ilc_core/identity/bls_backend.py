@@ -48,6 +48,10 @@ ILC_RELAY_INVITE_STORE_DST: Final[bytes] = (
 ILC_RELAY_INVITE_BUNDLE_DST: Final[bytes] = (
     b"ILC_RELAY_INVITE_BUNDLE_V1_BLS12381G2_XMD:SHA-256_SSWU_RO_"
 )
+ILC_NATIVE_TRUTH_SUBMIT_DST_PREFIX: Final[str] = "ILC_NATIVE_TRUTH_SUBMIT_V1"
+ILC_ENDPOINT_ASSERTION_DST_PREFIX: Final[str] = (
+    "ILC_PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_V1"
+)
 
 _IKM_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{64}$")
 _BLS_PUBLIC_KEY_RE: Final[re.Pattern[str]] = re.compile(r"^[0-9a-f]{96}$")
@@ -260,6 +264,168 @@ def _sign_digest_with_ciphersuite(
     digest = bytes.fromhex(_require_hex(digest_hex, _SHA384_RE, digest_token))
     signature_hex = bytes(ciphersuite.Sign(secret_key_int, digest)).hex()
     return _require_hex(signature_hex, _BLS_SIGNATURE_RE, signature_token)
+
+
+def _require_non_empty_network_id(network_id: str) -> str:
+    if not isinstance(network_id, str) or not network_id.strip() or ":" in network_id:
+        raise ValueError("bls_network_id_invalid")
+    return network_id
+
+
+def _sign_raw_bls_bytes_with_dst(
+    secret_key_hex: str,
+    message_bytes: bytes,
+    dst_bytes: bytes,
+    error_token_prefix: str,
+) -> str:
+    """Sign raw message bytes with caller-supplied DST bytes.
+
+    Private helper only. Public callers use domain-specific wrappers below so
+    authority surfaces cannot accidentally share a domain separation tag.
+    """
+
+    secret_key_int = int(
+        _require_hex(
+            secret_key_hex,
+            _BLS_SECRET_KEY_RE,
+            f"{error_token_prefix}_private_key_invalid",
+        ),
+        16,
+    )
+    if not _is_valid_secret_key_int(secret_key_int):
+        raise ValueError(f"{error_token_prefix}_private_key_invalid")
+    if not isinstance(message_bytes, bytes) or not message_bytes:
+        raise ValueError(f"{error_token_prefix}_message_bytes_invalid")
+    if not isinstance(dst_bytes, bytes) or not dst_bytes:
+        raise ValueError(f"{error_token_prefix}_dst_bytes_invalid")
+
+    class _Suite(G2Basic):
+        DST = dst_bytes
+
+    signature_hex = bytes(_Suite.Sign(secret_key_int, message_bytes)).hex()
+    return _require_hex(
+        signature_hex,
+        _BLS_SIGNATURE_RE,
+        f"{error_token_prefix}_signature_invalid",
+    )
+
+
+def _verify_raw_bls_bytes_with_dst(
+    public_key_hex: str,
+    message_bytes: bytes,
+    signature_hex: str,
+    dst_bytes: bytes,
+    error_token_prefix: str,
+) -> bool:
+    """Verify raw message bytes with caller-supplied DST bytes.
+
+    Private helper only. Returns False for validation or cryptographic failure.
+    """
+
+    try:
+        clean_public_key_hex = _require_hex(
+            public_key_hex,
+            _BLS_PUBLIC_KEY_RE,
+            f"{error_token_prefix}_public_key_invalid",
+        )
+        clean_signature_hex = _require_hex(
+            signature_hex,
+            _BLS_SIGNATURE_RE,
+            f"{error_token_prefix}_signature_invalid",
+        )
+        if not isinstance(message_bytes, bytes) or not message_bytes:
+            return False
+        if not isinstance(dst_bytes, bytes) or not dst_bytes:
+            return False
+
+        class _Suite(G2Basic):
+            DST = dst_bytes
+
+        public_key = bytes.fromhex(clean_public_key_hex)
+        signature = bytes.fromhex(clean_signature_hex)
+        if not _Suite.KeyValidate(public_key):
+            return False
+        return bool(_Suite.Verify(public_key, message_bytes, signature))
+    except (AssertionError, ValueError):
+        return False
+
+
+def sign_native_submit_bytes(
+    secret_key_hex: str,
+    message_bytes: bytes,
+    network_id: str,
+) -> str:
+    """Sign canonical native submission envelope bytes with an AgentID BLS key."""
+
+    clean_network_id = _require_non_empty_network_id(network_id)
+    dst = f"{ILC_NATIVE_TRUTH_SUBMIT_DST_PREFIX}:{clean_network_id}".encode()
+    return _sign_raw_bls_bytes_with_dst(
+        secret_key_hex,
+        message_bytes,
+        dst,
+        "native_submit_bls",
+    )
+
+
+def verify_native_submit_bytes(
+    public_key_hex: str,
+    message_bytes: bytes,
+    signature_hex: str,
+    network_id: str,
+) -> bool:
+    """Verify a native submission BLS signature over canonical envelope bytes."""
+
+    try:
+        clean_network_id = _require_non_empty_network_id(network_id)
+    except ValueError:
+        return False
+    dst = f"{ILC_NATIVE_TRUTH_SUBMIT_DST_PREFIX}:{clean_network_id}".encode()
+    return _verify_raw_bls_bytes_with_dst(
+        public_key_hex,
+        message_bytes,
+        signature_hex,
+        dst,
+        "native_submit_bls",
+    )
+
+
+def sign_endpoint_assertion_bytes(
+    secret_key_hex: str,
+    message_bytes: bytes,
+    network_id: str,
+) -> str:
+    """Sign canonical public-submit endpoint assertion payload bytes."""
+
+    clean_network_id = _require_non_empty_network_id(network_id)
+    dst = f"{ILC_ENDPOINT_ASSERTION_DST_PREFIX}:{clean_network_id}".encode()
+    return _sign_raw_bls_bytes_with_dst(
+        secret_key_hex,
+        message_bytes,
+        dst,
+        "endpoint_assertion_bls",
+    )
+
+
+def verify_endpoint_assertion_bytes(
+    public_key_hex: str,
+    message_bytes: bytes,
+    signature_hex: str,
+    network_id: str,
+) -> bool:
+    """Verify a public-submit endpoint assertion BLS signature."""
+
+    try:
+        clean_network_id = _require_non_empty_network_id(network_id)
+    except ValueError:
+        return False
+    dst = f"{ILC_ENDPOINT_ASSERTION_DST_PREFIX}:{clean_network_id}".encode()
+    return _verify_raw_bls_bytes_with_dst(
+        public_key_hex,
+        message_bytes,
+        signature_hex,
+        dst,
+        "endpoint_assertion_bls",
+    )
 
 
 def verify_invite_pop_digest(
@@ -612,6 +778,8 @@ def _is_valid_secret_key_int(value: int) -> bool:
 __all__ = [
     "ILC_INVITE_POP_DST",
     "ILC_INVITEE_INSTALL_RECEIPT_DST",
+    "ILC_ENDPOINT_ASSERTION_DST_PREFIX",
+    "ILC_NATIVE_TRUTH_SUBMIT_DST_PREFIX",
     "ILC_RELAY_ADMISSION_DST",
     "ILC_RELAY_BOOTSTRAP_CAPSULE_DST",
     "ILC_RELAY_BOOTSTRAP_RECORD_DST",
@@ -620,8 +788,10 @@ __all__ = [
     "ILC_RELAY_LIFECYCLE_DST",
     "keypair_from_ikm_hex",
     "public_key_from_secret_key_hex",
+    "sign_endpoint_assertion_bytes",
     "sign_invite_pop_digest",
     "sign_invitee_install_receipt_digest",
+    "sign_native_submit_bytes",
     "sign_relay_admission_digest",
     "sign_relay_bootstrap_capsule_digest",
     "sign_relay_bootstrap_record_digest",
@@ -629,8 +799,10 @@ __all__ = [
     "sign_relay_invite_store_digest",
     "sign_relay_lifecycle_digest",
     "verify_bls_signature_rust",
+    "verify_endpoint_assertion_bytes",
     "verify_invite_pop_digest",
     "verify_invitee_install_receipt_digest",
+    "verify_native_submit_bytes",
     "verify_relay_admission_digest",
     "verify_relay_bootstrap_capsule_digest",
     "verify_relay_bootstrap_record_digest",
