@@ -679,18 +679,18 @@
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_genesis_invite_issuer_delegation_schema_GAP_GENESIS_INVITE_ISSUER_00_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_genesis_invite_issuer_delegation_schema_GAP_GENESIS_INVITE_ISSUER_00_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/genesis/genesis_agent1_pubkey_record_838a.txt",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
         }
       ],
       "proposed_semantic_edges": [
@@ -85282,6 +85282,205 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_test_debt_canon_bundle_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00",
+      "chronology_note": "2026-09-28 GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00 prompt: sensitive ML-DSA delegation ceremony for the public submit ingress BLS key before guard clearance.",
+      "manual_read_summary": "Sensitive phase prompt requiring exact GO, Case 3 key resume verification, ML-DSA Plate 2 delegation over the public submit ingress BLS key, collision hard-stops, tests, status tokens, and phase-local graph-intake verification.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_genesis_operational_key_registry_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "PROMPTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "PROMPTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_key_delegation_00_g10_submit_ingress_key_delegation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00",
+      "chronology_note": "2026-09-28 Genesis operational key registry corrected for public submit ingress key delegation before guard clearance.",
+      "manual_read_summary": "Registry records Genesis key hierarchy, ML-DSA delegation requirement for Genesis-operated public protocol keys, public submit ingress BLS key scope, and collision hard-stops.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "target": "ilc_core/epoch/genesis_settlement_destination.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_genesis_operational_key_registry_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00",
+      "chronology_note": "2026-09-28 schema for Genesis public submit ingress key delegation record.",
+      "manual_read_summary": "Schema defining the ML-DSA-signed delegation record fields, signed payload boundary, invariants, revocation sketch, and non-claims for GENESIS_PUBLIC_SUBMIT_INGRESS_BLS_PK_HEX.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_genesis_operational_key_registry_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SPECIFIES",
+          "target": "docs/specs/ilc_genesis_public_submit_ingress_key_delegation_record_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00_v0.1.json"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SPECIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_genesis_public_submit_ingress_key_delegation_schema_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00",
+      "chronology_note": "2026-09-28 ML-DSA-signed Genesis delegation record for the public submit ingress BLS key.",
+      "manual_read_summary": "Public delegation record binding GENESIS_PUBLIC_SUBMIT_INGRESS_BLS_PK_HEX to role genesis_delegate_public_submit_ingress_v1 for network ilc-public-rc-01-testnet-harness, signed by Genesis Agent 01 Phase 838a ML-DSA key.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SIGNED_BY",
+          "target": "agent:GENESIS_AGENT1_PHASE_838A_MLDSA"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:public_submit_ingress_key_delegation_complete_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SIGNED_BY",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_genesis_public_submit_ingress_key_delegation_record_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00",
+      "chronology_note": "2026-09-28 tests for the public submit ingress key delegation record.",
+      "manual_read_summary": "Focused tests verifying record shape, public key format and collisions, signed payload exclusion, ML-DSA verification via pq_sign, phase tokens, and no private key material in the delegation record.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "docs/specs/ilc_genesis_public_submit_ingress_key_delegation_record_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_rc_native_submit_ingress_key_delegation_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_155_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00",
+      "chronology_note": "2026-09-28 walkthrough for the public submit ingress key delegation ceremony and verification.",
+      "manual_read_summary": "Walkthrough records exact GO phrase, Case 3 resume, payload SHA-256, ML-DSA verification, tests, graph-intake check, output tokens, and non-claims without private key material.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_key_delegation_00_g10_submit_ingress_key_delegation.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-KEY-DELEGATION-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:public_submit_ingress_key_delegation_complete_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_native_submit_ingress_key_delegation_00_walkthrough.md"
     }
   ],
   "boundary": {
