@@ -21,11 +21,11 @@ from dataclasses import dataclass, fields
 from typing import Any, Callable, Mapping
 
 
-PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_NOT_ACTIVATED = True
+PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_NOT_ACTIVATED = False
 # CDL-117 IS ratified (commit 4d4e54e43). This guard is a downstream activation
 # gate for consumers that need to check CDL ratification status before using the
 # ingress surface. It is NOT a factual claim that CDL-117 is unratified.
-PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_NOT_RATIFIED = True
+PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_NOT_RATIFIED = False
 
 PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_RUNTIME_VERSION = (
     "public_submit_ingress_endpoint_assertion_IMPL_00.v0.1"

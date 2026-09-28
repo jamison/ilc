@@ -239,13 +239,15 @@ def test_select_current_uses_revision_edge_to_reject_superseded_candidate(
         )
 
 
-def test_guard_raises_before_activation() -> None:
-    with pytest.raises(ValueError, match="public_submit_ingress_endpoint_assertion_not_activated_IMPL_00"):
-        load_from_atlas(
-            IterNodeAtlas([_assertion_record()]),
-            serving_agent_id=AGENT_ID,
-            network_id=NETWORK_ID,
-        )
+def test_load_from_atlas_reads_assertion_after_guard_clear() -> None:
+    loaded = load_from_atlas(
+        IterNodeAtlas([_assertion_record()]),
+        serving_agent_id=AGENT_ID,
+        network_id=NETWORK_ID,
+    )
+
+    assert loaded.serving_agent_id == AGENT_ID
+    assert loaded.network_id == NETWORK_ID
 
 
 def test_pre_signer_binding_advisory_trust_annotation_in_docstring() -> None:
