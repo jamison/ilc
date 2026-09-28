@@ -107015,6 +107015,78 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_native_submit_ingress_guard_clear_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_GAP_PUBLIC_RC_NATIVE_STATUS_EVIDENCE_00b",
+      "chronology_note": "2026-09-28 — STATUS-EVIDENCE-00b phase prompt drafted by Sonnet; closes 00a non-claims by producing offline BLS verification of endpoint assertion, live signed-submission acceptance evidence, and unsigned-rejection confirmation",
+      "manual_read_summary": "Phase prompt for GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b: offline BLS verify endpoint assertion, signed native truth primitive submission through live path to obtain CIDv1 node_id, unsigned submission rejection confirmation, and evidence receipt closing 00a open non-claims",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b"
+        },
+        {
+          "edge_type": "SUPERSEDES",
+          "target": "token:native_status_evidence_assembled_GAP_PUBLIC_RC_NATIVE_STATUS_EVIDENCE_00a"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SUPERSEDES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_status_evidence_00b_g10_signed_peer_evidence.md"
+    },
+    {
+      "annotation_batch": "manual_batch_158_phase_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00",
+      "chronology_note": "2026-09-28 — CAPSULE-KEY-DELEGATION-00 phase prompt drafted by Sonnet; provides ML-DSA-65 delegation record for GENESIS_CAPSULE_SIGNING_PK_HEX (b0059ca0...fdbd85), completing the authority chain for capsule signing",
+      "manual_read_summary": "SENSITIVE phase prompt for GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00: produces ML-DSA-65 signed delegation record for genesis_capsule_bls_sk, verifies five key-collision hard-stops, updates key registry §4, and emits capsule_signing_key_delegation_complete token",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_genesis_key_registry_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "token:public_submit_ingress_key_delegation_complete_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_KEY_DELEGATION_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_genesis_capsule_signing_key_delegation_00_g10_capsule_key_delegation.md"
     }
   ],
   "phase": "1545p-Fix38",
