@@ -107087,6 +107087,90 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_genesis_capsule_signing_key_delegation_00_g10_capsule_key_delegation.md"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_GAP_PUBLIC_RC_MULTI_AGENT_NATIVE_INGRESS_SMOKE_00",
+      "chronology_note": "2026-09-29 — SMOKE-00 execution added a native submit smoke runner proving two independent BLS agents can submit signed assert.truth envelopes through the guard-cleared runtime",
+      "manual_read_summary": "Standalone smoke runner for GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00: builds native_submit_sig.v0.1 envelopes, validates them, persists graph nodes through TruthPrimitiveGraphStore, checks graph-write idempotency, and confirms adversarial BLS/replay rejection",
+      "node_kind": "tool_script",
+      "phase_ref": "GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "runtime:native_submit_ingress"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SUPPORTS",
+        "TESTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/native_submit/run_multi_agent_smoke.py"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_GAP_PUBLIC_RC_MULTI_AGENT_NATIVE_INGRESS_SMOKE_00",
+      "chronology_note": "2026-09-29 — SMOKE-00 execution added focused tests for the multi-agent native submit smoke runner and its adversarial scenarios",
+      "manual_read_summary": "Focused pytest coverage for GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00: accepts Agent A/B signed submissions, proves graph-write idempotency without replay bypass, confirms invalid signature/key_ref/length/replay rejection, validates evidence shape, and catches tampered-envelope hash mismatch",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "TESTS",
+          "target": "tools/native_submit/run_multi_agent_smoke.py"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "TESTS",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_public_rc_multi_agent_native_ingress_smoke_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_GAP_PUBLIC_RC_MULTI_AGENT_NATIVE_INGRESS_SMOKE_00",
+      "chronology_note": "2026-09-29 — SMOKE-00 execution walkthrough recorded guard state, evidence SHA-256, node IDs, focused tests, adjacent regression, coverage, and non-claims",
+      "manual_read_summary": "Walkthrough for GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00 recording exact verification outputs, two persisted CIDv1 node IDs, evidence hash, phase-local LMDB path, output tokens, and non-claims",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:multi_agent_native_ingress_smoke_complete_GAP_PUBLIC_RC_MULTI_AGENT_NATIVE_INGRESS_SMOKE_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_multi_agent_native_ingress_smoke_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
