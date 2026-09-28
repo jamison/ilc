@@ -32,6 +32,41 @@ def test_verify_stake_distribution_ok():
     assert result["max_agent_error"] == "0"
     assert not result["top_errors"]
 
+
+def test_verify_stake_distribution_matches_ledger_largest_remainder_residual():
+    """
+    The verifier must mirror LedgerBackend._apply_rewards residual allocation.
+    Two quanta split across three equal stakes go to the first two agent IDs by
+    largest remainder, then agent ID tie-break.
+    """
+    epoch_record = {
+        "distribution_status": "distributed",
+        "summary": {"reward_total": "0.000000002"},
+    }
+    snapshot = StakeSnapshot(
+        epoch_id="test",
+        epoch_index=1,
+        namespace_id="ns",
+        stakes={"a": Decimal("1"), "b": Decimal("1"), "c": Decimal("1")},
+        total_stake=Decimal("3"),
+        created_at="now",
+    )
+    balances_before = {"a": "0", "b": "0", "c": "0"}
+    balances_after = {"a": "0.000000001", "b": "0.000000001", "c": "0"}
+
+    result = verify_stake_distribution(
+        epoch_record,
+        snapshot,
+        balances_before,
+        balances_after,
+    )
+
+    assert result["ok"] is True
+    assert result["total_delta"] == "0.000000002"
+    assert result["expected_total"] == "0.000000002"
+    assert result["max_agent_error"] == "0"
+    assert not result["top_errors"]
+
 def test_verify_stub_ok():
     """
     Test stub distribution (no changes allowed).

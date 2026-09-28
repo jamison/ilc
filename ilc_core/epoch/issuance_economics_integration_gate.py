@@ -89,6 +89,13 @@ QUOTE_LEVEL_CONSERVATION_SCOPE_TOKEN = (
 
 _ZERO = Decimal("0")
 
+# Test-only AgentID fixture stubs. These are valid 96-hex placeholders required
+# by _validate_member_id(); they are not real BLS public keys.
+_AGENT_FIXTURE_ALPHA = "aa" * 48
+_AGENT_FIXTURE_BETA = "bb" * 48
+_AGENT_FIXTURE_GAMMA = "cc" * 48
+_AGENT_FIXTURE_DELTA = "dd" * 48
+
 
 @dataclass(frozen=True)
 class StackVerificationRow:
@@ -313,9 +320,9 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "write_fee_burn": Decimal("20"),
             "ejected_stake": Decimal("9.000000001"),
             "member_stakes": {
-                "agent:alpha": Decimal("10"),
-                "agent:beta": Decimal("20"),
-                "agent:gamma": Decimal("30"),
+                _AGENT_FIXTURE_ALPHA: Decimal("10"),
+                _AGENT_FIXTURE_BETA: Decimal("20"),
+                _AGENT_FIXTURE_GAMMA: Decimal("30"),
             },
             "approve_votes": 3,
             "participating_voters": 3,
@@ -336,9 +343,9 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "write_fee_burn": Decimal("0.000000050"),
             "ejected_stake": Decimal("0.000000009"),
             "member_stakes": {
-                "agent:alpha": Decimal("1"),
-                "agent:beta": Decimal("1"),
-                "agent:gamma": Decimal("1"),
+                _AGENT_FIXTURE_ALPHA: Decimal("1"),
+                _AGENT_FIXTURE_BETA: Decimal("1"),
+                _AGENT_FIXTURE_GAMMA: Decimal("1"),
             },
             "approve_votes": 2,
             "participating_voters": 3,
@@ -359,10 +366,10 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "write_fee_burn": Decimal("0.000000500"),
             "ejected_stake": Decimal("30"),
             "member_stakes": {
-                "agent:alpha": Decimal("2"),
-                "agent:beta": Decimal("3"),
-                "agent:gamma": Decimal("5"),
-                "agent:delta": Decimal("10"),
+                _AGENT_FIXTURE_ALPHA: Decimal("2"),
+                _AGENT_FIXTURE_BETA: Decimal("3"),
+                _AGENT_FIXTURE_GAMMA: Decimal("5"),
+                _AGENT_FIXTURE_DELTA: Decimal("10"),
             },
             "approve_votes": 3,
             "participating_voters": 4,
@@ -383,9 +390,9 @@ def build_epoch_quote_conservation_results() -> tuple[QuoteConservationResult, .
             "write_fee_burn": Decimal("100.000000000"),
             "ejected_stake": Decimal("12.000000000"),
             "member_stakes": {
-                "agent:alpha": Decimal("7"),
-                "agent:beta": Decimal("11"),
-                "agent:gamma": Decimal("13"),
+                _AGENT_FIXTURE_ALPHA: Decimal("7"),
+                _AGENT_FIXTURE_BETA: Decimal("11"),
+                _AGENT_FIXTURE_GAMMA: Decimal("13"),
             },
             "approve_votes": 3,
             "participating_voters": 3,

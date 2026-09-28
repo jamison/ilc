@@ -4,17 +4,16 @@
       "annotation_batch": "manual_batch_140_phase_gap_public_rc_native_submit_ingress_impl_00_prompt",
       "chronology_note": "2026-09-26 — IMPL-00 phase prompt produced by Sonnet incorporating F-01/F-02/F-03/F-11 audit findings and CDL-117 INV-A through INV-D carry-forwards",
       "manual_read_summary": "Phase prompt for GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-IMPL-00: implements CDL-117 native public submit ingress behind three default-off guard constants, new submit_ingress_endpoint_assertion module, revocation schema (INV-D), sig verification wiring, and behavioral tests",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_impl_00_g10_native_ingress_implementation.md",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
         },
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_public_rc_native_submit_ingress_spec_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_SPEC_00_v0.1.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_public_rc_native_submit_ingress_spec_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_SPEC_00_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -32,13 +31,13 @@
         "SUPPORTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_impl_00_g10_native_ingress_implementation.md"
+      "recommended_graph_action": "graph_delta=support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_impl_00_g10_native_ingress_implementation.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_impl_00_g10_native_ingress_implementation.md"
     },
     {
       "annotation_batch": "manual_batch_141_phase_gap_public_rc_native_submit_ingress_impl_00_runtime",
       "chronology_note": "2026-09-27 — IMPL-00 runtime module added for CDL-117 public submit ingress endpoint assertions and revocation schema behind default-on guards",
       "manual_read_summary": "Runtime module for PublicSubmitIngressEndpointAssertion, PublicSubmitIngressEndpointRevocation, canonical payloads, BLS verifier hook, default-true endpoint assertion guard, CDL ratification guard, and fail-closed current assertion selection.",
-      "repo_path": "ilc_core/consensus/submit_ingress_endpoint_assertion.py",
       "node_kind": "runtime_module",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-IMPL-00",
       "proposed_authority_trace_edges": [
@@ -67,13 +66,13 @@
         "SUPPORTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/consensus/submit_ingress_endpoint_assertion.py"
+      "recommended_graph_action": "graph_delta=load_bearing_artifact_added:ilc_core/consensus/submit_ingress_endpoint_assertion.py",
+      "repo_path": "ilc_core/consensus/submit_ingress_endpoint_assertion.py"
     },
     {
       "annotation_batch": "manual_batch_141_phase_gap_public_rc_native_submit_ingress_impl_00_tests",
       "chronology_note": "2026-09-27 — IMPL-00 behavioral regression tests added for endpoint assertion parsing, guard boundaries, native sig object validation, and revocation schema",
       "manual_read_summary": "Tests for CDL-117 endpoint assertion epoch-zero semantics, transport-key scope, canonical payload signature exclusion, fail-closed selection/cardinality, default-on guard behavior, advisory-trust annotation, native sig object validation, and revocation canonical payload.",
-      "repo_path": "tests/test_submit_ingress_endpoint_assertion_IMPL_00.py",
       "node_kind": "test_file",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-IMPL-00",
       "proposed_authority_trace_edges": [
@@ -97,13 +96,13 @@
         "VERIFIES",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_submit_ingress_endpoint_assertion_IMPL_00.py"
     },
     {
       "annotation_batch": "manual_batch_141_phase_gap_public_rc_native_submit_ingress_impl_00_walkthrough",
       "chronology_note": "2026-09-27 — IMPL-00 walkthrough records verification, default-on guard preservation, non-claims, and pre-existing V6 full-suite failure disposition",
       "manual_read_summary": "Phase walkthrough for the CDL-117 native submit ingress runtime implementation, including verification command outputs, focused and adjacent regression results, seven pre-existing full-suite failures confirmed not introduced by IMPL-00, carry-forwards, and output token.",
-      "repo_path": "docs/phases/phase_gap_public_rc_native_submit_ingress_impl_00_walkthrough.md",
       "node_kind": "phase_walkthrough",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-IMPL-00",
       "proposed_authority_trace_edges": [
@@ -128,7 +127,8 @@
         "SUPPORTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_native_submit_ingress_impl_00_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_139_phase_gap_ecu_status_local_path_00_ecu_lifecycle_flow_diagram",
@@ -198,15 +198,58 @@
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_monthly_issuance_close_observe_00_g10_first_monthly_close_settlement.md"
     },
     {
-      "annotation_batch": "manual_batch_143_phase_gap_public_rc_native_status_evidence_00a_prompt",
-      "chronology_note": "2026-09-27 — 00a phase prompt drafted; produces standalone derived evidence object from Phase 1603 graph receipt + BalanceStore; no ilc_core/ mutations",
-      "manual_read_summary": "Phase prompt for GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a: assembles a standalone verifier-facing evidence receipt from Phase 1603 durable evidence (SHA-256 bound), proving agent init, local graph persistence, and Rust-backed ECU status without touching ilc_core/ or claiming live network ingress.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_status_evidence_00a_g10_graph_balance_store_evidence.md",
+      "annotation_batch": "manual_batch_142_ecu_lifecycle_flow_diagram_v0.4",
+      "chronology_note": "2026-09-27 — ECU lifecycle flow diagram v0.4 produced; supersedes v0.3; corrects stale CDL-117/IMPL-00 rows, adds agent-native ingress framing, adds signer-binding gap rows and test-debt row",
+      "manual_read_summary": "Target-state roadmap and gap ledger for the full ECU-to-ILC lifecycle; v0.4 marks CDL-117 opening and IMPL-00 as CLOSED/PARTIAL, corrects §2 guard annotation, establishes agent-native ingress baseline framing (ingress is a default agent capability not a permissioned service), adds signer-binding CDL/IMPL/profile/guard-clear/smoke/test-debt gap rows, and updates non-claims to reflect guards-still-True posture.",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_ecu_confidence_matrix_and_validation_lane_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPERSEDES",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.3.md"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "token:ecu_lifecycle_type_namespace_pre_canon"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-GUARD-CLEAR-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPERSEDES",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md"
+    },
+    {
+      "annotation_batch": "manual_batch_143_phase_gap_public_rc_native_status_evidence_00a_prompt",
+      "chronology_note": "2026-09-27 — 00a phase prompt drafted; produces standalone derived evidence object from Phase 1603 graph receipt + BalanceStore; no ilc_core/ mutations",
+      "manual_read_summary": "Phase prompt for GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a: assembles a standalone verifier-facing evidence receipt from Phase 1603 durable evidence (SHA-256 bound), proving agent init, local graph persistence, and Rust-backed ECU status without touching ilc_core/ or claiming live network ingress.",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -224,13 +267,13 @@
         "SUPPORTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_status_evidence_00a_g10_graph_balance_store_evidence.md"
     },
     {
       "annotation_batch": "manual_batch_144_phase_gap_public_rc_native_status_evidence_00a_execution",
       "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a schema spec added for standalone verifier-facing evidence derived from Phase 1603 durable graph receipt and Rust BalanceStore status.",
       "manual_read_summary": "Schema specification for native_status_evidence_00a.v0.1: binds the derived evidence object to Phase 1603 evidence SHA-256, names required assertions and non-claims, and records the no-live-ingress/no-settlement boundary.",
-      "repo_path": "docs/specs/ilc_native_status_evidence_00a_v0.1.md",
       "node_kind": "spec_doc",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a",
       "proposed_authority_trace_edges": [
@@ -267,13 +310,13 @@
         "NEGATIVE_ASSERTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "load_bearing_artifact_added"
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_native_status_evidence_00a_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_144_phase_gap_public_rc_native_status_evidence_00a_execution",
       "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a assembler added; verifies Phase 1603 evidence SHA-256 and writes derived evidence atomically.",
       "manual_read_summary": "Assembler script for native status evidence 00a: reads only durable Phase 1603 evidence, hard-fails with named tokens on invariant drift, forbids dependence on transient /tmp stdout paths, and writes canonical JSON using mkstemp plus os.replace.",
-      "repo_path": "tools/native_status_evidence/assemble_00a.py",
       "node_kind": "tool_script",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a",
       "proposed_authority_trace_edges": [
@@ -302,13 +345,13 @@
         "REFERENCES_AUTHORITY",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/native_status_evidence/assemble_00a.py"
     },
     {
       "annotation_batch": "manual_batch_144_phase_gap_public_rc_native_status_evidence_00a_execution",
       "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a verifier tests added for schema, field, assertion, non-claim, and adversarial invariant coverage.",
       "manual_read_summary": "Offline verifier tests for native status evidence 00a: confirms schema/source binding, all eight assertions, all ten non-claims, graph node and ECU status values, plus adversarial failures for source result, AgentID, persistence, balance source, stale marker, source schema, primitive type, source-ref count, gossip, package identity, clean-venv check, and SHA mismatch.",
-      "repo_path": "tests/test_native_status_evidence_00a.py",
       "node_kind": "test_file",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a",
       "proposed_authority_trace_edges": [
@@ -336,13 +379,13 @@
         "VERIFIES",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_native_status_evidence_00a.py"
     },
     {
       "annotation_batch": "manual_batch_144_phase_gap_public_rc_native_status_evidence_00a_execution",
       "chronology_note": "2026-09-27 — GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a walkthrough added with exact verification outputs and V2 grep-discrepancy note.",
       "manual_read_summary": "Walkthrough for native status evidence 00a records direct source reads, produced artifacts, derived evidence SHA-256, exact V1-V8 verification outputs, the overbroad prescribed V2 grep result and exact-token correction, output token, carry-forwards, and non-claims.",
-      "repo_path": "docs/phases/phase_gap_public_rc_native_status_evidence_00a_walkthrough.md",
       "node_kind": "phase_walkthrough",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00a",
       "proposed_authority_trace_edges": [
@@ -381,7 +424,8 @@
         "NEGATIVE_ASSERTS",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_native_status_evidence_00a_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_145_phase_gap_public_rc_native_agent_signer_binding_cdl_00_prompt",
@@ -546,7 +590,6 @@
       "annotation_batch": "manual_batch_149_phase_GAP_GRAPH_COVERAGE_AUDIT_00_coverage_audit_tool",
       "chronology_note": "2026-09-28 GAP-GRAPH-COVERAGE-AUDIT-00 - full repo-wide graph intake coverage audit tool implementation",
       "manual_read_summary": "Read-only CLI tool that walks COVERED_PREFIXES tracked files, loads Fix38 primary plus all ilc_fix*_graph_intake_overlay_v0.1.json overlay ledgers, reports coverage percentage, and lists unregistered files without mutating graph state.",
-      "repo_path": "tools/coverage_audit.py",
       "node_kind": "tool_script",
       "phase_ref": "GAP-GRAPH-COVERAGE-AUDIT-00",
       "proposed_authority_trace_edges": [],
@@ -564,13 +607,13 @@
         "SOURCE_TREE_MEMBER",
         "COMPANION_TOOL_OF"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/coverage_audit.py"
     },
     {
       "annotation_batch": "manual_batch_149_phase_GAP_GRAPH_COVERAGE_AUDIT_00_tests",
       "chronology_note": "2026-09-28 GAP-GRAPH-COVERAGE-AUDIT-00 - unit tests for coverage_audit.py ledger traversal and fail-on-unregistered behavior",
       "manual_read_summary": "Focused tests for the graph coverage audit tool: recursive _walk_paths extraction from _manual_additions and legacy annotations containers, deep nesting, audit count coherence, and --fail-on-unregistered exit behavior.",
-      "repo_path": "tests/test_coverage_audit.py",
       "node_kind": "test_file",
       "phase_ref": "GAP-GRAPH-COVERAGE-AUDIT-00",
       "proposed_authority_trace_edges": [],
@@ -588,20 +631,20 @@
         "VERIFIES",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_coverage_audit.py"
     },
     {
       "annotation_batch": "manual_batch_149_phase_GAP_GRAPH_COVERAGE_AUDIT_00_walkthrough",
       "chronology_note": "2026-09-28 GAP-GRAPH-COVERAGE-AUDIT-00 - walkthrough records verification outputs and computed coverage baseline",
       "manual_read_summary": "Phase walkthrough for the graph coverage audit tool, recording V1-V7 outputs, baseline coverage values, output tokens, non-claims, and carry-forward notes.",
-      "repo_path": "docs/phases/phase_gap_graph_coverage_audit_00_walkthrough.md",
       "node_kind": "phase_walkthrough",
       "phase_ref": "GAP-GRAPH-COVERAGE-AUDIT-00",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
-          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_graph_coverage_audit_00_g10_coverage_audit_tool.md",
-          "review_status": "candidate"
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_graph_coverage_audit_00_g10_coverage_audit_tool.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -624,7 +667,8 @@
         "VERIFIES",
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_graph_coverage_audit_00_walkthrough.md"
     }
   ],
   "annotations": [
@@ -84917,6 +84961,184 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_native_submit_ingress_cdl_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_150_phase_GAP_PUBLIC_RC_NATIVE_AGENT_SIGNER_BINDING_IMPL_00_prompt",
+      "chronology_note": "2026-09-28 — GAP-PUBLIC-RC-NATIVE-AGENT-SIGNER-BINDING-IMPL-00 phase prompt: implements BLS cryptographic signing in verify_native_submit_sig_envelope(), key_ref==agent_id enforcement, replay dedup, and BLS auto-discovery in ilc submit CLI.",
+      "manual_read_summary": "Phase prompt specifying BLS native submit signature verification implementation: sign_native_submit_bytes/verify_native_submit_bytes in bls_backend.py, 192-char enforcement, key_ref==agent_id check, replay dedup triple, and ILC_AGENT_BLS_SIGNING_KEY CLI auto-discovery.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_118_native_submit_sig_signer_binding_profile_GAP_PUBLIC_RC_NATIVE_AGENT_SIGNER_BINDING_CDL_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SPECIFIES",
+          "target": "ilc_core/identity/bls_backend.py"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "ilc_core/epistemic/truth_primitive_submission_runtime.py"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "ilc_core/cli/d2e_submit_cli.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SPECIFIES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_agent_signer_binding_impl_00_g10_signer_binding_impl.md"
+    },
+    {
+      "annotation_batch": "manual_batch_151_phase_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_GUARD_CLEAR_00_prompt",
+      "chronology_note": "2026-09-28 — GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-GUARD-CLEAR-00 phase prompt: clears all three native submit ingress guards after signer-binding CDL ratified and IMPL-00 complete; produces signed endpoint assertion record for testnet harness.",
+      "manual_read_summary": "SENSITIVE phase prompt specifying guard clearance for NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED, PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_NOT_RATIFIED, and PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_NOT_ACTIVATED after all preconditions met; includes endpoint assertion construction spec and BLS signing procedure.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_118_native_submit_sig_signer_binding_profile_GAP_PUBLIC_RC_NATIVE_AGENT_SIGNER_BINDING_CDL_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_117_native_submit_ingress_opening_ratification_GAP_PUBLIC_RC_NATIVE_SUBMIT_INGRESS_CDL_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SPECIFIES",
+          "target": "ilc_core/consensus/submit_ingress_endpoint_assertion.py"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "ilc_core/epistemic/truth_primitive_submission_runtime.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SPECIFIES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_guard_clear_00_g10_guard_clearance.md"
+    },
+    {
+      "annotation_batch": "manual_batch_152_phase_GAP_PUBLIC_RC_MULTI_AGENT_NATIVE_INGRESS_SMOKE_00_prompt",
+      "chronology_note": "2026-09-28 — GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00 phase prompt: proves two independent BLS agents can sign and submit native envelopes to the live runtime after all guards are cleared.",
+      "manual_read_summary": "NON-SENSITIVE phase prompt specifying end-to-end native ingress smoke with two independent BLS agents: sign canonical envelope bytes, submit to validate_truth_primitive_submission + write_truth_primitive_result, verify deterministic CIDv1 node_ids, plus adversarial rejection scenarios.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_118_native_submit_sig_signer_binding_profile_GAP_PUBLIC_RC_NATIVE_AGENT_SIGNER_BINDING_CDL_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SPECIFIES",
+          "target": "ilc_core/epistemic/truth_primitive_submission_runtime.py"
+        },
+        {
+          "edge_type": "SPECIFIES",
+          "target": "ilc_core/epistemic/truth_primitive_graph_store.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SPECIFIES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_multi_agent_native_ingress_smoke_00_g10_ingress_smoke.md"
+    },
+    {
+      "annotation_batch": "manual_batch_153_phase_GAP_TEST_DEBT_CANON_BUNDLE_00_prompt",
+      "chronology_note": "2026-09-28 — GAP-TEST-DEBT-CANON-BUNDLE-00 phase prompt: fix pre-existing test_run_scenario_emits_live_economic_state failure by replacing agent:alpha placeholder member_stakes stubs with valid 96-hex AgentID fixtures; execution scope expanded in-place to align settlement_verification residual allocation with the ledger backend.",
+      "manual_read_summary": "NON-SENSITIVE targeted test-debt prompt. Original fixture fix adds _AGENT_FIXTURE_ALPHA/BETA/GAMMA/DELTA 96-hex constants to issuance_economics_integration_gate.py and replaces agent:alpha member_stakes placeholders. Approved execution expansion also requires settlement_verification.py to mirror LedgerBackend largest-remainder residual allocation with a focused regression test.",
+      "node_kind": "phase_prompt",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SPECIFIES",
+          "target": "ilc_core/epoch/issuance_economics_integration_gate.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SPECIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_test_debt_canon_bundle_00_g10_agent_id_fixture_fix.md"
+    },
+    {
+      "annotation_batch": "manual_batch_154_phase_GAP_TEST_DEBT_CANON_BUNDLE_00_completion",
+      "chronology_note": "2026-09-28 — GAP-TEST-DEBT-CANON-BUNDLE-00 walkthrough records fixture-stub repair, settlement verifier residual alignment, verification outputs, tokens, and non-claims.",
+      "manual_read_summary": "Walkthrough for the completed non-sensitive test-debt phase: valid 96-hex AgentID fixture constants replace invalid member_stakes placeholders, and settlement_verification residual allocation now follows the ledger backend largest-remainder algorithm.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-TEST-DEBT-CANON-BUNDLE-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_test_debt_canon_bundle_00_g10_agent_id_fixture_fix.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-TEST-DEBT-CANON-BUNDLE-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:agent_id_fixture_fix_complete_GAP_TEST_DEBT_CANON_BUNDLE_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:issuance_gate_member_stubs_updated_GAP_TEST_DEBT_CANON_BUNDLE_00"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/epoch/issuance_economics_integration_gate.py"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "artifact:ilc_core/ledger/settlement_verification.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_test_debt_canon_bundle_00_walkthrough.md"
     }
   ],
   "boundary": {

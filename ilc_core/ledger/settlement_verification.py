@@ -44,17 +44,41 @@ def _expected_distribution(
 ) -> dict[str, Decimal]:
     if snapshot.total_stake <= ZERO:
         return {}
-    expected: dict[str, Decimal] = {}
-    running_total = ZERO
+
     stake_items = sorted(snapshot.stakes.items(), key=lambda item: item[0])
-    for index, (agent_id, stake) in enumerate(stake_items):
-        if index == len(stake_items) - 1:
-            share = reward_total - running_total
-        else:
-            share = _quantize_distribution_amount(
-                (stake / snapshot.total_stake) * reward_total
-            )
-            running_total += share
+    exact_shares = [
+        (agent_id, (stake / snapshot.total_stake) * reward_total)
+        for agent_id, stake in stake_items
+    ]
+    base_shares = [
+        (agent_id, _quantize_distribution_amount(share), share)
+        for agent_id, share in exact_shares
+    ]
+    allocated = sum(share for _, share, _ in base_shares)
+    residual = reward_total - allocated
+    residual_quanta = int(
+        (residual / _SETTLEMENT_QUANTUM).to_integral_value(rounding=ROUND_DOWN)
+    )
+    ranked_remainders = sorted(
+        base_shares,
+        key=lambda item: (-(item[2] - item[1]), item[0]),
+    )
+    winners = {
+        agent_id for agent_id, _, _ in ranked_remainders[:residual_quanta]
+    }
+    dust_receiver = (
+        ranked_remainders[residual_quanta][0]
+        if residual_quanta < len(ranked_remainders)
+        else None
+    )
+    residual_dust = residual - (_SETTLEMENT_QUANTUM * residual_quanta)
+    expected: dict[str, Decimal] = {}
+    for agent_id, base_share, _ in base_shares:
+        share = base_share + (
+            _SETTLEMENT_QUANTUM if agent_id in winners else ZERO
+        )
+        if agent_id == dust_receiver:
+            share += residual_dust
         expected[agent_id] = share
     return expected
 
