@@ -352,3 +352,114 @@ The economics document explicitly identifies validator correlation as an
 open convergence question. This section exists to make that limitation
 prominent to integrators and external reviewers, rather than buried in an
 appendix. Full formal model is in the forward plan Part 12g.
+
+---
+
+## §10 — Genesis Key Hierarchy and Authority Chain
+
+Genesis Agent 1's key architecture differs fundamentally from all other agents
+in the protocol. Understanding this distinction is essential for any phase
+touching Genesis-controlled keys, endpoint assertions, or signing ceremonies.
+
+### Two coexisting AgentID derivation schemes
+
+ILC has two coexisting AgentID derivation schemes:
+
+**CDL-069 path (Genesis Agent 1 only):**
+
+```
+agent_id = SHA-384("ilc-agent-id-v1:" || identity_seed)
+```
+
+`GENESIS_AGENT1_AGENT_ID` is a 48-byte SHA-384 hash — the same byte length as
+a BLS G1 compressed public key, but a different mathematical object. It is not
+a curve point and cannot sign or verify BLS artifacts. This derivation predates
+CDL-017 and coexists with it.
+
+**CDL-017 path (all other agents):**
+
+```
+AgentID = BLS12-381 G1 compressed public key  (96 lowercase hex)
+```
+
+For every current public-RC CDL-017 agent, AgentID equals the BLS public key.
+The private signing key is the corresponding BLS scalar and must never be
+confused with the AgentID. No dual-surface mapping is needed for this path.
+Generating a new identity means generating a new BLS keypair locally.
+
+### The 838a offline ceremony and authority chain
+
+All Genesis protocol authority traces deterministically to an offline key
+ceremony (Phase 838a). No Genesis-operated protocol endpoint derives authority
+from code-commit alone — each requires a cryptographic delegation chain back
+to this root.
+
+```
+Phase 838a offline ceremony (air-gapped)
+  │
+  ├─ Plate 1: identity_seed (32 bytes, cold storage)
+  │     └─→ SHA-384("ilc-agent-id-v1:" || seed)
+  │               = GENESIS_AGENT1_AGENT_ID  [NOT a BLS key]
+  │
+  ├─ Plate 2: ML-DSA-65 root keypair (FIPS 204, governance signing authority)
+  │     └─→ ML-DSA signs delegation records
+  │           ├─→ invite_issuer_pk_hex  (BLS G1, invite bundle signing)
+  │           └─→ GENESIS_PUBLIC_SUBMIT_INGRESS_BLS_PK_HEX  (BLS G1, endpoint assertion)
+  │
+  └─ Plate 3: SPHINCS+ keypair (FIPS 205, emergency recovery only)
+        └─→ not used for any production protocol path
+
+
+Current public-RC agents (CDL-017 path — no Genesis ceremony required):
+  invite code (from an authorized agent)
+    └─→ BLS keypair generated locally  [provision_new_identity()]
+          └─→ AgentID = BLS public key directly
+                └─→ proof-of-possession (BLS signature)
+                      └─→ invite provenance edge / onboarding record
+                            └─→ authority traces back to Genesis through invite chain
+```
+
+Each Genesis operational BLS key:
+
+1. Is **purpose-scoped** — one key per function, never reused across purposes.
+2. Requires an **ML-DSA-65 delegation record** signed by Plate 2 before the
+   corresponding protocol guard is cleared.
+3. Is a distinct BLS G1 keypair — not derived from `GENESIS_AGENT1_AGENT_ID`.
+
+### Side-by-side comparison
+
+| Dimension | Genesis Agent 1 | Current public-RC CDL-017 agents |
+|---|---|---|
+| Identity derivation | `SHA-384("ilc-agent-id-v1:" \|\| seed)` | AgentID = BLS public key |
+| AgentID == BLS public key? | No — separate mathematical objects | Yes — same public value |
+| Operational signing keys | Purpose-scoped BLS keys, one per function | Single BLS keypair |
+| Authority grant | ML-DSA delegation record from 838a Plate 2 | Invite code from authorized agent |
+| Key ceremony | Offline plates, air-gapped | Local `provision_new_identity()` |
+| Protocol endpoint authority | ML-DSA delegation required for Genesis-operated protocol keys before guard clearance | Graph-rooted endpoint assertion / discoverability metadata; authority comes from CDL-017 AgentID BLS key and graph provenance, not Genesis ML-DSA delegation |
+| Secret file | `~/.ilc/<purpose>_bls_sk.hex` per function | `~/.ilc/identity/signing_key.hex` |
+
+### Common misreads
+
+**"GENESIS_AGENT1_AGENT_ID is the signing key."** It is not. It is a SHA-384
+hash that identifies Genesis Agent 1. Setting `bls_public_key_hex =
+GENESIS_AGENT1_AGENT_ID` is always wrong.
+
+**"Genesis keys don't need delegation records because the public key is committed
+to the repo."** Code-commit authority alone is not sufficient. Every Genesis
+operational BLS key controlling a production protocol path must have an ML-DSA
+delegation record before the corresponding guard is flipped.
+
+**"All agents do the same key ceremony."** No. The 838a ceremony is Genesis-only.
+Current public-RC CDL-017 agents generate a BLS keypair locally and enter the
+network through invite provenance — no plates, no air-gapping, no ML-DSA.
+
+### Canonical source
+
+`docs/specs/ilc_genesis_operational_key_registry_v0.1.md` is the mandatory
+pre-read for any phase touching Genesis-controlled keys. It documents all
+registered Genesis operational BLS keys, the collision-check procedure, and
+the 4-case idempotent key generation pattern.
+
+Source: `ilc_core/epoch/genesis_settlement_destination.py`,
+`ilc_core/identity/agent_id_runtime.py`,
+`ilc_core/identity/first_run_provisioning.py`, CDL-017, CDL-069

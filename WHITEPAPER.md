@@ -291,6 +291,24 @@ Each epoch commitment requires an aggregate BLS signature from ≥ 2f+1 validato
 
 Forging σ_agg(t) without the private keys of ≥ 2f+1 validators requires breaking BLS under the co-CDH assumption — infeasible at current security parameters. Crucially, the security guarantee **strengthens with distance from Genesis**: a commitment at epoch t has been signed by ≥ 2f+1 validators, accumulated through the irreversible morphism chain, and content-addressed at every vertex. An adversary substituting a fraudulent G(t) must simultaneously compromise ≥ f+1 validators, find a SHA-256 collision, and construct a fraudulent morphism chain consistent with all prior epoch commitments. The composition of these three requirements makes the graph more secure over time, not less.
 
+### Genesis Authority Chain
+
+The BLS threshold security above governs epoch commitments made by the validator quorum. The Genesis root itself — the authority from which the entire protocol derives its initial legitimacy — is grounded in an offline key ceremony that predates the running network.
+
+At Phase 838a, Genesis Agent 1 conducted an air-gapped ceremony producing three cold-storage plate materials: an identity seed (Plate 1) whose SHA-384 hash is the Genesis AgentID, an ML-DSA-65 root keypair (Plate 2, FIPS 204) that signs all governance delegation records, and a SPHINCS+ recovery keypair (Plate 3, FIPS 205) for emergency recovery only. No BLS keypair was generated at 838a. Operational BLS keys — the hot keys used in production for endpoint assertions, capsule signing, and invite issuance — are generated separately as purpose-scoped keys. Each derives its protocol authority not from raw key control but from an ML-DSA delegation record signed by Plate 2:
+
+```
+838a Plate 2 (ML-DSA root, air-gapped)
+  └─→ ML-DSA-signed delegation record
+        └─→ operational BLS key (purpose-scoped, one per function)
+              └─→ BLS-signed endpoint assertion or protocol artifact
+                    └─→ guard cleared / protocol path activated
+```
+
+This structure ensures that compromising an operational BLS key — the hot key in production — does not compromise the Genesis root. Revoking and rotating a purpose-scoped key requires a new ML-DSA delegation from Plate 2; the Plate 2 material itself never touches a networked machine.
+
+Current public-RC ordinary agents derive authority through the invite system rather than offline ceremony: generating a BLS keypair locally, proving possession with a BLS signature, and receiving provenance in the graph that traces back to Genesis through the chain of invitations. The 838a apparatus described here is the minimal bootstrap that makes subsequent authority derivations possible — the single application of the Genesis axiom stop from which the morphogenetic trajectory begins.
+
 ### Six Truth Primitives: Closed Epistemic Algebra
 
 ILC defines six agent-submittable truth primitives forming a **closed typed algebra** over epistemic events:

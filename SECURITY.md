@@ -78,6 +78,43 @@ The following invariants are considered security-critical and are enforced by th
 
 ---
 
+## Genesis Key Authority Model
+
+ILC's trust root is an offline key ceremony (Phase 838a) that produced three
+plate materials stored in air-gapped cold storage. No production network
+activity is required to establish this root — it predates the running protocol.
+
+| Material | Algorithm | Role |
+|---|---|---|
+| identity_seed (Plate 1) | OS CSPRNG | Source of Genesis AgentID via SHA-384; cold-storage identity root; must never be logged or committed |
+| ML-DSA-65 root keypair (Plate 2) | FIPS 204 | Signs all governance delegation records; never touches a networked machine |
+| SPHINCS+ recovery keypair (Plate 3) | FIPS 205 | Emergency recovery only; not used for any production protocol path |
+
+Operational BLS keys used in production (endpoint assertion signing, capsule
+signing, invite issuance) are each **purpose-scoped** — one key per function,
+never reused across purposes. Each requires an ML-DSA-signed delegation record
+from Plate 2 before the corresponding protocol path is active. Code-commit of
+a public key constant to the repository is not sufficient to establish protocol
+authority for a Genesis-controlled endpoint.
+
+`GENESIS_AGENT1_AGENT_ID` is a SHA-384 hash — not a BLS key. It is the same
+byte length as a BLS G1 compressed public key (48 bytes / 96 hex chars) but a
+different mathematical object. It must never be passed to BLS verification, used
+as a signing key, or treated as a curve point.
+
+Current public-RC ordinary agents (CDL-017 path) derive identity from a locally
+generated BLS keypair — AgentID equals the BLS public key directly, not the
+private signing key. Their authority derives from an invite chain that traces
+provenance back to Genesis through the invitation graph, not through offline key
+ceremonies.
+
+The governing reference for Genesis key registration, collision checks, and the
+key generation pattern is
+[`docs/specs/ilc_genesis_operational_key_registry_v0.1.md`](docs/specs/ilc_genesis_operational_key_registry_v0.1.md)
+(mandatory pre-read for any phase touching Genesis-controlled keys).
+
+---
+
 ## Disclosure Policy
 
 We follow coordinated disclosure. We ask that you:
