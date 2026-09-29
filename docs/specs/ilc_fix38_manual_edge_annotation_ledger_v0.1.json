@@ -107428,6 +107428,122 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_native_ingress_historical_truth_primitive_test_refresh_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_163_phase_1605_cdl_115_capproof_opening",
+      "chronology_note": "2026-09-29 Phase 1605 - CDL-115 CapProof v1 production-governance opening prompt.",
+      "manual_read_summary": "Phase prompt authorizes the sensitive CDL-115 opening only after exact GO, hard-stops on Phase 1604 input token presence and output-token absence, requires no ilc_core changes, and binds deliverables to the CDL-115 opening doc, constitutional decision log row, walkthrough, STATUS tokens, planning updates, and graph-intake coverage.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "1605",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "AUTHORIZES",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_capproof_multiplier_reconcile_phase_1604_v0.1.md"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_cdl_092_capproof_ratification_evidence_1405_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "AUTHORIZES",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1605_g10_cdl_115_capproof_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_163_phase_1605_cdl_115_capproof_opening",
+      "chronology_note": "2026-09-29 Phase 1605 - CDL-115 CapProof v1 production-governance opening authority document.",
+      "manual_read_summary": "Opening document records CDL-115 status open, predecessor authority from CDL-092 and Phase 1604, the five-probe CapProof v1 inventory, no-direct-ILC-mint invariant, single bounded Decimal multiplier and no-stacking boundary, anti-gaming commitments, non-claims, and Phase 1606-1609 follow-on sequence.",
+      "node_kind": "cdl_authority_doc",
+      "phase_ref": "1605",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "AMENDS_REGISTER",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md#CDL-115"
+        },
+        {
+          "edge_type": "INHERITS_AUTHORITY_FROM",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_092_capproof_ratification_evidence_1405_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "LOCKS_INVARIANT",
+          "target": "symbol:CAPPROOF_V1_NO_ILC_MINT"
+        },
+        {
+          "edge_type": "LOCKS_INVARIANT",
+          "target": "capproof:v1_five_probe_suite"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/specs/ilc_capproof_multiplier_reconcile_phase_1604_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "AMENDS_REGISTER",
+        "INHERITS_AUTHORITY_FROM",
+        "LOCKS_INVARIANT",
+        "DEPENDS_ON",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_163_phase_1605_cdl_115_capproof_opening",
+      "chronology_note": "2026-09-29 Phase 1605 - CDL-115 CapProof v1 opening walkthrough.",
+      "manual_read_summary": "Walkthrough records the exact sensitive GO phrase, input-token and output-token preflight checks, direct-read context, CDL register mutation, verification command outputs, graph coverage audit, output tokens, next frontier, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "1605",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1605_g10_cdl_115_capproof_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md#CDL-115"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1605_cdl_115_capproof_opening_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
