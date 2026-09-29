@@ -1046,6 +1046,141 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1608_capproof_graphprobe_posk_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_167_phase_1609_capproof_gate_a",
+      "chronology_note": "2026-09-29 Phase 1609 - CapProof Gate-A prompt.",
+      "manual_read_summary": "Phase prompt hardened to require the live Phase 1608 token, live probe_runner.py and graph_probe_posk.py paths, current Phase 1606 test filename, CDL-104 ratified-but-not-live-recomputation boundary, and CDL-115 Q3 lower-bound det_pass=False behavior.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "1609",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SEQUENCES_AFTER",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1608_g10_capproof_graphprobe_posk.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SEQUENCES_AFTER",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1609_g10_capproof_gate_a.md"
+    },
+    {
+      "annotation_batch": "manual_batch_167_phase_1609_capproof_gate_a",
+      "chronology_note": "2026-09-29 Phase 1609 - CapProof Gate-A verifier.",
+      "manual_read_summary": "Internal verification tool checks all six CDL-115 Gate-A invariants, runs phase test files, performs deterministic 10000-sample multiplier fuzzing, verifies PoSK tamper rejection, checks no-stacking and no-ILC-mint boundaries, and writes sorted evidence JSON atomically.",
+      "node_kind": "tool_script",
+      "phase_ref": "1609",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1609_g10_capproof_gate_a.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_core/capproof/probe_runner.py"
+        },
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_core/capproof/graph_probe_posk.py"
+        },
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_core/epoch/capproof_epoch_init_wiring.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/capproof/verify_gate_a.py"
+    },
+    {
+      "annotation_batch": "manual_batch_167_phase_1609_capproof_gate_a",
+      "chronology_note": "2026-09-29 Phase 1609 - CapProof Gate-A verifier tests.",
+      "manual_read_summary": "Test file verifies the Gate-A evidence builder returns PASS for all six invariants and the CLI writes requested evidence JSON with the PASS token.",
+      "node_kind": "test_file",
+      "phase_ref": "1609",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "review_status": "candidate",
+          "target": "tools/capproof/verify_gate_a.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1609_g10_capproof_gate_a.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1609_capproof_gate_a.py"
+    },
+    {
+      "annotation_batch": "manual_batch_167_phase_1609_capproof_gate_a",
+      "chronology_note": "2026-09-29 Phase 1609 - CapProof Gate-A walkthrough.",
+      "manual_read_summary": "Walkthrough records prompt hardening, Gate-A evidence hash, verification command outputs, post-execution audit, output token, non-claims, and next frontier Phase 1610.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "1609",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1609_g10_capproof_gate_a.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "tools/capproof/verify_gate_a.py"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "out/phase_1609_capproof_gate_a/gate_a_evidence.json"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1609_capproof_gate_a_walkthrough.md"
     }
   ],
   "annotations": [
