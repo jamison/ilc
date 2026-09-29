@@ -155,6 +155,29 @@ def lookup_by_token(env: lmdb.Environment, receipt_token: str) -> RouterReceipt 
     return RouterReceipt.from_core_and_companion(core, companion)
 
 
+def list_router_receipts(env: lmdb.Environment, *, limit: int = 100) -> list[RouterReceipt]:
+    """List router receipts in epoch/ordinal order."""
+
+    if isinstance(limit, bool) or not isinstance(limit, int) or limit < 1 or limit > 1000:
+        raise RouterReceiptError("model_router_list_limit_invalid")
+    receipts_db, _token_index_db, companion_db, _nullifiers_db = _open_dbs(env)
+    receipts: list[RouterReceipt] = []
+    with env.begin() as txn:
+        with txn.cursor(db=receipts_db) as cursor:
+            for key, core_raw in cursor:
+                if len(key) != _RECEIPT_KEY_BYTES:
+                    raise RouterReceiptError("model_router_receipt_key_corrupted")
+                core = _decode_core_receipt(core_raw)
+                companion_raw = txn.get(core.receipt_token.encode("ascii"), db=companion_db)
+                if companion_raw is None:
+                    raise RouterReceiptError("model_router_companion_missing")
+                companion = _decode_companion(companion_raw)
+                receipts.append(RouterReceipt.from_core_and_companion(core, companion))
+                if len(receipts) >= limit:
+                    break
+    return receipts
+
+
 def check_nullifier(env: lmdb.Environment, nullifier: bytes) -> bool:
     """Return True if a nullifier is already present."""
 
@@ -277,6 +300,7 @@ __all__ = [
     "TOKEN_INDEX_DB",
     "check_nullifier",
     "finalize_reserved_router_receipt",
+    "list_router_receipts",
     "lookup_by_token",
     "open_router_receipt_env",
     "reserve_router_nullifier",

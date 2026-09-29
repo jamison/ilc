@@ -60,6 +60,14 @@ _EXTERNAL_SIDECARS: list[dict[str, Any]] = [
         "module": "ilc_genesis_atlas.__main__",
     },
     {
+        "sidecar_id": "model-router",
+        "kind": "built-in",
+        "description": "Local-first model inference router with private receipts and consent-gated promotion preview",
+        "invoke": "ilc sidecar model-router {route,list-receipts,promote-receipt} [OPTIONS]",
+        "install": "built-in (no additional install required)",
+        "module": "ilc_model_router.cli",
+    },
+    {
         "sidecar_id": "typesafe",
         "kind": "built-in",
         "description": "TypeSafe Jev — probabilistic judgment engine for epistemic quality, attribution, and claim verification (advisory only; no ECU/ILC mutation)",

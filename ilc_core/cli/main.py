@@ -5933,6 +5933,7 @@ def main() -> int:
     _SIDECAR_PASSTHROUGH: dict[str, str] = {
         "genesis-atlas": "ilc_genesis_atlas.__main__",
         "graph-viz": "ilc_graph_viz.__main__",
+        "model-router": "ilc_model_router.cli",
         "typesafe": "ilc_core.sidecars.typesafe_judgment",
     }
     argv = sys.argv[1:]
