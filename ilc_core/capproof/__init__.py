@@ -8,6 +8,23 @@ from .multiplier import (
     CAPPROOF_MULTIPLIER_MIN,
     compute_capproof_multiplier,
 )
+from .graph_probe_posk import (
+    POSK_CONSENSUS_BINDING,
+    POSK_MAX_REPLAY_LEDGER_ENTRIES,
+    POSK_MAX_TRAVERSAL_EDGES,
+    POSK_MAX_TRAVERSAL_NODES,
+    POSK_RUNTIME_VERSION,
+    POSK_SPECTRAL_NOT_ACTIVATED,
+    PoSKChallenge,
+    PoSKError,
+    PoSKInput,
+    PoSKProof,
+    PoSKReplayLedger,
+    build_posk_proof,
+    derive_posk_challenge,
+    record_posk_replay_or_raise,
+    verify_posk_proof,
+)
 from .probe_runner import (
     CAPPROOF_RUNTIME_VERSION,
     CAPPROOF_V1_NO_ILC_MINT,
@@ -21,6 +38,7 @@ from .probe_runner import (
     GraphProbeResult,
     InferProbe,
     InferProbeResult,
+    run_graph_probe_with_posk,
 )
 
 __all__ = [
@@ -31,6 +49,12 @@ __all__ = [
     "CAPPROOF_MULTIPLIER_MIN",
     "CAPPROOF_RUNTIME_VERSION",
     "CAPPROOF_V1_NO_ILC_MINT",
+    "POSK_CONSENSUS_BINDING",
+    "POSK_MAX_REPLAY_LEDGER_ENTRIES",
+    "POSK_MAX_TRAVERSAL_EDGES",
+    "POSK_MAX_TRAVERSAL_NODES",
+    "POSK_RUNTIME_VERSION",
+    "POSK_SPECTRAL_NOT_ACTIVATED",
     "CapProofValidationError",
     "CapabilityVector",
     "DeterminismProbe",
@@ -41,5 +65,15 @@ __all__ = [
     "GraphProbeResult",
     "InferProbe",
     "InferProbeResult",
+    "PoSKChallenge",
+    "PoSKError",
+    "PoSKInput",
+    "PoSKProof",
+    "PoSKReplayLedger",
+    "build_posk_proof",
     "compute_capproof_multiplier",
+    "derive_posk_challenge",
+    "record_posk_replay_or_raise",
+    "run_graph_probe_with_posk",
+    "verify_posk_proof",
 ]

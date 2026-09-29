@@ -85,6 +85,67 @@ class GraphProbe:
             epoch_salt=salt,
         )
 
+    def run_with_posk(
+        self,
+        epoch_salt: str,
+        *,
+        graph_root_hash: str,
+        epoch: int,
+        visited_node_ids: tuple[str, ...],
+        traversal_edges: tuple[tuple[str, str], ...] = (),
+        replay_ledger: object | None = None,
+    ) -> tuple[GraphProbeResult, object]:
+        """Run GraphProbe with a challenge-bound PoSK commitment."""
+
+        salt = _require_epoch_salt(epoch_salt)
+        from .graph_probe_posk import (
+            PoSKInput,
+            build_posk_proof,
+            record_posk_replay_or_raise,
+            verify_posk_proof,
+        )
+
+        proof = build_posk_proof(
+            PoSKInput(
+                graph_root_hash=graph_root_hash,
+                epoch_salt=salt,
+                epoch=epoch,
+                visited_node_ids=visited_node_ids,
+                traversal_edges=traversal_edges,
+            )
+        )
+        verify_posk_proof(proof)
+        next_ledger = record_posk_replay_or_raise(replay_ledger, proof)
+        return (
+            GraphProbeResult(
+                graph_mteps=_derive_metric(salt, "graph", Decimal("10000"), Decimal("100")),
+                posk_commitment=proof.proof_commitment,
+                epoch_salt=salt,
+            ),
+            next_ledger,
+        )
+
+
+def run_graph_probe_with_posk(
+    epoch_salt: str,
+    *,
+    graph_root_hash: str,
+    epoch: int,
+    visited_node_ids: tuple[str, ...],
+    traversal_edges: tuple[tuple[str, str], ...] = (),
+    replay_ledger: object | None = None,
+) -> tuple[GraphProbeResult, object]:
+    """Module-level helper for callers that do not need a GraphProbe instance."""
+
+    return GraphProbe().run_with_posk(
+        epoch_salt,
+        graph_root_hash=graph_root_hash,
+        epoch=epoch,
+        visited_node_ids=visited_node_ids,
+        traversal_edges=traversal_edges,
+        replay_ledger=replay_ledger,
+    )
+
 
 class BandwidthProbe:
     field_name = "bw_gbps"
