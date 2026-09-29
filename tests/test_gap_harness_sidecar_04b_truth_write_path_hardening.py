@@ -9,6 +9,7 @@ from cryptography.hazmat.primitives.asymmetric import ed25519
 from ilc_core.cli.d2e_submit_cli import (
     GraphSubmitAdvisoryEnvelope,
     SubmitCommandError,
+    _build_native_submit_sig_object,
     build_graph_submit_envelope,
     build_refutation_primitive,
     check_graph_mutation_allowed,
@@ -18,9 +19,10 @@ from ilc_core.epistemic.truth_primitive_sig_verifier import verify_truth_primiti
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 
 
-AGENT_ID_HEX = "a" * 96
+TEST_BLS_SECRET_HEX, AGENT_ID_HEX = keypair_from_ikm_hex("04" * 32)
 TARGET_NODE_ID = "cid_" + "b" * 59
 EVIDENCE_NODE_ID = "cid_" + "c" * 59
 
@@ -51,6 +53,12 @@ def _signed_record(envelope: GraphSubmitAdvisoryEnvelope) -> dict[str, object]:
     record["sig_pubkey_fingerprint"] = envelope.sig_pubkey_fingerprint
     record["sig_scheme"] = envelope.sig_scheme
     return record
+
+
+def _native_signed_submission(submission: dict[str, object]) -> dict[str, object]:
+    signed = dict(submission)
+    signed["sig"] = _build_native_submit_sig_object(signed, TEST_BLS_SECRET_HEX)
+    return signed
 
 
 def test_build_graph_submit_envelope_happy_path_verifies() -> None:
@@ -118,7 +126,7 @@ def test_build_refutation_primitive_happy_path_passes_runtime_validator() -> Non
         5,
     )
 
-    result = validate_truth_primitive_submission(submission)
+    result = validate_truth_primitive_submission(_native_signed_submission(submission))
     assert result.primitive == "refute.claim"
     assert result.creates_node is False
     assert submission["primitive"] == "refute.claim"
@@ -149,7 +157,7 @@ def test_build_refutation_primitive_accepts_reason_exactly_500_utf8_bytes() -> N
         5,
     )
 
-    validate_truth_primitive_submission(submission)
+    validate_truth_primitive_submission(_native_signed_submission(submission))
 
 
 def test_build_refutation_primitive_rejects_empty_evidence_node_id() -> None:
@@ -197,6 +205,28 @@ def test_handle_submit_calls_graph_mutation_gate_before_lmdb_write(
 ) -> None:
     store_path = tmp_path / "truth-store"
     monkeypatch.setenv("ILC_TRUTH_GRAPH_STORE_PATH", str(store_path))
+    monkeypatch.setenv("ILC_AGENT_BLS_SIGNING_KEY", "")
+    monkeypatch.setattr(
+        "ilc_core.cli.d2e_submit_cli._ILC_AGENT_BLS_KEY_DEFAULT_PATH",
+        tmp_path / "missing-signing-key.hex",
+    )
+    payload = {
+        "content": {"body": "blocked"},
+        "epistemic_type": "objective",
+        "parent_node_ids": [],
+        "primitive_type": "observation",
+    }
+    sig = _build_native_submit_sig_object(
+        {
+            "agent_id": AGENT_ID_HEX,
+            "epoch": 1,
+            "payload": payload,
+            "primitive": "assert.truth",
+            "sig": "UNSIGNED",
+            "v": 1,
+        },
+        TEST_BLS_SECRET_HEX,
+    )
     args = type(
         "Args",
         (),
@@ -210,7 +240,7 @@ def test_handle_submit_calls_graph_mutation_gate_before_lmdb_write(
             ),
             "primitive": "assert.truth",
             "public_path_guard_value": True,
-            "sig": "UNSIGNED",
+            "sig": sig,
             "signing_key": None,
         },
     )()

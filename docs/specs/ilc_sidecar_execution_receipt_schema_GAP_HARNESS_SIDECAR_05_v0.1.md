@@ -19,7 +19,7 @@ This schema is intentionally not a consensus receipt, not a BLS attestation, not
 | `schema_version` | string | Exactly `sidecar_execution_receipt_GAP_HARNESS_SIDECAR_05.v0.1` | Included in stored JSON and checked on decode |
 | `receipt_token` | string | 64 lowercase hex chars | SHA-256 of canonical JSON over all fields except `receipt_token` and `schema_version` |
 | `tool_id` | string | Non-empty, max 128 chars | Local sidecar tool identifier |
-| `action_type` | string | One of `ilc_transfer`, `ecu_transfer`, `attribution_batch`, `graph_submit`, `query`, `unknown` | Advisory classification only |
+| `action_type` | string | One of `ilc_transfer`, `ecu_transfer`, `attribution_batch`, `graph_submit`, `model_inference`, `query`, `unknown` | Advisory classification only |
 | `epoch` | integer | Non-negative int, bool rejected | Protocol epoch supplied by caller; never wall-clock-derived |
 | `agent_id_hex` | string | 96 lowercase hex chars | Acting AgentID in canonical hex form |
 | `inputs_hash` | string | 64 lowercase hex chars | SHA-256 of canonical JSON input arguments |
@@ -56,7 +56,7 @@ The token is:
 hashlib.sha256(encoded_payload).hexdigest()
 ```
 
-`schema_version` is validated on stored JSON decode, but it is not part of the receipt-token preimage. This keeps the token scoped to action semantics rather than storage envelope versioning.
+`schema_version` is validated on stored JSON decode, but it is not part of the receipt-token preimage. This keeps the token scoped to action semantics rather than storage envelope versioning. Phase 1611 added `model_inference` as an additive action type without changing the field set or schema version, so `sidecar_execution_receipt_GAP_HARNESS_SIDECAR_05.v0.1` remains the canonical schema version.
 
 ## 4. LMDB Layout
 

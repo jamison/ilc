@@ -26,6 +26,7 @@ ACTION_TYPES = frozenset(
         "ecu_transfer",
         "graph_submit",
         "ilc_transfer",
+        "model_inference",
         "query",
         "unknown",
     }

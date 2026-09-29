@@ -1278,6 +1278,227 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1610_model_router_spec_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1611_harness_sidecar_05_fix1",
+      "chronology_note": "2026-09-29 Phase 1611 - HARNESS-SIDECAR-05-FIX1 prompt.",
+      "manual_read_summary": "Phase prompt governs the additive model_inference ACTION_TYPES compatibility patch, forbids schema version bump, requires regression tests for the six original action types, and requires broad sidecar no-regression verification.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "1611",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SEQUENCES_AFTER",
+          "review_status": "candidate",
+          "target": "docs/phases/phase_1610_model_router_spec_walkthrough.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_model_router_sidecar_spec_phase_1610_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SEQUENCES_AFTER",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1611_g10_harness_sidecar_05_fix1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1611_harness_sidecar_05_fix1",
+      "chronology_note": "2026-09-29 Phase 1611 - HARNESS-SIDECAR-05 model_inference action-type regression tests.",
+      "manual_read_summary": "Tests prove model_inference is accepted by SidecarExecutionReceipt and SidecarExecutionReceiptStore, the v0.1 schema version remains canonical, all six original action types still round-trip, invalid action types remain rejected, and action_type matching stays case-sensitive.",
+      "node_kind": "test_file",
+      "phase_ref": "1611",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1611_g10_harness_sidecar_05_fix1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_core/sidecars/execution_receipt.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1611_model_inference_action_type.py"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1611_harness_sidecar_05_fix1",
+      "chronology_note": "2026-09-29 Phase 1611 - local E2E harness soak native-submit hardening.",
+      "manual_read_summary": "Material update keeps the PUBLIC_RC_EXCLUDE local E2E soak aligned with guard-cleared native-submit semantics by using the full 96-hex AgentID and an explicit native-submit BLS key path for signed truth primitive validation.",
+      "node_kind": "tool",
+      "phase_ref": "1611",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1611_g10_harness_sidecar_05_fix1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "tests/test_gap_harness_sidecar_10_e2e_harness_soak.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/e2e_harness_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1611_harness_sidecar_05_fix1",
+      "chronology_note": "2026-09-29 Phase 1611 - stale sidecar test fixture refresh.",
+      "manual_read_summary": "Material updates refresh historical sidecar tests from stale pre-native-ingress assumptions to current invite-gated identity state fixtures, BLS-derived AgentID fixtures, signed native truth primitives, and machine-local BLS key isolation.",
+      "node_kind": "test_file",
+      "phase_ref": "1611",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1611_g10_harness_sidecar_05_fix1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "tools/testbed/e2e_harness_soak.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VERIFIES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_10_e2e_harness_soak.py"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1611_harness_sidecar_05_fix1",
+      "chronology_note": "2026-09-29 Phase 1611 - stale sidecar CLI and truth-write test refresh.",
+      "manual_read_summary": "Material updates refresh sidecar CLI JSON and truth-write hardening tests to current invite enforcement and native-submit guard-cleared semantics, including signed BLS fixtures and explicit machine-local BLS key isolation.",
+      "node_kind": "test_file",
+      "phase_ref": "1611",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1611_g10_harness_sidecar_05_fix1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "ilc_core/cli/d2e_submit_cli.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VERIFIES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_01_cli_json_conformance.py"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1611_harness_sidecar_05_fix1",
+      "chronology_note": "2026-09-29 Phase 1611 - stale sidecar truth-write test refresh.",
+      "manual_read_summary": "Material update signs refutation and graph-mutation-gate test submissions with deterministic native BLS fixtures so validation reaches the intended guard-cleared runtime surface instead of failing on stale UNSIGNED placeholders.",
+      "node_kind": "test_file",
+      "phase_ref": "1611",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1611_g10_harness_sidecar_05_fix1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "ilc_core/epistemic/truth_primitive_submission_runtime.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VERIFIES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_harness_sidecar_04b_truth_write_path_hardening.py"
+    },
+    {
+      "annotation_batch": "manual_batch_169_phase_1611_harness_sidecar_05_fix1",
+      "chronology_note": "2026-09-29 Phase 1611 - HARNESS-SIDECAR-05-FIX1 walkthrough.",
+      "manual_read_summary": "Walkthrough records prompt hardening, source reads, implementation notes, verification command outputs, stale-test execution hardening, post-execution audit, output token, non-claims, and Phase 1612 frontier.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "1611",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1611_g10_harness_sidecar_05_fix1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_core/sidecars/execution_receipt.py"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "tests/test_phase_1611_model_inference_action_type.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1611_harness_sidecar_05_fix1_walkthrough.md"
     }
   ],
   "annotations": [

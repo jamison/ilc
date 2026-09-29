@@ -11,13 +11,14 @@ import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 from tools.testbed import e2e_harness_soak
 from tools.testbed.e2e_harness_soak import E2EHarnessSoakConfig, run_e2e_harness_soak
 
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULE = ROOT / "tools/testbed/e2e_harness_soak.py"
-AGENT_ID = "a" * 96
+BLS_SECRET_HEX, AGENT_ID = keypair_from_ikm_hex("10" * 32)
 
 
 def _write_key(path: Path) -> Path:
@@ -33,11 +34,18 @@ def _write_key(path: Path) -> Path:
     return path
 
 
+def _write_bls_key(path: Path) -> Path:
+    path.write_text(f"{BLS_SECRET_HEX}\n", encoding="ascii")
+    path.chmod(0o600)
+    return path
+
+
 def _config(tmp_path: Path, *, dry_run: bool = False, epoch: int = 7) -> E2EHarnessSoakConfig:
     return E2EHarnessSoakConfig(
         agent_id=AGENT_ID,
         lmdb_base_path=tmp_path / "lmdb",
         signing_key_path=Path("/dev/null") if dry_run else _write_key(tmp_path / "agent.pem"),
+        native_submit_bls_key_path=_write_bls_key(tmp_path / "agent_bls.hex"),
         epoch=epoch,
         dry_run=dry_run,
         output_path=tmp_path / "evidence.json",
@@ -121,6 +129,7 @@ def test_invalid_agent_id_and_epoch_are_rejected(tmp_path: Path) -> None:
                 agent_id="A" * 96,
                 lmdb_base_path=tmp_path / "lmdb",
                 signing_key_path=Path("/dev/null"),
+                native_submit_bls_key_path=_write_bls_key(tmp_path / "bad_agent_bls.hex"),
                 epoch=1,
             )
         )
@@ -134,6 +143,7 @@ def test_non_dry_run_rejects_invalid_signing_key_path(tmp_path: Path) -> None:
             agent_id=AGENT_ID,
             lmdb_base_path=tmp_path / "lmdb",
             signing_key_path=Path("/dev/null"),
+            native_submit_bls_key_path=_write_bls_key(tmp_path / "invalid_signing_bls.hex"),
             epoch=1,
         )
     )
@@ -151,6 +161,8 @@ def test_cli_dry_run_prints_pass_json(tmp_path: Path, capsys: pytest.CaptureFixt
             str(tmp_path / "lmdb"),
             "--signing-key-path",
             "/dev/null",
+            "--native-submit-bls-key-path",
+            str(_write_bls_key(tmp_path / "cli_bls.hex")),
             "--epoch",
             "8",
             "--dry-run",
@@ -209,4 +221,5 @@ def test_cli_help_exposes_required_flags(capsys: pytest.CaptureFixture[str]) -> 
     assert "--agent-id" in help_text
     assert "--lmdb-base-path" in help_text
     assert "--signing-key-path" in help_text
+    assert "--native-submit-bls-key-path" in help_text
     assert "--epoch" in help_text

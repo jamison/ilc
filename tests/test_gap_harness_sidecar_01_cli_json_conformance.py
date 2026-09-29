@@ -16,6 +16,7 @@ QUERY_SCHEMA_VERSION = "299.v0.1"
 VERIFY_SCHEMA_VERSION = "301.v0.1"
 BUNDLE_SCHEMA_VERSION = "303.v0.1"
 PRIMARY_SCHEMA_VERSION = "254.v0.1"
+VALID_AGENT_ID = "a" * 96
 
 
 def _write_json(path: Path, payload: dict[str, Any]) -> Path:
@@ -41,6 +42,26 @@ def _graph_state(tmp_path: Path) -> Path:
                     "state_root": "sha256:fixture",
                 }
             ],
+        },
+    )
+
+
+def _identity_state(graph_state: Path) -> Path:
+    return graph_state.with_name(".ilc_d2e04_identity_state.json")
+
+
+def _seed_identity_state(graph_state: Path) -> Path:
+    return _write_json(
+        _identity_state(graph_state),
+        {
+            "agent_id": VALID_AGENT_ID,
+            "key_ref": "key-local-0",
+            "lineage_id": "lineage-local",
+            "rotation_count": 0,
+            "status": "active",
+            "updated_at": "1970-01-01T00:00:00Z",
+            "validator_participation_enabled": False,
+            "validator_role_record_status": "opted_out",
         },
     )
 
@@ -115,12 +136,7 @@ def _assert_meta_envelope(
 
 def test_identity_show_and_export_json_shape(tmp_path: Path) -> None:
     graph_state = _graph_state(tmp_path)
-    init_data = _assert_primary_envelope(
-        _run_cli(tmp_path, "identity", "init", graph_state=graph_state),
-        "identity",
-    )
-    assert init_data["action"] == "init"
-    assert isinstance(init_data["state"], dict)
+    _seed_identity_state(graph_state)
 
     show_data = _assert_primary_envelope(
         _run_cli(tmp_path, "identity", "show", graph_state=graph_state),
@@ -208,6 +224,9 @@ def test_balance_prototype_json_shape(tmp_path: Path) -> None:
 
 
 def test_submit_value_action_surface_json_shape(tmp_path: Path) -> None:
+    from ilc_core.identity.bls_backend import keypair_from_ikm_hex
+
+    secret_key_hex, agent_id = keypair_from_ikm_hex("61" * 32)
     data = _assert_primary_envelope(
         _run_cli(
             tmp_path,
@@ -225,10 +244,11 @@ def test_submit_value_action_surface_json_shape(tmp_path: Path) -> None:
                 sort_keys=True,
             ),
             "--agent-id",
-            "agent-sidecar-01",
+            agent_id,
             "--epoch",
             "0",
             graph_state=_graph_state(tmp_path),
+            extra_env={"ILC_AGENT_BLS_SIGNING_KEY": secret_key_hex},
         ),
         "submit",
     )
