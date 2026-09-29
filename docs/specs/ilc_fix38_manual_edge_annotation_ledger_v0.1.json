@@ -722,6 +722,137 @@
         "SOURCE_TREE_MEMBER"
       ],
       "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_165_phase_1607_capproof_epoch_init_wiring",
+      "chronology_note": "2026-09-29 Phase 1607 - CapProof epoch-init wiring prompt.",
+      "manual_read_summary": "Phase prompt hardened to require the live Phase 1606 token, Phase 1606 module split, true default guard bypass, CDL-115 Q3 lower-bound handling for det_pass=False, single multiplier source via compute_capproof_multiplier, and no carry-forward for correctness gaps.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "1607",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SEQUENCES_AFTER",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1606_g10_capproof_v1_implementation.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SEQUENCES_AFTER",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1607_g10_capproof_epoch_init_wiring.md"
+    },
+    {
+      "annotation_batch": "manual_batch_165_phase_1607_capproof_epoch_init_wiring",
+      "chronology_note": "2026-09-29 Phase 1607 - CapProof epoch-init wiring runtime.",
+      "manual_read_summary": "Runtime module adds guarded six-step CapProof epoch-init wiring with neutral bypass while CAPPROOF_EPOCH_WIRING_NOT_ACTIVATED is true, Phase 1606 compute_capproof_multiplier reuse, Decimal-only validation, conservation check, deterministic sorted-JSON epoch seal, and no production CapProof activation.",
+      "node_kind": "runtime_module",
+      "phase_ref": "1607",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1607_g10_capproof_epoch_init_wiring.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "USES",
+          "target": "ilc_core/capproof/capability_vector.py"
+        },
+        {
+          "edge_type": "USES",
+          "target": "ilc_core/capproof/multiplier.py"
+        },
+        {
+          "edge_type": "USES",
+          "target": "ilc_core/capproof/probe_runner.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "USES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/epoch/capproof_epoch_init_wiring.py"
+    },
+    {
+      "annotation_batch": "manual_batch_165_phase_1607_capproof_epoch_init_wiring",
+      "chronology_note": "2026-09-29 Phase 1607 - CapProof epoch-init wiring focused tests.",
+      "manual_read_summary": "Test file covers default guard bypass, full-flow execution with guard cleared, epoch mismatch rejection, det_pass=False lower-bound behavior, band bounds, conservation mismatch rejection, result validation, deterministic seal, no-ILC-mint invariant reassertion, and non-finite Decimal boundary behavior.",
+      "node_kind": "test_file",
+      "phase_ref": "1607",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1607_g10_capproof_epoch_init_wiring.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_core/epoch/capproof_epoch_init_wiring.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1607_capproof_epoch_wiring.py"
+    },
+    {
+      "annotation_batch": "manual_batch_165_phase_1607_capproof_epoch_init_wiring",
+      "chronology_note": "2026-09-29 Phase 1607 - CapProof epoch-init wiring walkthrough.",
+      "manual_read_summary": "Walkthrough records prompt hardening, implementation summary, verification command outputs, post-execution audit, output token, non-claims, and next frontier Phase 1608.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "1607",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1607_g10_capproof_epoch_init_wiring.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_core/epoch/capproof_epoch_init_wiring.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1607_capproof_epoch_init_wiring_walkthrough.md"
     }
   ],
   "annotations": [
