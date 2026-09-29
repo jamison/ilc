@@ -29,6 +29,7 @@ RECEIPTS_DB: Final[bytes] = RECEIPTS_DB_NAME
 TOKEN_INDEX_DB: Final[bytes] = TOKEN_INDEX_DB_NAME
 COMPANION_DB: Final[bytes] = b"companion_meta"
 NULLIFIERS_DB: Final[bytes] = b"nullifiers"
+PENDING_NULLIFIER_VALUE: Final[bytes] = b"pending:model-router-receipt:v1"
 MAX_ROUTER_RECEIPTS_PER_EPOCH: int = MAX_SIDECAR_EXECUTION_RECEIPTS_PER_EPOCH
 MAX_ROUTER_COMPANION_BYTES: Final[int] = 16 * 1024
 _RECEIPT_KEY_BYTES: Final[int] = 12
@@ -65,6 +66,47 @@ def store_router_receipt(
 ) -> None:
     """Atomically store a router receipt, companion record, and nullifier."""
 
+    _store_router_receipt_with_nullifier_state(
+        env,
+        receipt,
+        nullifier,
+        expected_nullifier_value=None,
+    )
+
+
+def reserve_router_nullifier(env: lmdb.Environment, nullifier: bytes) -> None:
+    """Reserve a nullifier before provider dispatch."""
+
+    clean_nullifier = _require_nullifier(nullifier)
+    _receipts_db, _token_index_db, _companion_db, nullifiers_db = _open_dbs(env)
+    with env.begin(write=True) as txn:
+        if txn.get(clean_nullifier, db=nullifiers_db) is not None:
+            raise RouterReceiptError("model_router_nullifier_collision")
+        txn.put(clean_nullifier, PENDING_NULLIFIER_VALUE, db=nullifiers_db)
+
+
+def finalize_reserved_router_receipt(
+    env: lmdb.Environment,
+    receipt: RouterReceipt,
+    nullifier: bytes,
+) -> None:
+    """Atomically finalize a reserved nullifier with the full router receipt."""
+
+    _store_router_receipt_with_nullifier_state(
+        env,
+        receipt,
+        nullifier,
+        expected_nullifier_value=PENDING_NULLIFIER_VALUE,
+    )
+
+
+def _store_router_receipt_with_nullifier_state(
+    env: lmdb.Environment,
+    receipt: RouterReceipt,
+    nullifier: bytes,
+    *,
+    expected_nullifier_value: bytes | None,
+) -> None:
     if not isinstance(receipt, RouterReceipt):
         raise RouterReceiptError("model_router_receipt_invalid")
     clean_nullifier = _require_nullifier(nullifier)
@@ -74,8 +116,11 @@ def store_router_receipt(
     encoded_companion = _encode_companion(receipt.companion)
     token_key = receipt.receipt_token.encode("ascii")
     with env.begin(write=True) as txn:
-        if txn.get(clean_nullifier, db=nullifiers_db) is not None:
+        current_nullifier_value = txn.get(clean_nullifier, db=nullifiers_db)
+        if expected_nullifier_value is None and current_nullifier_value is not None:
             raise RouterReceiptError("model_router_nullifier_collision")
+        if expected_nullifier_value is not None and current_nullifier_value != expected_nullifier_value:
+            raise RouterReceiptError("model_router_nullifier_not_reserved")
         if txn.get(token_key, db=token_index_db) is not None:
             raise RouterReceiptError("model_router_receipt_token_duplicate")
         ordinal = _next_epoch_ordinal(txn, receipts_db, receipt.epoch)
@@ -226,11 +271,14 @@ __all__ = [
     "MAX_ROUTER_COMPANION_BYTES",
     "MAX_ROUTER_RECEIPTS_PER_EPOCH",
     "NULLIFIERS_DB",
+    "PENDING_NULLIFIER_VALUE",
     "RECEIPTS_DB",
     "ROUTER_RECEIPT_STORE_VERSION",
     "TOKEN_INDEX_DB",
     "check_nullifier",
+    "finalize_reserved_router_receipt",
     "lookup_by_token",
     "open_router_receipt_env",
+    "reserve_router_nullifier",
     "store_router_receipt",
 ]
