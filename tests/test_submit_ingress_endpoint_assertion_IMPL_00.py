@@ -29,8 +29,8 @@ from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
 
 NETWORK_ID = "ilc-public-rc-01-testnet-harness"
 AGENT_ID = "a" * 96
-TRANSPORT_KEY = "b" * 96
 BLS_KEY = "c" * 96
+TRANSPORT_KEY = BLS_KEY
 SIGNATURE = "d" * 192
 TLS_FINGERPRINT = "e" * 64
 
@@ -150,6 +150,11 @@ def test_parse_valid_assertion_epoch_zero_valid_until() -> None:
 def test_parse_assertion_rejects_wrong_transport_key_scope() -> None:
     with pytest.raises(ValueError, match="submit_ingress_assertion_transport_key_scope_invalid_IMPL_00"):
         parse_endpoint_assertion(_assertion_record(transport_key_scope="validator_grpc"))
+
+
+def test_parse_assertion_rejects_transport_bls_key_mismatch() -> None:
+    with pytest.raises(ValueError, match="submit_ingress_assertion_transport_bls_key_mismatch_IMPL_00"):
+        parse_endpoint_assertion(_assertion_record(transport_public_key_hex="b" * 96))
 
 
 def test_parse_assertion_rejects_wrong_node_kind() -> None:

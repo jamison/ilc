@@ -21,6 +21,7 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.cli.d2e_submit_cli import _build_native_submit_sig_object
 from ilc_core.cli.d2e_query_truth_cli import (
     CDL_075_DEPENDENCY,
     D2E_QUERY_TRUTH_CLI_VERSION,
@@ -34,11 +35,13 @@ from ilc_core.epistemic.truth_primitive_graph_store import (
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 PHASE_890_COMMIT_SUBJECT = "feat(g8): phase 887-890 truth primitive query cli"
 MODULE_PATH = Path("ilc_core/cli/d2e_query_truth_cli.py")
 MAIN_PY_PATH = Path("ilc_core/cli/main.py")
+TEST_BLS_SECRET_HEX, TEST_AGENT_ID_Q = keypair_from_ikm_hex("89" * 32)
 
 
 # ---------------------------------------------------------------------------
@@ -47,10 +50,10 @@ MAIN_PY_PATH = Path("ilc_core/cli/main.py")
 
 
 def _assert_truth_envelope(body: str = "test claim", epoch: int = 1) -> dict:
-    return {
+    envelope = {
         "v": 1,
         "primitive": "assert.truth",
-        "agent_id": "agent-q-test",
+        "agent_id": TEST_AGENT_ID_Q,
         "epoch": epoch,
         "payload": {
             "content": {"body": body},
@@ -60,6 +63,8 @@ def _assert_truth_envelope(body: str = "test claim", epoch: int = 1) -> dict:
         },
         "sig": "UNSIGNED",
     }
+    envelope["sig"] = _build_native_submit_sig_object(envelope, TEST_BLS_SECRET_HEX)
+    return envelope
 
 
 def _populate_store(store_dir: Path, n: int = 1) -> list[str]:
@@ -188,10 +193,10 @@ def test_query_truth_edges_by_agent_id(tmp_path: Path, monkeypatch: pytest.Monke
     monkeypatch.setenv("ILC_TRUTH_GRAPH_STORE_PATH", str(store_dir))
 
     # agent_id appears as the target of asserted_by edges
-    result = handle_query_truth_edges("agent-q-test")
+    result = handle_query_truth_edges(TEST_AGENT_ID_Q)
     assert result["count"] >= 1
     for edge in result["edges"]:
-        assert edge.get("source") == "agent-q-test" or edge.get("target") == "agent-q-test"
+        assert edge.get("source") == TEST_AGENT_ID_Q or edge.get("target") == TEST_AGENT_ID_Q
 
 
 # ---------------------------------------------------------------------------

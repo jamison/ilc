@@ -23,7 +23,9 @@ from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     TruthPrimitiveResult,
     AGENT_ISSUABLE_PRIMITIVES,
+    native_submit_replay_record_from_envelope,
 )
+from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
 from ilc_core.protocol.harness_interfaces import TruthPrimitiveGraphPersistence
 
 # ---------------------------------------------------------------------------
@@ -102,6 +104,9 @@ def node_record_from_submission(
         record["sig_pubkey_hex"] = str(envelope.get("sig_pubkey_hex", ""))
         record["sig_pubkey_fingerprint"] = str(envelope.get("sig_pubkey_fingerprint", ""))
         record["sig_scheme"] = str(envelope.get("sig_scheme", ""))
+    elif isinstance(sig, dict):
+        record["v"] = int(envelope.get("v", 1))
+        record["native_submit_sig"] = dict(sig)
     return record
 
 
@@ -235,6 +240,11 @@ def _resolve_edges(
             records[-1]["sig_pubkey_fingerprint"] = str(envelope.get("sig_pubkey_fingerprint", ""))
             records[-1]["sig_scheme"] = str(envelope.get("sig_scheme", ""))
             records[-1]["v"] = int(envelope.get("v", 1))
+        elif isinstance(sig, dict):
+            records[-1]["payload"] = payload
+            records[-1]["primitive"] = primitive
+            records[-1]["native_submit_sig"] = dict(sig)
+            records[-1]["v"] = int(envelope.get("v", 1))
 
     return records
 
@@ -284,24 +294,48 @@ def write_truth_primitive_result(
 
     # Derive node_id for node-creating primitives.
     node_id: str | None = None
-    node_written = False
+    canonical: dict[str, Any] | None = None
     if result.creates_node:
         node_id = node_id_from_submission(envelope, result)
         canonical = node_record_from_submission(envelope, result)
-        node_written = store.put_node_if_absent(node_id, canonical)
 
     # Resolve and persist edges.
     edge_records = _resolve_edges(envelope, result, node_id)
-    edges_written = 0
-    for record in edge_records:
-        key = _edge_key(record)
-        if store.put_edge_if_absent(key, record):
-            edges_written += 1
+    keyed_edge_records = [(_edge_key(record), record) for record in edge_records]
+    replay_record = native_submit_replay_record_from_envelope(envelope)
+
+    batch_writer = getattr(store, "write_truth_primitive_batch", None)
+    if callable(batch_writer):
+        batch = batch_writer(
+            node_id=node_id,
+            node_record=canonical,
+            edge_records=keyed_edge_records,
+            replay_key=replay_record[0] if replay_record is not None else None,
+            replay_payload=replay_record[1] if replay_record is not None else None,
+        )
+        if batch.get("replay_rejected") is True:
+            raise EpistemicSubmissionError(
+                "native_submit_sig_replay_rejected_CDL_118",
+                "native submit replay rejected: triple already seen",
+            )
+        node_written_count = int(batch.get("nodes_written", 0))
+        edges_written = int(batch.get("edges_written", 0))
+        replay_written = int(batch.get("replay_written", 0))
+    else:
+        node_written_count = 0
+        if node_id is not None and canonical is not None:
+            node_written_count = 1 if store.put_node_if_absent(node_id, canonical) else 0
+        edges_written = 0
+        for key, record in keyed_edge_records:
+            if store.put_edge_if_absent(key, record):
+                edges_written += 1
+        replay_written = 0
 
     return {
         "node_id": node_id,
-        "nodes_written": 1 if node_written else 0,
+        "nodes_written": node_written_count,
         "edges_written": edges_written,
+        "native_submit_replay_written": replay_written,
         "primitive": primitive,
         "version": TRUTH_PRIMITIVE_GRAPH_STORE_VERSION,
     }

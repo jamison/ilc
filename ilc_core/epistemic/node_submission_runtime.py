@@ -18,7 +18,7 @@ EPISTEMIC_RUNTIME_PART1_VERSION = "epistemic_node_submission_runtime_477.v0.1"
 CDL_052_DEPENDENCY = "cdl_052_ratified_466.v0.1"
 
 
-@dataclass(frozen=True)
+@dataclass
 class EpistemicSubmissionError(ValueError):
     token: str
     message: str

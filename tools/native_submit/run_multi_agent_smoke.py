@@ -193,17 +193,17 @@ def run_smoke(
             )
         )
 
-        idempotent_receipt = write_truth_primitive_result(store, envelope_a, result_a)
+        try:
+            write_truth_primitive_result(store, envelope_a, result_a)
+            raise AssertionError("duplicate native submit unexpectedly accepted")
+        except EpistemicSubmissionError as exc:
+            token = _assert_token(exc, "native_submit_sig_replay_rejected_CDL_118")
         scenario_results.append(
             _scenario(
                 3,
-                "graph_write_idempotent",
-                passed=(
-                    idempotent_receipt["node_id"] == receipt_a["node_id"]
-                    and idempotent_receipt["nodes_written"] == 0
-                ),
-                node_id=idempotent_receipt["node_id"],
-                nodes_written=idempotent_receipt["nodes_written"],
+                "duplicate_native_submit_rejected",
+                passed=True,
+                rejection_token=token,
             )
         )
 
@@ -255,13 +255,17 @@ def run_smoke(
             _scenario(6, "sig_length_invalid_rejected", passed=True, rejection_token=token)
         )
 
-        try:
-            validate_truth_primitive_submission(envelope_a)
-            raise AssertionError("replay unexpectedly accepted")
-        except EpistemicSubmissionError as exc:
-            token = _assert_token(exc, "native_submit_sig_replay_rejected_CDL_118")
+        graph_node_kinds = [row.get("kind") or row.get("primitive") for row in store.iter_nodes()]
         scenario_results.append(
-            _scenario(7, "replay_rejected", passed=True, rejection_token=token)
+            _scenario(
+                7,
+                "replay_marker_not_graph_node",
+                passed=(
+                    "native_submit_replay" not in graph_node_kinds
+                    and graph_node_kinds.count("assert.truth") == 2
+                ),
+                graph_node_kinds=graph_node_kinds,
+            )
         )
 
         deterministic_node_id = node_id_from_submission(envelope_a, result_a)

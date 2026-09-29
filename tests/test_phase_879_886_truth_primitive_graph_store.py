@@ -24,6 +24,7 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.cli.d2e_submit_cli import _build_native_submit_sig_object
 from ilc_core.epistemic.truth_primitive_graph_store import (
     CDL_074_DEPENDENCY,
     CDL_075_DEPENDENCY,
@@ -34,17 +35,19 @@ from ilc_core.epistemic.truth_primitive_graph_store import (
     node_record_from_submission,
     write_truth_primitive_result,
 )
+from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 PHASE_882_COMMIT_SUBJECT = "feat(g8): phase 877-882 cdl-075 truth primitive graph store"
 MODULE_PATH = Path("ilc_core/epistemic/truth_primitive_graph_store.py")
 SUBMIT_CLI_PATH = Path("ilc_core/cli/d2e_submit_cli.py")
-VALID_AGENT_ID = "a" * 96
-CLI_AGENT_ID = "b" * 96
-READBACK_AGENT_ID = "c" * 96
+TEST_BLS_SECRET_HEX, VALID_AGENT_ID = keypair_from_ikm_hex("88" * 32)
+CLI_AGENT_ID = VALID_AGENT_ID
+READBACK_AGENT_ID = VALID_AGENT_ID
 
 
 # ---------------------------------------------------------------------------
@@ -53,7 +56,7 @@ READBACK_AGENT_ID = "c" * 96
 
 
 def _envelope(primitive: str, payload: dict) -> dict:
-    return {
+    envelope = {
         "v": 1,
         "primitive": primitive,
         "agent_id": VALID_AGENT_ID,
@@ -61,6 +64,8 @@ def _envelope(primitive: str, payload: dict) -> dict:
         "payload": payload,
         "sig": "UNSIGNED",
     }
+    envelope["sig"] = _build_native_submit_sig_object(envelope, TEST_BLS_SECRET_HEX)
+    return envelope
 
 
 def _result(envelope: dict):
@@ -130,6 +135,7 @@ def _revise_assert_env():
 def _run_cli_submit(*args: str, graph_path: Path, store_path: str | None = None) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
     env["ILC_CLI_GRAPH_STATE_PATH"] = str(graph_path)
+    env["ILC_AGENT_BLS_SIGNING_KEY"] = TEST_BLS_SECRET_HEX
     if store_path:
         env["ILC_TRUTH_GRAPH_STORE_PATH"] = store_path
     else:
@@ -188,12 +194,23 @@ def test_node_record_assert_truth_has_required_fields() -> None:
     env = _assert_truth_env()
     result = _result(env)
     record = node_record_from_submission(env, result)
-    assert set(record.keys()) == {"agent_id", "cdl_version", "epoch", "payload", "primitive", "primitive_type"}
+    assert set(record.keys()) == {
+        "agent_id",
+        "cdl_version",
+        "epoch",
+        "native_submit_sig",
+        "payload",
+        "primitive",
+        "primitive_type",
+        "v",
+    }
     assert record["cdl_version"] == "cdl_075.v0.1"
     assert record["primitive"] == "assert.truth"
     assert record["primitive_type"] == "observation"
     assert record["epoch"] == 3
     assert record["agent_id"] == VALID_AGENT_ID
+    assert record["native_submit_sig"] == env["sig"]
+    assert record["v"] == 1
 
 
 def test_node_record_revise_assert_has_required_fields() -> None:
@@ -394,11 +411,10 @@ def test_write_twice_returns_same_node_id(tmp_path: Path) -> None:
         env = _assert_truth_env()
         result = _result(env)
         r1 = write_truth_primitive_result(store, env, result)
-        r2 = write_truth_primitive_result(store, env, result)
-        assert r1["node_id"] == r2["node_id"]
+        with pytest.raises(EpistemicSubmissionError) as exc_info:
+            write_truth_primitive_result(store, env, result)
+        assert exc_info.value.token == "native_submit_sig_replay_rejected_CDL_118"
         assert r1["nodes_written"] == 1
-        assert r2["nodes_written"] == 0  # already present
-        assert r2["edges_written"] == 0  # edges already present
     finally:
         store.close()
 

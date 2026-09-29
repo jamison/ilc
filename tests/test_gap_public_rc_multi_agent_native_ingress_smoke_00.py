@@ -51,16 +51,14 @@ def test_agent_b_signed_submission_accepted_with_distinct_node(
     assert evidence["agent_a_pk_hex"] != evidence["agent_b_pk_hex"]
 
 
-def test_graph_write_idempotency_without_revalidation(
+def test_duplicate_native_submit_rejected_at_write_boundary(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     evidence = _run(tmp_path, monkeypatch)
-    agent_a = _scenario(evidence, "agent_a_accept")
-    row = _scenario(evidence, "graph_write_idempotent")
+    row = _scenario(evidence, "duplicate_native_submit_rejected")
     assert row["pass"] is True
-    assert row["node_id"] == agent_a["node_id"]
-    assert row["nodes_written"] == 0
+    assert row["rejection_token"] == "native_submit_sig_replay_rejected_CDL_118"
 
 
 def test_invalid_signature_is_rejected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -87,14 +85,14 @@ def test_signature_length_invalid_is_rejected(
     assert row["rejection_token"] == "native_submit_sig_signature_hex_length_invalid_CDL_118"
 
 
-def test_replay_is_rejected_by_lmdb_durable_path(
+def test_replay_marker_is_not_exposed_as_graph_node(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     evidence = _run(tmp_path, monkeypatch)
-    row = _scenario(evidence, "replay_rejected")
+    row = _scenario(evidence, "replay_marker_not_graph_node")
     assert row["pass"] is True
-    assert row["rejection_token"] == "native_submit_sig_replay_rejected_CDL_118"
+    assert "native_submit_replay" not in row["graph_node_kinds"]
     assert "ILC_TRUTH_GRAPH_STORE_PATH" in __import__("os").environ
 
 

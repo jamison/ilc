@@ -19,19 +19,20 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 from ilc_core.cli.d2e_submit_cli import (
     CDL_074_DEPENDENCY,
     D2E_SUBMIT_CLI_VERSION,
     SubmitCommandError,
     handle_submit,
 )
-from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 
 PHASE_874_COMMIT_SUBJECT = "feat(g8): phase 873-874 submit cli wiring"
 MAIN_PY_PATH = Path("ilc_core/cli/main.py")
 CLI_MODULE_PATH = Path("ilc_core/cli/d2e_submit_cli.py")
 DECISION_LOG_PATH = "docs/specs/ilc_constitutional_decision_log_v0.1.md"
-VALID_AGENT_ID = GENESIS_AGENT1_AGENT_ID
+TEST_BLS_SECRET_HEX, VALID_AGENT_ID = keypair_from_ikm_hex("87" * 32)
+NO_DEFAULT_BLS_KEY_PATH = Path("/nonexistent/ilc_phase_874_no_key.hex")
 
 
 # ---------------------------------------------------------------------------
@@ -61,12 +62,24 @@ def _ns(**kwargs: object) -> argparse.Namespace:
 def _run_cli(*args: str, graph_path: Path) -> subprocess.CompletedProcess[str]:
     env = dict(os.environ)
     env["ILC_CLI_GRAPH_STATE_PATH"] = str(graph_path)
+    env["ILC_AGENT_BLS_SIGNING_KEY"] = TEST_BLS_SECRET_HEX
     return subprocess.run(
         ["python3", "-m", "ilc_core.cli.main", *args],
         capture_output=True,
         text=True,
         check=False,
         env=env,
+    )
+
+
+@pytest.fixture(autouse=True)
+def _isolate_native_bls_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ILC_AGENT_BLS_SIGNING_KEY", TEST_BLS_SECRET_HEX)
+    monkeypatch.setattr(
+        "ilc_core.cli.d2e_submit_cli._ILC_AGENT_BLS_KEY_DEFAULT_PATH",
+        NO_DEFAULT_BLS_KEY_PATH,
     )
 
 
@@ -330,7 +343,7 @@ def test_handle_submit_invalid_epoch_raises() -> None:
     assert exc_info.value.token == "submit_epoch_invalid"
 
 
-def test_handle_submit_rejects_native_sig_object_before_activation() -> None:
+def test_handle_submit_rejects_malformed_native_sig_object_after_activation() -> None:
     ns = _ns(
         primitive="assert.truth",
         payload_json=_ASSERT_TRUTH_PAYLOAD,
@@ -342,7 +355,7 @@ def test_handle_submit_rejects_native_sig_object_before_activation() -> None:
     with pytest.raises(SubmitCommandError) as exc_info:
         handle_submit(ns)
 
-    assert exc_info.value.token == "sig_invalid_pre_native_ingress_activation"
+    assert exc_info.value.token == "native_submit_sig_verifier_profile_invalid_IMPL_00"
 
 
 def test_handle_submit_payload_ambiguous_raises(tmp_path: Path) -> None:

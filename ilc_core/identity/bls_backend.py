@@ -267,9 +267,19 @@ def _sign_digest_with_ciphersuite(
 
 
 def _require_non_empty_network_id(network_id: str) -> str:
-    if not isinstance(network_id, str) or not network_id.strip() or ":" in network_id:
+    if not isinstance(network_id, str):
         raise ValueError("bls_network_id_invalid")
-    return network_id
+    if any(char != " " and char.isspace() for char in network_id):
+        raise ValueError("bls_network_id_invalid")
+    clean_network_id = network_id.strip(" ")
+    if (
+        not clean_network_id
+        or ":" in clean_network_id
+        or not clean_network_id.isascii()
+        or any(ord(char) < 0x21 or ord(char) > 0x7e for char in clean_network_id)
+    ):
+        raise ValueError("bls_network_id_invalid")
+    return clean_network_id
 
 
 def _sign_raw_bls_bytes_with_dst(
@@ -346,7 +356,7 @@ def _verify_raw_bls_bytes_with_dst(
         if not _Suite.KeyValidate(public_key):
             return False
         return bool(_Suite.Verify(public_key, message_bytes, signature))
-    except (AssertionError, ValueError):
+    except ValueError:
         return False
 
 

@@ -681,15 +681,11 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     ):
         native_sig = _build_native_submit_sig_object(envelope, bls_secret_hex)
         if native_sig["key_ref"] != agent_id:
-            if bls_key_source == "file":
-                native_sig = None
-            else:
-                raise SubmitCommandError(
-                    "submit_bls_key_agent_id_mismatch",
-                    "native BLS signing key public key must equal --agent-id",
-                )
-        if native_sig is not None:
-            envelope["sig"] = native_sig
+            raise SubmitCommandError(
+                "submit_bls_key_agent_id_mismatch",
+                "native BLS signing key public key must equal --agent-id",
+            )
+        envelope["sig"] = native_sig
 
     envelope = _sign_submission_envelope(envelope, getattr(args, "signing_key", None))
 
@@ -752,6 +748,8 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
             graph_persistence = "persisted"
         finally:
             store.close()
+    elif not truth_runtime.NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED:
+        truth_runtime.consume_native_submit_replay_fallback(envelope)
 
     # CDL-076: announce to gossip peers after confirmed CDL-075 persist.
     gossip_delivery: str = "deferred — gossip peers not configured"

@@ -149,6 +149,8 @@ class PublicSubmitIngressEndpointAssertion:
             96,
             "submit_ingress_assertion_bls_public_key_invalid_IMPL_00",
         )
+        if self.transport_public_key_hex != self.bls_public_key_hex:
+            raise ValueError("submit_ingress_assertion_transport_bls_key_mismatch_IMPL_00")
         _require_lower_hex_exact(
             self.bls_signature_hex,
             192,

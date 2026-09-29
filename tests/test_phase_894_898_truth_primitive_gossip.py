@@ -23,6 +23,7 @@ from unittest.mock import patch
 
 import pytest
 
+from ilc_core.cli.d2e_submit_cli import _build_native_submit_sig_object
 from ilc_core.network.d2d.truth_primitive_gossip_runtime import (
     CDL_061_DEPENDENCY,
     CDL_075_DEPENDENCY,
@@ -43,12 +44,13 @@ from ilc_core.epistemic.truth_primitive_graph_store import (
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 PHASE_896_COMMIT_SUBJECT = "feat(g8): phase 892-896 cdl-076 truth primitive announcement gossip"
 MODULE_PATH = Path("ilc_core/network/d2d/truth_primitive_gossip_runtime.py")
 SUBMIT_CLI_PATH = Path("ilc_core/cli/d2e_submit_cli.py")
-VALID_AGENT_ID = "a" * 96
+TEST_BLS_SECRET_HEX, VALID_AGENT_ID = keypair_from_ikm_hex("8a" * 32)
 
 
 # ---------------------------------------------------------------------------
@@ -57,7 +59,7 @@ VALID_AGENT_ID = "a" * 96
 
 
 def _truth_envelope(body: str = "gossip test claim", epoch: int = 1) -> dict:
-    return {
+    envelope = {
         "v": 1,
         "primitive": "assert.truth",
         "agent_id": VALID_AGENT_ID,
@@ -70,6 +72,16 @@ def _truth_envelope(body: str = "gossip test claim", epoch: int = 1) -> dict:
         },
         "sig": "UNSIGNED",
     }
+    envelope["sig"] = _build_native_submit_sig_object(envelope, TEST_BLS_SECRET_HEX)
+    return envelope
+
+
+@pytest.fixture(autouse=True)
+def _isolate_native_bls_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
+
+    monkeypatch.setenv("ILC_AGENT_BLS_SIGNING_KEY", TEST_BLS_SECRET_HEX)
+    truth_runtime._NATIVE_SUBMIT_REPLAY_FALLBACK.clear()
 
 
 def _populate_store(store_dir: Path) -> tuple[str, dict, dict]:
@@ -87,6 +99,7 @@ def _populate_store(store_dir: Path) -> tuple[str, dict, dict]:
 def _run_cli(*args: str, store_path: str | None = None, gossip_peers: str | None = None,
              graph_path: Path | None = None) -> subprocess.CompletedProcess:
     env = dict(os.environ)
+    env["ILC_AGENT_BLS_SIGNING_KEY"] = TEST_BLS_SECRET_HEX
     if store_path:
         env["ILC_TRUTH_GRAPH_STORE_PATH"] = store_path
     else:

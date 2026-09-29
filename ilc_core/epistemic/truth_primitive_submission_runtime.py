@@ -28,8 +28,9 @@ from dataclasses import dataclass, replace
 from decimal import Decimal, InvalidOperation
 import hashlib
 import json
-import os
+import logging
 import re
+import threading
 from typing import Any, Final
 
 from ilc_core.protocol.primitive_type_registry import (
@@ -58,6 +59,10 @@ _MAX_EVIDENCE_NODE_IDS = 64
 NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED = False
 _NATIVE_SUBMIT_REPLAY_KEY_PREFIX: Final[str] = "native_submit_replay:v1:"
 _NATIVE_SUBMIT_REPLAY_FALLBACK: set[tuple[str, int, str]] = set()
+_NATIVE_SUBMIT_REPLAY_FALLBACK_LOCK = threading.Lock()
+_NATIVE_SUBMIT_REPLAY_FALLBACK_MAX_SIZE: Final[int] = 100_000
+_NATIVE_SUBMIT_REPLAY_FALLBACK_WARNING_EMITTED = False
+_LOGGER = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Agent-issuable primitive set (commit.epoch excluded)
@@ -99,6 +104,85 @@ def _replay_key_for_triple(agent_id: str, epoch: int, payload_sha256: str) -> st
 
     triple_bytes = f"{agent_id}:{epoch}:{payload_sha256}".encode("utf-8")
     return _NATIVE_SUBMIT_REPLAY_KEY_PREFIX + hashlib.sha256(triple_bytes).hexdigest()
+
+
+def _native_submit_replay_payload(
+    agent_id: str,
+    epoch: int,
+    payload_sha256: str,
+) -> dict[str, Any]:
+    return {
+        "kind": "native_submit_replay",
+        "agent_id": agent_id,
+        "epoch": epoch,
+        "payload_sha256": payload_sha256,
+    }
+
+
+def native_submit_replay_record_from_envelope(
+    envelope: dict[str, Any],
+) -> tuple[str, dict[str, Any]] | None:
+    """Return the replay DB key/payload for an already verified native envelope."""
+
+    sig = envelope.get("sig")
+    if not isinstance(sig, dict):
+        return None
+    payload_sha256 = sig.get("payload_sha256")
+    agent_id = envelope.get("agent_id")
+    epoch = envelope.get("epoch")
+    if (
+        not isinstance(payload_sha256, str)
+        or _SHA256_RE.fullmatch(payload_sha256) is None
+        or not isinstance(agent_id, str)
+        or _AGENT_ID_RE.fullmatch(agent_id) is None
+        or not isinstance(epoch, int)
+        or isinstance(epoch, bool)
+        or epoch < 0
+    ):
+        return None
+    return (
+        _replay_key_for_triple(agent_id, epoch, payload_sha256),
+        _native_submit_replay_payload(agent_id, epoch, payload_sha256),
+    )
+
+
+def consume_native_submit_replay_fallback(envelope: dict[str, Any]) -> None:
+    """Consume replay protection for validate-only native submit paths.
+
+    Production persistence paths should use the LMDB replay DB through
+    write_truth_primitive_result(). This fallback is only for callers that
+    intentionally validate/accept without a configured graph store.
+    """
+
+    global _NATIVE_SUBMIT_REPLAY_FALLBACK_WARNING_EMITTED
+
+    sig = envelope.get("sig")
+    if not isinstance(sig, dict):
+        return
+    payload_sha256 = str(sig.get("payload_sha256", ""))
+    agent_id = str(envelope.get("agent_id", ""))
+    epoch = envelope.get("epoch")
+    if not isinstance(epoch, int) or isinstance(epoch, bool):
+        return
+    replay_tuple = (agent_id, epoch, payload_sha256)
+    if not _NATIVE_SUBMIT_REPLAY_FALLBACK_WARNING_EMITTED:
+        _LOGGER.warning(
+            "ilc_truth_graph_store_path_not_configured: replay fallback is "
+            "non-persistent and in-process only"
+        )
+        _NATIVE_SUBMIT_REPLAY_FALLBACK_WARNING_EMITTED = True
+    with _NATIVE_SUBMIT_REPLAY_FALLBACK_LOCK:
+        if replay_tuple in _NATIVE_SUBMIT_REPLAY_FALLBACK:
+            raise EpistemicSubmissionError(
+                "native_submit_sig_replay_rejected_CDL_118",
+                "native submit replay rejected: triple already seen",
+            )
+        if len(_NATIVE_SUBMIT_REPLAY_FALLBACK) >= _NATIVE_SUBMIT_REPLAY_FALLBACK_MAX_SIZE:
+            raise EpistemicSubmissionError(
+                "native_submit_replay_fallback_capacity_exhausted",
+                "native submit in-process replay fallback capacity exhausted",
+            )
+        _NATIVE_SUBMIT_REPLAY_FALLBACK.add(replay_tuple)
 
 # ---------------------------------------------------------------------------
 # Result types
@@ -511,7 +595,7 @@ def verify_native_submit_sig_envelope(envelope: dict) -> None:
     Raises EpistemicSubmissionError on any rejection. This verifier implements
     CDL-118's public-RC base profile: key_ref must equal agent_id, the BLS G2
     signature is checked over canonical envelope bytes, and replay triples are
-    recorded atomically when an LMDB graph store path is configured.
+    replay consumption is handled by the acceptance/persistence path.
     """
     sig = envelope.get("sig")
     if sig is None or sig == "UNSIGNED":
@@ -602,69 +686,17 @@ def verify_native_submit_sig_envelope(envelope: dict) -> None:
             "submission.sig.dst must start with 'ILC_NATIVE_TRUTH_SUBMIT_V1:'",
         )
     network_id = dst[len(dst_prefix):]
-    replay_tuple = (agent_id, epoch, payload_sha256)
-    lmdb_store_path = os.environ.get("ILC_TRUTH_GRAPH_STORE_PATH", "").strip()
-
-    def _verify_bls_or_raise() -> None:
-        ok = verify_native_submit_bytes(
-            public_key_hex=key_ref,
-            message_bytes=canonical,
-            signature_hex=signature_hex,
-            network_id=network_id,
-        )
-        if not ok:
-            raise EpistemicSubmissionError(
-                "native_submit_sig_bls_verification_failed_CDL_118",
-                "native submit BLS signature verification failed",
-            )
-
-    replay_payload = {
-        "kind": "native_submit_replay",
-        "agent_id": agent_id,
-        "epoch": epoch,
-        "payload_sha256": payload_sha256,
-    }
-    if lmdb_store_path:
-        from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore
-
-        replay_key = _replay_key_for_triple(agent_id, epoch, payload_sha256)
-        store = LmdbGraphStore(lmdb_store_path)
-        replay_seen = False
-        verification_ok = False
-        try:
-            with store.node_write_transaction() as txn:
-                if txn.get_node(replay_key) is not None:
-                    replay_seen = True
-                else:
-                    verification_ok = verify_native_submit_bytes(
-                        public_key_hex=key_ref,
-                        message_bytes=canonical,
-                        signature_hex=signature_hex,
-                        network_id=network_id,
-                    )
-                    if verification_ok:
-                        txn.put_node(replay_key, replay_payload)
-        finally:
-            store.close()
-        if replay_seen:
-            raise EpistemicSubmissionError(
-                "native_submit_sig_replay_rejected_CDL_118",
-                "native submit replay rejected: triple already seen",
-            )
-        if not verification_ok:
-            raise EpistemicSubmissionError(
-                "native_submit_sig_bls_verification_failed_CDL_118",
-                "native submit BLS signature verification failed",
-            )
-        return
-
-    if replay_tuple in _NATIVE_SUBMIT_REPLAY_FALLBACK:
+    ok = verify_native_submit_bytes(
+        public_key_hex=key_ref,
+        message_bytes=canonical,
+        signature_hex=signature_hex,
+        network_id=network_id,
+    )
+    if not ok:
         raise EpistemicSubmissionError(
-            "native_submit_sig_replay_rejected_CDL_118",
-            "native submit replay rejected: triple already seen",
+            "native_submit_sig_bls_verification_failed_CDL_118",
+            "native submit BLS signature verification failed",
         )
-    _verify_bls_or_raise()
-    _NATIVE_SUBMIT_REPLAY_FALLBACK.add(replay_tuple)
 
 
 def validate_truth_primitive_submission(submission: Any) -> TruthPrimitiveResult:
