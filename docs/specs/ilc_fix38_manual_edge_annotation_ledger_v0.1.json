@@ -2100,6 +2100,142 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1613_model_router_provider_adapters_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_172_rev185_ecu_lifecycle_flow_diagrams",
+      "chronology_note": "2026-09-29 Rev 185 - ECU lifecycle flow diagram v0.1 (superseded by v0.4). First version of the three-layer CURRENT/TARGET/DELTA ECU lifecycle analysis.",
+      "manual_read_summary": "First iteration of the ECU lifecycle flow diagram establishing the CURRENT/TARGET/DELTA layering framework for ECU type namespace; superseded by v0.2.",
+      "node_kind": "spec_doc",
+      "phase_ref": "rev185_planning_update",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPERSEDED_BY",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.2.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPERSEDED_BY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_172_rev185_ecu_lifecycle_flow_diagrams",
+      "chronology_note": "2026-09-29 Rev 185 - ECU lifecycle flow diagram v0.2 (superseded by v0.4). Added conservation equation with unissued backward residual and dust terms.",
+      "manual_read_summary": "Second iteration adding the full conservation equation including unissued_backward_residual and dust_or_rounding_residual terms; superseded by v0.3.",
+      "node_kind": "spec_doc",
+      "phase_ref": "rev185_planning_update",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPERSEDES",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.1.md"
+        },
+        {
+          "edge_type": "SUPERSEDED_BY",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.3.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPERSEDES",
+        "SUPERSEDED_BY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.2.md"
+    },
+    {
+      "annotation_batch": "manual_batch_172_rev185_ecu_lifecycle_flow_diagrams",
+      "chronology_note": "2026-09-29 Rev 185 - ECU lifecycle flow diagram v0.3 (superseded by v0.4). Added OBSERVE-00 time gate, CDL-114 blocked backward pool, Werner/Omega clarification, and ECU^C over-debit reject-not-clamp invariant.",
+      "manual_read_summary": "Third iteration locking CDL-114 blocked backward pool behavior, OBSERVE-00 time gate, Werner flow-governor reweighting semantics, and ECU^C reject-not-clamp invariant; superseded by v0.4.",
+      "node_kind": "spec_doc",
+      "phase_ref": "rev185_planning_update",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPERSEDES",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.2.md"
+        },
+        {
+          "edge_type": "SUPERSEDED_BY",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUPERSEDES",
+        "SUPERSEDED_BY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.3.md"
+    },
+    {
+      "annotation_batch": "manual_batch_172_rev185_ecu_lifecycle_flow_diagrams",
+      "chronology_note": "2026-09-29 Rev 185 - ECU lifecycle flow diagram v0.4 (current governing spec). Locks CURRENT/TARGET/DELTA analysis, conservation equation, ECU type namespace, two Layer 0 OBSERVE blockers (quantum/rounding policy and CDL-114 backward residual disposition), and OBSERVE-00 preconditions.",
+      "manual_read_summary": "Current governing ECU lifecycle spec: establishes the full ECU type namespace (ECU^X/Q/A+/A-/C/L/T/Omega), three-layer CURRENT/TARGET/DELTA analysis, conservation equation, and explicitly names the two Layer 0 OBSERVE blockers (quantum/rounding policy and CDL-114 backward unissued residual disposition) that must be resolved before OBSERVE-00.",
+      "node_kind": "spec_doc",
+      "phase_ref": "rev185_planning_update",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "GOVERNED_BY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-114"
+        },
+        {
+          "edge_type": "GOVERNED_BY",
+          "review_status": "candidate",
+          "target": "cdl:CDL-108"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPERSEDES",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.3.md"
+        },
+        {
+          "edge_type": "REFERENCES_SPEC",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNED_BY",
+        "REFERENCES_AUTHORITY",
+        "REFERENCES_SPEC",
+        "SOURCE_TREE_MEMBER",
+        "SUPERSEDES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md"
     }
   ],
   "annotations": [
