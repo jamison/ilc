@@ -107018,7 +107018,7 @@
     },
     {
       "annotation_batch": "manual_batch_157_phase_GAP_PUBLIC_RC_NATIVE_STATUS_EVIDENCE_00b",
-      "chronology_note": "2026-09-28 — STATUS-EVIDENCE-00b phase prompt drafted by Sonnet; closes 00a non-claims by producing offline BLS verification of endpoint assertion, live signed-submission acceptance evidence, and unsigned-rejection confirmation",
+      "chronology_note": "2026-09-28 \u2014 STATUS-EVIDENCE-00b phase prompt drafted by Sonnet; closes 00a non-claims by producing offline BLS verification of endpoint assertion, live signed-submission acceptance evidence, and unsigned-rejection confirmation",
       "manual_read_summary": "Phase prompt for GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b: offline BLS verify endpoint assertion, signed native truth primitive submission through live path to obtain CIDv1 node_id, unsigned submission rejection confirmation, and evidence receipt closing 00a open non-claims",
       "node_kind": "phase_prompt",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b",
@@ -107054,15 +107054,15 @@
     },
     {
       "annotation_batch": "manual_batch_158_phase_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00",
-      "chronology_note": "2026-09-28 — CAPSULE-KEY-DELEGATION-00 phase prompt drafted by Sonnet; provides ML-DSA-65 delegation record for GENESIS_CAPSULE_SIGNING_PK_HEX (b0059ca0...fdbd85), completing the authority chain for capsule signing",
-      "manual_read_summary": "SENSITIVE phase prompt for GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00: produces ML-DSA-65 signed delegation record for genesis_capsule_bls_sk, verifies five key-collision hard-stops, updates key registry §4, and emits capsule_signing_key_delegation_complete token",
+      "chronology_note": "2026-09-28 \u2014 CAPSULE-KEY-DELEGATION-00 phase prompt drafted by Sonnet; provides ML-DSA-65 delegation record for GENESIS_CAPSULE_SIGNING_PK_HEX (b0059ca0...fdbd85), completing the authority chain for capsule signing",
+      "manual_read_summary": "SENSITIVE phase prompt for GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00: produces ML-DSA-65 signed delegation record for genesis_capsule_bls_sk, verifies five key-collision hard-stops, updates key registry \u00a74, and emits capsule_signing_key_delegation_complete token",
       "node_kind": "phase_prompt",
       "phase_ref": "GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00",
       "proposed_authority_trace_edges": [
         {
           "edge_type": "REFERENCES_AUTHORITY",
           "review_status": "candidate",
-          "target": "docs/specs/ilc_genesis_key_registry_v0.1.md"
+          "target": "docs/specs/ilc_genesis_operational_key_registry_v0.1.md"
         }
       ],
       "proposed_semantic_edges": [
@@ -107090,7 +107090,7 @@
     },
     {
       "annotation_batch": "manual_batch_159_phase_GAP_PUBLIC_RC_MULTI_AGENT_NATIVE_INGRESS_SMOKE_00",
-      "chronology_note": "2026-09-29 — SMOKE-00 execution added a native submit smoke runner proving two independent BLS agents can submit signed assert.truth envelopes through the guard-cleared runtime",
+      "chronology_note": "2026-09-29 \u2014 SMOKE-00 execution added a native submit smoke runner proving two independent BLS agents can submit signed assert.truth envelopes through the guard-cleared runtime",
       "manual_read_summary": "Standalone smoke runner for GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00: builds native_submit_sig.v0.1 envelopes, validates them, persists graph nodes through TruthPrimitiveGraphStore, checks graph-write idempotency, and confirms adversarial BLS/replay rejection",
       "node_kind": "tool_script",
       "phase_ref": "GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00",
@@ -107118,7 +107118,7 @@
     },
     {
       "annotation_batch": "manual_batch_159_phase_GAP_PUBLIC_RC_MULTI_AGENT_NATIVE_INGRESS_SMOKE_00",
-      "chronology_note": "2026-09-29 — SMOKE-00 execution added focused tests for the multi-agent native submit smoke runner and its adversarial scenarios",
+      "chronology_note": "2026-09-29 \u2014 SMOKE-00 execution added focused tests for the multi-agent native submit smoke runner and its adversarial scenarios",
       "manual_read_summary": "Focused pytest coverage for GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00: accepts Agent A/B signed submissions, proves graph-write idempotency without replay bypass, confirms invalid signature/key_ref/length/replay rejection, validates evidence shape, and catches tampered-envelope hash mismatch",
       "node_kind": "test_file",
       "phase_ref": "GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00",
@@ -107146,7 +107146,7 @@
     },
     {
       "annotation_batch": "manual_batch_159_phase_GAP_PUBLIC_RC_MULTI_AGENT_NATIVE_INGRESS_SMOKE_00",
-      "chronology_note": "2026-09-29 — SMOKE-00 execution walkthrough recorded guard state, evidence SHA-256, node IDs, focused tests, adjacent regression, coverage, and non-claims",
+      "chronology_note": "2026-09-29 \u2014 SMOKE-00 execution walkthrough recorded guard state, evidence SHA-256, node IDs, focused tests, adjacent regression, coverage, and non-claims",
       "manual_read_summary": "Walkthrough for GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00 recording exact verification outputs, two persisted CIDv1 node IDs, evidence hash, phase-local LMDB path, output tokens, and non-claims",
       "node_kind": "phase_walkthrough",
       "phase_ref": "GAP-PUBLIC-RC-MULTI-AGENT-NATIVE-INGRESS-SMOKE-00",
@@ -107174,7 +107174,7 @@
     },
     {
       "annotation_batch": "manual_batch_160_phase_GAP_PUBLIC_RC_NATIVE_STATUS_EVIDENCE_00b",
-      "chronology_note": "2026-09-29 — STATUS-EVIDENCE-00b execution added a signed-peer/native-response evidence assembler",
+      "chronology_note": "2026-09-29 \u2014 STATUS-EVIDENCE-00b execution added a signed-peer/native-response evidence assembler",
       "manual_read_summary": "Assembler for GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b: verifies the GUARD-CLEAR endpoint assertion offline with BLS, proves tamper rejection, creates a fresh ephemeral BLS test agent, validates and persists a signed native assert.truth submission into phase-local LMDB, confirms unsigned rejection, and writes the evidence receipt atomically.",
       "node_kind": "tool_script",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b",
@@ -107202,7 +107202,7 @@
     },
     {
       "annotation_batch": "manual_batch_160_phase_GAP_PUBLIC_RC_NATIVE_STATUS_EVIDENCE_00b",
-      "chronology_note": "2026-09-29 — STATUS-EVIDENCE-00b execution added focused tests for signed-peer/native-response evidence",
+      "chronology_note": "2026-09-29 \u2014 STATUS-EVIDENCE-00b execution added focused tests for signed-peer/native-response evidence",
       "manual_read_summary": "Focused pytest coverage for GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b: checks guard state, endpoint assertion artifact shape, BLS offline verification, tamper rejection, source 00a hash binding, evidence receipt schema and non-claims, CIDv1 node_id, unsigned rejection token, no Genesis key reuse by the ephemeral test agent, and adversarial source/signature failures.",
       "node_kind": "test_file",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b",
@@ -107230,7 +107230,7 @@
     },
     {
       "annotation_batch": "manual_batch_160_phase_GAP_PUBLIC_RC_NATIVE_STATUS_EVIDENCE_00b",
-      "chronology_note": "2026-09-29 — STATUS-EVIDENCE-00b execution walkthrough recorded exact verification outputs, evidence hash, node_id, hardening notes, and non-claims",
+      "chronology_note": "2026-09-29 \u2014 STATUS-EVIDENCE-00b execution walkthrough recorded exact verification outputs, evidence hash, node_id, hardening notes, and non-claims",
       "manual_read_summary": "Walkthrough for GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b recording prompt hardening, guard state, input-token checks, endpoint assertion BLS verification, unsigned rejection, evidence receipt SHA-256, focused and adjacent test outputs, graph coverage, output tokens, and non-claims.",
       "node_kind": "phase_walkthrough",
       "phase_ref": "GAP-PUBLIC-RC-NATIVE-STATUS-EVIDENCE-00b",
@@ -107255,6 +107255,143 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_public_rc_native_status_evidence_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_161_phase_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_execution",
+      "chronology_note": "2026-09-29 GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00 - capsule signing key delegation schema.",
+      "manual_read_summary": "Schema for the ML-DSA-signed Genesis capsule signing key delegation record: defines signed payload boundary, capsule_signing_pk_hex role, purpose, collision invariants, revocation sketch, and non-claims.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_genesis_operational_key_registry_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "GOVERNS",
+          "target": "docs/specs/ilc_genesis_capsule_signing_key_delegation_record_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_v0.1.json"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_genesis_capsule_signing_key_delegation_schema_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_161_phase_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_execution",
+      "chronology_note": "2026-09-29 GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00 - ML-DSA-signed capsule signing key delegation record.",
+      "manual_read_summary": "Signed delegation record binding GENESIS_CAPSULE_SIGNING_PK_HEX to role genesis_delegate_capsule_signing_v1; signature verifies against Phase 838a Genesis Agent 01 ML-DSA public key.",
+      "node_kind": "authority_record",
+      "phase_ref": "GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "SIGNED_BY",
+          "review_status": "candidate",
+          "target": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_genesis_capsule_signing_key_delegation_schema_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "AUTHORIZES",
+          "target": "symbol:GENESIS_CAPSULE_SIGNING_PK_HEX"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SIGNED_BY",
+        "IMPLEMENTS",
+        "AUTHORIZES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_genesis_capsule_signing_key_delegation_record_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_161_phase_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_execution",
+      "chronology_note": "2026-09-29 GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00 - delegation verification tests.",
+      "manual_read_summary": "Focused tests verify the capsule delegation record schema fields, BLS key collision boundaries, signed payload exclusion rules, ML-DSA signature verification against 838a, phase tokens, and capsule-only role/purpose.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "docs/specs/ilc_genesis_capsule_signing_key_delegation_record_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_v0.1.json"
+        },
+        {
+          "edge_type": "VERIFIES",
+          "target": "docs/specs/ilc_genesis_capsule_signing_key_delegation_schema_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_genesis_capsule_signing_key_delegation_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_161_phase_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_execution",
+      "chronology_note": "2026-09-29 GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00 - phase walkthrough.",
+      "manual_read_summary": "Walkthrough records GO authorization, key resume output, collision checks, canonical payload hash, ML-DSA verification output, focused tests, registry update, output tokens, and non-claims with no secret material.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-GENESIS-CAPSULE-SIGNING-KEY-DELEGATION-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_genesis_capsule_signing_key_delegation_00_g10_capsule_key_delegation.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_genesis_capsule_signing_key_delegation_record_GAP_GENESIS_CAPSULE_SIGNING_KEY_DELEGATION_00_v0.1.json"
+        },
+        {
+          "edge_type": "VERIFIES",
+          "target": "tests/test_gap_genesis_capsule_signing_key_delegation_00.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "VERIFIES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_genesis_capsule_signing_key_delegation_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
