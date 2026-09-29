@@ -1,0 +1,78 @@
+{
+  "artifact": "ilc_fix_phase_1615_cdl_116_model_router_opening_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "cdl_mutation": true,
+    "network_or_p2p_activation": false,
+    "public_rc_activation": false,
+    "purpose": "Supplemental graph-intake records for Phase 1615 CDL-116 Model Router governance opening artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "phase_1615_cdl_116_model_router_opening_overlay_record",
+      "edge_role": "CDL_OPENING_RECORD",
+      "graph_delta": "governance_artifact_added",
+      "node_kind": "cdl_opening_record",
+      "repo_path": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md",
+      "target": "cdl:116"
+    },
+    {
+      "annotation_method": "phase_1615_cdl_116_model_router_opening_overlay_record",
+      "edge_role": "CDL_REGISTER",
+      "graph_delta": "governance_register_modified",
+      "node_kind": "cdl_register",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+      "target": "cdl:116"
+    },
+    {
+      "annotation_method": "phase_1615_cdl_116_model_router_opening_overlay_record",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "phase_prompt_hardened",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1615_g10_cdl_116_model_router_opening.md",
+      "target": "phase:1615_cdl_116_model_router_opening"
+    },
+    {
+      "annotation_method": "phase_1615_cdl_116_model_router_opening_overlay_record",
+      "edge_role": "PHASE_STATUS",
+      "graph_delta": "status_log_modified",
+      "node_kind": "phase_status_log",
+      "repo_path": "docs/phases/STATUS.md",
+      "target": "phase:1615_cdl_116_model_router_opening"
+    },
+    {
+      "annotation_method": "phase_1615_cdl_116_model_router_opening_overlay_record",
+      "edge_role": "PLANNING_INDEX",
+      "graph_delta": "planning_index_modified",
+      "node_kind": "planning_index",
+      "repo_path": "docs/PLANNING_INDEX.md",
+      "target": "phase:1615_cdl_116_model_router_opening"
+    },
+    {
+      "annotation_method": "phase_1615_cdl_116_model_router_opening_overlay_record",
+      "edge_role": "FORWARD_PLAN",
+      "graph_delta": "forward_plan_modified",
+      "node_kind": "forward_plan",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
+      "target": "phase:1615_cdl_116_model_router_opening"
+    },
+    {
+      "annotation_method": "phase_1615_cdl_116_model_router_opening_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_1615_cdl_116_model_router_opening_walkthrough.md",
+      "target": "phase:1615_cdl_116_model_router_opening"
+    },
+    {
+      "annotation_method": "phase_1615_cdl_116_model_router_opening_overlay_record",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_phase_1615_cdl_116_model_router_opening_graph_intake_overlay_v0.1.json",
+      "target": "phase:1615_cdl_116_model_router_opening"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1",
+  "status": "review_queue_support_only"
+}
