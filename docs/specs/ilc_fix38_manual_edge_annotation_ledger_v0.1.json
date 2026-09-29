@@ -1181,6 +1181,103 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1609_capproof_gate_a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_168_phase_1610_model_router_spec",
+      "chronology_note": "2026-09-29 Phase 1610 - Model Router architecture spec prompt.",
+      "manual_read_summary": "Phase prompt hardened to use the live Phase 1609 token, record CDL-116 as planning-assigned but not register-opened, require HARNESS-SIDECAR-05 and Part 3j reads, and stop after Phase 1610 for Phase 1611 conditional review.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "1610",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_window_1596_1616_candidate_phase_grouping_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SEQUENCES_AFTER",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1609_g10_capproof_gate_a.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SEQUENCES_AFTER",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1610_g10_model_router_spec.md"
+    },
+    {
+      "annotation_batch": "manual_batch_168_phase_1610_model_router_spec",
+      "chronology_note": "2026-09-29 Phase 1610 - Model Router sidecar governing spec.",
+      "manual_read_summary": "Spec locks the Model Router action_type decision as Option (a), documents HARNESS-SIDECAR-05 compatibility patch scope, companion metadata storage, router LMDB layout, provider adapter contract, nullifier schema, local-first consent UX, and CDL-116 scope preview.",
+      "node_kind": "spec_doc",
+      "phase_ref": "1610",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1610_g10_model_router_spec.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/sidecars/execution_receipt.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_sidecar_execution_receipt_schema_GAP_HARNESS_SIDECAR_05_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_model_router_sidecar_spec_phase_1610_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_168_phase_1610_model_router_spec",
+      "chronology_note": "2026-09-29 Phase 1610 - Model Router spec walkthrough.",
+      "manual_read_summary": "Walkthrough records prompt hardening, source reads, live pre-read findings, locked decisions, verification command outputs, post-execution audit, output token, non-claims, and Phase 1611 conditional stop instruction.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "1610",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1610_g10_model_router_spec.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_model_router_sidecar_spec_phase_1610_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1610_model_router_spec_walkthrough.md"
     }
   ],
   "annotations": [
