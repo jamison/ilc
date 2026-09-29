@@ -2236,6 +2236,47 @@
       ],
       "recommended_graph_action": "load_bearing_artifact_added",
       "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md"
+    },
+    {
+      "annotation_batch": "manual_batch_173_window_1617_guidance_doc",
+      "chronology_note": "2026-09-30 Window 1617+ guidance doc \u2014 ECU conservation policy + OBSERVE-00 gate + parallel post-live evidence lanes.",
+      "manual_read_summary": "Window 1617+ guidance document establishing the conservation policy lane (DRAFT-00 \u2192 CDL-119 RATIFY-00 \u2192 OBSERVE-00-FIX1 \u2192 OBSERVE-00), passive centrality smoke, CapProof/Model Router post-live evidence lanes, and attribution bridge spec lanes.",
+      "node_kind": "spec_doc",
+      "phase_ref": "window_1617_guidance",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_window_1596_1616_handoff_1616_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPERSEDES",
+          "target": "docs/specs/ilc_window_1596_1616_candidate_phase_grouping_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_SPEC",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.4.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "REFERENCES_SPEC",
+        "SOURCE_TREE_MEMBER",
+        "SUPERSEDES"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_window_1617_tbd_candidate_phase_grouping_v0.1.md"
     }
   ],
   "annotations": [
