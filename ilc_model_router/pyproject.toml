@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ilc-model-router"
+version = "0.1.0"
+description = "Local-first ILC Model Router sidecar receipts"
+requires-python = ">=3.10"
+license = "AGPL-3.0-only"
+dependencies = [
+    "ilc-core>=0.4.31",
+    "lmdb>=2.2.0",
+]
+
+[tool.setuptools]
+packages = ["ilc_model_router"]
+
+[tool.setuptools.package-dir]
+ilc_model_router = "."

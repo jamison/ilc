@@ -1499,6 +1499,289 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1611_harness_sidecar_05_fix1_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1612_model_router_receipt_schema",
+      "chronology_note": "2026-09-29 Phase 1612 - Model Router Receipt Schema.",
+      "manual_read_summary": "Phase prompt hardened for live Phase 1611 predecessor token, ilc_model_router package deliverable, ilc-core>=0.4.31 dependency floor, in-transaction nullifier collision check, monkeypatched epoch-cap test, and package/non-vendoring verification.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "1612",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "GOVERNS_IMPLEMENTATION_OF",
+          "target": "ilc_model_router/receipt_schema.py"
+        },
+        {
+          "edge_type": "GOVERNS_IMPLEMENTATION_OF",
+          "target": "ilc_model_router/receipt_store.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS_IMPLEMENTATION_OF",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1612_model_router_receipt_schema",
+      "chronology_note": "2026-09-29 Phase 1612 - Model Router Receipt Schema.",
+      "manual_read_summary": "Cross-phase hardening correction: predecessor prose now requires the actual Phase 1612 output token model_router_receipts_committed_phase_1612.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "1612",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "docs/phases/phase_1612_model_router_receipt_schema_walkthrough.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_1613_g10_model_router_provider_adapters.md"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1612_model_router_receipt_schema",
+      "chronology_note": "2026-09-29 Phase 1612 - Model Router Receipt Schema.",
+      "manual_read_summary": "Model Router package entrypoint exports the receipt schema and LMDB store API introduced by Phase 1612.",
+      "node_kind": "runtime_source",
+      "phase_ref": "1612",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EXPORTS",
+          "target": "ilc_model_router/receipt_schema.py"
+        },
+        {
+          "edge_type": "EXPORTS",
+          "target": "ilc_model_router/receipt_store.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EXPORTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_model_router/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1612_model_router_receipt_schema",
+      "chronology_note": "2026-09-29 Phase 1612 - Model Router Receipt Schema.",
+      "manual_read_summary": "Separate ilc-model-router package metadata with live ilc-core>=0.4.31 dependency floor and explicit nested package-dir mapping; no vendored ilc_core.",
+      "node_kind": "package_metadata",
+      "phase_ref": "1612",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DECLARES_PACKAGE_FOR",
+          "target": "ilc_model_router/__init__.py"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "pyproject.toml"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DECLARES_PACKAGE_FOR",
+        "DEPENDS_ON",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_model_router/pyproject.toml"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1612_model_router_receipt_schema",
+      "chronology_note": "2026-09-29 Phase 1612 - Model Router Receipt Schema.",
+      "manual_read_summary": "Defines RouterReceipt and RouterCompanionRecord, composing HARNESS-SIDECAR-05 model_inference receipts with local-only companion metadata and no raw prompt/completion persistence.",
+      "node_kind": "runtime_source",
+      "phase_ref": "1612",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        },
+        {
+          "edge_type": "DEPENDS_ON",
+          "target": "ilc_core/sidecars/execution_receipt.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DEPENDS_ON",
+        "IMPLEMENTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_model_router/receipt_schema.py"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1612_model_router_receipt_schema",
+      "chronology_note": "2026-09-29 Phase 1612 - Model Router Receipt Schema.",
+      "manual_read_summary": "Implements atomic LMDB storage for router receipts, companion metadata, token index, and replay nullifiers with in-transaction collision checks.",
+      "node_kind": "runtime_source",
+      "phase_ref": "1612",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        },
+        {
+          "edge_type": "PERSISTS",
+          "target": "ilc_model_router/receipt_schema.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "PERSISTS",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_model_router/receipt_store.py"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1612_model_router_receipt_schema",
+      "chronology_note": "2026-09-29 Phase 1612 - Model Router Receipt Schema.",
+      "manual_read_summary": "Regression tests for router receipt schema validation, companion metadata, local_only consent default, nullifier collision fail-closed behavior, epoch cap, and LMDB round-trip lookup.",
+      "node_kind": "test_file",
+      "phase_ref": "1612",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_model_router/receipt_schema.py"
+        },
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_model_router/receipt_store.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "VERIFIES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_phase_1612_model_router_receipts.py"
+    },
+    {
+      "annotation_batch": "manual_batch_170_phase_1612_model_router_receipt_schema",
+      "chronology_note": "2026-09-29 Phase 1612 - Model Router Receipt Schema.",
+      "manual_read_summary": "Walkthrough records Phase 1612 prompt hardening, source reads, implementation, verification outputs, package build smoke, post-execution audit, non-claims, and Phase 1613 frontier.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "1612",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_1612_g10_model_router_receipt_schema.md"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_model_router/receipt_schema.py"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_model_router/receipt_store.py"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "SUMMARIZES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_1612_model_router_receipt_schema_walkthrough.md"
     }
   ],
   "annotations": [
