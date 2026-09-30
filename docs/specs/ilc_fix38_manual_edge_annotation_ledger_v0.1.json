@@ -2459,6 +2459,47 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_ecu_monthly_close_conservation_policy_ratify_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_176_gap_observe_00_fix1",
+      "chronology_note": "2026-09-30 GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00-FIX1 walkthrough - verification outputs for OBSERVE-00 prompt hardening.",
+      "manual_read_summary": "Walkthrough records FIX1 verification command outputs, prompt validator result, centrality verdict token observed as missing, no ilc_core mutation, Fix38 ledger coverage, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00-FIX1",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_monthly_issuance_close_observe_00_g10_fix1_conservation_gate_hardening.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_first_monthly_issuance_close_observe_00_g10_first_monthly_close_settlement.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "DOCUMENTS_PHASE",
+          "target": "GAP-FIRST-MONTHLY-ISSUANCE-CLOSE-OBSERVE-00-FIX1"
+        },
+        {
+          "edge_type": "EMITS_TOKEN",
+          "target": "observe_00_conservation_hardening_complete_GAP_FIRST_MONTHLY_ISSUANCE_CLOSE_OBSERVE_00_FIX1"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "DOCUMENTS_PHASE",
+        "EMITS_TOKEN",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_first_monthly_issuance_close_observe_00_fix1_walkthrough.md"
     }
   ],
   "annotations": [
