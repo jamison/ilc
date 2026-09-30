@@ -87384,6 +87384,116 @@
         "EVIDENCES",
         "REFERENCES_AUTHORITY"
       ]
+    },
+    {
+      "annotation_batch": "manual_batch_158_phase_GAP_REFUTATION_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-REFUTATION-BRIDGE-00 prompt hardened/executed as a non-sensitive spec-only attribution bridge phase.",
+      "manual_read_summary": "Phase prompt for the refutation attribution bridge spec; hardened to correct the cap-blocked residual authority chain from CDL-115 to CDL-029/Phase 1351a and to preserve the direct CDL-083 refutation payout boundary.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_refutation_bridge_00_g10_refutation_attribution_spec.md",
+      "recommended_graph_action": "support_only",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:1599"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:083"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:029"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:1351a"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:114"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_158_phase_GAP_REFUTATION_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-REFUTATION-BRIDGE-00 publishes the refutation attribution bridge spec.",
+      "manual_read_summary": "Spec-only bridge document for future REFUTATION submission-to-attribution implementation. It records direct CDL-083 upheld-refutation payout semantics, Phase 1599 settlement tests, CDL-029/Phase 1351a residual route interaction, CDL-114 boundary, CDL-115 non-authority, and implementation obligations.",
+      "repo_path": "docs/specs/ilc_refutation_attribution_bridge_spec_GAP_REFUTATION_BRIDGE_00_v0.1.md",
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_083_h_con_02_panel_quorum_ejected_stake_opening_1103_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_1351a_cdl_029_amendment_post_theta_hard_dust_routing_walkthrough.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_114_sybil_diversity_backward_attribution_guard_v0.1.md"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/phases/phase_1599_ecu_edge_coverage_weight_params_fix_walkthrough.md"
+        },
+        {
+          "edge_type": "CONSTRAINS_FUTURE_PHASE",
+          "target": "phase:GAP-REFUTATION-BRIDGE-IMPLEMENTATION-TBD"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:refutation_bridge_spec_complete_GAP_REFUTATION_BRIDGE_00"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM",
+        "CONSTRAINS_FUTURE_PHASE",
+        "EVIDENCES"
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_158_phase_GAP_REFUTATION_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-REFUTATION-BRIDGE-00 walkthrough records execution evidence, verification commands, graph-intake disposition, and non-claims.",
+      "manual_read_summary": "Walkthrough for the non-sensitive refutation attribution bridge spec phase. Records prompt validation, authority-chain correction, source reads, token checks, absence of REFUTATION bridge references in attribution_batch_bridge.py, Phase 1599 regression output, and no-runtime-mutation boundary.",
+      "repo_path": "docs/phases/phase_gap_refutation_bridge_00_walkthrough.md",
+      "recommended_graph_action": "support_only",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:refutation_bridge_spec_complete_GAP_REFUTATION_BRIDGE_00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_refutation_attribution_bridge_spec_GAP_REFUTATION_BRIDGE_00_v0.1.md"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY"
+      ]
     }
   ],
   "boundary": {
