@@ -218,16 +218,11 @@ def _require_werner_pressure(value: Any) -> Decimal | None:
             "werner_raw_pressure_must_be_exact_decimal",
             "Werner pressure must be exact",
         ) from exc
-    if not pressure.is_finite():
-        raise AttributionBatchBridgeError(
-            "werner_raw_pressure_must_be_finite",
-            "Werner pressure must be finite",
-        )
-    if pressure < Decimal("0"):
-        raise AttributionBatchBridgeError(
-            "werner_raw_pressure_must_be_non_negative",
-            "Werner pressure must be non-negative",
-        )
+    if not pressure.is_finite() or pressure < Decimal("0"):
+        # CDL-109 treats optional unusable Werner context as absent context,
+        # not as an attribution-batch blocker. Binary64/type errors still fail
+        # closed above because they indicate non-canonical evidence encoding.
+        return None
     return pressure
 
 
