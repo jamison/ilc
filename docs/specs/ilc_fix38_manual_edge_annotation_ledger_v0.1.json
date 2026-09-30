@@ -87494,6 +87494,112 @@
         "EVIDENCES",
         "REFERENCES_AUTHORITY"
       ]
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_GAP_PROVENANCE_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-PROVENANCE-BRIDGE-00 prompt executed as a non-sensitive spec-only attribution bridge phase.",
+      "manual_read_summary": "Phase prompt for the provenance attribution bridge spec; requires live CDL-084 provenance semantics, Phase 1126 alpha lock, Phase 1602 source_refs bridge precedent, and GAP-ECU-04b extension-point reads.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_provenance_bridge_00_g10_provenance_attribution_spec.md",
+      "recommended_graph_action": "support_only",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:1599"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:1602"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:084"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:114"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_GAP_PROVENANCE_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-PROVENANCE-BRIDGE-00 publishes the provenance attribution bridge spec.",
+      "manual_read_summary": "Spec-only bridge document for future PROVENANCE submission-to-attribution implementation. It records live CDL-084 semantics, Phase 1126 alpha lock, provenance_chain schema, input-vs-settlement bounds, Phase 1602 source_refs precedent, CDL-114 boundary, GAP-ECU-04b extension point, and implementation obligations.",
+      "repo_path": "docs/specs/ilc_provenance_attribution_bridge_spec_GAP_PROVENANCE_BRIDGE_00_v0.1.md",
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_084_provenance_chain_attribution_opening_1111_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/phases/phase_1602_source_refs_attribution_bridge_walkthrough.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_114_sybil_diversity_backward_attribution_guard_v0.1.md"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/phases/phase_1599_ecu_edge_coverage_weight_params_fix_walkthrough.md"
+        },
+        {
+          "edge_type": "CONSTRAINS_FUTURE_PHASE",
+          "target": "phase:GAP-PROVENANCE-BRIDGE-IMPLEMENTATION-TBD"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:provenance_bridge_spec_complete_GAP_PROVENANCE_BRIDGE_00"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM",
+        "CONSTRAINS_FUTURE_PHASE",
+        "EVIDENCES"
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_159_phase_GAP_PROVENANCE_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-PROVENANCE-BRIDGE-00 walkthrough records execution evidence, verification commands, graph-intake disposition, and non-claims.",
+      "manual_read_summary": "Walkthrough for the non-sensitive provenance attribution bridge spec phase. Records prompt validation, live alpha correction, source reads, token checks, GAP-ECU-04b extension point, provenance constant checks, Phase 1599 and Phase 1602 focused regressions, and no-runtime-mutation boundary.",
+      "repo_path": "docs/phases/phase_gap_provenance_bridge_00_walkthrough.md",
+      "recommended_graph_action": "support_only",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:provenance_bridge_spec_complete_GAP_PROVENANCE_BRIDGE_00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_provenance_attribution_bridge_spec_GAP_PROVENANCE_BRIDGE_00_v0.1.md"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY"
+      ]
     }
   ],
   "boundary": {
