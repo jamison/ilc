@@ -10,6 +10,7 @@ from decimal import Decimal
 from typing import Any
 
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
+CAPPROOF_MAX_METRIC_VALUE = Decimal("1E+18")
 
 
 class CapProofValidationError(ValueError):
@@ -87,6 +88,11 @@ def _require_decimal_metric(value: Decimal, field_name: str) -> None:
         raise CapProofValidationError(
             f"capproof_{field_name}_must_be_nonnegative",
             f"{field_name} must be non-negative",
+        )
+    if value > CAPPROOF_MAX_METRIC_VALUE:
+        raise CapProofValidationError(
+            f"capproof_{field_name}_exceeds_maximum",
+            f"{field_name} exceeds maximum CapProof metric value",
         )
 
 

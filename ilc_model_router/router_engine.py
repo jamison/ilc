@@ -66,23 +66,27 @@ class RouterEngine:
         )
         reserve_router_nullifier(self._store_env, nullifier)
         try:
-            response = self._adapter.route(request)
+            response = self._adapter.route(request, timeout=self._timeout)
+        except KeyboardInterrupt:
+            # Keep the reserved nullifier from remaining pending during operator interrupts.
+            receipt = _build_router_receipt(
+                request,
+                _failure_response("provider_adapter_interrupted"),
+            )
+            finalize_reserved_router_receipt(self._store_env, receipt, nullifier)
+            raise
+        except SystemExit:
+            # Preserve process-exit semantics after committing the local failure receipt.
+            receipt = _build_router_receipt(
+                request,
+                _failure_response("provider_adapter_system_exit"),
+            )
+            finalize_reserved_router_receipt(self._store_env, receipt, nullifier)
+            raise
         except Exception:
-            response = ProviderResponse(
-                status="failure",
-                content="",
-                error_token="provider_adapter_exception",
-                token_counts_input=0,
-                token_counts_output=0,
-            )
+            response = _failure_response("provider_adapter_exception")
         if not isinstance(response, ProviderResponse):
-            response = ProviderResponse(
-                status="failure",
-                content="",
-                error_token="provider_response_invalid",
-                token_counts_input=0,
-                token_counts_output=0,
-            )
+            response = _failure_response("provider_response_invalid")
         receipt = _build_router_receipt(request, response)
         finalize_reserved_router_receipt(self._store_env, receipt, nullifier)
         return receipt
@@ -120,6 +124,16 @@ def _build_outputs_hash(response: ProviderResponse) -> str:
         "token_counts_output": response.token_counts_output,
     }
     return hashlib.sha256(_canonical_json_bytes(payload)).hexdigest()
+
+
+def _failure_response(error_token: str) -> ProviderResponse:
+    return ProviderResponse(
+        status="failure",
+        content="",
+        error_token=error_token,
+        token_counts_input=0,
+        token_counts_output=0,
+    )
 
 
 def _build_router_receipt(request: RouterRequest, response: ProviderResponse) -> RouterReceipt:

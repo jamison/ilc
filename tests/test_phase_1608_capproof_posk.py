@@ -5,6 +5,7 @@ import pytest
 
 from ilc_core.capproof.graph_probe_posk import (
     POSK_MAX_TRAVERSAL_NODES,
+    POSK_MAX_REPLAY_LEDGER_ENTRIES,
     PoSKError,
     PoSKInput,
     PoSKProof,
@@ -181,6 +182,21 @@ def test_replay_ledger_rejects_duplicate_epoch_commitment() -> None:
     _assert_token(excinfo, "posk_replay_detected_phase_1608")
 
 
+def test_replay_ledger_accepts_final_slot_then_rejects_full_ledger() -> None:
+    proof = build_posk_proof(_inp())
+    entries = tuple((7, f"{index:064x}") for index in range(POSK_MAX_REPLAY_LEDGER_ENTRIES - 1))
+    ledger = PoSKReplayLedger(entries=entries)
+
+    full = record_posk_replay_or_raise(ledger, proof)
+    assert len(full.entries) == POSK_MAX_REPLAY_LEDGER_ENTRIES
+
+    next_proof = build_posk_proof(_inp(salt=_OTHER_SALT))
+    with pytest.raises(PoSKError) as excinfo:
+        record_posk_replay_or_raise(full, next_proof)
+
+    _assert_token(excinfo, "posk_replay_ledger_exceeds_max_entries")
+
+
 def test_graph_root_hash_changes_challenge_and_commitment() -> None:
     first = build_posk_proof(_inp(root=_ROOT))
     second = build_posk_proof(_inp(root=_OTHER_ROOT))
@@ -191,10 +207,25 @@ def test_graph_root_hash_changes_challenge_and_commitment() -> None:
 
 def test_verifier_rejects_tampered_commitment() -> None:
     proof = build_posk_proof(_inp())
-    tampered = replace(proof, proof_commitment="0" * 64)
 
     with pytest.raises(PoSKError) as excinfo:
-        verify_posk_proof(tampered)
+        replace(proof, proof_commitment="0" * 64)
+
+    _assert_token(excinfo, "posk_commitment_mismatch")
+
+
+def test_posk_proof_constructor_self_verifies_commitment() -> None:
+    proof = build_posk_proof(_inp())
+
+    with pytest.raises(PoSKError) as excinfo:
+        PoSKProof(
+            challenge=proof.challenge,
+            visited_node_ids=proof.visited_node_ids,
+            traversal_edges=proof.traversal_edges,
+            proof_commitment="f" * 64,
+            node_count=proof.node_count,
+            edge_count=proof.edge_count,
+        )
 
     _assert_token(excinfo, "posk_commitment_mismatch")
 

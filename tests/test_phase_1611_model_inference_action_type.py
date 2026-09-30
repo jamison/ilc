@@ -72,6 +72,40 @@ def test_model_inference_store_roundtrip_preserves_action_type(tmp_path: Path) -
     assert store.lookup_by_token(receipt.receipt_token).action_type == "model_inference"
 
 
+def test_execution_receipt_epoch_cap_accepts_final_slot_then_rejects_next(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.sidecars.execution_receipt as execution_receipt
+
+    monkeypatch.setattr(execution_receipt, "MAX_SIDECAR_EXECUTION_RECEIPTS_PER_EPOCH", 3)
+    store = SidecarExecutionReceiptStore(tmp_path / "cap")
+    try:
+        for index in range(3):
+            store.append_receipt(
+                _receipt(
+                    epoch=42,
+                    inputs_hash=_hash({"slot": index}),
+                )
+            )
+
+        with pytest.raises(
+            SidecarExecutionReceiptError,
+            match="sidecar_execution_receipt_epoch_full",
+        ):
+            store.append_receipt(_receipt(epoch=42, inputs_hash=_hash({"slot": "overflow"})))
+    finally:
+        store.env.close()
+
+
+def test_execution_receipt_rejects_uint64_epoch_overflow() -> None:
+    with pytest.raises(
+        SidecarExecutionReceiptError,
+        match="sidecar_execution_receipt_epoch_invalid",
+    ):
+        _receipt(epoch=0x10000000000000000)
+
+
 def test_schema_version_remains_v0_1() -> None:
     assert SIDECAR_EXECUTION_RECEIPT_SCHEMA_VERSION == (
         "sidecar_execution_receipt_GAP_HARNESS_SIDECAR_05.v0.1"

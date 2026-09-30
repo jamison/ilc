@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from ilc_core.sidecars.execution_receipt import SIDECAR_EXECUTION_RECEIPT_SCHEMA_VERSION
+from ilc_core.sidecars.execution_receipt import SidecarExecutionReceiptError
 
 from ilc_model_router import receipt_store
 from ilc_model_router.receipt_schema import (
@@ -159,6 +160,36 @@ def test_epoch_cap_uses_small_monkeypatched_cap(tmp_path: Path, monkeypatch: pyt
                 _receipt(epoch=4, inputs_hash=hashlib.sha256(b"3").hexdigest()),
                 b"\x06" * 32,
             )
+    finally:
+        env.close()
+
+
+def test_epoch_cap_accepts_final_slot_then_rejects_next(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    env = _env(tmp_path)
+    monkeypatch.setattr(receipt_store, "MAX_ROUTER_RECEIPTS_PER_EPOCH", 3)
+    try:
+        for index in range(3):
+            store_router_receipt(
+                env,
+                _receipt(epoch=5, inputs_hash=hashlib.sha256(f"slot-{index}".encode()).hexdigest()),
+                bytes([10 + index]) * 32,
+            )
+
+        with pytest.raises(RouterReceiptError, match="model_router_epoch_cap_exceeded"):
+            store_router_receipt(
+                env,
+                _receipt(epoch=5, inputs_hash=hashlib.sha256(b"overflow").hexdigest()),
+                b"\x20" * 32,
+            )
+    finally:
+        env.close()
+
+
+def test_epoch_rejects_uint64_overflow(tmp_path: Path) -> None:
+    env = _env(tmp_path)
+    try:
+        with pytest.raises(SidecarExecutionReceiptError, match="sidecar_execution_receipt_epoch_invalid"):
+            store_router_receipt(env, _receipt(epoch=0x10000000000000000), b"\x21" * 32)
     finally:
         env.close()
 

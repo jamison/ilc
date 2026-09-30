@@ -51,19 +51,20 @@ class AnthropicAdapter(ProviderAdapter):
             raise ValueError("anthropic_adapter_endpoint_invalid")
         if type(provider_id) is not str or not provider_id:
             raise ValueError("anthropic_adapter_provider_id_invalid")
-        if isinstance(timeout, bool) or not isinstance(timeout, (int, float)):
-            raise ValueError("anthropic_adapter_timeout_invalid")
-        timeout_float = float(timeout)
-        if not math.isfinite(timeout_float) or timeout_float <= 0:
-            raise ValueError("anthropic_adapter_timeout_non_finite_or_non_positive")
         self._api_key = api_key
         self._endpoint = endpoint
         self._provider_id = provider_id
-        self._timeout = timeout_float
+        self._timeout = _require_timeout(timeout)
         self._opener = urllib.request.build_opener(_NoRedirectHandler())
 
-    def route(self, request: RouterRequest) -> ProviderResponse:
+    def route(
+        self,
+        request: RouterRequest,
+        *,
+        timeout: float | None = None,
+    ) -> ProviderResponse:
         try:
+            request_timeout = self._timeout if timeout is None else _require_timeout(timeout)
             payload = self._payload_for_request(request)
             encoded = json.dumps(
                 payload,
@@ -77,7 +78,7 @@ class AnthropicAdapter(ProviderAdapter):
                 headers=self._headers(),
                 method="POST",
             )
-            with self._opener.open(http_request, timeout=self._timeout) as response:
+            with self._opener.open(http_request, timeout=request_timeout) as response:
                 body = response.read(MAX_PROVIDER_RESPONSE_BYTES + 1)
             if len(body) > MAX_PROVIDER_RESPONSE_BYTES:
                 return _failure("provider_response_too_large")
@@ -156,6 +157,15 @@ def _failure(token: str) -> ProviderResponse:
         token_counts_input=0,
         token_counts_output=0,
     )
+
+
+def _require_timeout(value: object) -> float:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError("anthropic_adapter_timeout_invalid")
+    timeout_float = float(value)
+    if not math.isfinite(timeout_float) or timeout_float <= 0:
+        raise ValueError("anthropic_adapter_timeout_non_finite_or_non_positive")
+    return timeout_float
 
 
 def _extract_openrouter_content(decoded: Mapping[str, Any]) -> str | None:

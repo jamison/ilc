@@ -28,7 +28,12 @@ _HEX = frozenset("0123456789abcdef")
 
 
 class _DryRunAdapter(ProviderAdapter):
-    def route(self, request: RouterRequest) -> ProviderResponse:
+    def route(
+        self,
+        request: RouterRequest,
+        *,
+        timeout: float | None = None,
+    ) -> ProviderResponse:
         return ProviderResponse(
             status="success",
             content=f"dry-run response for {request.model_id}",

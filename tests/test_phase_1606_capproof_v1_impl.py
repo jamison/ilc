@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 from ilc_core.capproof import (
+    CAPPROOF_MAX_METRIC_VALUE,
     CAPPROOF_V1_NO_ILC_MINT,
     BandwidthProbe,
     CapabilityVector,
@@ -90,6 +91,20 @@ def test_capability_vector_rejects_negative_metric() -> None:
     assert exc.value.token == "capproof_gemm_gops_must_be_nonnegative"
 
 
+def test_capability_vector_rejects_unbounded_metric() -> None:
+    with pytest.raises(CapProofValidationError) as exc:
+        CapabilityVector(
+            gemm_gops=CAPPROOF_MAX_METRIC_VALUE + Decimal("1"),
+            infer_tps=Decimal("1"),
+            bw_gbps=Decimal("1"),
+            graph_mteps=Decimal("1"),
+            det_pass=True,
+            epoch=1,
+            agent_id=_AGENT_ID,
+        )
+    assert exc.value.token == "capproof_gemm_gops_exceeds_maximum"
+
+
 def test_capability_vector_rejects_non_bool_det_pass() -> None:
     with pytest.raises(CapProofValidationError) as exc:
         CapabilityVector(
@@ -151,23 +166,23 @@ def test_multiplier_clamps_at_lower_bound() -> None:
 
 def test_multiplier_clamps_at_upper_bound_for_extreme_cv() -> None:
     cv = CapabilityVector(
-        gemm_gops=Decimal("1E+999"),
-        infer_tps=Decimal("1E+999"),
-        bw_gbps=Decimal("1E+999"),
-        graph_mteps=Decimal("1E+999"),
+        gemm_gops=CAPPROOF_MAX_METRIC_VALUE,
+        infer_tps=CAPPROOF_MAX_METRIC_VALUE,
+        bw_gbps=CAPPROOF_MAX_METRIC_VALUE,
+        graph_mteps=CAPPROOF_MAX_METRIC_VALUE,
         det_pass=True,
         epoch=1,
         agent_id=_AGENT_ID,
     )
-    assert compute_capproof_multiplier(cv) == Decimal("1.15")
+    assert Decimal("1.149999999999") < compute_capproof_multiplier(cv) <= Decimal("1.15")
 
 
 def test_multiplier_det_pass_false_preserves_lower_bound() -> None:
     cv = CapabilityVector(
-        gemm_gops=Decimal("1E+999"),
-        infer_tps=Decimal("1E+999"),
-        bw_gbps=Decimal("1E+999"),
-        graph_mteps=Decimal("1E+999"),
+        gemm_gops=CAPPROOF_MAX_METRIC_VALUE,
+        infer_tps=CAPPROOF_MAX_METRIC_VALUE,
+        bw_gbps=CAPPROOF_MAX_METRIC_VALUE,
+        graph_mteps=CAPPROOF_MAX_METRIC_VALUE,
         det_pass=False,
         epoch=1,
         agent_id=_AGENT_ID,

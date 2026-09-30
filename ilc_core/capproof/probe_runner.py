@@ -162,6 +162,12 @@ class DeterminismProbe:
     field_name = "det_pass"
 
     def run(self, epoch_salt: str) -> DeterminismProbeResult:
+        """Return the scaffold determinism result.
+
+        Phase 1606 records the digest and keeps `det_pass=True` until a later
+        production probe supplies a real reproducibility check.
+        """
+
         salt = _require_epoch_salt(epoch_salt)
         digest = hashlib.sha256(
             f"ILC_CAPPROOF_DETERMINISM_V1:{salt}".encode("utf-8")
@@ -196,5 +202,7 @@ def _derive_metric(epoch_salt: str, domain: str, scale: Decimal, quantum: Decima
     digest = hashlib.sha256(
         f"ILC_CAPPROOF_PROBE_V1:{domain}:{epoch_salt}".encode("utf-8")
     ).hexdigest()
+    # Phase 1606 probes are deterministic stubs. 64 digest bits are ample for
+    # bounded scaffold jitter; production probes must replace this sampler.
     raw = Decimal(int(digest[:16], 16) % 1000000)
     return (raw / quantum) + scale

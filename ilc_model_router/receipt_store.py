@@ -242,19 +242,29 @@ def _decode_companion(payload: bytes) -> RouterCompanionRecord:
 
 
 def _next_epoch_ordinal(txn: Any, receipts_db: Any, epoch: int) -> int:
-    prefix = _require_epoch(epoch).to_bytes(8, "big", signed=False)
-    ordinal_count = 0
+    normalized_epoch = _require_epoch(epoch)
+    prefix = normalized_epoch.to_bytes(8, "big", signed=False)
     with txn.cursor(db=receipts_db) as cursor:
-        if cursor.set_range(prefix):
-            for key, _value in cursor:
-                if not key.startswith(prefix):
-                    break
-                if len(key) != _RECEIPT_KEY_BYTES:
-                    raise RouterReceiptError("model_router_receipt_key_corrupted")
-                ordinal_count += 1
-    if ordinal_count >= MAX_ROUTER_RECEIPTS_PER_EPOCH:
+        if normalized_epoch < 0xFFFFFFFFFFFFFFFF:
+            upper = (normalized_epoch + 1).to_bytes(8, "big", signed=False)
+            has_candidate = cursor.set_range(upper)
+            if has_candidate:
+                has_candidate = cursor.prev()
+            else:
+                has_candidate = cursor.last()
+        else:
+            has_candidate = cursor.last()
+        if not has_candidate:
+            return 0
+        key = cursor.key()
+        if not key.startswith(prefix):
+            return 0
+        if len(key) != _RECEIPT_KEY_BYTES:
+            raise RouterReceiptError("model_router_receipt_key_corrupted")
+        next_ordinal = int.from_bytes(key[8:], "big") + 1
+    if next_ordinal >= MAX_ROUTER_RECEIPTS_PER_EPOCH:
         raise RouterReceiptError("model_router_epoch_cap_exceeded")
-    return ordinal_count
+    return next_ordinal
 
 
 def _receipt_key(epoch: int, ordinal: int) -> bytes:
@@ -270,7 +280,12 @@ def _receipt_key(epoch: int, ordinal: int) -> bytes:
 
 
 def _require_epoch(value: Any) -> int:
-    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, int)
+        or value < 0
+        or value > 0xFFFFFFFFFFFFFFFF
+    ):
         raise RouterReceiptError("model_router_epoch_invalid")
     return value
 

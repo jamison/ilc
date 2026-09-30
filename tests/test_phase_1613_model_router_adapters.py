@@ -16,6 +16,7 @@ from ilc_model_router.anthropic_adapter import AnthropicAdapter
 from ilc_model_router.receipt_schema import RouterReceiptError
 from ilc_model_router.receipt_store import (
     check_nullifier,
+    list_router_receipts,
     lookup_by_token,
     open_router_receipt_env,
     reserve_router_nullifier,
@@ -34,9 +35,16 @@ class StubAdapter(ProviderAdapter):
     def __init__(self, response: ProviderResponse) -> None:
         self.response = response
         self.calls = 0
+        self.seen_timeout: float | None = None
 
-    def route(self, request: RouterRequest) -> ProviderResponse:
+    def route(
+        self,
+        request: RouterRequest,
+        *,
+        timeout: float | None = None,
+    ) -> ProviderResponse:
         self.calls += 1
+        self.seen_timeout = timeout
         return self.response
 
 
@@ -46,7 +54,12 @@ class ReservationCheckingAdapter(ProviderAdapter):
         self.calls = 0
         self.saw_reserved_nullifier = False
 
-    def route(self, request: RouterRequest) -> ProviderResponse:
+    def route(
+        self,
+        request: RouterRequest,
+        *,
+        timeout: float | None = None,
+    ) -> ProviderResponse:
         self.calls += 1
         nullifier = _build_nullifier(
             ROUTER_DST,
@@ -62,9 +75,24 @@ class RaisingAdapter(ProviderAdapter):
     def __init__(self) -> None:
         self.calls = 0
 
-    def route(self, request: RouterRequest) -> ProviderResponse:
+    def route(
+        self,
+        request: RouterRequest,
+        *,
+        timeout: float | None = None,
+    ) -> ProviderResponse:
         self.calls += 1
         raise RuntimeError("boom")
+
+
+class InterruptingAdapter(ProviderAdapter):
+    def route(
+        self,
+        request: RouterRequest,
+        *,
+        timeout: float | None = None,
+    ) -> ProviderResponse:
+        raise KeyboardInterrupt()
 
 
 def _success_response(content: str = "hello") -> ProviderResponse:
@@ -126,6 +154,29 @@ def test_router_engine_happy_path_stores_receipt(tmp_path: Path) -> None:
         assert lookup_by_token(env, receipt.receipt_token) == receipt
     finally:
         env.close()
+
+
+def test_router_engine_passes_timeout_to_adapter(tmp_path: Path) -> None:
+    env = _env(tmp_path)
+    try:
+        adapter = StubAdapter(_success_response())
+        RouterEngine(adapter, env, timeout=2.5).route(_request())
+
+        assert adapter.seen_timeout == 2.5
+    finally:
+        env.close()
+
+
+def test_router_request_rejects_model_id_too_long_for_receipt_schema() -> None:
+    with pytest.raises(ProviderAdapterError, match="model_router_model_id_invalid"):
+        RouterRequest(
+            model_id="m" * 257,
+            provider="anthropic",
+            messages=({"role": "user", "content": "hello"},),
+            agent_id_hex=AGENT_ID,
+            epoch=7,
+            request_nonce=b"\x01" * 16,
+        )
 
 
 def test_nullifier_collision_rejects_before_second_adapter_call(tmp_path: Path) -> None:
@@ -279,6 +330,24 @@ def test_unexpected_adapter_exception_finalizes_failure_receipt(tmp_path: Path) 
         assert receipt.status == "failure"
         assert receipt.error_token == "provider_adapter_exception"
         assert lookup_by_token(env, receipt.receipt_token) == receipt
+    finally:
+        env.close()
+
+
+def test_keyboard_interrupt_finalizes_failure_receipt_before_reraising(tmp_path: Path) -> None:
+    env = _env(tmp_path)
+    try:
+        request = _request(nonce=b"\x09" * 16)
+        nullifier = _build_nullifier(ROUTER_DST, request.agent_id_hex, request.request_nonce, request.epoch)
+
+        with pytest.raises(KeyboardInterrupt):
+            RouterEngine(InterruptingAdapter(), env).route(request)
+
+        assert check_nullifier(env, nullifier) is True
+        receipts = list_router_receipts(env)
+        assert len(receipts) == 1
+        assert receipts[0].status == "failure"
+        assert receipts[0].error_token == "provider_adapter_interrupted"
     finally:
         env.close()
 

@@ -120,7 +120,9 @@ class PoSKProof:
             self.runtime_version == POSK_RUNTIME_VERSION,
             "posk_runtime_version_mismatch",
         )
-        _require_lower_hex_64(commitment, "posk_commitment_must_be_64_char_hex")
+        expected = _proof_digest(self.challenge, nodes, edges)
+        if commitment != expected:
+            raise PoSKError("posk_commitment_mismatch")
 
 
 @dataclass(frozen=True)
@@ -128,6 +130,7 @@ class PoSKReplayLedger:
     """Append-only bounded replay ledger for `(epoch, proof_commitment)` pairs."""
 
     entries: tuple[tuple[int, str], ...] = field(default_factory=tuple)
+    entry_set: frozenset[tuple[int, str]] = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         if len(self.entries) > POSK_MAX_REPLAY_LEDGER_ENTRIES:
@@ -143,6 +146,7 @@ class PoSKReplayLedger:
             if key in seen:
                 raise PoSKError("posk_replay_ledger_contains_duplicate")
             seen.add(key)
+        object.__setattr__(self, "entry_set", frozenset(seen))
 
 
 def derive_posk_challenge(graph_root_hash: str, epoch_salt: str, epoch: int) -> PoSKChallenge:
@@ -213,7 +217,7 @@ def record_posk_replay_or_raise(
     current = ledger if ledger is not None else PoSKReplayLedger()
     verify_posk_proof(proof)
     key = (proof.challenge.epoch, proof.proof_commitment)
-    if key in current.entries:
+    if key in current.entry_set:
         raise PoSKError("posk_replay_detected_phase_1608")
     if len(current.entries) >= POSK_MAX_REPLAY_LEDGER_ENTRIES:
         raise PoSKError("posk_replay_ledger_exceeds_max_entries")

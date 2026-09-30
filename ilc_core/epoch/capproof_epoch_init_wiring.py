@@ -11,7 +11,7 @@ import hashlib
 import json
 import re
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, localcontext
 
 from ilc_core.capproof.capability_vector import CapabilityVector
 from ilc_core.capproof.multiplier import (
@@ -141,7 +141,7 @@ def step5_conservation_check(
     cap_adjusted_base_ecu_amount: Decimal,
     band_multiplier: Decimal,
 ) -> bool:
-    """Step 5: verify the adjusted base ECU amount exactly matches base * band."""
+    """Step 5: verify adjusted base ECU amount against high-precision base * band."""
 
     base = _require_decimal(base_ecu_amount, "capproof_wiring_base_ecu_amount")
     adjusted = _require_decimal(
@@ -153,7 +153,7 @@ def step5_conservation_check(
         raise CapProofEpochWiringError("capproof_wiring_base_ecu_amount_negative")
     if not (CAPPROOF_BAND_FLOOR <= band <= CAPPROOF_BAND_CEIL):
         raise CapProofEpochWiringError("capproof_conservation_check_failed_band_out_of_range")
-    if adjusted != base * band:
+    if adjusted != _multiply_decimal(base, band):
         raise CapProofEpochWiringError("capproof_conservation_check_failed_amount_mismatch")
     return True
 
@@ -221,7 +221,7 @@ def process_capproof_epoch_init(
     step2_verify_probe(cv)
     potential = step3_update_potential(cv)
     band_multiplier = step4_compute_band_multiplier(cv)
-    adjusted = base * band_multiplier
+    adjusted = _multiply_decimal(base, band_multiplier)
     conservation_ok = step5_conservation_check(base, adjusted, band_multiplier)
     seal_token = step6_seal_epoch(cv.agent_id, normalized_epoch, band_multiplier, adjusted)
     return CapProofEpochInitResult(
@@ -277,6 +277,12 @@ def _clamp_unit(value: Decimal) -> Decimal:
     if normalized > _UNIT_ONE:
         return _UNIT_ONE
     return normalized
+
+
+def _multiply_decimal(left: Decimal, right: Decimal) -> Decimal:
+    with localcontext() as ctx:
+        ctx.prec = 50
+        return left * right
 
 
 def _decimal_text(value: Decimal) -> str:

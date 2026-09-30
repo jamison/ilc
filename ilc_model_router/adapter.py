@@ -14,7 +14,7 @@ PROVIDER_RESPONSE_STATUSES = frozenset({"failure", "partial", "success"})
 MAX_ROUTER_MESSAGES = 64
 MAX_ROUTER_REQUEST_BYTES = 64 * 1024
 MAX_PROVIDER_CONTENT_CHARS = 64 * 1024
-MAX_ROUTER_TEXT_CHARS = 512
+MAX_ROUTER_TEXT_CHARS = 256
 _HEX = frozenset("0123456789abcdef")
 
 
@@ -117,7 +117,12 @@ class ProviderAdapter(ABC):
     """Abstract provider adapter. Concrete adapters must not raise from route()."""
 
     @abstractmethod
-    def route(self, request: RouterRequest) -> ProviderResponse:
+    def route(
+        self,
+        request: RouterRequest,
+        *,
+        timeout: float | None = None,
+    ) -> ProviderResponse:
         """Route a request to the provider and return a receipt-shaped response."""
 
 

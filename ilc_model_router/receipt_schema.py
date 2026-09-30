@@ -11,13 +11,13 @@ from ilc_core.sidecars.execution_receipt import (
     SidecarExecutionReceipt,
 )
 
-MODEL_ROUTER_RECEIPT_SCHEMA_VERSION = "model_router_receipt_phase_1612.v0.1"
+from .adapter import MAX_ROUTER_TEXT_CHARS
+
 MODEL_ROUTER_COMPANION_SCHEMA_VERSION = "ilc_model_router_companion_meta_phase_1610.v0.1"
 MODEL_ROUTER_PACKAGE_NAME = "ilc-model-router"
 MODEL_ROUTER_TOOL_ID = "ilc-model-router-v1"
 CONSENT_STATUSES = frozenset({"local_only", "promoted", "promotion_pending"})
 CAPABILITY_CLASSES = frozenset({"embedding", "inference", "multimodal", None})
-MAX_ROUTER_TEXT_CHARS = 256
 _HEX = frozenset("0123456789abcdef")
 
 
@@ -250,7 +250,6 @@ __all__ = [
     "MAX_ROUTER_TEXT_CHARS",
     "MODEL_ROUTER_COMPANION_SCHEMA_VERSION",
     "MODEL_ROUTER_PACKAGE_NAME",
-    "MODEL_ROUTER_RECEIPT_SCHEMA_VERSION",
     "MODEL_ROUTER_TOOL_ID",
     "RouterCompanionRecord",
     "RouterReceipt",
