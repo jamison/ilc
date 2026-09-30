@@ -10,11 +10,15 @@ import pytest
 
 from ilc_core.consensus.attribution_batch_bridge import (
     AttributionBatchBridgeError,
+    MAX_ATTRIBUTION_EVENT_LOG_RECORDS,
     MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH,
+    MAX_BRIDGE_IDENTIFIER_CHARS,
+    MAX_U64,
     _backward_attribution_batch_root,
     apply_attribution_batch_with_rust,
     build_attribution_batch_from_claims,
 )
+from ilc_core.consensus import attribution_batch_bridge as batch_bridge
 from ilc_core.epoch.ecu_attribution_receipt_store import AttributionOriginAccrualRuntime
 from tools import agent_loop_v1
 from tests.test_agent_loop_v1_runtime import _cdl069_seed, _legacy_seed, _submission, _task
@@ -222,6 +226,33 @@ def test_bridge_rejects_single_attribution_amount_above_rust_u64() -> None:
     assert excinfo.value.token == "claim_amount_micro_ecu_exceeds_u64"
 
 
+def test_bridge_rejects_per_agent_accumulation_above_rust_u64() -> None:
+    per_claim_micro_ecu = (MAX_U64 // 2) + 1
+    per_claim_ecu = Decimal(per_claim_micro_ecu) / Decimal("1000000")
+    claim_payload = {
+        "claims": [
+            {
+                "agent_id": AGENT_A,
+                "amount": str(per_claim_ecu),
+                "claim_id": "claim-half-a",
+                "epoch": 7,
+            },
+            {
+                "agent_id": AGENT_A,
+                "amount": str(per_claim_ecu),
+                "claim_id": "claim-half-b",
+                "epoch": 7,
+            },
+        ],
+        "marker": "agent_loop_claims_ok",
+    }
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(claim_payload)
+
+    assert excinfo.value.token == "agent_micro_ecu_accumulation_exceeds_u64"
+
+
 def test_bridge_rejects_total_attribution_amount_above_rust_u64() -> None:
     claim_payload = {
         "claims": [
@@ -247,6 +278,34 @@ def test_bridge_rejects_total_attribution_amount_above_rust_u64() -> None:
     assert excinfo.value.token == "attribution_batch_total_micro_ecu_exceeds_u64"
 
 
+def test_bridge_rejects_epoch_above_u64_before_backend_overflow() -> None:
+    claim_payload = _simple_claim_payload()
+    claim_payload["claims"][0]["epoch"] = MAX_U64 + 1
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(claim_payload)
+
+    assert excinfo.value.token == "epoch_exceeds_u64"
+
+
+@pytest.mark.parametrize(
+    "claim_id",
+    [
+        " claim-1",
+        "claim-1 ",
+        "x" * (MAX_BRIDGE_IDENTIFIER_CHARS + 1),
+    ],
+)
+def test_bridge_rejects_noncanonical_claim_id(claim_id: str) -> None:
+    claim_payload = _simple_claim_payload()
+    claim_payload["claims"][0]["claim_id"] = claim_id
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(claim_payload)
+
+    assert excinfo.value.token == "claim_id_required"
+
+
 def test_backward_root_requires_canonical_sorted_entries() -> None:
     sorted_entries = [
         {"event_id": "a", "recipient_agent_id": AGENT_A, "upstream_artifact_id": "node-a"},
@@ -259,6 +318,28 @@ def test_backward_root_requires_canonical_sorted_entries() -> None:
         _backward_attribution_batch_root(unsorted_entries)
 
     assert excinfo.value.token == "backward_attribution_entries_must_be_canonical_sorted"
+
+
+def test_attribution_event_log_fails_before_lmdb_record_cap(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    context = _simple_backward_context()
+    context["nodes"]["upstream-b"] = _backward_node(AGENT_B)
+    context["edges"].append(_backward_edge("source", "upstream-b"))
+    monkeypatch.setattr(
+        batch_bridge,
+        "MAX_ATTRIBUTION_EVENT_LOG_RECORDS",
+        1,
+    )
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _simple_claim_payload(),
+            backward_attribution_graph_context=context,
+        )
+
+    assert excinfo.value.token == "attribution_event_log_record_count_exceeds_maximum"
+    assert MAX_ATTRIBUTION_EVENT_LOG_RECORDS == 4096
 
 
 def test_attribution_event_log_retry_does_not_silently_overwrite(tmp_path: Path) -> None:

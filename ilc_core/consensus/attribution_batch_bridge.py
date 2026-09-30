@@ -31,7 +31,7 @@ import re
 import shutil
 import subprocess
 import tempfile
-from decimal import Decimal, InvalidOperation, ROUND_FLOOR
+from decimal import Decimal, InvalidOperation, ROUND_FLOOR, localcontext
 from pathlib import Path
 from typing import Any
 
@@ -39,6 +39,7 @@ from ilc_core.consensus.binary_paths import installed_consensus_binary_path
 from ilc_core.encoding.cidv1 import parse_nodeid_strict
 from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 from ilc_core.economics.backward_attribution_traversal import (
+    BACKWARD_ATTRIBUTION_ALLOWED_EDGE_TYPES,
     BACKWARD_ATTRIBUTION_BACKWARD_POOL_SHARE_BETA,
     BACKWARD_ATTRIBUTION_CDL_VERSION,
     BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES,
@@ -71,6 +72,8 @@ DEFAULT_ATTRIBUTION_BATCH_INGEST_BINARY = (
 MAX_CLAIMS_PER_BATCH = 10_000
 MAX_BACKWARD_ATTRIBUTION_EVENTS_PER_BATCH = 1_000
 MAX_WERNER_CONTEXTS_PER_BATCH = BACKWARD_ATTRIBUTION_MAX_TRAVERSAL_NODES
+MAX_ATTRIBUTION_EVENT_LOG_RECORDS = 4096
+MAX_BRIDGE_IDENTIFIER_CHARS = 512
 MAX_U64 = 18_446_744_073_709_551_615
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _SHA256_HEX_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -145,6 +148,11 @@ def _require_claims(value: Any) -> list[dict[str, Any]]:
 def _require_epoch(value: Any) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise AttributionBatchBridgeError("claim_epoch_must_be_non_negative_int", "claim epoch must be >= 0")
+    if value > MAX_U64:
+        raise AttributionBatchBridgeError(
+            "epoch_exceeds_u64",
+            "epoch exceeds Rust u64 boundary",
+        )
     return value
 
 
@@ -199,8 +207,13 @@ def _require_decimal_amount(value: Any) -> Decimal:
 
 
 def _require_werner_pressure(value: Any) -> Decimal | None:
+    pressure, _unusable = _coerce_optional_werner_pressure(value)
+    return pressure
+
+
+def _coerce_optional_werner_pressure(value: Any) -> tuple[Decimal | None, bool]:
     if value is None:
-        return None
+        return None, False
     if isinstance(value, (bool, float)):
         raise AttributionBatchBridgeError(
             "werner_raw_pressure_must_be_exact_decimal",
@@ -222,13 +235,16 @@ def _require_werner_pressure(value: Any) -> Decimal | None:
         # CDL-109 treats optional unusable Werner context as absent context,
         # not as an attribution-batch blocker. Binary64/type errors still fail
         # closed above because they indicate non-canonical evidence encoding.
-        return None
-    return pressure
+        return None, True
+    return pressure, False
 
 
 def _amount_to_micro_ecu(amount: Decimal) -> tuple[int, Decimal]:
-    scaled = amount * MICRO_ECU_PER_ECU
-    floored = scaled.to_integral_value(rounding=ROUND_FLOOR)
+    with localcontext() as context:
+        context.prec = 50
+        scaled = amount * MICRO_ECU_PER_ECU
+        floored = scaled.to_integral_value(rounding=ROUND_FLOOR)
+        dust = (scaled - floored) / MICRO_ECU_PER_ECU
     if floored <= 0:
         raise AttributionBatchBridgeError(
             "claim_amount_below_one_micro_ecu",
@@ -239,7 +255,6 @@ def _amount_to_micro_ecu(amount: Decimal) -> tuple[int, Decimal]:
             "claim_amount_micro_ecu_exceeds_u64",
             "claim amount exceeds Rust u64 micro-ECU boundary",
         )
-    dust = (scaled - floored) / MICRO_ECU_PER_ECU
     return int(floored), dust
 
 
@@ -262,6 +277,11 @@ def _append_amount(
         },
     )
     entry["amount_micro_ecu"] += micro_amount
+    if entry["amount_micro_ecu"] > MAX_U64:
+        raise AttributionBatchBridgeError(
+            "agent_micro_ecu_accumulation_exceeds_u64",
+            "agent attribution total exceeds Rust u64 micro-ECU boundary",
+        )
     entry["source_amount_ecu"] += amount
     entry["dust_ecu"] += dust
     entry["source_claim_ids"].append(source_id)
@@ -295,9 +315,9 @@ def _require_backward_graph_context(value: Any) -> dict[str, Any]:
 
 def _require_werner_context_by_agent_id(
     value: Any,
-) -> dict[str, WernerAttributionContext]:
+) -> tuple[dict[str, WernerAttributionContext], int]:
     if value is None:
-        return {}
+        return {}, 0
     if not isinstance(value, dict):
         raise AttributionBatchBridgeError(
             "werner_context_by_agent_id_must_be_object",
@@ -309,6 +329,7 @@ def _require_werner_context_by_agent_id(
             "Werner context map contains too many agent entries",
         )
     contexts: dict[str, WernerAttributionContext] = {}
+    unusable_count = 0
     for raw_agent_id, raw_context in value.items():
         agent_id = _require_agent_id(raw_agent_id)
         context = _require_dict("werner_context", raw_context)
@@ -318,14 +339,17 @@ def _require_werner_context_by_agent_id(
                 "werner_context_agent_id_mismatch",
                 "Werner context agent_id must match its map key",
             )
+        raw_pressure, pressure_unusable = _coerce_optional_werner_pressure(
+            context.get("raw_werner_pressure"),
+        )
+        if pressure_unusable:
+            unusable_count += 1
         contexts[agent_id] = WernerAttributionContext(
             agent_id=agent_id,
             epoch=_require_epoch(context.get("epoch")),
-            raw_werner_pressure=_require_werner_pressure(
-                context.get("raw_werner_pressure"),
-            ),
+            raw_werner_pressure=raw_pressure,
         )
-    return contexts
+    return contexts, unusable_count
 
 
 def _require_backward_event(value: Any) -> dict[str, Any]:
@@ -505,7 +529,21 @@ def _require_non_empty_bridge_string(value: Any, token: str) -> str:
         raise AttributionBatchBridgeError(token, token)
     if value != value.strip():
         raise AttributionBatchBridgeError(token, token)
+    if len(value) > MAX_BRIDGE_IDENTIFIER_CHARS:
+        raise AttributionBatchBridgeError(token, token)
     return value
+
+
+def _append_attribution_event_log(
+    attribution_event_log: list[dict[str, Any]],
+    record: dict[str, Any],
+) -> None:
+    if len(attribution_event_log) >= MAX_ATTRIBUTION_EVENT_LOG_RECORDS:
+        raise AttributionBatchBridgeError(
+            "attribution_event_log_record_count_exceeds_maximum",
+            "attribution event log exceeds bridge memory and LMDB audit bounds",
+        )
+    attribution_event_log.append(record)
 
 
 def _attribution_event_log_key(
@@ -536,9 +574,12 @@ def _source_ref_traversal_edges(
     selected_targets: set[str] = set()
     for raw_edge in edges:
         edge = _require_dict("backward_edge", raw_edge)
+        edge_type = edge.get("edge_type")
+        normalized_edge_type = edge_type.upper() if isinstance(edge_type, str) else ""
         if (
             edge.get("source_node_id") == source_node_id
             and edge.get("target_node_id") in allowed_targets
+            and normalized_edge_type in BACKWARD_ATTRIBUTION_ALLOWED_EDGE_TYPES
         ):
             selected.append(dict(edge))
             selected_targets.add(edge["target_node_id"])
@@ -654,7 +695,7 @@ def build_attribution_batch_from_claims(
         "agent_reputation_root_must_be_64_lower_hex",
     )
 
-    selected_epoch: int | None = epoch
+    selected_epoch: int | None = _require_epoch(epoch) if epoch is not None else None
     aggregated: dict[str, dict[str, Any]] = {}
     seen_claim_ids: set[str] = set()
     claim_agent_ids: set[str] = set()
@@ -674,7 +715,12 @@ def build_attribution_batch_from_claims(
         amount = _require_decimal_amount(claim.get("amount"))
         total_source += amount
         claim_id = claim.get("claim_id")
-        if not isinstance(claim_id, str) or not claim_id:
+        if (
+            not isinstance(claim_id, str)
+            or not claim_id
+            or claim_id != claim_id.strip()
+            or len(claim_id) > MAX_BRIDGE_IDENTIFIER_CHARS
+        ):
             raise AttributionBatchBridgeError("claim_id_required", "each claim must have a claim_id")
         if claim_id in seen_claim_ids:
             raise AttributionBatchBridgeError(
@@ -701,7 +747,10 @@ def build_attribution_batch_from_claims(
     if backward_attribution_graph_context is not None:
         context = _require_backward_graph_context(backward_attribution_graph_context)
         normalized_nodes = _normalize_backward_nodes(context["nodes"])
-        werner_contexts = _require_werner_context_by_agent_id(
+        (
+            werner_contexts,
+            werner_context_unusable_count,
+        ) = _require_werner_context_by_agent_id(
             context.get("werner_context_by_agent_id"),
         )
         settled_ids = frozenset(cdl084_settled_event_ids or ())
@@ -726,6 +775,12 @@ def build_attribution_batch_from_claims(
                     "backward attribution events must share the batch epoch",
                 )
             selected_epoch = event_epoch
+            for werner_context in werner_contexts.values():
+                if werner_context.epoch != event_epoch:
+                    raise AttributionBatchBridgeError(
+                        "werner_context_epoch_must_match_event_epoch",
+                        "Werner context epoch must match the attribution event epoch",
+                    )
             source_node_id = _require_non_empty_bridge_string(
                 event["source_node_id"],
                 "backward_source_node_id_required",
@@ -766,7 +821,8 @@ def build_attribution_batch_from_claims(
                     total_backward_unissued += (
                         event_budget * BACKWARD_ATTRIBUTION_BACKWARD_POOL_SHARE_BETA
                     )
-                    attribution_event_log.append(
+                    _append_attribution_event_log(
+                        attribution_event_log,
                         {
                             "cdl114_sybil_diversity_guard_applied": True,
                             "credit_amount": "0",
@@ -801,7 +857,7 @@ def build_attribution_batch_from_claims(
                     "lmdb_key_hex": log_key,
                     "source_node_cid": source_node_id,
                 }
-                attribution_event_log.append(log_record)
+                _append_attribution_event_log(attribution_event_log, log_record)
                 continue
 
             if source_ref_node_ids is not None:
@@ -915,7 +971,7 @@ def build_attribution_batch_from_claims(
                         }
                     )
                 _require_agent_id(final_credit.recipient_agent_id)
-                attribution_event_log.append(entry)
+                _append_attribution_event_log(attribution_event_log, entry)
                 backward_entries.append(entry)
                 if final_credit.final_credit_ecu > Decimal("0"):
                     _, dust = _append_amount(
@@ -990,7 +1046,10 @@ def build_attribution_batch_from_claims(
                     _backward_attribution_batch_root(sorted_backward_entries)
                 ),
                 "backward_attribution_batch_root_algorithm": (
-                    "sha256_sorted_backward_attribution_entries_v1"
+                    "sha256_sorted_backward_attribution_entries_v1_decimal_to_canonical_string_v1"
+                ),
+                "backward_attribution_batch_root_serialization_contract": (
+                    "decimal_to_canonical_string_v1"
                 ),
                 "backward_attribution_marker": (
                     "backward_attribution_runtime_wired_GAP_ECU_04b"
@@ -1018,6 +1077,10 @@ def build_attribution_batch_from_claims(
                 "werner_attribution_bridge_version": WERNER_BRIDGE_VERSION,
                 "werner_cdl_authority_version": WERNER_CDL_109_VERSION,
                 "werner_context_count": len(werner_contexts),
+                "werner_context_unusable_count": werner_context_unusable_count,
+                "werner_context_usable_count": (
+                    len(werner_contexts) - werner_context_unusable_count
+                ),
             }
         )
         if source_refs_guard_event_count:

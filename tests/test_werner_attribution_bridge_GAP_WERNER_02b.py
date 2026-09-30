@@ -452,6 +452,28 @@ def test_bridge_invalid_optional_werner_pressure_fails_closed() -> None:
         assert entries[AGENT_A]["werner_context_present"] is False
         assert entries[AGENT_A]["werner_multiplier"] == "1"
         assert entries[AGENT_A]["werner_flow_budget"] == "0"
+        assert batch["werner_context_count"] == 1
+        assert batch["werner_context_usable_count"] == 0
+        assert batch["werner_context_unusable_count"] == 1
+
+
+def test_bridge_rejects_werner_context_epoch_mismatch_with_stable_token() -> None:
+    context = _graph_context()
+    context["werner_context_by_agent_id"] = {
+        AGENT_A: {
+            "agent_id": AGENT_A,
+            "epoch": 8,
+            "raw_werner_pressure": "0.10",
+        }
+    }
+
+    with pytest.raises(AttributionBatchBridgeError) as excinfo:
+        build_attribution_batch_from_claims(
+            _claim_payload(),
+            backward_attribution_graph_context=context,
+        )
+
+    assert excinfo.value.token == "werner_context_epoch_must_match_event_epoch"
 
 
 def test_bridge_rejects_werner_context_agent_mismatch() -> None:

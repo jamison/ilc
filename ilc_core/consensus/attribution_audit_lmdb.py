@@ -14,6 +14,7 @@ ATTRIBUTION_AUDIT_LMDB_VERSION = "attribution_audit_lmdb_phase_1594.v0.1"
 DEFAULT_ATTRIBUTION_AUDIT_MAP_SIZE_BYTES = 128 * 1024 * 1024
 MAX_ATTRIBUTION_AUDIT_EVENT_COUNT = 4096
 MAX_ATTRIBUTION_AUDIT_EVENT_BYTES = 256 * 1024
+MAX_ATTRIBUTION_AUDIT_EPOCH = 18_446_744_073_709_551_615
 ATTR_EVENTS_DB_NAME = b"attr_events"
 EPOCH_INDEX_DB_NAME = b"epoch_index"
 ATTR_EVENT_KEY_PREFIX = b"attr_event:"
@@ -23,6 +24,8 @@ EPOCH_INDEX_KEY_PREFIX = b"epoch:"
 def _require_epoch(epoch: Any) -> int:
     if isinstance(epoch, bool) or not isinstance(epoch, int) or epoch < 0:
         raise ValueError("attribution_audit_epoch_invalid")
+    if epoch > MAX_ATTRIBUTION_AUDIT_EPOCH:
+        raise ValueError("attribution_audit_epoch_exceeds_u64")
     return epoch
 
 
@@ -182,4 +185,5 @@ __all__ = [
     "EPOCH_INDEX_DB_NAME",
     "MAX_ATTRIBUTION_AUDIT_EVENT_BYTES",
     "MAX_ATTRIBUTION_AUDIT_EVENT_COUNT",
+    "MAX_ATTRIBUTION_AUDIT_EPOCH",
 ]

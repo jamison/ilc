@@ -262,6 +262,28 @@ def test_genesis_single_creator_exemption_requires_durable_receipt_token() -> No
     )
 
 
+def test_genesis_single_creator_exemption_blocks_zero_distinct_external_creators() -> None:
+    own_ref = _node_id("submitter-own-genesis-ref")
+    batch = build_attribution_batch_from_claims(
+        _claim_payload(),
+        backward_attribution_graph_context=_source_refs_context(
+            source_refs=[own_ref],
+            nodes={own_ref: _node(SUBMITTER)},
+            event_overrides={
+                "genesis_single_creator_exemption": True,
+                "genesis_single_creator_exemption_receipt_token": (
+                    "public_rc_launch_anchor:"
+                    "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                ),
+            },
+        ),
+    )
+
+    assert batch["source_refs_cdl114_guard_block_count"] == 1
+    assert batch["backward_attribution_entry_count"] == 0
+    assert batch["attribution_event_log"][0]["distinct_source_ref_creator_count"] == 0
+
+
 @pytest.mark.parametrize(
     ("event_overrides", "token"),
     [
@@ -378,6 +400,30 @@ def test_source_refs_traversal_cannot_credit_unreferenced_edges() -> None:
         entry["recipient_agent_id"]
         for entry in batch["backward_attribution_entries"]
     }
+
+
+def test_source_refs_ignores_non_traversal_edge_type_when_marking_refs_selected() -> None:
+    context = _source_refs_context(source_refs=[REF_1_ID, REF_2_ID, REF_3_ID])
+    context["edges"] = [
+        {
+            "edge_confidence": "1",
+            "edge_type": "REFUTATION",
+            "source_node_id": NEW_NODE_ID,
+            "target_node_id": REF_1_ID,
+        },
+        _edge(NEW_NODE_ID, REF_2_ID),
+        _edge(NEW_NODE_ID, REF_3_ID),
+    ]
+
+    batch = build_attribution_batch_from_claims(
+        _claim_payload(),
+        backward_attribution_graph_context=context,
+    )
+
+    assert {
+        entry["recipient_agent_id"]
+        for entry in batch["backward_attribution_entries"]
+    } == {CREATOR_1, CREATOR_2, CREATOR_3}
 
 
 def test_raw_cdl075_truth_node_records_are_normalized_for_source_refs() -> None:

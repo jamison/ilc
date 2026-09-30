@@ -70,6 +70,10 @@ def test_invalid_epoch_and_event_inputs_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="attribution_audit_epoch_invalid"):
         store.write_epoch_events(True, [])
+    with pytest.raises(ValueError, match="attribution_audit_epoch_exceeds_u64"):
+        store.write_epoch_events(2**64, [])
+    with pytest.raises(ValueError, match="attribution_audit_epoch_exceeds_u64"):
+        store.read_epoch_events(2**64)
     with pytest.raises(ValueError, match="attribution_audit_event_invalid"):
         store.write_epoch_events(1, ["not-object"])  # type: ignore[list-item]
 
