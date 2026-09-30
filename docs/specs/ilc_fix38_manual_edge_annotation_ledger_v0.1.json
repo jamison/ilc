@@ -1,6 +1,78 @@
 {
   "_manual_additions": [
     {
+      "annotation_batch": "manual_batch_174_gap_draft_00_conservation_audit",
+      "chronology_note": "2026-09-30 - GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00 monthly close conservation policy runtime audit spec.",
+      "manual_read_summary": "Spec doc audits the current monthly close conservation runtime: ILC_QUANTUM SSOT, _allocate_pool_to_agents() integer-quanta largest-remainder algorithm, build_allocation_distribution_quote() residual routing, explicit_rounding_sinks_ilc ZERO determination, residual-category table, backward_attribution_total_unissued_ecu boundary, and verify_epoch_conservation_before_commit() gate.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_window_1617_tbd_candidate_phase_grouping_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_core/epoch/epoch_distribution_writer.py"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_core/epoch/allocation_distributor_runtime.py"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_core/epoch/epoch_conservation_gate.py"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:monthly_close_conservation_policy_draft_complete_GAP_ECU_MONTHLY_CLOSE_CONSERVATION_POLICY_DRAFT_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_ecu_monthly_close_conservation_policy_audit_GAP_ECU_MONTHLY_CLOSE_CONSERVATION_POLICY_DRAFT_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_174_gap_draft_00_conservation_audit",
+      "chronology_note": "2026-09-30 - GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00 walkthrough.",
+      "manual_read_summary": "Walkthrough records the conservation policy audit source reads, central explicit_rounding_sinks_ilc finding, residual example output, verification commands, graph delta, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_monthly_close_conservation_policy_draft_00_g10_conservation_policy_audit.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:monthly_close_conservation_policy_draft_complete_GAP_ECU_MONTHLY_CLOSE_CONSERVATION_POLICY_DRAFT_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_monthly_close_conservation_policy_draft_00_walkthrough.md"
+    },
+    {
       "annotation_batch": "manual_batch_140_phase_gap_public_rc_native_submit_ingress_impl_00_prompt",
       "chronology_note": "2026-09-26 \u2014 IMPL-00 phase prompt produced by Sonnet incorporating F-01/F-02/F-03/F-11 audit findings and CDL-117 INV-A through INV-D carry-forwards",
       "manual_read_summary": "Phase prompt for GAP-PUBLIC-RC-NATIVE-SUBMIT-INGRESS-IMPL-00: implements CDL-117 native public submit ingress behind three default-off guard constants, new submit_ingress_endpoint_assertion module, revocation schema (INV-D), sig verification wiring, and behavioral tests",
@@ -109360,6 +109432,90 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_1606_capproof_v1_implementation_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_174_gap_draft_00_conservation_audit",
+      "chronology_note": "2026-09-30 - GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00 monthly close conservation policy runtime audit spec.",
+      "manual_read_summary": "Spec doc audits the current monthly close conservation runtime: ILC_QUANTUM SSOT, _allocate_pool_to_agents() integer-quanta largest-remainder algorithm, build_allocation_distribution_quote() residual routing, explicit_rounding_sinks_ilc ZERO determination, residual-category table, backward_attribution_total_unissued_ecu boundary, and verify_epoch_conservation_before_commit() gate.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_window_1617_tbd_candidate_phase_grouping_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_core/epoch/epoch_distribution_writer.py"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_core/epoch/allocation_distributor_runtime.py"
+        },
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "ilc_core/epoch/epoch_conservation_gate.py"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:monthly_close_conservation_policy_draft_complete_GAP_ECU_MONTHLY_CLOSE_CONSERVATION_POLICY_DRAFT_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_ecu_monthly_close_conservation_policy_audit_GAP_ECU_MONTHLY_CLOSE_CONSERVATION_POLICY_DRAFT_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_174_gap_draft_00_conservation_audit",
+      "chronology_note": "2026-09-30 - GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00 walkthrough.",
+      "manual_read_summary": "Walkthrough records the conservation policy audit source reads, central explicit_rounding_sinks_ilc finding, residual example output, verification commands, graph delta, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_ecu_monthly_close_conservation_policy_draft_00_g10_conservation_policy_audit.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-ECU-MONTHLY-CLOSE-CONSERVATION-POLICY-DRAFT-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:monthly_close_conservation_policy_draft_complete_GAP_ECU_MONTHLY_CLOSE_CONSERVATION_POLICY_DRAFT_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_ecu_monthly_close_conservation_policy_draft_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

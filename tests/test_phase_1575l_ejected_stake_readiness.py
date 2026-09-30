@@ -15,9 +15,23 @@ from ilc_core.epoch.ejected_stake_distribution_production_path import (
     require_ejected_stake_distribution_production_activation,
 )
 from tools.phase_1575l_ejected_stake_readiness import (
+    SYNTHETIC_VALIDATOR_A_AGENT_ID,
+    SYNTHETIC_VALIDATOR_B_AGENT_ID,
+    SYNTHETIC_VALIDATOR_C_AGENT_ID,
     build_phase_1575l_evidence,
     stable_json,
 )
+
+
+def test_phase_1575l_synthetic_agent_ids_match_runtime_shape() -> None:
+    for agent_id in (
+        SYNTHETIC_VALIDATOR_A_AGENT_ID,
+        SYNTHETIC_VALIDATOR_B_AGENT_ID,
+        SYNTHETIC_VALIDATOR_C_AGENT_ID,
+    ):
+        assert len(agent_id) == 96
+        assert agent_id == agent_id.lower()
+        int(agent_id, 16)
 
 
 def test_phase_1575l_guard_remains_default_off_and_raises_not_implemented() -> None:
@@ -35,9 +49,9 @@ def test_phase_1575l_rehearsal_uses_real_production_wrapper() -> None:
             "distribution_epoch": 1575,
             "ejected_stake_ilc": Decimal("123.456789123"),
             "remaining_member_stakes": {
-                "agent:phase1575l_validator_a": Decimal("100.000000000"),
-                "agent:phase1575l_validator_b": Decimal("200.000000000"),
-                "agent:phase1575l_validator_c": Decimal("300.000000000"),
+                SYNTHETIC_VALIDATOR_A_AGENT_ID: Decimal("100.000000000"),
+                SYNTHETIC_VALIDATOR_B_AGENT_ID: Decimal("200.000000000"),
+                SYNTHETIC_VALIDATOR_C_AGENT_ID: Decimal("300.000000000"),
             },
             "approve_votes": 3,
             "participating_voters": 3,
@@ -46,9 +60,9 @@ def test_phase_1575l_rehearsal_uses_real_production_wrapper() -> None:
 
     assert result.production_ejected_stake_distribution_activated is False
     assert result.distribution_quote.payouts == (
-        ("agent:phase1575l_validator_a", Decimal("20.576131520")),
-        ("agent:phase1575l_validator_b", Decimal("41.152263041")),
-        ("agent:phase1575l_validator_c", Decimal("61.728394562")),
+        (SYNTHETIC_VALIDATOR_A_AGENT_ID, Decimal("20.576131520")),
+        (SYNTHETIC_VALIDATOR_B_AGENT_ID, Decimal("41.152263041")),
+        (SYNTHETIC_VALIDATOR_C_AGENT_ID, Decimal("61.728394562")),
     )
     assert sum((amount for _, amount in result.distribution_quote.payouts), Decimal("0")) == (
         result.distribution_quote.ejected_stake_ilc
@@ -87,9 +101,9 @@ def test_phase_1575l_fail_closed_quorum_reduces_to_exception() -> None:
                 "distribution_epoch": 1575,
                 "ejected_stake_ilc": Decimal("123.456789123"),
                 "remaining_member_stakes": {
-                    "agent:phase1575l_validator_a": Decimal("100.000000000"),
-                    "agent:phase1575l_validator_b": Decimal("200.000000000"),
-                    "agent:phase1575l_validator_c": Decimal("300.000000000"),
+                    SYNTHETIC_VALIDATOR_A_AGENT_ID: Decimal("100.000000000"),
+                    SYNTHETIC_VALIDATOR_B_AGENT_ID: Decimal("200.000000000"),
+                    SYNTHETIC_VALIDATOR_C_AGENT_ID: Decimal("300.000000000"),
                 },
                 "approve_votes": 1,
                 "participating_voters": 1,

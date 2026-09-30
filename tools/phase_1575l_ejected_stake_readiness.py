@@ -30,10 +30,13 @@ EVENT_PATH = OUTPUT_DIR / "ejection_rehearsal_event.json"
 CERTIFICATE_PATH = OUTPUT_DIR / "ejected_stake_readiness_certificate.json"
 PHASE_1575L_TOOL_VERSION = "phase_1575l_ejected_stake_readiness.v0.1"
 SYNTHETIC_EJECTED_VALIDATOR_AGENT_CID = "agent:phase1575l_ejected_validator_synthetic"
+SYNTHETIC_VALIDATOR_A_AGENT_ID = "a" * 96
+SYNTHETIC_VALIDATOR_B_AGENT_ID = "b" * 96
+SYNTHETIC_VALIDATOR_C_AGENT_ID = "c" * 96
 SYNTHETIC_REMAINING_MEMBER_STAKES = {
-    "agent:phase1575l_validator_a": Decimal("100.000000000"),
-    "agent:phase1575l_validator_b": Decimal("200.000000000"),
-    "agent:phase1575l_validator_c": Decimal("300.000000000"),
+    SYNTHETIC_VALIDATOR_A_AGENT_ID: Decimal("100.000000000"),
+    SYNTHETIC_VALIDATOR_B_AGENT_ID: Decimal("200.000000000"),
+    SYNTHETIC_VALIDATOR_C_AGENT_ID: Decimal("300.000000000"),
 }
 SYNTHETIC_EJECTED_STAKE_ILC = Decimal("123.456789123")
 SYNTHETIC_DISTRIBUTION_EPOCH = 1575
