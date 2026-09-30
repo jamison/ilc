@@ -87286,6 +87286,104 @@
         "REFERENCES_AUTHORITY"
       ],
       "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_GAP_CO_AUTHORSHIP_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-CO_AUTHORSHIP-BRIDGE-00 prompt hardened/executed as a non-sensitive spec-only attribution bridge phase.",
+      "manual_read_summary": "Phase prompt for the co-authorship attribution bridge spec; normalized to canonical GAP-CO_AUTHORSHIP-BRIDGE-00 ID and requires Phase 1599, CDL-081, CDL-114, and Phase 1602/source_refs boundary reads.",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_co_authorship_bridge_00_g10_co_authorship_attribution_spec.md",
+      "recommended_graph_action": "support_only",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "phase:1599"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:081"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "cdl:114"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_GAP_CO_AUTHORSHIP_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-CO_AUTHORSHIP-BRIDGE-00 publishes the co-authorship attribution bridge spec.",
+      "manual_read_summary": "Spec-only bridge document for future CO_AUTHORSHIP submission-to-attribution implementation. It records Phase 1599 settlement coverage, CDL-081 co-authorship math, CDL-114 source_refs/backward-attribution boundary, direct route requirements, non-claims, and implementation obligations.",
+      "repo_path": "docs/specs/ilc_co_authorship_attribution_bridge_spec_GAP_CO_AUTHORSHIP_BRIDGE_00_v0.1.md",
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_081_hyperedge_ecu_attribution_opening_929_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_114_sybil_diversity_backward_attribution_guard_v0.1.md"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/phases/phase_1599_ecu_edge_coverage_weight_params_fix_walkthrough.md"
+        },
+        {
+          "edge_type": "CONSTRAINS_FUTURE_PHASE",
+          "target": "phase:GAP-CO_AUTHORSHIP-BRIDGE-IMPLEMENTATION-TBD"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:co_authorship_bridge_spec_complete_GAP_CO_AUTHORSHIP_BRIDGE_00"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM",
+        "CONSTRAINS_FUTURE_PHASE",
+        "EVIDENCES"
+      ]
+    },
+    {
+      "annotation_batch": "manual_batch_157_phase_GAP_CO_AUTHORSHIP_BRIDGE_00",
+      "chronology_note": "2026-09-30 GAP-CO_AUTHORSHIP-BRIDGE-00 walkthrough records execution evidence, verification commands, graph-intake disposition, and non-claims.",
+      "manual_read_summary": "Walkthrough for the non-sensitive co-authorship attribution bridge spec phase. Records prompt validation, source reads, Phase 1599/CDL-114 token checks, absence of CO_AUTHORSHIP bridge references in attribution_batch_bridge.py, attribution selector results, and no-runtime-mutation boundary.",
+      "repo_path": "docs/phases/phase_gap_co_authorship_bridge_00_walkthrough.md",
+      "recommended_graph_action": "support_only",
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:co_authorship_bridge_spec_complete_GAP_CO_AUTHORSHIP_BRIDGE_00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_co_authorship_attribution_bridge_spec_GAP_CO_AUTHORSHIP_BRIDGE_00_v0.1.md"
+        }
+      ],
+      "proposed_authority_trace_edges": [],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY"
+      ]
     }
   ],
   "boundary": {
