@@ -2505,7 +2505,7 @@
       "annotation_batch": "manual_batch_177_phase_gap_capproof_cdl115_ratification_candidate_prep_00_prompt",
       "chronology_note": "2026-10-01 Rev 198 \u2014 GAP-CAPPROOF-CDL-115-RATIFICATION-CANDIDATE-PREP-00 phase prompt",
       "manual_read_summary": "Phase prompt for CDL-115 ratification candidate audit: audits Gate A evidence, six open deliberation questions, and CAPPROOF_EPOCH_WIRING_NOT_ACTIVATED guard disposition to determine ratification readiness.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_capproof_ratification_candidate_prep_00_g10_cdl_115_evidence_audit.md",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -2516,18 +2516,18 @@
           "target": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_capproof_ratification_candidate_prep_00_g10_cdl_115_evidence_audit.md"
     },
     {
       "annotation_batch": "manual_batch_178_phase_gap_model_router_cdl116_post_live_evidence_00_prompt",
       "chronology_note": "2026-10-01 Rev 198 \u2014 GAP-MODEL-ROUTER-CDL-116-POST-LIVE-EVIDENCE-00 phase prompt",
       "manual_read_summary": "Phase prompt for CDL-116 post-live evidence collection: checks for live ilc sidecar model-router receipts since Phase 1615 and documents Werner baseline or emits explicit no-receipts non-claim.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_model_router_post_live_evidence_00_g10_cdl_116_evidence_collection.md",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -2538,80 +2538,80 @@
           "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_model_router_post_live_evidence_00_g10_cdl_116_evidence_collection.md"
     },
     {
       "annotation_batch": "manual_batch_179_codex_rehydration_handoff_2026_09_16",
       "chronology_note": "2026-10-01 \u2014 Codex rehydration handoff document 2026-09-16",
       "manual_read_summary": "Agent-continuity handoff document for Codex session rehydration on 2026-09-16; records live frontier state for chat context recovery.",
-      "repo_path": "docs/antigravity_tasks/ilc_codex_rehydration_handoff_2026_09_16.md",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/ilc_codex_rehydration_handoff_2026_09_16.md"
     },
     {
       "annotation_batch": "manual_batch_180_codex_rehydration_prompt_2026_09_16",
       "chronology_note": "2026-10-01 \u2014 Codex rehydration prompt for new Antigravity chat 2026-09-16",
       "manual_read_summary": "Agent-continuity prompt for initiating a fresh Codex/Antigravity chat session from the 2026-09-16 state; private session-management artifact.",
-      "repo_path": "docs/antigravity_tasks/ilc_codex_rehydration_prompt_for_new_codex_chat_2026_09_16.md",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/ilc_codex_rehydration_prompt_for_new_codex_chat_2026_09_16.md"
     },
     {
       "annotation_batch": "manual_batch_181_ilc_epistemic_feature_geometry_protocol_spec_v0_2",
       "chronology_note": "2026-10-01 \u2014 ILC epistemic feature geometry protocol spec v0.2 (draft research)",
       "manual_read_summary": "Draft research protocol spec v0.2 for epistemic feature geometry: non-ratified design doc connecting SAE feature decomposition to ILC hypergraph node types and canonical Laplacian commitment.",
-      "repo_path": "docs/specs/ilc_epistemic_feature_geometry_protocol_spec_v0.2.md",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_epistemic_feature_geometry_protocol_spec_v0.2.md"
     },
     {
       "annotation_batch": "manual_batch_182_tools_repair_antigravity_codex_visibility",
       "chronology_note": "2026-10-01 \u2014 repair_antigravity_codex_visibility.py tool script",
       "manual_read_summary": "Tool script for repairing Codex/Antigravity prompt file visibility; maintenance utility with no protocol authority.",
-      "repo_path": "tools/repair_antigravity_codex_visibility.py",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
           "target": "genesis:genesis_root_v0.4"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/repair_antigravity_codex_visibility.py"
     }
   ],
   "annotations": [
@@ -87376,7 +87376,6 @@
       "annotation_batch": "manual_batch_156_phase_REV_191_ECU_LIFECYCLE_V0_5",
       "chronology_note": "2026-09-30 Rev 191 \u2014 ECU lifecycle flow diagram v0.5 produced as state refresh of v0.4 incorporating all Codex corrections; v0.4 tombstoned; VPS smoke gap added to forward plan.",
       "manual_read_summary": "ECU lifecycle target architecture and gap roadmap v0.5: state refresh as of Rev 190 / audit commit a39fc8284; 12 gap rows closed since v0.4; new VPS validator-network acceptance gap row; CDL-114 backward residual reframed; supersedes v0.4.",
-      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.5.md",
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -87397,14 +87396,14 @@
         "SUPERSEDES",
         "REFERENCES_AUTHORITY"
       ],
-      "recommended_graph_action": "support_only"
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.5.md"
     },
     {
       "annotation_batch": "manual_batch_157_phase_GAP_CO_AUTHORSHIP_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-CO_AUTHORSHIP-BRIDGE-00 prompt hardened/executed as a non-sensitive spec-only attribution bridge phase.",
       "manual_read_summary": "Phase prompt for the co-authorship attribution bridge spec; normalized to canonical GAP-CO_AUTHORSHIP-BRIDGE-00 ID and requires Phase 1599, CDL-081, CDL-114, and Phase 1602/source_refs boundary reads.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_co_authorship_bridge_00_g10_co_authorship_attribution_spec.md",
-      "recommended_graph_action": "support_only",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87423,18 +87422,18 @@
           "target": "cdl:114"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY"
-      ]
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_co_authorship_bridge_00_g10_co_authorship_attribution_spec.md"
     },
     {
       "annotation_batch": "manual_batch_157_phase_GAP_CO_AUTHORSHIP_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-CO_AUTHORSHIP-BRIDGE-00 publishes the co-authorship attribution bridge spec.",
       "manual_read_summary": "Spec-only bridge document for future CO_AUTHORSHIP submission-to-attribution implementation. It records Phase 1599 settlement coverage, CDL-081 co-authorship math, CDL-114 source_refs/backward-attribution boundary, direct route requirements, non-claims, and implementation obligations.",
-      "repo_path": "docs/specs/ilc_co_authorship_attribution_bridge_spec_GAP_CO_AUTHORSHIP_BRIDGE_00_v0.1.md",
-      "recommended_graph_action": "load_bearing_artifact_added",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87461,21 +87460,21 @@
           "target": "claim:co_authorship_bridge_spec_complete_GAP_CO_AUTHORSHIP_BRIDGE_00"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY",
         "DERIVED_FROM",
         "CONSTRAINS_FUTURE_PHASE",
         "EVIDENCES"
-      ]
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_co_authorship_attribution_bridge_spec_GAP_CO_AUTHORSHIP_BRIDGE_00_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_157_phase_GAP_CO_AUTHORSHIP_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-CO_AUTHORSHIP-BRIDGE-00 walkthrough records execution evidence, verification commands, graph-intake disposition, and non-claims.",
       "manual_read_summary": "Walkthrough for the non-sensitive co-authorship attribution bridge spec phase. Records prompt validation, source reads, Phase 1599/CDL-114 token checks, absence of CO_AUTHORSHIP bridge references in attribution_batch_bridge.py, attribution selector results, and no-runtime-mutation boundary.",
-      "repo_path": "docs/phases/phase_gap_co_authorship_bridge_00_walkthrough.md",
-      "recommended_graph_action": "support_only",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87490,19 +87489,19 @@
           "target": "docs/specs/ilc_co_authorship_attribution_bridge_spec_GAP_CO_AUTHORSHIP_BRIDGE_00_v0.1.md"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "EVIDENCES",
         "REFERENCES_AUTHORITY"
-      ]
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_co_authorship_bridge_00_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_158_phase_GAP_REFUTATION_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-REFUTATION-BRIDGE-00 prompt hardened/executed as a non-sensitive spec-only attribution bridge phase.",
       "manual_read_summary": "Phase prompt for the refutation attribution bridge spec; hardened to correct the cap-blocked residual authority chain from CDL-115 to CDL-029/Phase 1351a and to preserve the direct CDL-083 refutation payout boundary.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_refutation_bridge_00_g10_refutation_attribution_spec.md",
-      "recommended_graph_action": "support_only",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87529,18 +87528,18 @@
           "target": "cdl:114"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY"
-      ]
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_refutation_bridge_00_g10_refutation_attribution_spec.md"
     },
     {
       "annotation_batch": "manual_batch_158_phase_GAP_REFUTATION_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-REFUTATION-BRIDGE-00 publishes the refutation attribution bridge spec.",
       "manual_read_summary": "Spec-only bridge document for future REFUTATION submission-to-attribution implementation. It records direct CDL-083 upheld-refutation payout semantics, Phase 1599 settlement tests, CDL-029/Phase 1351a residual route interaction, CDL-114 boundary, CDL-115 non-authority, and implementation obligations.",
-      "repo_path": "docs/specs/ilc_refutation_attribution_bridge_spec_GAP_REFUTATION_BRIDGE_00_v0.1.md",
-      "recommended_graph_action": "load_bearing_artifact_added",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87571,21 +87570,21 @@
           "target": "claim:refutation_bridge_spec_complete_GAP_REFUTATION_BRIDGE_00"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY",
         "DERIVED_FROM",
         "CONSTRAINS_FUTURE_PHASE",
         "EVIDENCES"
-      ]
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_refutation_attribution_bridge_spec_GAP_REFUTATION_BRIDGE_00_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_158_phase_GAP_REFUTATION_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-REFUTATION-BRIDGE-00 walkthrough records execution evidence, verification commands, graph-intake disposition, and non-claims.",
       "manual_read_summary": "Walkthrough for the non-sensitive refutation attribution bridge spec phase. Records prompt validation, authority-chain correction, source reads, token checks, absence of REFUTATION bridge references in attribution_batch_bridge.py, Phase 1599 regression output, and no-runtime-mutation boundary.",
-      "repo_path": "docs/phases/phase_gap_refutation_bridge_00_walkthrough.md",
-      "recommended_graph_action": "support_only",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87600,19 +87599,19 @@
           "target": "docs/specs/ilc_refutation_attribution_bridge_spec_GAP_REFUTATION_BRIDGE_00_v0.1.md"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "EVIDENCES",
         "REFERENCES_AUTHORITY"
-      ]
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_refutation_bridge_00_walkthrough.md"
     },
     {
       "annotation_batch": "manual_batch_159_phase_GAP_PROVENANCE_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-PROVENANCE-BRIDGE-00 prompt executed as a non-sensitive spec-only attribution bridge phase.",
       "manual_read_summary": "Phase prompt for the provenance attribution bridge spec; requires live CDL-084 provenance semantics, Phase 1126 alpha lock, Phase 1602 source_refs bridge precedent, and GAP-ECU-04b extension-point reads.",
-      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_provenance_bridge_00_g10_provenance_attribution_spec.md",
-      "recommended_graph_action": "support_only",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87635,18 +87634,18 @@
           "target": "cdl:114"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY"
-      ]
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_provenance_bridge_00_g10_provenance_attribution_spec.md"
     },
     {
       "annotation_batch": "manual_batch_159_phase_GAP_PROVENANCE_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-PROVENANCE-BRIDGE-00 publishes the provenance attribution bridge spec.",
       "manual_read_summary": "Spec-only bridge document for future PROVENANCE submission-to-attribution implementation. It records live CDL-084 semantics, Phase 1126 alpha lock, provenance_chain schema, input-vs-settlement bounds, Phase 1602 source_refs precedent, CDL-114 boundary, GAP-ECU-04b extension point, and implementation obligations.",
-      "repo_path": "docs/specs/ilc_provenance_attribution_bridge_spec_GAP_PROVENANCE_BRIDGE_00_v0.1.md",
-      "recommended_graph_action": "load_bearing_artifact_added",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87677,21 +87676,21 @@
           "target": "claim:provenance_bridge_spec_complete_GAP_PROVENANCE_BRIDGE_00"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "REFERENCES_AUTHORITY",
         "DERIVED_FROM",
         "CONSTRAINS_FUTURE_PHASE",
         "EVIDENCES"
-      ]
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_provenance_attribution_bridge_spec_GAP_PROVENANCE_BRIDGE_00_v0.1.md"
     },
     {
       "annotation_batch": "manual_batch_159_phase_GAP_PROVENANCE_BRIDGE_00",
       "chronology_note": "2026-09-30 GAP-PROVENANCE-BRIDGE-00 walkthrough records execution evidence, verification commands, graph-intake disposition, and non-claims.",
       "manual_read_summary": "Walkthrough for the non-sensitive provenance attribution bridge spec phase. Records prompt validation, live alpha correction, source reads, token checks, GAP-ECU-04b extension point, provenance constant checks, Phase 1599 and Phase 1602 focused regressions, and no-runtime-mutation boundary.",
-      "repo_path": "docs/phases/phase_gap_provenance_bridge_00_walkthrough.md",
-      "recommended_graph_action": "support_only",
+      "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
           "edge_type": "SOURCE_TREE_MEMBER",
@@ -87706,12 +87705,13 @@
           "target": "docs/specs/ilc_provenance_attribution_bridge_spec_GAP_PROVENANCE_BRIDGE_00_v0.1.md"
         }
       ],
-      "proposed_authority_trace_edges": [],
       "proposed_trace_roles": [
         "SOURCE_TREE_MEMBER",
         "EVIDENCES",
         "REFERENCES_AUTHORITY"
-      ]
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_provenance_bridge_00_walkthrough.md"
     }
   ],
   "boundary": {
@@ -110808,6 +110808,114 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_adversarial_epistemics_report_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_177_gap_capproof_115_candidate",
+      "chronology_note": "2026-10-01 GAP-CAPPROOF-CDL-115-RATIFICATION-CANDIDATE-PREP-00 - CDL-115 ratification candidate audit document.",
+      "manual_read_summary": "Candidate audit maps every CDL-115 invariant and deliberation question to live CapProof source, Gate A evidence, guard state, PoSK status, post-live evidence requirements, and non-claims. It records that Gate A supports a future ratification proposal but does not ratify CDL-115 or clear CapProof guards.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-CAPPROOF-CDL-115-RATIFICATION-CANDIDATE-PREP-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md#CDL-115"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:1609"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:capproof_cdl_115_ratification_candidate_prep_complete_GAP_CAPPROOF_CDL_115_RATIFICATION_CANDIDATE_PREP_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_capproof_cdl_115_ratification_candidate_GAP_CAPPROOF_CDL_115_RATIFICATION_CANDIDATE_PREP_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_177_gap_capproof_115_candidate",
+      "chronology_note": "2026-10-01 GAP-CAPPROOF-CDL-115-RATIFICATION-CANDIDATE-PREP-00 - phase walkthrough.",
+      "manual_read_summary": "Walkthrough records prompt hardening, source reads, MemPalace query disposition, verification command outputs, graph-intake checks, candidate audit verdict, output token, carry-forward, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-CAPPROOF-CDL-115-RATIFICATION-CANDIDATE-PREP-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_capproof_ratification_candidate_prep_00_g10_cdl_115_evidence_audit.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_capproof_cdl_115_ratification_candidate_GAP_CAPPROOF_CDL_115_RATIFICATION_CANDIDATE_PREP_00_v0.1.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-CAPPROOF-CDL-115-RATIFICATION-CANDIDATE-PREP-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_capproof_cdl_115_ratification_candidate_prep_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_177_gap_capproof_115_candidate",
+      "chronology_note": "2026-10-01 GAP-CAPPROOF-CDL-115-RATIFICATION-CANDIDATE-PREP-00 - phase-local machine-readable candidate audit evidence.",
+      "manual_read_summary": "JSON evidence records source SHA-256 values, Gate A SHA confirmation, guard state, candidate verdict, no-mutation boundaries, output token, and invariant verdict counts for the CapProof CDL-115 candidate audit.",
+      "node_kind": "evidence_json",
+      "phase_ref": "GAP-CAPPROOF-CDL-115-RATIFICATION-CANDIDATE-PREP-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_capproof_cdl_115_ratification_candidate_GAP_CAPPROOF_CDL_115_RATIFICATION_CANDIDATE_PREP_00_v0.1.md"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_capproof_cdl_115_ratification_candidate_prep_00/candidate_audit_evidence.json"
     }
   ],
   "phase": "1545p-Fix38",
