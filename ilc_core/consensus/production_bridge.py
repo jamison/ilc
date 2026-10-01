@@ -23,6 +23,7 @@ from typing import Any, Callable, Mapping, Protocol
 
 from google.protobuf import descriptor_pb2, descriptor_pool, message_factory
 
+from ilc_core.epoch.epoch_maturity_gate import MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN
 from ilc_core.consensus.validator_endpoint_assertion import (
     BlsVerifier,
     assertion_is_superseded,
@@ -235,12 +236,14 @@ class EpochRecordQuote:
     state_root: bytes
     spectral_hash: bytes
     agg_sig: bytes
+    not_before_unix_ms: int = 0
 
     def to_dict(self) -> dict[str, Any]:
         return {
             "agg_sig_hex": self.agg_sig.hex(),
             "epoch": self.epoch,
             "found": self.found,
+            "not_before_unix_ms": self.not_before_unix_ms,
             "spectral_hash_hex": self.spectral_hash.hex(),
             "state_root_hex": self.state_root.hex(),
         }
@@ -834,6 +837,7 @@ def _build_message_types() -> _MessageTypes:
             ("agg_sig", 3, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
             ("found", 4, descriptor_pb2.FieldDescriptorProto.TYPE_BOOL),
             ("spectral_hash", 5, descriptor_pb2.FieldDescriptorProto.TYPE_BYTES),
+            ("not_before_unix_ms", 6, descriptor_pb2.FieldDescriptorProto.TYPE_UINT64),
         ),
     )
     chain_request = _add_message(file_proto, "GetEpochChainRequest", ())
@@ -1386,7 +1390,34 @@ def _normalize_epoch_record_response(response: Any, token: str) -> EpochRecordQu
         if getattr(response, "found", None) is True
         else _require_bytes(getattr(response, "spectral_hash", None), token),
         agg_sig=_require_bytes(getattr(response, "agg_sig", None), token),
+        not_before_unix_ms=_require_uint64_int(
+            getattr(response, "not_before_unix_ms", 0),
+            token,
+        ),
     )
+
+
+def derive_closing_validation_epoch_from_epoch_records(
+    epoch_n_record: EpochRecordQuote,
+    epoch_n1_record: EpochRecordQuote,
+) -> tuple[int, int]:
+    """Derive maturity proof validation-epoch bounds from signed epoch records."""
+
+    if not epoch_n_record.found or not epoch_n1_record.found:
+        raise ValueError("maturity_proof_epoch_record_not_found")
+    if epoch_n_record.not_before_unix_ms == 0 or epoch_n1_record.not_before_unix_ms == 0:
+        raise ValueError("maturity_proof_not_before_unix_ms_zero")
+    if epoch_n1_record.not_before_unix_ms <= epoch_n_record.not_before_unix_ms:
+        raise ValueError("maturity_proof_not_before_unix_ms_order_invalid")
+    validation_epoch_ms = 60_000
+    opening_validation_epoch = epoch_n_record.not_before_unix_ms // validation_epoch_ms
+    closing_validation_epoch = epoch_n1_record.not_before_unix_ms // validation_epoch_ms
+    if (
+        closing_validation_epoch - opening_validation_epoch
+        < MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN
+    ):
+        raise ValueError("maturity_span_below_minimum")
+    return opening_validation_epoch, closing_validation_epoch
 
 
 def verify_validator_cert_against_graph(
@@ -1800,6 +1831,7 @@ __all__ = [
     "build_secure_grpc_attribution_ingress_stub",
     "build_secure_grpc_proposal_ingress_stub",
     "build_secure_grpc_read_stub",
+    "derive_closing_validation_epoch_from_epoch_records",
     "quote_to_canonical_json",
     "submit_attribution_batch_via_grpc",
     "submit_ecu_transfer_via_quic",

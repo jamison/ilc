@@ -25,12 +25,14 @@ from ilc_core.consensus import (
     SUBMIT_EPOCH_PROPOSAL_ACCEPTED_TOKEN,
     TESTBED_STUBS_REPLACED_PRODUCTION_PATH_TOKEN,
     ConsensusBridgeConfig,
+    EpochRecordQuote,
     EpochSettlementProposalSubmission,
     ILCConsensusGrpcReadAdapter,
     build_epoch_settlement_proposal_submission,
     build_quic_ecu_transfer_submission_path,
     build_secure_grpc_proposal_ingress_stub,
     build_secure_grpc_read_stub,
+    derive_closing_validation_epoch_from_epoch_records,
     quote_to_canonical_json,
     submit_ecu_transfer_via_quic,
 )
@@ -83,6 +85,7 @@ class FakeReadStub:
                 state_root=b"r" * 36,
                 spectral_hash=SPECTRAL_HASH,
                 agg_sig=b"s" * 96,
+                not_before_unix_ms=1_789_516_800_000,
             )
         )
         self.GetEpochChain = RecordingRpc(
@@ -95,6 +98,7 @@ class FakeReadStub:
                         state_root=b"a" * 36,
                         spectral_hash=bytes([1]) * 32,
                         agg_sig=b"b" * 96,
+                        not_before_unix_ms=1_789_516_800_000,
                     ),
                     SimpleNamespace(
                         epoch=2,
@@ -102,6 +106,7 @@ class FakeReadStub:
                         state_root=b"c" * 36,
                         spectral_hash=bytes([2]) * 32,
                         agg_sig=b"d" * 96,
+                        not_before_unix_ms=1_729_065_600_000,
                     ),
                 ],
             )
@@ -312,6 +317,7 @@ def test_epoch_record_and_epoch_chain_are_bounded_and_timeout_explicit() -> None
     assert record.state_root == b"r" * 36
     assert record.spectral_hash == SPECTRAL_HASH
     assert record.agg_sig == b"s" * 96
+    assert record.not_before_unix_ms == 1_789_516_800_000
 
     chain = adapter.get_epoch_chain(1, 2)
     request, timeout = stub.GetEpochChain.calls[0]
@@ -321,6 +327,10 @@ def test_epoch_record_and_epoch_chain_are_bounded_and_timeout_explicit() -> None
     assert request.include_edges is False
     assert chain.chain_complete is True
     assert [entry.epoch for entry in chain.records] == [1, 2]
+    assert [entry.not_before_unix_ms for entry in chain.records] == [
+        1_789_516_800_000,
+        1_729_065_600_000,
+    ]
 
     fresh_stub = FakeReadStub()
     fresh_adapter = _adapter(fresh_stub)
@@ -333,6 +343,109 @@ def test_epoch_chain_rejects_edge_expansion_for_phase_1358() -> None:
     adapter = _adapter(FakeReadStub())
     with pytest.raises(ValueError, match="epoch_chain_edges_not_enabled_phase_1358"):
         adapter.get_epoch_chain(1, 2, include_edges=True)
+
+
+def _epoch_record_quote_with_not_before(
+    *,
+    epoch: int = 1,
+    found: bool = True,
+    not_before_unix_ms: int,
+) -> EpochRecordQuote:
+    return EpochRecordQuote(
+        epoch=epoch,
+        found=found,
+        state_root=b"r" * 36 if found else b"",
+        spectral_hash=SPECTRAL_HASH if found else b"",
+        agg_sig=b"s" * 96 if found else b"",
+        not_before_unix_ms=not_before_unix_ms,
+    )
+
+
+def test_maturity_bridge_derive_zero_epoch_n_raises() -> None:
+    r0 = _epoch_record_quote_with_not_before(epoch=1, not_before_unix_ms=0)
+    r1 = _epoch_record_quote_with_not_before(
+        epoch=2,
+        not_before_unix_ms=1_789_516_800_000 + 2_592_000_000,
+    )
+
+    with pytest.raises(ValueError, match="maturity_proof_not_before_unix_ms_zero"):
+        derive_closing_validation_epoch_from_epoch_records(r0, r1)
+
+
+def test_maturity_bridge_derive_zero_epoch_n1_raises() -> None:
+    r0 = _epoch_record_quote_with_not_before(epoch=1, not_before_unix_ms=1_789_516_800_000)
+    r1 = _epoch_record_quote_with_not_before(epoch=2, not_before_unix_ms=0)
+
+    with pytest.raises(ValueError, match="maturity_proof_not_before_unix_ms_zero"):
+        derive_closing_validation_epoch_from_epoch_records(r0, r1)
+
+
+def test_maturity_bridge_derive_not_found_raises() -> None:
+    r0 = _epoch_record_quote_with_not_before(
+        epoch=1,
+        found=False,
+        not_before_unix_ms=1_789_516_800_000,
+    )
+    r1 = _epoch_record_quote_with_not_before(
+        epoch=2,
+        not_before_unix_ms=1_789_516_800_000 + 2_592_000_000,
+    )
+
+    with pytest.raises(ValueError, match="maturity_proof_epoch_record_not_found"):
+        derive_closing_validation_epoch_from_epoch_records(r0, r1)
+
+
+def test_maturity_bridge_derive_non_increasing_timestamp_raises() -> None:
+    r0 = _epoch_record_quote_with_not_before(epoch=1, not_before_unix_ms=1_789_516_800_000)
+    r1 = _epoch_record_quote_with_not_before(epoch=2, not_before_unix_ms=1_789_516_800_000)
+
+    with pytest.raises(
+        ValueError,
+        match="maturity_proof_not_before_unix_ms_order_invalid",
+    ):
+        derive_closing_validation_epoch_from_epoch_records(r0, r1)
+
+
+def test_maturity_bridge_derive_span_below_minimum_raises() -> None:
+    r0 = _epoch_record_quote_with_not_before(epoch=1, not_before_unix_ms=1_789_516_800_000)
+    r1 = _epoch_record_quote_with_not_before(
+        epoch=2,
+        not_before_unix_ms=1_789_516_800_000 + 60_000,
+    )
+
+    with pytest.raises(ValueError, match="maturity_span_below_minimum"):
+        derive_closing_validation_epoch_from_epoch_records(r0, r1)
+
+
+def test_maturity_bridge_derive_valid_span() -> None:
+    start = 1_789_516_800_000
+    r0 = _epoch_record_quote_with_not_before(epoch=1, not_before_unix_ms=start)
+    r1 = _epoch_record_quote_with_not_before(
+        epoch=2,
+        not_before_unix_ms=start + 2_592_000_000,
+    )
+
+    opening, closing = derive_closing_validation_epoch_from_epoch_records(r0, r1)
+
+    assert closing - opening == 43_200
+    assert opening == start // 60_000
+    assert closing == (start + 2_592_000_000) // 60_000
+
+
+def test_maturity_bridge_normalizes_old_validator_missing_not_before_to_zero() -> None:
+    stub = FakeReadStub()
+    stub.GetEpochRecord.response = SimpleNamespace(
+        epoch=4,
+        found=True,
+        state_root=b"e" * 36,
+        spectral_hash=SPECTRAL_HASH,
+        agg_sig=b"f" * 96,
+    )
+    adapter = _adapter(stub)
+
+    record = adapter.get_epoch_record(4)
+
+    assert record.not_before_unix_ms == 0
 
 
 def test_quic_ecu_transfer_submission_path_is_present_but_not_activated() -> None:

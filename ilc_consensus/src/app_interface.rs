@@ -99,6 +99,7 @@ impl IlcAppReadService for ApplicationInterface {
                     agg_sig: stored.agg_sig_bytes,
                     found: true,
                     spectral_hash: stored.record.spectral_hash.to_vec(),
+                    not_before_unix_ms: stored.record.not_before_unix_ms,
                 }))
             }
             Ok(None) => Ok(Response::new(GetEpochRecordResponse {
@@ -107,6 +108,7 @@ impl IlcAppReadService for ApplicationInterface {
                 agg_sig: vec![],
                 found: false,
                 spectral_hash: vec![],
+                not_before_unix_ms: 0,
             })),
             Err(e) => Err(Status::internal(format!("LMDB read error: {:?}", e))),
         }
@@ -152,6 +154,7 @@ impl IlcAppReadService for ApplicationInterface {
                             agg_sig: stored.agg_sig_bytes,
                             found: true,
                             spectral_hash: stored.record.spectral_hash.to_vec(),
+                            not_before_unix_ms: stored.record.not_before_unix_ms,
                         });
                     }
                     Ok(None) => break,
@@ -1089,12 +1092,13 @@ mod tests {
         let (vset, entries) = setup_validators();
 
         // SEC-FIX-02: commit sequentially.
+        let not_before_unix_ms = test_epoch_not_before_unix_ms(1);
         let record = EpochSettlementRecord {
             epoch: EpochSeq(1),
             state_root: CIDv1Root::new([1u8; 36]),
             spectral_hash: [0u8; 32],
             proposal_commitment_sha256: [1u8; 32],
-            not_before_unix_ms: 0,
+            not_before_unix_ms,
         };
         let (sigs, signers) = agg_sig_all(&record, &entries);
         let checkpoint = EpochCheckpoint {
@@ -1111,6 +1115,21 @@ mod tests {
         assert!(resp.found);
         assert_eq!(resp.agg_sig.len(), 96);
         assert_eq!(resp.state_root, [1u8; 36].to_vec());
+        assert_eq!(resp.not_before_unix_ms, not_before_unix_ms);
+    }
+
+    #[tokio::test]
+    async fn test_get_epoch_record_not_found_has_zero_not_before_unix_ms() {
+        let (env, _dir) = setup_env();
+        let balance_store = Arc::new(BalanceStore::new(env.clone()).unwrap());
+        let epoch_store = Arc::new(EpochStore::new(env.clone()).unwrap());
+        let app = ApplicationInterface::new(balance_store, epoch_store);
+
+        let req = Request::new(GetEpochRecordRequest { epoch: 99 });
+        let resp = app.get_epoch_record(req).await.unwrap().into_inner();
+        assert!(!resp.found);
+        assert_eq!(resp.epoch, 99);
+        assert_eq!(resp.not_before_unix_ms, 0);
     }
 
     #[tokio::test]
@@ -1151,6 +1170,12 @@ mod tests {
         let resp = app.get_epoch_chain(req).await.unwrap().into_inner();
         assert!(resp.chain_complete);
         assert_eq!(resp.records.len(), 5);
+        for record in &resp.records {
+            assert_eq!(
+                record.not_before_unix_ms,
+                test_epoch_not_before_unix_ms(record.epoch)
+            );
+        }
     }
 
     #[tokio::test]

@@ -88,6 +88,7 @@ message GetEpochRecordResponse {
     bytes  agg_sig    = 3;
     bool   found      = 4;
     bytes  spectral_hash = 5; // CDL-104 S(t), exactly 32 bytes when found=true
+    uint64 not_before_unix_ms = 6; // Quorum-ratified epoch opening timestamp in ms since Unix epoch
 }
 
 message GetEpochChainRequest {

@@ -111062,6 +111062,54 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "out/gap_model_router_post_live_evidence_00/evidence.json"
+    },
+    {
+      "annotation_batch": "manual_batch_179_gap_observe_maturity_bridge_00",
+      "chronology_note": "2026-10-01 Rev 206 \u2014 GAP-OBSERVE-MATURITY-BRIDGE-00 v0.2 prompt",
+      "manual_read_summary": "OBSERVE-00 maturity bridge v0.2 prompt: specifies Rust/Python epoch-record not_before_unix_ms read-path extension, dynamic Python descriptor update, absolute validation-epoch arithmetic, and old-validator hard-stop behavior.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-OBSERVE-MATURITY-BRIDGE-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/ops/ilc_observe_00_prelaunch_phase_plan_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_maturity_bridge_00_v02_g10_maturity_bridge_rust_extension.md"
+    },
+    {
+      "annotation_batch": "manual_batch_179_gap_observe_maturity_bridge_00",
+      "chronology_note": "2026-10-01 Rev 206 \u2014 GAP-OBSERVE-MATURITY-BRIDGE-00 v0.2 walkthrough",
+      "manual_read_summary": "Phase walkthrough for the OBSERVE maturity bridge implementation: records prompt hardening, Rust and Python read-path changes, focused Python test results, Rust cargo verification, and non-claim boundaries.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-OBSERVE-MATURITY-BRIDGE-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_maturity_bridge_00_v02_g10_maturity_bridge_rust_extension.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_observe_maturity_bridge_00_v02_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",
