@@ -288,3 +288,130 @@ The terms below appear in historical dredge material and research discussion, bu
 | **Cognitive Light Cone Intersection** | The condition in which two agents' epistemic light cones overlap — they observe the same knowledge territory from different positions. Detectable via spectral beacon proximity (similar λ_local) without exposing light cone contents. Enables private discovery of collaborators working in the same epistemic neighborhood. Relates to existing `ilc_core/analysis/light_cone_kpis.py`. | Research / privacy-preserving discovery |
 
 Reference list for broader historical lexicon: `docs/reference/ilc_comprehensive_reference_glossary_v0.1.md`.
+
+## 4.X Python/Rust Boundary Invariants
+
+INVARIANT-PY-RUST-1:
+No Python-produced artifact can cause Rust to accept an invalid consensus
+transition. Rust verifies all consensus rules independently of Python input.
+
+INVARIANT-PY-RUST-2:
+No economically valid but semantically malicious Python artifact can alter
+constitutional authority without passing Rust-verifiable authorization rules.
+Economic manipulation cannot bootstrap governance privilege.
+
+These invariants are formal glossary statements, not completed audit verdicts.
+INVARIANT-PY-RUST-2 requires a dedicated enumeration of all artifact types
+crossing the Python/Rust boundary and a verification that each type cannot be
+used to manipulate consensus inputs through valid-but-malicious graph-layer
+operations. That audit remains a pre-mainnet deliverable.
+
+## 6.X Laplacian Analytics Clarification
+
+lambda_2, the Fiedler value, is an observability and anomaly-detection signal in
+the live ILC architecture. It is NOT a trust signal or a consensus input.
+
+Live architecture in `ilc_core/analysis/laplacian_analytics.py` uses this family
+of signals for graph connectivity monitoring, behavioral partition anomaly
+detection, and partition quality metrics for jury diversity audit.
+
+Research-only uses are not live architecture and are not ratified: the
+Merkle-Laplacian dual commitment, spectral integrity proofs, and attempts to
+prove graph structural properties through eigenvalue bounds. A reader of the
+whitepaper or architecture docs should not conflate live observability with a
+research-phase proposal to make spectral properties protocol commitments.
+
+## 9. Adversarial Epistemics: Formal Model and Simulation Findings
+
+ILC's epistemic guarantees require empirical validation against adversarial
+rational agents who understand the mechanism. The SIM-LAUNDER adversarial
+epistemics simulation program ran from 2026-09-07 to 2026-09-08 and produced 16
+experiments with 67,700 total simulation runs.
+
+All results are model results under the assumed voter error distribution. They
+describe behavior of the simulation harness, not empirical measurements of the
+live ILC protocol.
+
+### 9.1 Formal Variables
+
+```text
+N        = total validator population
+E(x)     = relevant-expertise population for claim x
+alpha(x) = adversarial fraction within E(x)
+rho      = pairwise epistemic error correlation
+d(x)     = evidence independence coefficient for the dominant edge type on x
+R        = reputation-to-selection or refutation-resistance amplification
+delta    = reputation decay rate
+A(x)     = epistemic attention allocated to x
+I(x)     = downstream influence of x
+```
+
+The jury effectiveness function is:
+
+```text
+effectiveness = f(n, rho, E(x), alpha(x))
+```
+
+It is not simply `f(n)`. When `rho` approaches 1, adding validators provides
+near-zero additional epistemic protection.
+
+### 9.2 Three-Layer Diversity Taxonomy
+
+Identity diversity, epistemic diversity, and evidential independence are not
+interchangeable. CDL-V3 addresses identity/operator diversity; behavioral
+clustering partially addresses epistemic diversity; independent evidence
+tracking remains a separate surface.
+
+```text
+1,000,000 identities
+  -> 100 epistemic clusters
+  -> 10 independent evidence sources
+  -> 1 underlying information origin
+```
+
+That chain is not equivalent to 1,000,000 independent observations.
+
+### 9.3 Key Simulation Findings
+
+False consensus risk decomposed primarily by signal strength, cartel pressure,
+and correlation pressure. The dangerous regime in these simulations was
+weak-signal claims, not high-correlation validators alone.
+
+Raw reuse weight conflates propagation with corroboration. A single-origin claim
+with many descendants can outrank a claim with fewer descendants and more
+independent origins. The Popular Falsehood versus Contested Truth comparison
+produced an ELF gap of 52-59x.
+
+The staged compression result from SIM-LAUNDER-02H was:
+
+```text
+Graph: preserves 88% of observer structure
+Binary jury: preserves 26% of observer structure
+```
+
+The three jury-collapsed pairs were:
+
+| Pair | Graph separation | Jury separation |
+|---|---:|---:|
+| OBJECTIVE vs LAUNDERED | 0.7222 | 0.0003 |
+| CONTEXTUAL vs SUBJECTIVE | 0.1247 | 0.0013 |
+| CONTESTED vs POPPERIAN | 0.1581 | 0.0228 |
+
+SIM-LAUNDER-02G supports treating IEC, Popperian resistance, and K as
+independent dimensions. They should not be collapsed into one scalar.
+
+### 9.4 Minimal Protocol Addition
+
+The minimal addition suggested by the Phase 1 research is to record `origin_id`
+and `context_id` per vote or attribution event. This enables Independent
+Evidence Count and context profile K without changing the binary verdict
+mechanism.
+
+The CDL for this addition has not been opened by
+GAP-ADVERSARIAL-EPISTEMICS-REPORT-00.
+
+### 9.5 Open Questions
+
+SIM-REPUTATION-01, SIM-CAMOUFLAGE-01, and SIM-EVOLVE-01 have not run. Real
+LLM-agent calibration has not run. An adversarial tournament against a live ILC
+RC remains post-mainnet work.
