@@ -1,0 +1,100 @@
+{
+  "schema_version": "ilc.package_build_receipt.v0.1",
+  "phase": "GAP-PACKAGE-V0432-00a",
+  "date": "2026-10-01",
+  "status": "complete",
+  "source_private_commit_before_version_bump": "9405a9414760b0d108ee94076c54304ac71c926b",
+  "phase_completion_commit": "recorded by this completion commit",
+  "release_id": "ilc-core-0.4.32",
+  "version": {
+    "from": "0.4.31",
+    "to": "0.4.32"
+  },
+  "changes_from_0431": [
+    "pyproject.toml: version 0.4.31 -> 0.4.32",
+    "ilc_core/__init__.py: __version__ 0.4.31 -> 0.4.32",
+    "carries GAP-OBSERVE-MATURITY-BRIDGE-00 not_before_unix_ms read-path extension"
+  ],
+  "python_artifacts": {
+    "wheel": {
+      "path": "dist/ilc_core-0.4.32-py3-none-any.whl",
+      "sha256": "0594b30a7f3d515585acda12e8e6ea0ab3012d72ca48accd4890cb4006474564",
+      "size_bytes": 1549292,
+      "artifact_id_for_00b": "ilc-artifact:ilc-core-python-wheel-0432@phase-1628",
+      "signed_preimage_sha256_for_00b": "064dd4d59a535eeef1e9cb61adcc05c0da6072e95d61741bd04a89f6c1faa7e2"
+    },
+    "sdist": {
+      "path": "dist/ilc_core-0.4.32.tar.gz",
+      "sha256": "95181fe6729da2ac549506d1d09f5aae03519c0a7206999dbc941983a9330a09",
+      "size_bytes": 1267335,
+      "artifact_id_for_00b": "ilc-artifact:ilc-core-python-sdist-0432@phase-1628",
+      "signed_preimage_sha256_for_00b": "972fc6becaa76f3b0ff2b537f3da7822768126312cb587f0f1080a2e1c169731"
+    }
+  },
+  "rust_helper_binary_disposition": {
+    "local_release_build": "passed with existing dead-code warnings in ilc_consensus/src/node.rs",
+    "wheel_embeds_helper_binaries": false,
+    "wheel_content_check": "PASS: wheel has no embedded Rust helper binaries; helper tarball required in 00b",
+    "sensitive_00b_requirement": "build, publish, fetchback-verify, and deploy a fresh Linux x86_64 helper tarball from the exact 0.4.32 source commit because Rust gRPC server code changed"
+  },
+  "clean_venv_smoke": {
+    "python": "/usr/local/bin/python3.12",
+    "venv": "/tmp/ilc_0432_smoke_venv",
+    "working_directory_for_import_checks": "/tmp",
+    "installed_metadata_version": "0.4.32",
+    "ilc_core_version": "0.4.32",
+    "installed_module_path": "/private/tmp/ilc_0432_smoke_venv/lib/python3.12/site-packages/ilc_core/__init__.py",
+    "not_before_unix_ms_field_present": true,
+    "invite_enforcement_enabled": true,
+    "resolved_dependencies": {
+      "cbor2": "5.9.0",
+      "cryptography": "50.0.2",
+      "ilc-core": "0.4.32"
+    },
+    "dependency_observations": [
+      "cbor2 resolved to 5.9.0 as intended; no cbor2 6.x source-build path.",
+      "cryptography 50.0.2 built from source on this local Intel macOS Python 3.12 environment; install succeeded. 00b fetchback must preserve the hard-stop posture if public install fails on target platforms."
+    ]
+  },
+  "verification": {
+    "prompt_validator_00a": "VALID",
+    "prompt_validator_00b": "VALID",
+    "cargo_build_release": "passed",
+    "python_build": "Successfully built ilc_core-0.4.32.tar.gz and ilc_core-0.4.32-py3-none-any.whl",
+    "twine_check": "PASSED for wheel and sdist",
+    "focused_package_maturity_install_tests": "90 passed in 13.82s",
+    "full_suite_diagnostic": {
+      "status": "interrupted_after_unrelated_historical_failures_observed",
+      "exit_code": 130,
+      "progress_at_interrupt": "approximately 7 percent",
+      "first_failure_cluster": [
+        "tests/test_canon_bundle_pipeline.py",
+        "tests/test_canon_bundle_replay_report.py",
+        "tests/test_canon_bundle_replay_verify.py"
+      ],
+      "disposition": "not treated as a 0.4.32 package-build regression; focused package/maturity/install gate passed"
+    },
+    "setuptools_warning": "project.license as a TOML table is deprecated and must be updated before 2027-02-18"
+  },
+  "output_token": "package_v0432_local_build_pass_GAP_PACKAGE_V0432_00a",
+  "next_phase": "GAP-PACKAGE-V0432-00b",
+  "next_phase_go_phrase": "GO Phase GAP-PACKAGE-V0432-00b PACKAGE-0432-PUBLISH-AUTHORIZED",
+  "non_claims": [
+    "no_pypi_upload",
+    "no_release_signing_ceremony",
+    "no_pypi_fetchback_verification",
+    "no_pypi_yank",
+    "no_helper_tarball_publication",
+    "no_vps_validator_sync",
+    "no_validator_restart",
+    "no_live_gRPC_verification",
+    "no_public_mirror_refresh",
+    "no_public_mirror_push",
+    "no_lmdb_write",
+    "no_epoch_close",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting",
+    "no_public_rc_activation"
+  ]
+}

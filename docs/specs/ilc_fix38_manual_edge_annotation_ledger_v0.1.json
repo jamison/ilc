@@ -100421,6 +100421,102 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_submit_ingress_cdl_00_g10_cdl_117_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_180_gap_package_v0432_00a",
+      "chronology_note": "2026-10-01 Rev 207 - GAP-PACKAGE-V0432-00a build receipt",
+      "manual_read_summary": "Build receipt for ilc-core 0.4.32 local wheel and sdist: records artifact SHA-256 values, byte sizes, signing preimages for the 00b ceremony, clean-venv dependency observations, and non-claim boundaries.",
+      "node_kind": "phase_receipt",
+      "phase_ref": "GAP-PACKAGE-V0432-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "docs/phases/phase_gap_package_v0432_00a_walkthrough.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_V0432_00a_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_180_gap_package_v0432_00a",
+      "chronology_note": "2026-10-01 Rev 207 - GAP-PACKAGE-V0432-00a walkthrough",
+      "manual_read_summary": "Phase walkthrough for the non-sensitive 0.4.32 local package build: records prompt hardening, Rust release build, Python build/twine checks, clean-venv installed-wheel smoke, helper-tarball boundary, focused tests, and full-suite diagnostic disposition.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PACKAGE-V0432-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_v0432_00a_g10_package_0432_local_build.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_v0432_00a_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_180_gap_package_v0432_00a",
+      "chronology_note": "2026-10-01 Rev 207 - package v0432 prompt registration",
+      "manual_read_summary": "OBSERVE-00 package 0.4.32 local-build prompt: version bump, Rust release build, wheel+sdist build, clean installed-wheel smoke, helper-tarball boundary, receipt and token requirements.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PACKAGE-V0432-00a",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/ops/ilc_observe_00_prelaunch_phase_plan_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_v0432_00a_g10_package_0432_local_build.md"
+    },
+    {
+      "annotation_batch": "manual_batch_180_gap_package_v0432_00a",
+      "chronology_note": "2026-10-01 Rev 207 - package v0432 prompt registration",
+      "manual_read_summary": "OBSERVE-00 package 0.4.32 sensitive publish prompt: wheel+sdist signing/upload/fetchback, fresh helper-tarball publication/deployment, VPS validator sync, live gRPC verification, and mirror refresh.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-PACKAGE-V0432-00b",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/ops/ilc_observe_00_prelaunch_phase_plan_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_v0432_00b_g10_package_0432_publish.md"
     }
   ],
   "nodes": [
