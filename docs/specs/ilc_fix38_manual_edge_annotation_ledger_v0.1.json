@@ -87712,6 +87712,81 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_provenance_bridge_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_160_phase_GAP_OBSERVE_CERT_GRAPH_BINDING_CONFIG_00",
+      "chronology_note": "2026-10-01 GAP-OBSERVE-CERT-GRAPH-BINDING-CONFIG-00 resolves the F-003 cert-graph-binding config blocker for downstream OBSERVE-00 pre-flight phases.",
+      "manual_read_summary": "Walkthrough for the non-sensitive OBSERVE-00 cert graph-binding config resolution phase. Records guard anatomy, six-condition resolution, local DER certificate fingerprint matching, read-only LMDB-backed validator endpoint assertion verification, prompt verification command outputs, STATUS token emission, and no-live-gRPC/no-runtime-mutation boundary.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:cert_graph_binding_config_resolved_GAP_OBSERVE_CERT_GRAPH_BINDING_CONFIG_00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_cert_graph_binding_config_00_g10_cert_graph_binding_config_resolve.md"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "docs/specs/ilc_validator_endpoint_assertions_manifest_GAP_VPS_VALIDATOR_REPROVISION_00_v0.1.json"
+        },
+        {
+          "edge_type": "DERIVED_FROM",
+          "target": "out/gap_vps_validator_reprovision_00/endpoint_assertions_lmdb"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "DERIVED_FROM"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_observe_cert_graph_binding_config_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_160_phase_GAP_OBSERVE_CERT_GRAPH_BINDING_CONFIG_00",
+      "chronology_note": "2026-10-01 prompt governing GAP-OBSERVE-CERT-GRAPH-BINDING-CONFIG-00, the first OBSERVE-00 pre-flight lane step.",
+      "manual_read_summary": "Phase prompt for the non-sensitive OBSERVE-00 cert graph-binding config resolution phase. Specifies F-003 guard anatomy, six required graph-binding inputs, no-live-gRPC/no-code-mutation boundaries, resolved versus hard-stop evidence paths, verification commands, and STATUS token discipline.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CONSTRAINS_FUTURE_PHASE",
+          "target": "phase:GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00"
+        },
+        {
+          "edge_type": "CONSTRAINS_FUTURE_PHASE",
+          "target": "phase:GAP-OBSERVE-EPOCH-ANCHOR-VERIFY-00"
+        },
+        {
+          "edge_type": "CONSTRAINS_FUTURE_PHASE",
+          "target": "phase:GAP-OBSERVE-PREFLIGHT-DRY-RUN-00"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/consensus/production_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_validator_endpoint_assertions_manifest_GAP_VPS_VALIDATOR_REPROVISION_00_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CONSTRAINS_FUTURE_PHASE",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_cert_graph_binding_config_00_g10_cert_graph_binding_config_resolve.md"
     }
   ],
   "boundary": {
@@ -110918,16 +110993,9 @@
       "repo_path": "out/gap_capproof_cdl_115_ratification_candidate_prep_00/candidate_audit_evidence.json"
     },
     {
-      "repo_path": "docs/specs/ilc_model_router_post_live_evidence_GAP_MODEL_ROUTER_CDL_116_POST_LIVE_EVIDENCE_00_v0.1.md",
-      "recommended_graph_action": "load_bearing_artifact_added",
       "annotation_batch": "manual_batch_178_gap_model_router_evidence_00",
       "chronology_note": "2026-10-01 Rev 201 \u2014 GAP-MODEL-ROUTER-CDL-116-POST-LIVE-EVIDENCE-00 evidence doc",
       "manual_read_summary": "Post-live CDL-116 evidence document: records read-only search for live Model Router receipts, emits no-live-receipts verdict, and preserves CDL-116 open/not-ratified and Werner-formula-deferred boundaries.",
-      "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER",
-        "REFERENCES_AUTHORITY",
-        "EVIDENCE_FOR"
-      ],
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -110942,18 +111010,19 @@
           "edge_type": "EVIDENCE_FOR",
           "target": "CDL-116"
         }
-      ]
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCE_FOR"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_model_router_post_live_evidence_GAP_MODEL_ROUTER_CDL_116_POST_LIVE_EVIDENCE_00_v0.1.md"
     },
     {
-      "repo_path": "docs/phases/phase_gap_model_router_post_live_evidence_00_walkthrough.md",
-      "recommended_graph_action": "support_only",
       "annotation_batch": "manual_batch_178_gap_model_router_evidence_00",
       "chronology_note": "2026-10-01 Rev 201 \u2014 GAP-MODEL-ROUTER-CDL-116-POST-LIVE-EVIDENCE-00 walkthrough",
       "manual_read_summary": "Phase walkthrough for the read-only Model Router CDL-116 post-live evidence collection phase, including prompt hardening, source reads, receipt-store search results, and verification output.",
-      "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER",
-        "REFERENCES_AUTHORITY"
-      ],
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -110964,18 +111033,18 @@
           "edge_type": "REFERENCES_AUTHORITY",
           "target": "docs/specs/ilc_model_router_post_live_evidence_GAP_MODEL_ROUTER_CDL_116_POST_LIVE_EVIDENCE_00_v0.1.md"
         }
-      ]
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_model_router_post_live_evidence_00_walkthrough.md"
     },
     {
-      "repo_path": "out/gap_model_router_post_live_evidence_00/evidence.json",
-      "recommended_graph_action": "support_only",
       "annotation_batch": "manual_batch_178_gap_model_router_evidence_00",
       "chronology_note": "2026-10-01 Rev 201 \u2014 GAP-MODEL-ROUTER-CDL-116-POST-LIVE-EVIDENCE-00 machine-readable evidence",
       "manual_read_summary": "Machine-readable evidence for CDL-116 post-live receipt search: records no default store, no environment store override, no repo LMDB candidates outside excluded paths, and no live receipts found.",
-      "proposed_trace_roles": [
-        "SOURCE_TREE_MEMBER",
-        "EVIDENCE_FOR"
-      ],
       "proposed_authority_trace_edges": [],
       "proposed_semantic_edges": [
         {
@@ -110986,7 +111055,13 @@
           "edge_type": "EVIDENCE_FOR",
           "target": "docs/specs/ilc_model_router_post_live_evidence_GAP_MODEL_ROUTER_CDL_116_POST_LIVE_EVIDENCE_00_v0.1.md"
         }
-      ]
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCE_FOR"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_model_router_post_live_evidence_00/evidence.json"
     }
   ],
   "phase": "1545p-Fix38",
