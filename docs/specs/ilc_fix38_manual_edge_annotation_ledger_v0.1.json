@@ -87821,6 +87821,34 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_cert_graph_binding_config_00_g10_cert_graph_binding_config_resolve.md"
+    },
+    {
+      "annotation_batch": "manual_batch_184_gap_package_v0432_00b_manifest",
+      "chronology_note": "2026-10-02 \u2014 GAP-PACKAGE-V0432-00b installable release manifest for ilc-core 0.4.32",
+      "manual_read_summary": "Installable release manifest for ilc-core 0.4.32: binds PyPI wheel and sdist hashes/sizes, the fresh Linux x86_64 helper tarball hash/size, the 0.4.32 release envelope reference, and installer sync metadata for tools/install.sh.",
+      "node_kind": "release_manifest",
+      "phase_ref": "GAP-PACKAGE-V0432-00b",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_core_0432_release_envelopes_GAP_PACKAGE_V0432_00b_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0432_GAP_PACKAGE_V0432_00b_v0.1.json"
     }
   ],
   "boundary": {

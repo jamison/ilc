@@ -20,33 +20,33 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0431_GAP_PACKAGE_0431_00b_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0432_GAP_PACKAGE_V0432_00b_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/0a/9f/"
-    "3fd0f80bbb7d42adcfae53ecd3fbd2c5b9b555820808b9f6e75e952ae54c/"
-    "ilc_core-0.4.31-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/d9/d9/"
+    "ad2851b3166b9f38e2cd9bc73bf3bb39d830a6ec2797649bc01c4d1e31d5/"
+    "ilc_core-0.4.32-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "362e6be6c3be596010d02e37c94b66570507e67b590716114eaaf5f2dd63dae1"
-EXPECTED_SIZE = "1534395"
-EXPECTED_RELEASE_ID = "ilc-core-0.4.31"
-EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0431@phase-1628"
-EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0431@phase-1628"
-EXPECTED_SDIST_SHA256 = "646854df1eb3a75346d962a7a790e71f667d4edbcc11d81f87fe5bc791dc2d31"
-EXPECTED_SDIST_SIZE = "1255698"
+EXPECTED_SHA256 = "f5486b0b20cfef77aeba18d9dbe371d385cb58ec04b83fb7765f652695171c90"
+EXPECTED_SIZE = "1549382"
+EXPECTED_RELEASE_ID = "ilc-core-0.4.32"
+EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0432@phase-1628"
+EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0432@phase-1628"
+EXPECTED_SDIST_SHA256 = "172cd72d62393fae7785cf0bb321153d8ffdae368e8163f2183769d0dc7bfa4d"
+EXPECTED_SDIST_SIZE = "1267446"
 EXPECTED_RELEASE_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0431_release_envelopes_GAP_PACKAGE_0431_00b_v0.1.json"
+    "ilc_core_0432_release_envelopes_GAP_PACKAGE_V0432_00b_v0.1.json"
 )
 EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX = (
     "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 )
 EXPECTED_CONSENSUS_URL = (
-    "https://github.com/jamison/ilc/releases/download/v0.4.31/"
-    "ilc-consensus-linux-x86_64-v0.4.31.tar.gz"
+    "https://github.com/jamison/ilc/releases/download/v0.4.32/"
+    "ilc-consensus-linux-x86_64-v0.4.32.tar.gz"
 )
-EXPECTED_CONSENSUS_SHA256 = "f493ae06732b5a0e55576aaf86dbeb20ce4a742d3488579e73933a6ac1721036"
-EXPECTED_CONSENSUS_SIZE = "5045081"
+EXPECTED_CONSENSUS_SHA256 = "8d04e69eafb4c7c9a40ef96f335b7dddf2d01452eb383a4dbd8c08d481238259"
+EXPECTED_CONSENSUS_SIZE = "5046757"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
