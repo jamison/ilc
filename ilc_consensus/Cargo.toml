@@ -78,18 +78,6 @@ name = "attribution_batch_ingest"
 path = "src/attribution_batch_ingest_main.rs"
 
 [[bin]]
-name = "shamir_split"
-path = "src/shamir_split_main.rs"
-
-[[bin]]
-name = "shamir_recover"
-path = "src/shamir_recover_main.rs"
-
-[[bin]]
-name = "shamir_verify"
-path = "src/shamir_verify_main.rs"
-
-[[bin]]
 name = "genesis_recovery_fake_vector"
 path = "src/genesis_recovery_fake_vector_main.rs"
 
