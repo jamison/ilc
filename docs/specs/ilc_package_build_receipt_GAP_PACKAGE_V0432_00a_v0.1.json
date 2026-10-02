@@ -13,22 +13,23 @@
   "changes_from_0431": [
     "pyproject.toml: version 0.4.31 -> 0.4.32",
     "ilc_core/__init__.py: __version__ 0.4.31 -> 0.4.32",
-    "carries GAP-OBSERVE-MATURITY-BRIDGE-00 not_before_unix_ms read-path extension"
+    "carries GAP-OBSERVE-MATURITY-BRIDGE-00 not_before_unix_ms read-path extension",
+    "post-audit hardening: maturity derivation imports VALIDATION_EPOCH_SECONDS, enforces epoch ordering, and checks raw millisecond span before floored validation-epoch derivation"
   ],
   "python_artifacts": {
     "wheel": {
       "path": "dist/ilc_core-0.4.32-py3-none-any.whl",
-      "sha256": "0594b30a7f3d515585acda12e8e6ea0ab3012d72ca48accd4890cb4006474564",
-      "size_bytes": 1549292,
+      "sha256": "f5486b0b20cfef77aeba18d9dbe371d385cb58ec04b83fb7765f652695171c90",
+      "size_bytes": 1549382,
       "artifact_id_for_00b": "ilc-artifact:ilc-core-python-wheel-0432@phase-1628",
-      "signed_preimage_sha256_for_00b": "064dd4d59a535eeef1e9cb61adcc05c0da6072e95d61741bd04a89f6c1faa7e2"
+      "signed_preimage_sha256_for_00b": "8c5a3989a7ea49f60a37517ff6d2984679f70b0164ed22e9a9b5776ba053b8d2"
     },
     "sdist": {
       "path": "dist/ilc_core-0.4.32.tar.gz",
-      "sha256": "95181fe6729da2ac549506d1d09f5aae03519c0a7206999dbc941983a9330a09",
-      "size_bytes": 1267335,
+      "sha256": "172cd72d62393fae7785cf0bb321153d8ffdae368e8163f2183769d0dc7bfa4d",
+      "size_bytes": 1267446,
       "artifact_id_for_00b": "ilc-artifact:ilc-core-python-sdist-0432@phase-1628",
-      "signed_preimage_sha256_for_00b": "972fc6becaa76f3b0ff2b537f3da7822768126312cb587f0f1080a2e1c169731"
+      "signed_preimage_sha256_for_00b": "81daa68627f4c731082d6c2ecb2bf36e9009a473b90b000c70b6aac5c78dc7ea"
     }
   },
   "rust_helper_binary_disposition": {
@@ -39,11 +40,11 @@
   },
   "clean_venv_smoke": {
     "python": "/usr/local/bin/python3.12",
-    "venv": "/tmp/ilc_0432_smoke_venv",
+    "venv": "/tmp/ilc_0432_audit_rebuild_smoke_venv",
     "working_directory_for_import_checks": "/tmp",
     "installed_metadata_version": "0.4.32",
     "ilc_core_version": "0.4.32",
-    "installed_module_path": "/private/tmp/ilc_0432_smoke_venv/lib/python3.12/site-packages/ilc_core/__init__.py",
+    "installed_module_path": "/private/tmp/ilc_0432_audit_rebuild_smoke_venv/lib/python3.12/site-packages/ilc_core/__init__.py",
     "not_before_unix_ms_field_present": true,
     "invite_enforcement_enabled": true,
     "resolved_dependencies": {
@@ -63,6 +64,7 @@
     "python_build": "Successfully built ilc_core-0.4.32.tar.gz and ilc_core-0.4.32-py3-none-any.whl",
     "twine_check": "PASSED for wheel and sdist",
     "focused_package_maturity_install_tests": "90 passed in 13.82s",
+    "post_audit_verification": "39 passed in 2.40s; compileall passed; clean rebuilt-wheel smoke passed; Rust not_before_unix_ms targeted tests passed",
     "full_suite_diagnostic": {
       "status": "interrupted_after_unrelated_historical_failures_observed",
       "exit_code": 130,

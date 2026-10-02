@@ -41,6 +41,8 @@ from ilc_core.consensus.validator_endpoint_assertion import (
     VALIDATOR_ENDPOINT_ASSERTION_SCHEMA_VERSION,
     validator_assertion_candidate_id,
 )
+from ilc_core.epoch.epoch_emission_runtime import VALIDATION_EPOCH_SECONDS
+from ilc_core.epoch.epoch_maturity_gate import MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN
 
 
 GRAPH_BINDING_AGENT_ID = "a" * 96
@@ -106,7 +108,7 @@ class FakeReadStub:
                         state_root=b"c" * 36,
                         spectral_hash=bytes([2]) * 32,
                         agg_sig=b"d" * 96,
-                        not_before_unix_ms=1_729_065_600_000,
+                        not_before_unix_ms=1_789_516_800_000 + 2_592_000_000,
                     ),
                 ],
             )
@@ -329,7 +331,7 @@ def test_epoch_record_and_epoch_chain_are_bounded_and_timeout_explicit() -> None
     assert [entry.epoch for entry in chain.records] == [1, 2]
     assert [entry.not_before_unix_ms for entry in chain.records] == [
         1_789_516_800_000,
-        1_729_065_600_000,
+        1_789_516_800_000 + 2_592_000_000,
     ]
 
     fresh_stub = FakeReadStub()
@@ -406,11 +408,44 @@ def test_maturity_bridge_derive_non_increasing_timestamp_raises() -> None:
         derive_closing_validation_epoch_from_epoch_records(r0, r1)
 
 
+def test_maturity_bridge_derive_reversed_epoch_arguments_raise() -> None:
+    start = 1_789_516_800_000
+    opening = _epoch_record_quote_with_not_before(epoch=1, not_before_unix_ms=start)
+    closing = _epoch_record_quote_with_not_before(
+        epoch=2,
+        not_before_unix_ms=start + 2_592_000_000,
+    )
+
+    with pytest.raises(ValueError, match="maturity_proof_epoch_order_invalid"):
+        derive_closing_validation_epoch_from_epoch_records(closing, opening)
+
+
 def test_maturity_bridge_derive_span_below_minimum_raises() -> None:
     r0 = _epoch_record_quote_with_not_before(epoch=1, not_before_unix_ms=1_789_516_800_000)
     r1 = _epoch_record_quote_with_not_before(
         epoch=2,
         not_before_unix_ms=1_789_516_800_000 + 60_000,
+    )
+
+    with pytest.raises(ValueError, match="maturity_span_below_minimum"):
+        derive_closing_validation_epoch_from_epoch_records(r0, r1)
+
+
+def test_maturity_bridge_derive_rejects_flooring_boundary_shortfall() -> None:
+    validation_epoch_ms = VALIDATION_EPOCH_SECONDS * 1_000
+    minimum_span_ms = MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN * validation_epoch_ms
+    # Opening late in a minute and closing early in the boundary minute can
+    # produce a large enough floored minute-index delta unless raw ms are checked.
+    start = 1_789_516_800_999
+    r0 = _epoch_record_quote_with_not_before(epoch=1, not_before_unix_ms=start)
+    r1 = _epoch_record_quote_with_not_before(
+        epoch=2,
+        not_before_unix_ms=start + minimum_span_ms - 999,
+    )
+    assert (
+        r1.not_before_unix_ms // validation_epoch_ms
+        - r0.not_before_unix_ms // validation_epoch_ms
+        == MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN
     )
 
     with pytest.raises(ValueError, match="maturity_span_below_minimum"):
@@ -446,6 +481,22 @@ def test_maturity_bridge_normalizes_old_validator_missing_not_before_to_zero() -
     record = adapter.get_epoch_record(4)
 
     assert record.not_before_unix_ms == 0
+
+
+def test_maturity_bridge_rejects_float_not_before_boundary_value() -> None:
+    stub = FakeReadStub()
+    stub.GetEpochRecord.response = SimpleNamespace(
+        epoch=4,
+        found=True,
+        state_root=b"e" * 36,
+        spectral_hash=SPECTRAL_HASH,
+        agg_sig=b"f" * 96,
+        not_before_unix_ms=0.0,
+    )
+    adapter = _adapter(stub)
+
+    with pytest.raises(ValueError, match="get_epoch_record_response_invalid_phase_1358"):
+        adapter.get_epoch_record(4)
 
 
 def test_quic_ecu_transfer_submission_path_is_present_but_not_activated() -> None:

@@ -23,6 +23,7 @@ from typing import Any, Callable, Mapping, Protocol
 
 from google.protobuf import descriptor_pb2, descriptor_pool, message_factory
 
+from ilc_core.epoch.epoch_emission_runtime import VALIDATION_EPOCH_SECONDS
 from ilc_core.epoch.epoch_maturity_gate import MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN
 from ilc_core.consensus.validator_endpoint_assertion import (
     BlsVerifier,
@@ -1405,11 +1406,16 @@ def derive_closing_validation_epoch_from_epoch_records(
 
     if not epoch_n_record.found or not epoch_n1_record.found:
         raise ValueError("maturity_proof_epoch_record_not_found")
+    if epoch_n1_record.epoch <= epoch_n_record.epoch:
+        raise ValueError("maturity_proof_epoch_order_invalid")
     if epoch_n_record.not_before_unix_ms == 0 or epoch_n1_record.not_before_unix_ms == 0:
         raise ValueError("maturity_proof_not_before_unix_ms_zero")
     if epoch_n1_record.not_before_unix_ms <= epoch_n_record.not_before_unix_ms:
         raise ValueError("maturity_proof_not_before_unix_ms_order_invalid")
-    validation_epoch_ms = 60_000
+    validation_epoch_ms = VALIDATION_EPOCH_SECONDS * 1_000
+    minimum_span_ms = MIN_MONTHLY_ISSUANCE_VALIDATION_EPOCH_SPAN * validation_epoch_ms
+    if epoch_n1_record.not_before_unix_ms - epoch_n_record.not_before_unix_ms < minimum_span_ms:
+        raise ValueError("maturity_span_below_minimum")
     opening_validation_epoch = epoch_n_record.not_before_unix_ms // validation_epoch_ms
     closing_validation_epoch = epoch_n1_record.not_before_unix_ms // validation_epoch_ms
     if (
