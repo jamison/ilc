@@ -11,6 +11,7 @@ from typing import Any, Mapping
 
 PROVIDER_ADAPTER_VERSION = "provider_adapter_phase_1613.v0.1"
 PROVIDER_RESPONSE_STATUSES = frozenset({"failure", "partial", "success"})
+ROUTER_CAPABILITY_CLASSES = frozenset({"embedding", "inference", "multimodal"})
 MAX_ROUTER_MESSAGES = 64
 MAX_ROUTER_REQUEST_BYTES = 64 * 1024
 MAX_PROVIDER_CONTENT_CHARS = 64 * 1024
@@ -36,10 +37,13 @@ class RouterRequest:
     agent_id_hex: str
     epoch: int
     request_nonce: bytes
+    capability_class: str = "inference"
 
     def __post_init__(self) -> None:
         _require_text(self.model_id, "model_router_model_id_invalid")
         _require_text(self.provider, "model_router_provider_invalid")
+        if self.capability_class not in ROUTER_CAPABILITY_CLASSES:
+            raise ProviderAdapterError("model_router_capability_class_invalid")
         _require_hex(self.agent_id_hex, "model_router_agent_id_invalid", length=96)
         _require_non_negative_int(self.epoch, "model_router_epoch_invalid")
         if type(self.request_nonce) is not bytes or len(self.request_nonce) != 16:
@@ -54,6 +58,11 @@ class RouterRequest:
         encoded = _canonical_json_bytes(list(self.messages), "model_router_messages_invalid")
         if len(encoded) > MAX_ROUTER_REQUEST_BYTES:
             raise ProviderAdapterError("model_router_messages_too_large")
+        object.__setattr__(
+            self,
+            "messages",
+            tuple(json.loads(encoded.decode("utf-8"))),
+        )
 
     @classmethod
     def build(
@@ -64,6 +73,7 @@ class RouterRequest:
         messages: tuple[dict[str, Any], ...],
         agent_id_hex: str,
         epoch: int,
+        capability_class: str = "inference",
     ) -> "RouterRequest":
         """Build a request with a fresh secure per-request nonce."""
 
@@ -74,6 +84,7 @@ class RouterRequest:
             agent_id_hex=agent_id_hex,
             epoch=epoch,
             request_nonce=secrets.token_bytes(16),
+            capability_class=capability_class,
         )
 
 
@@ -165,6 +176,7 @@ __all__ = [
     "MAX_ROUTER_TEXT_CHARS",
     "PROVIDER_ADAPTER_VERSION",
     "PROVIDER_RESPONSE_STATUSES",
+    "ROUTER_CAPABILITY_CLASSES",
     "ProviderAdapter",
     "ProviderAdapterError",
     "ProviderResponse",

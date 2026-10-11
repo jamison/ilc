@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import ast
-from decimal import Decimal
+from decimal import Decimal, localcontext
 from pathlib import Path
 
 import pytest
@@ -10,6 +10,7 @@ import pytest
 from ilc_core.capproof import (
     CAPPROOF_MAX_METRIC_VALUE,
     CAPPROOF_V1_NO_ILC_MINT,
+    CAPPROOF_DETERMINISM_PROBE_PRODUCTION_ACTIVATED,
     BandwidthProbe,
     CapabilityVector,
     CapProofValidationError,
@@ -19,6 +20,8 @@ from ilc_core.capproof import (
     InferProbe,
     compute_capproof_multiplier,
 )
+from ilc_core.capproof import probe_runner
+from ilc_core.capproof.probe_runner import _derive_metric
 
 _SALT = "ab" * 32
 _AGENT_ID = "a" * 96
@@ -29,12 +32,34 @@ def test_capproof_no_ilc_mint_constant_is_true() -> None:
     assert CAPPROOF_V1_NO_ILC_MINT is True
 
 
+def test_determinism_probe_is_marked_scaffold_only_until_guard_clearance() -> None:
+    assert CAPPROOF_DETERMINISM_PROBE_PRODUCTION_ACTIVATED is False
+
+
 def test_all_probe_stubs_return_expected_field_types() -> None:
     assert isinstance(GEMMProbe().run(_SALT).gemm_gops, Decimal)
     assert isinstance(InferProbe().run(_SALT).infer_tps, Decimal)
     assert isinstance(GraphProbe().run(_SALT).graph_mteps, Decimal)
     assert isinstance(BandwidthProbe().run(_SALT).bw_gbps, Decimal)
     assert DeterminismProbe().run(_SALT).det_pass is True
+
+
+def test_determinism_probe_result_depends_on_repeat_hash_consistency(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    calls = 0
+
+    def _drifting_digest(_salt: str) -> str:
+        nonlocal calls
+        calls += 1
+        return f"{calls:064x}"
+
+    monkeypatch.setattr(probe_runner, "_determinism_digest", _drifting_digest)
+
+    result = DeterminismProbe().run(_SALT)
+
+    assert result.det_pass is False
+    assert calls == 3
 
 
 def test_probe_stubs_reject_mismatched_epoch_salt() -> None:
@@ -149,6 +174,38 @@ def test_capability_vector_json_is_deterministic_and_decimal_strings() -> None:
         + '","bw_gbps":"4.5","det_pass":true,"epoch":7,'
         + '"gemm_gops":"2.5","graph_mteps":"5.5","infer_tps":"3.5"}'
     )
+    assert CapabilityVector.from_dict(cv.to_dict()) == cv
+    assert CapabilityVector.from_json(cv.to_json()) == cv
+
+
+def test_capability_vector_from_dict_rejects_scientific_decimal_string() -> None:
+    cv = CapabilityVector(
+        gemm_gops=Decimal("2.5"),
+        infer_tps=Decimal("3.5"),
+        bw_gbps=Decimal("4.5"),
+        graph_mteps=Decimal("5.5"),
+        det_pass=True,
+        epoch=7,
+        agent_id=_AGENT_ID,
+    )
+    payload = cv.to_dict()
+    payload["gemm_gops"] = "1E+2"
+
+    with pytest.raises(CapProofValidationError) as exc:
+        CapabilityVector.from_dict(payload)
+
+    assert exc.value.token == "capproof_gemm_gops_must_be_canonical_decimal_string"
+
+
+def test_probe_metric_derivation_ignores_ambient_decimal_precision() -> None:
+    with localcontext() as ctx:
+        ctx.prec = 6
+        low_precision = _derive_metric(_SALT, "gemm", Decimal("100000"), Decimal("1000"))
+    with localcontext() as ctx:
+        ctx.prec = 50
+        high_precision = _derive_metric(_SALT, "gemm", Decimal("100000"), Decimal("1000"))
+
+    assert low_precision == high_precision
 
 
 def test_multiplier_clamps_at_lower_bound() -> None:

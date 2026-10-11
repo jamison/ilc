@@ -8,6 +8,8 @@ pub mod balance_store;
 pub mod config;
 pub mod epoch_settlement;
 pub mod fast_path;
+pub mod native_submit_persist;
+pub mod native_submit_validate;
 pub mod network;
 pub mod node;
 pub mod persistent_quic;

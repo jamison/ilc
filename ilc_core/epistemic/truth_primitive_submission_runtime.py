@@ -251,6 +251,40 @@ def _require_map(name: str, obj: dict) -> dict:
     return v
 
 
+def _is_canonical_decimal_string(value: str) -> bool:
+    if (
+        not value
+        or value.startswith(("-", "+"))
+        or "e" in value
+        or "E" in value
+        or value == "."
+    ):
+        return False
+    dot_seen = False
+    digit_seen = False
+    for char in value:
+        if char.isdigit():
+            digit_seen = True
+            continue
+        if char == "." and not dot_seen:
+            dot_seen = True
+            continue
+        return False
+    return digit_seen
+
+
+def _contains_non_integer_json_number(value: Any) -> bool:
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, float):
+        return True
+    if isinstance(value, list):
+        return any(_contains_non_integer_json_number(item) for item in value)
+    if isinstance(value, dict):
+        return any(_contains_non_integer_json_number(item) for item in value.values())
+    return False
+
+
 def _require_in(name: str, value: str, allowed: frozenset[str]) -> None:
     if value not in allowed:
         raise EpistemicSubmissionError(
@@ -262,6 +296,11 @@ def _require_in(name: str, value: str, allowed: frozenset[str]) -> None:
 def _validate_decimal_confidence(name: str, value: Any) -> None:
     """Validate a decimal string confidence value: 0 < v <= 1.0."""
     if not isinstance(value, str):
+        raise EpistemicSubmissionError(
+            f"field_invalid_{name}",
+            f"'{name}' must be a canonical decimal string",
+        )
+    if not _is_canonical_decimal_string(value):
         raise EpistemicSubmissionError(
             f"field_invalid_{name}",
             f"'{name}' must be a canonical decimal string",
@@ -338,6 +377,11 @@ def _validate_outer_envelope(submission: Any) -> dict:
         raise EpistemicSubmissionError(
             "payload_missing",
             "submission.payload must be a map/object",
+        )
+    if _contains_non_integer_json_number(payload):
+        raise EpistemicSubmissionError(
+            "payload_non_integer_number_rejected",
+            "submission.payload must not contain JSON float numbers; use canonical decimal strings",
         )
     sig = submission.get("sig")
     if sig is not None and not isinstance(sig, str):

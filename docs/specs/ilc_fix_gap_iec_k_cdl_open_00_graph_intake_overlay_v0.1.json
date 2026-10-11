@@ -1,0 +1,59 @@
+{
+  "artifact": "ilc_fix_gap_iec_k_cdl_open_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "cdl_mutation": true,
+    "network_or_p2p_activation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-IEC-K-CDL-OPEN-00 CDL-120 opening evidence and documentation."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_iec_k_cdl_open_00_overlay_record",
+      "annotation_phase": "GAP-IEC-K-CDL-OPEN-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_gap_iec_k_cdl_open_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_iec_k_cdl_open_00_overlay_record",
+      "annotation_phase": "GAP-IEC-K-CDL-OPEN-00",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_iec_k_cdl_open_00_g10_iec_k_cdl_opening.md",
+      "target": "phase:GAP-IEC-K-CDL-OPEN-00"
+    },
+    {
+      "annotation_method": "gap_iec_k_cdl_open_00_overlay_record",
+      "annotation_phase": "GAP-IEC-K-CDL-OPEN-00",
+      "edge_role": "CDL_OPENING_DOC",
+      "graph_delta": "support_only",
+      "node_kind": "cdl_opening_doc",
+      "repo_path": "docs/specs/ilc_cdl_120_iec_k_context_tracking_cdl_opening_GAP_IEC_K_CDL_OPEN_00_v0.1.md",
+      "target": "cdl:CDL-120"
+    },
+    {
+      "annotation_method": "gap_iec_k_cdl_open_00_overlay_record",
+      "annotation_phase": "GAP-IEC-K-CDL-OPEN-00",
+      "edge_role": "CDL_REGISTER_UPDATE",
+      "graph_delta": "support_only",
+      "node_kind": "cdl_register",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+      "target": "cdl:CDL-120"
+    },
+    {
+      "annotation_method": "gap_iec_k_cdl_open_00_overlay_record",
+      "annotation_phase": "GAP-IEC-K-CDL-OPEN-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_iec_k_cdl_open_00_walkthrough.md",
+      "target": "phase:GAP-IEC-K-CDL-OPEN-00"
+    }
+  ],
+  "schema_version": "fix39_graph_intake_overlay.v0.1",
+  "status": "support_only"
+}

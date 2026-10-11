@@ -8,6 +8,7 @@ import math
 import socket
 import urllib.error
 import urllib.request
+import urllib.parse
 from typing import Any, Mapping
 
 from .adapter import (
@@ -47,7 +48,7 @@ class AnthropicAdapter(ProviderAdapter):
     ) -> None:
         if type(api_key) is not str or not api_key:
             raise ValueError("anthropic_adapter_api_key_required")
-        if type(endpoint) is not str or not endpoint.startswith("https://"):
+        if type(endpoint) is not str or not _is_valid_https_endpoint(endpoint):
             raise ValueError("anthropic_adapter_endpoint_invalid")
         if type(provider_id) is not str or not provider_id:
             raise ValueError("anthropic_adapter_provider_id_invalid")
@@ -139,7 +140,10 @@ class AnthropicAdapter(ProviderAdapter):
             return _failure("provider_response_missing_content")
         if len(content) > MAX_PROVIDER_CONTENT_CHARS:
             return _failure("provider_response_content_too_large")
-        input_tokens, output_tokens = _extract_usage_counts(usage)
+        counts = _extract_usage_counts(usage)
+        if counts is None:
+            return _failure("provider_response_usage_invalid")
+        input_tokens, output_tokens = counts
         return ProviderResponse(
             status="success",
             content=content,
@@ -196,22 +200,31 @@ def _extract_anthropic_content(decoded: Mapping[str, Any]) -> str | None:
     return content or None
 
 
-def _extract_usage_counts(usage: object) -> tuple[int, int]:
+def _is_valid_https_endpoint(endpoint: str) -> bool:
+    parsed = urllib.parse.urlparse(endpoint)
+    return parsed.scheme == "https" and bool(parsed.netloc) and bool(parsed.path)
+
+
+def _extract_usage_counts(usage: object) -> tuple[int, int] | None:
     if not isinstance(usage, Mapping):
         return 0, 0
     input_value = usage.get("input_tokens", usage.get("prompt_tokens", 0))
     output_value = usage.get("output_tokens", usage.get("completion_tokens", 0))
-    return _non_negative_int(input_value), _non_negative_int(output_value)
+    input_count = _non_negative_int(input_value)
+    output_count = _non_negative_int(output_value)
+    if input_count is None or output_count is None:
+        return None
+    return input_count, output_count
 
 
-def _non_negative_int(value: object) -> int:
+def _non_negative_int(value: object) -> int | None:
     if isinstance(value, bool):
-        return 0
-    try:
-        out = int(str(value))
-    except (TypeError, ValueError):
-        return 0
-    return out if out >= 0 else 0
+        return None
+    if isinstance(value, int):
+        return value if value >= 0 else None
+    if isinstance(value, str) and value and value.isdecimal():
+        return int(value)
+    return None
 
 
 __all__ = [

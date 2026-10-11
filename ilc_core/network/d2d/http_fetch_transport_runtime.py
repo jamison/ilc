@@ -29,10 +29,16 @@ from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs, urlparse
 
 from ilc_core.network.d2d import truth_primitive_fetch_runtime as _fetch_rt
 from ilc_core.network.d2d.persistent_fetch_rate_limiter_runtime import (
     PersistentFetchRateLimiter,
+)
+from ilc_core.release.constants import MAX_UPGRADE_ASSERTION_BYTES
+from ilc_core.release.upgrade_check import (
+    UpgradeCheckError,
+    validate_release_assertion,
 )
 from ilc_core.sidecars.public_path_activation import (
     authorize_public_fetch_serving,
@@ -60,6 +66,16 @@ _MAX_INBOUND_BYTES = 65_536  # 64 KiB — request body OOM guard
 _CONTENT_LENGTH_MISSING_TOKEN = "fetch_content_length_missing"
 _CONTENT_LENGTH_INVALID_TOKEN = "fetch_content_length_invalid"
 _CONTENT_TOO_LARGE_TOKEN = "fetch_content_too_large"
+_RELEASE_ASSERTION_LATEST_PATH = "/.well-known/ilc/software-release/latest.json"
+_DEFAULT_RELEASE_ASSERTION_CHANNEL = "public_rc"
+_RELEASE_ASSERTION_NOT_FOUND_TOKEN = "release_assertion_not_found"
+_RELEASE_ASSERTION_STORE_UNAVAILABLE_TOKEN = "release_assertion_store_unavailable"
+_RELEASE_ASSERTION_TOO_LARGE_TOKEN = "release_assertion_response_too_large"
+_RELEASE_ASSERTION_CHANNEL_INVALID_TOKEN = "release_assertion_channel_invalid"
+_RELEASE_ASSERTION_INVALID_TOKEN = "release_assertion_invalid"
+_RELEASE_ASSERTION_SERIALIZE_FAILED_TOKEN = "release_assertion_serialize_failed"
+_RELEASE_ASSERTION_CHANNEL_MAX_CHARS = 128
+_ERROR_PATH_MAX_CHARS = 256
 
 # Dep-chain guard
 if _fetch_rt.TRUTH_PRIMITIVE_FETCH_RUNTIME_VERSION != FETCH_RUNTIME_DEPENDENCY:
@@ -234,6 +250,155 @@ class HttpFetchTransportRuntime:
                 return request, client_address
 
         class _Handler(BaseHTTPRequestHandler):
+            def _write_json(self, status: int, payload: Mapping[str, Any]) -> None:
+                body = json.dumps(
+                    dict(payload),
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                ).encode("utf-8")
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+            def _write_release_assertion_error(
+                self,
+                *,
+                channel: str | None,
+                path: str,
+                status: int,
+                token: str,
+            ) -> None:
+                runtime.state["last_status_code"] = status
+                runtime.state["requests_served"] += 1
+                runtime._record(
+                    "release_assertion_get_rejected",
+                    channel=channel,
+                    path=path,
+                    status=status,
+                    token=token,
+                )
+                payload: dict[str, Any] = {"token": token}
+                if channel is not None:
+                    payload["channel"] = channel
+                self._write_json(status, payload)
+
+            def _encode_release_assertion_body(
+                self,
+                assertion: Mapping[str, Any],
+            ) -> tuple[bytes | None, str | None]:
+                try:
+                    encoder = json.JSONEncoder(
+                        sort_keys=True,
+                        separators=(",", ":"),
+                        allow_nan=False,
+                    )
+                    chunks: list[bytes] = []
+                    total = 0
+                    for chunk in encoder.iterencode(dict(assertion)):
+                        encoded = chunk.encode("utf-8")
+                        total += len(encoded)
+                        if total > MAX_UPGRADE_ASSERTION_BYTES:
+                            return None, _RELEASE_ASSERTION_TOO_LARGE_TOKEN
+                        chunks.append(encoded)
+                except (TypeError, ValueError):
+                    return None, _RELEASE_ASSERTION_SERIALIZE_FAILED_TOKEN
+                return b"".join(chunks), None
+
+            def do_GET(self) -> None:  # noqa: N802
+                parsed = urlparse(self.path)
+                path = parsed.path
+                if path != _RELEASE_ASSERTION_LATEST_PATH:
+                    diagnostic_path = path[:_ERROR_PATH_MAX_CHARS]
+                    runtime.state["last_status_code"] = 404
+                    runtime.state["requests_served"] += 1
+                    runtime._record("fetch_request_served", path=diagnostic_path, status=404)
+                    self._write_json(
+                        404,
+                        {"path": diagnostic_path, "token": "fetch_unknown_path"},
+                    )
+                    return
+
+                query = parse_qs(parsed.query, keep_blank_values=True)
+                channel_values = query.get("channel", [_DEFAULT_RELEASE_ASSERTION_CHANNEL])
+                channel = channel_values[0].strip() if len(channel_values) == 1 else ""
+                if not channel or len(channel) > _RELEASE_ASSERTION_CHANNEL_MAX_CHARS:
+                    self._write_release_assertion_error(
+                        channel=None,
+                        path=path,
+                        status=400,
+                        token=_RELEASE_ASSERTION_CHANNEL_INVALID_TOKEN,
+                    )
+                    return
+
+                store = runtime._store
+                getter = getattr(store, "get_latest_release_assertion", None)
+                if store is None or not callable(getter):
+                    self._write_release_assertion_error(
+                        channel=channel,
+                        path=path,
+                        status=503,
+                        token=_RELEASE_ASSERTION_STORE_UNAVAILABLE_TOKEN,
+                    )
+                    return
+
+                try:
+                    assertion = getter(channel)
+                except Exception:  # noqa: BLE001 - read endpoint fails closed.
+                    self._write_release_assertion_error(
+                        channel=channel,
+                        path=path,
+                        status=503,
+                        token=_RELEASE_ASSERTION_STORE_UNAVAILABLE_TOKEN,
+                    )
+                    return
+                if assertion is None:
+                    self._write_release_assertion_error(
+                        channel=channel,
+                        path=path,
+                        status=404,
+                        token=_RELEASE_ASSERTION_NOT_FOUND_TOKEN,
+                    )
+                    return
+
+                try:
+                    validate_release_assertion(assertion)
+                except UpgradeCheckError:
+                    self._write_release_assertion_error(
+                        channel=channel,
+                        path=path,
+                        status=503,
+                        token=_RELEASE_ASSERTION_INVALID_TOKEN,
+                    )
+                    return
+
+                body, encode_error = self._encode_release_assertion_body(assertion)
+                if encode_error is not None or body is None:
+                    self._write_release_assertion_error(
+                        channel=channel,
+                        path=path,
+                        status=503,
+                        token=encode_error or _RELEASE_ASSERTION_SERIALIZE_FAILED_TOKEN,
+                    )
+                    return
+
+                runtime.state["last_status_code"] = 200
+                runtime.state["requests_served"] += 1
+                runtime._record(
+                    "release_assertion_get_served",
+                    channel=channel,
+                    path=path,
+                    status=200,
+                    response_bytes=len(body),
+                )
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
             def do_POST(self) -> None:  # noqa: N802
                 content_length_raw = self.headers.get("Content-Length")
                 if content_length_raw is None:

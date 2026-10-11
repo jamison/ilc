@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from decimal import Decimal
+import json
 from collections.abc import Iterator, Mapping
+from decimal import Decimal
 
 import pytest
 
+import ilc_core.epoch.epoch_distribution_writer as writer
 from ilc_core.epoch.epoch_emission_production_path import GENESIS_FIXED_TRANCHE_ILC
 from ilc_core.epoch.epoch_emission_runtime import raw_epoch_emission_budget
 from ilc_core.epoch.epoch_maturity_gate import (
@@ -26,6 +28,7 @@ from ilc_core.epoch.epoch_distribution_writer import (
     commit_epoch_distribution,
     commit_verified_epoch_distribution,
     format_epoch_id,
+    load_fallback_eligible_set,
 )
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 from ilc_core.epoch.pool_carry_forward_runtime import (
@@ -54,6 +57,13 @@ AGENT_C = "c" * 96
 AGENT_ZERO = "d" * 96
 PERFORMER_AGENT = "e" * 96
 AUDITOR_AGENT = "f" * 96
+EXPECTED_FALLBACK_AGENTS = {
+    "8b4370fe4ffa16bbb9fc8430d638d9d19a12d8efad02964c85a867f65d942f98230a0b78baaa59b340ba88c6c480ac19",
+    "8c3b517ece61ca111a1e44939b40c2fb85e96d0295b935ce50b2f95204cd938d23c244178a7367b21fc1622f5a95e62f",
+    "97fc59d642f4df19bc017ede43e0e15202d933c89913201da5945b672d624fbf963262e795d23309362e5b419fd5ba09",
+    "b306d66948b4dca95aade079b42931dd553432131d7138cc2b6e8ba804807fc881689bfc7fc0d9568e198bdbbea8d1e9",
+    GENESIS_AGENT1_AGENT_ID,
+}
 
 
 class RecordingBatchLifecycle:
@@ -134,6 +144,29 @@ def _looks_valid_root(value: str) -> bool:
         and value.startswith("01711220")
         and all(char in "0123456789abcdef" for char in value)
     )
+
+
+def _fallback_artifact_payload(**overrides: object) -> dict[str, object]:
+    agents = sorted(EXPECTED_FALLBACK_AGENTS)
+    payload: dict[str, object] = {
+        "agents": agents,
+        "discovery_rule": "no_grpc_list_agents_no_runtime_operator_expansion",
+        "eligibility_rule": "committed_pre_open_config_only",
+        "issuance_epoch": 1,
+        "issuance_epoch_open_anchor_ms": 1791007007082,
+        "network_id": "public-rc",
+        "output_token": "fallback_policy_ratified_GAP_ECU_MONTHLY_CLOSE_EMPTY_POOL_FALLBACK_POLICY_00",
+        "phase": "GAP-ECU-MONTHLY-CLOSE-EMPTY-POOL-FALLBACK-POLICY-00",
+        "policy_doc": "docs/specs/ilc_ecu_empty_weight_fallback_policy_v0.1.md",
+        "ratified_at_utc": "2026-10-03T00:00:00Z",
+        "schema_version": "ilc.ecu_empty_weight_fallback_eligible_set.v0.1",
+        "tie_breaker": "largest_remainder_then_agent_id_lexicographic_ascending",
+        "total_weight": "1",
+        "weighting_rule": "equal_weight_per_agent",
+        "weights": {agent_id: "0.2" for agent_id in agents},
+    }
+    payload.update(overrides)
+    return payload
 
 
 def _maturity_proof(
@@ -248,9 +281,9 @@ def test_epoch_one_nonzero_emission_with_no_eligible_agents_still_requires_matur
 
     output = compute_epoch_distribution(_inputs(issuance_epoch=1, eligible_agents={}))
     assert output.monthly_maturity_proof is not None
-    assert output.agent_settled_balance_deltas == {}
+    assert set(output.agent_settled_balance_deltas) == EXPECTED_FALLBACK_AGENTS
     assert output.genesis_settled_delta > Decimal("0")
-    assert output.carry_forward_out_records
+    assert output.carry_forward_out_records == ()
 
 
 def test_epoch_one_accepts_rust_cidv1_source_settlement_root() -> None:
@@ -262,11 +295,9 @@ def test_epoch_one_accepts_rust_cidv1_source_settlement_root() -> None:
         )
     )
 
-    assert output.carry_forward_out_records
-    assert all(
-        record.source_settlement_root == CIDV1_ROOT_HEX
-        for record in output.carry_forward_out_records
-    )
+    assert output.source_settlement_root_hex == CIDV1_ROOT_HEX
+    assert output.carry_forward_out_records == ()
+    assert set(output.agent_settled_balance_deltas) == EXPECTED_FALLBACK_AGENTS
 
 
 def test_auditor_agents_can_be_distinct_from_performer_agents() -> None:
@@ -326,15 +357,90 @@ def test_prior_carry_forward_is_consumed_into_agent_distribution() -> None:
     assert output.conservation_record.distribution_carry_forward_in_ilc == Decimal("10")
 
 
-def test_prior_carry_forward_without_agents_is_recarried_once() -> None:
+def test_prior_carry_forward_without_epoch_fallback_policy_hard_stops() -> None:
     prior = _prior_record(amount=Decimal("10"), target_epoch=2)
-    output = compute_epoch_distribution(
-        _inputs(issuance_epoch=2, prior_carry_forward_records=[prior])
+    with pytest.raises(ValueError, match="fallback_policy_epoch_not_ratified"):
+        compute_epoch_distribution(_inputs(issuance_epoch=2, prior_carry_forward_records=[prior]))
+
+
+def test_fallback_weights_are_deterministic_and_sum_to_one() -> None:
+    first = load_fallback_eligible_set(close_epoch_boundary=1)
+    second = load_fallback_eligible_set(close_epoch_boundary=1)
+
+    assert first == second
+    assert set(first) == EXPECTED_FALLBACK_AGENTS
+    assert sum(first.values(), Decimal("0")) == Decimal("1.0")
+    assert set(first.values()) == {Decimal("0.2")}
+
+
+def test_fallback_loader_allows_absent_docs_artifact_for_installed_wheels(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setattr(writer, "_FALLBACK_ARTIFACT_VALIDATION_CACHE", None)
+    monkeypatch.setattr(
+        writer,
+        "_EMPTY_WEIGHT_FALLBACK_ELIGIBLE_SET_ARTIFACT",
+        str(tmp_path / "missing_fallback_artifact.json"),
     )
 
-    assert output.consumed_carry_forward_records[0].consumed_at_epoch == 2
-    assert sum(record.amount_ilc for record in output.carry_forward_out_records) > Decimal("10")
-    assert output.conservation_record.distribution_carry_forward_in_ilc == Decimal("10")
+    assert set(load_fallback_eligible_set(close_epoch_boundary=1)) == EXPECTED_FALLBACK_AGENTS
+
+
+def test_fallback_artifact_schema_metadata_is_load_bearing(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path,
+) -> None:  # type: ignore[no-untyped-def]
+    artifact = tmp_path / "fallback_artifact.json"
+    artifact.write_text(
+        json.dumps(
+            _fallback_artifact_payload(
+                schema_version="ilc.ecu_empty_weight_fallback_eligible_set.v0.2"
+            ),
+            sort_keys=True,
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(writer, "_FALLBACK_ARTIFACT_VALIDATION_CACHE", None)
+    monkeypatch.setattr(
+        writer,
+        "_EMPTY_WEIGHT_FALLBACK_ELIGIBLE_SET_ARTIFACT",
+        str(artifact),
+    )
+
+    with pytest.raises(ValueError, match="fallback_eligible_set_artifact_invalid"):
+        load_fallback_eligible_set(close_epoch_boundary=1)
+
+
+def test_fallback_agent_id_intentionally_allows_genesis_but_normal_weights_reject_it() -> None:
+    assert writer._require_fallback_agent_id(GENESIS_AGENT1_AGENT_ID) == GENESIS_AGENT1_AGENT_ID
+
+    with pytest.raises(ValueError, match="eligible_agent_id_is_reserved_protocol_account"):
+        compute_epoch_distribution(
+            _inputs(
+                issuance_epoch=1,
+                total_epoch_fees_ilc=Decimal("100"),
+                eligible_agents={GENESIS_AGENT1_AGENT_ID: Decimal("1")},
+            )
+        )
+
+
+def test_epoch_one_fallback_matches_policy_arithmetic() -> None:
+    output = compute_epoch_distribution(_inputs(issuance_epoch=1, eligible_agents={}))
+
+    assert output.allocation_quote.performer_reward_pool_ilc == Decimal("297287.91299707")
+    assert output.allocation_quote.auditor_reward_pool_ilc == Decimal("55741.48368695")
+    assert output.allocation_quote.genesis_overhead_pool_ilc == Decimal("18580.494562318")
+    assert output.agent_settled_balance_deltas == {
+        agent_id: Decimal("70605.879336804")
+        for agent_id in sorted(EXPECTED_FALLBACK_AGENTS)
+    }
+    assert (
+        output.agent_settled_balance_deltas[GENESIS_AGENT1_AGENT_ID]
+        + output.genesis_settled_delta
+    ) == Decimal("89186.373899122")
+    assert output.carry_forward_out_records == ()
+    assert output.conservation_record.difference_ilc == Decimal("0E-9")
 
 
 def test_consumed_prior_carry_forward_is_rejected() -> None:
@@ -547,19 +653,19 @@ def test_reserved_protocol_accounts_cannot_be_auditor_eligible_agents(
         )
 
 
-def test_dust_assignment_order_is_lexicographic_by_agent_id() -> None:
+def test_dust_assignment_uses_largest_remainder_then_lexicographic_tie_break() -> None:
     allocations, residual = _allocate_pool_to_agents(
-        Decimal("0.000000005"),
+        Decimal("0.000000007"),
         {
-            AGENT_C: Decimal("1"),
+            AGENT_A: Decimal("3"),
             AGENT_B: Decimal("1"),
-            AGENT_A: Decimal("1"),
+            AGENT_C: Decimal("1"),
         },
     )
 
     assert residual == Decimal("0E-9")
     assert allocations == {
-        AGENT_A: Decimal("0.000000002"),
+        AGENT_A: Decimal("0.000000004"),
         AGENT_B: Decimal("0.000000002"),
         AGENT_C: Decimal("0.000000001"),
     }
@@ -878,37 +984,74 @@ def test_real_lmdb_rejects_same_epoch_recipient_extension(tmp_path) -> None:  # 
     assert exc_info.value.token == "lifecycle_epoch_replay_recipient_extension"
 
 
-def test_real_lmdb_carry_forward_consumption_debits_pool_accounts(tmp_path) -> None:  # type: ignore[no-untyped-def]
+def test_real_lmdb_records_nonzero_epoch_manifest_and_allows_exact_replay(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+    settlements = {AGENT_A: Decimal("1"), AGENT_B: Decimal("2")}
+
+    first = writer._commit_lmdb_lifecycle_batch(
+        lifecycle_runtime=lifecycle,
+        settlements=settlements,
+        epoch_id="0000000001",
+    )
+    replay = writer._commit_lmdb_lifecycle_batch(
+        lifecycle_runtime=lifecycle,
+        settlements=dict(reversed(list(settlements.items()))),
+        epoch_id="0000000001",
+    )
+
+    marker = wallet_store.get_epoch_commit_marker("0000000001")
+    assert marker is not None
+    assert marker["settlement_count"] == 2
+    assert marker["settlement_status"] == "verified_epoch_committed"
+    assert isinstance(marker["settlement_digest"], str)
+    assert {row["token"] for row in first} == {"lifecycle_epoch_commit_applied"}
+    assert {row["token"] for row in replay} == {"lifecycle_epoch_commit_idempotent_replay"}
+
+
+def test_real_lmdb_rejects_same_epoch_subset_replay(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    wallet_store = LmdbWalletStore(tmp_path / "wallets")
+    lifecycle = EcuIlcLifecycleRuntime(
+        wallet_store=wallet_store,
+        ecu_runtime=EcuActiveLayerRuntime(),
+    )
+    writer._commit_lmdb_lifecycle_batch(
+        lifecycle_runtime=lifecycle,
+        settlements={AGENT_A: Decimal("1"), AGENT_B: Decimal("2")},
+        epoch_id="0000000001",
+    )
+
+    with pytest.raises(EcuIlcLifecycleRuntimeError) as exc_info:
+        writer._commit_lmdb_lifecycle_batch(
+            lifecycle_runtime=lifecycle,
+            settlements={AGENT_A: Decimal("1")},
+            epoch_id="0000000001",
+        )
+
+    assert exc_info.value.token == "lifecycle_epoch_replay_set_mismatch"
+
+
+def test_real_lmdb_empty_weight_fallback_does_not_create_pool_accounts(tmp_path) -> None:  # type: ignore[no-untyped-def]
     wallet_store = LmdbWalletStore(tmp_path / "wallets")
     lifecycle = EcuIlcLifecycleRuntime(
         wallet_store=wallet_store,
         ecu_runtime=EcuActiveLayerRuntime(),
     )
 
-    first = commit_epoch_distribution(
+    output = commit_epoch_distribution(
         _inputs(issuance_epoch=1, total_epoch_fees_ilc=Decimal("100"), eligible_agents={}),
         lifecycle,
     )
-    assert Decimal(wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"]) > Decimal("72")  # type: ignore[index]
-    assert Decimal(wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"]) > Decimal("13.5")  # type: ignore[index]
-
-    second = commit_epoch_distribution(
-        _inputs(
-            issuance_epoch=2,
-            eligible_agents={AGENT_A: Decimal("1")},
-            prior_carry_forward_records=first.carry_forward_out_records,
-        ),
-        lifecycle,
-    )
-
-    assert second.conservation_record.distribution_carry_forward_in_ilc == sum(
-        record.amount_ilc for record in first.carry_forward_out_records
-    )
-    assert wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "0"  # type: ignore[index]
-    assert wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID)["balance_ilc"] == "0"  # type: ignore[index]
-    agent_wallet = wallet_store.get_wallet(AGENT_A)
-    assert agent_wallet is not None
-    assert Decimal(agent_wallet["balance_ilc"]) > Decimal("85.5")
+    assert output.carry_forward_out_records == ()
+    assert wallet_store.get_wallet(PERFORMER_CARRY_FORWARD_ACCOUNT_ID) is None
+    assert wallet_store.get_wallet(AUDITOR_CARRY_FORWARD_ACCOUNT_ID) is None
+    for agent_id in EXPECTED_FALLBACK_AGENTS:
+        wallet = wallet_store.get_wallet(agent_id)
+        assert wallet is not None
+        assert Decimal(wallet["balance_ilc"]) > Decimal("0")
 
 
 def test_saturated_genesis_cap_with_fees_and_prior_carry_forward_conserves() -> None:

@@ -343,8 +343,6 @@ def _canonical_amount(value: object) -> str:
     canonical = decimal_to_canonical_string(amount)
     if value != canonical and isinstance(value, str):
         raise ValueError("attribution_receipt_amount_must_be_canonical_decimal_string")
-    if isinstance(value, Decimal) and str(value) != canonical:
-        raise ValueError("attribution_receipt_amount_must_be_canonical_decimal")
     return canonical
 
 

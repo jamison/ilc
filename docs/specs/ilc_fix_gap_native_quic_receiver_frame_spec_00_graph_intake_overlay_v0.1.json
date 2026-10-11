@@ -1,0 +1,48 @@
+{
+  "artifact": "ilc_fix_gap_native_quic_receiver_frame_spec_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-NATIVE-QUIC-RECEIVER-FRAME-SPEC-00 ADR and walkthrough artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_native_quic_receiver_frame_spec_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-FRAME-SPEC-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "spec_doc",
+      "repo_path": "docs/specs/ilc_fix_gap_native_quic_receiver_frame_spec_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_frame_spec_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-FRAME-SPEC-00",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_native_quic_receiver_frame_spec_00_g10_frame_spec.md",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-FRAME-SPEC-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_frame_spec_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-FRAME-SPEC-00",
+      "edge_role": "ADR",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "spec_doc",
+      "repo_path": "docs/adr/ADR_0045_ILC_Native_QUIC_Submit_Frame_Format.md",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-FRAME-SPEC-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_frame_spec_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-FRAME-SPEC-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_native_quic_receiver_frame_spec_00_walkthrough.md",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-FRAME-SPEC-00"
+    }
+  ],
+  "schema_version": "fix39_graph_intake_overlay.v0.1",
+  "status": "support_only"
+}

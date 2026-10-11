@@ -9,6 +9,31 @@
 `pyproject_version_corrected_GAP_PUBLIC_INSTALL_00`
 `install_layer_separation_documented_GAP_PUBLIC_INSTALL_00`
 
+## 0. Successor Note - Rev 271 Install Surface Reconciliation
+
+This GAP-PUBLIC-INSTALL-00 document is a historical reconciliation record from
+the `ilc-core 0.2.0` era. As of `GAP-RC-INSTALL-SURFACE-RECONCILE-00`,
+`ilc-core==0.4.32` is the current package version and `tools/install.sh` exists
+as the RC installer.
+
+The RC installer is now a composed onboarding orchestrator: it installs the
+verified wheel and then invokes invite-based graph onboarding. This supersedes
+the older "future install.sh" wording below, but does not erase the internal
+authority boundary between package installation, invite verification, identity
+provisioning, nullifier persistence, and graph materialization. Package-install
+code must not directly mutate graph state except through the explicit onboarding
+layer it invokes.
+
+"Default verifier" language in current RC-facing docs means release and
+graph-record verification only. It does not imply validator, jury, settlement,
+wallet, minting, mainnet, or monthly-close authority.
+
+OpenClaw local capture and Model Router graph promotion are separate surfaces.
+OpenClaw local capture is private/local by default. Model Router route metadata
+may be default-promoted only after the first-run advisory and remains bounded to
+approved metadata; raw prompts, completions, model outputs, provider secrets,
+and API keys remain excluded.
+
 ## 1. Distribution Inventory
 
 Current public software distribution state, based on committed phase evidence:

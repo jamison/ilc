@@ -1,0 +1,68 @@
+{
+  "artifact": "ilc_fix_gap_release_assertion_publish_ceremony_00_complete_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": true,
+    "cdl_mutation": false,
+    "network_or_p2p_activation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00 completion evidence and documentation."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_release_assertion_publish_ceremony_00_complete_overlay_record",
+      "annotation_phase": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_gap_release_assertion_publish_ceremony_00_complete_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_release_assertion_publish_ceremony_00_complete_overlay_record",
+      "annotation_phase": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_release_assertion_publish_ceremony_00_walkthrough.md",
+      "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00"
+    },
+    {
+      "annotation_method": "gap_release_assertion_publish_ceremony_00_complete_overlay_record",
+      "annotation_phase": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "edge_role": "PHASE_PROMPT_HARDENING",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_ceremony_00_g10_release_assertion_publish_ceremony.md",
+      "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00"
+    },
+    {
+      "annotation_method": "gap_release_assertion_publish_ceremony_00_complete_overlay_record",
+      "annotation_phase": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "edge_role": "PHASE_TOOL",
+      "graph_delta": "support_only",
+      "node_kind": "tool_script",
+      "repo_path": "tools/publish_release_assertion_ceremony.py",
+      "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00"
+    },
+    {
+      "annotation_method": "gap_release_assertion_publish_ceremony_00_complete_overlay_record",
+      "annotation_phase": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "edge_role": "PHASE_TEST",
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "repo_path": "tests/test_publish_release_assertion_ceremony.py",
+      "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00"
+    },
+    {
+      "annotation_method": "gap_release_assertion_publish_ceremony_00_complete_overlay_record",
+      "annotation_phase": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "edge_role": "LIVE_PUBLISH_EVIDENCE",
+      "graph_delta": "support_only",
+      "node_kind": "phase_evidence",
+      "repo_path": "out/gap_release_assertion_publish_ceremony_00/publish_evidence.json",
+      "target": "token:release_assertion_publish_ceremony_complete_GAP_RELEASE_ASSERTION_PUBLISH_CEREMONY_00"
+    }
+  ],
+  "schema_version": "fix39_graph_intake_overlay.v0.1",
+  "status": "support_only"
+}

@@ -16,6 +16,8 @@ _ALLOWED_BINARY_NAMES: Final[frozenset[str]] = frozenset(
         "invite_pop_bls",
         "keygen",
         "ilc_p2p_bridge",
+        "ilc_native_submit_client",
+        "ilc_native_submit_receiver_bridge",
         "attribution_batch_ingest",
         "validator_endpoint_assertion_bls",
         "validator_harness",

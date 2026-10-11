@@ -1,0 +1,72 @@
+{
+  "schema_version": "ilc.package_build_receipt.v0.1",
+  "phase": "GAP-PACKAGE-V0433-00a",
+  "date": "2026-10-11",
+  "status": "complete",
+  "source_private_commit_before_version_bump": "84fa883c282d8f31e7ea572fa9fd4b554fbf776d",
+  "phase_completion_commit": "recorded by this completion commit",
+  "release_id": "ilc-core-0.4.33",
+  "version": {
+    "from": "0.4.32",
+    "to": "0.4.33"
+  },
+  "changes_from_0432": [
+    "pyproject.toml: version 0.4.32 -> 0.4.33",
+    "ilc_core/__init__.py: __version__ 0.4.32 -> 0.4.33",
+    "pyproject.toml setuptools include list now packages top-level ilc_model_router"
+  ],
+  "python_artifacts": {
+    "wheel": {
+      "path": "out/gap_package_v0433_00a/dist/ilc_core-0.4.33-py3-none-any.whl",
+      "sha256": "45047599ab76cbb81f880d17bd48a1fdfa492e1120292a988aae3a656648b871",
+      "size_bytes": 1596564
+    },
+    "sdist": {
+      "path": "out/gap_package_v0433_00a/dist/ilc_core-0.4.33.tar.gz",
+      "sha256": "4b083cb0f8f0cb433be625139db80a9436beb11166e27f93c382bc2aa96ecc89",
+      "size_bytes": 1307602
+    }
+  },
+  "wheel_content_check": {
+    "ilc_core.release.upgrade_check.py": "present",
+    "ilc_model_router.__init__.py": "present",
+    "ilc_model_router.cli.py": "present"
+  },
+  "clean_venv_smoke": {
+    "python": "/usr/local/bin/python3.12",
+    "venv": "/tmp/ilc_pkg_gate_b_v0433_00a_venv",
+    "working_directory_for_import_checks": "/tmp",
+    "installed_metadata_version": "0.4.33",
+    "ilc_core_version": "0.4.33",
+    "installed_module_path": "/private/tmp/ilc_pkg_gate_b_v0433_00a_venv/lib/python3.12/site-packages/ilc_core/__init__.py",
+    "upgrade_check_module_path": "/private/tmp/ilc_pkg_gate_b_v0433_00a_venv/lib/python3.12/site-packages/ilc_core/release/upgrade_check.py",
+    "model_router_module_path": "/private/tmp/ilc_pkg_gate_b_v0433_00a_venv/lib/python3.12/site-packages/ilc_model_router/__init__.py",
+    "outside_repo_imports": true,
+    "upgrade_check_help_accepted": true,
+    "model_router_sidecar_help_accepted": true
+  },
+  "verification": {
+    "gate_a_dependency_floor": "PASS: tests/test_phase_1573f_ccss_spectral_01_crypto_primitives.py::test_phase_1573f_fix1_dependency_floor_uses_cryptography_48",
+    "build": "PASS: python3 -m build --wheel --sdist --outdir out/gap_package_v0433_00a/dist",
+    "twine_check": "PASS: wheel and sdist",
+    "gate_b_clean_resolver_outside_repo_imports": "PASS",
+    "cli_upgrade_check_help": "PASS: usage: ilc upgrade check [-h] [--endpoint ENDPOINT] [--json]",
+    "cli_sidecar_model_router_help": "PASS: usage: ilc sidecar model-router [-h]"
+  },
+  "sensitive_follow_on_required": {
+    "phase": "GAP-PACKAGE-V0433-00b",
+    "exact_go_required": true,
+    "suggested_go_phrase": "GO Phase GAP-PACKAGE-V0433-00b PACKAGE-0433-PUBLISH-AUTHORIZED",
+    "actions_not_performed_in_00a": [
+      "PyPI upload",
+      "Phase 1335 Ed25519 signing ceremony",
+      "PyPI fetchback verification",
+      "0.4.32 yank",
+      "public mirror refresh",
+      "tools/install.sh retarget",
+      "ClawHub skill refresh",
+      "fresh invite install smoke retry"
+    ]
+  },
+  "output_token": "package_v0433_local_build_pass_GAP_PACKAGE_V0433_00a"
+}

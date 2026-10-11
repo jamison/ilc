@@ -1,0 +1,111 @@
+{
+  "artifact": "ilc_fix_gap_native_quic_receiver_rust_bridge_and_client_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00 Rust bridge/client, Python worker, tests, and walkthrough artifacts."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "spec_doc",
+      "repo_path": "docs/specs/ilc_fix_gap_native_quic_receiver_rust_bridge_and_client_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_native_quic_receiver_rust_bridge_and_client_00_g10_rust_bridge_client.md",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "RUST_BINARY_SOURCE",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "rust_binary_source",
+      "repo_path": "ilc_consensus/src/ilc_native_submit_receiver_bridge_main.rs",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "RUST_BINARY_SOURCE",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "rust_binary_source",
+      "repo_path": "ilc_consensus/src/ilc_native_submit_client_main.rs",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "PYTHON_WORKER",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_core/bridge_submit_receiver.py",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "CARGO_MANIFEST",
+      "graph_delta": "load_bearing_artifact_modified",
+      "node_kind": "rust_manifest",
+      "repo_path": "ilc_consensus/Cargo.toml",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "CARGO_LOCK",
+      "graph_delta": "load_bearing_artifact_modified",
+      "node_kind": "rust_lockfile",
+      "repo_path": "ilc_consensus/Cargo.lock",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "BINARY_RESOLVER",
+      "graph_delta": "load_bearing_artifact_modified",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_core/consensus/binary_paths.py",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "PACKAGE_METADATA",
+      "graph_delta": "load_bearing_artifact_modified",
+      "node_kind": "python_package_manifest",
+      "repo_path": "pyproject.toml",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "TESTS",
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "repo_path": "tests/test_gap_native_quic_receiver_rust_bridge_and_client_00.py",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_bridge_and_client_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_native_quic_receiver_rust_bridge_and_client_00_walkthrough.md",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+    }
+  ],
+  "schema_version": "fix39_graph_intake_overlay.v0.1",
+  "status": "support_only"
+}

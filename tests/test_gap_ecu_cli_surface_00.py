@@ -34,6 +34,16 @@ VALID_AGENT_ID = "a" * 96
 ROOT = Path(__file__).resolve().parents[1]
 
 
+@pytest.fixture(autouse=True)
+def _disable_machine_bls_key(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("ILC_AGENT_BLS_SIGNING_KEY", "")
+    monkeypatch.setattr(
+        d2e_submit_cli,
+        "_ILC_AGENT_BLS_KEY_DEFAULT_PATH",
+        tmp_path / "no-default-bls-key.hex",
+    )
+
+
 def _fake_keygen(tmp_path: Path, *, pubkey: str | None = None) -> Path:
     secret_key_hex, public_key_hex = keypair_from_ikm_hex("11" * 32)
     emitted_pubkey = pubkey or public_key_hex
@@ -419,7 +429,13 @@ def test_ecu_status_local_zero_is_stateless_without_endpoint(tmp_path: Path) -> 
     assert not graph_path.exists()
 
 
-def test_submit_signing_surfaces_signature_without_graph_store(tmp_path: Path) -> None:
+def test_submit_signing_surfaces_signature_without_graph_store(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
+
+    monkeypatch.setattr(truth_runtime, "NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED", True)
     private_key = ed25519.Ed25519PrivateKey.generate()
     key_path = tmp_path / "hotkey.pem"
     key_path.write_bytes(
@@ -455,7 +471,13 @@ def test_submit_signing_surfaces_signature_without_graph_store(tmp_path: Path) -
     assert len(result["signature"]["sig_pubkey_hex"]) == 64
 
 
-def test_submit_signing_missing_key_uses_stable_error_token(tmp_path: Path) -> None:
+def test_submit_signing_missing_key_uses_stable_error_token(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
+
+    monkeypatch.setattr(truth_runtime, "NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED", True)
     with pytest.raises(SubmitCommandError) as exc_info:
         d2e_submit_cli.handle_submit(
             argparse.Namespace(

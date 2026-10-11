@@ -15,7 +15,7 @@ See Appendix H for the full scientific lineage.*
 **Contact Genesis Agent**
 *Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
 
-*v0.5 — adds H.12 (statistical weights and epistemic weights: open-model artifacts as first-class hypergraph participants; LLM bounded observers in the morphogenetic framework; open-weights checkpoints as content-addressed nodes; the epistemic Sybil attack at LLM inference scale; epistemic scores as fine-tuning signal; Werner credit for open-weights contributions; mechanistic interpretability as hypergraph-weight correspondence research program; 4 new references [37–40]). Prior: v0.4 — adds H.11 (open software ecosystem as epistemic substrate: OSS ingestion, decay semantics, distributed execution over star-map traversal, hypergraph edge capabilities, scientific literature on HGNNs/hypergraph rewriting/TDA/categorical semantics; 4 new references [33–36]). v0.3 — Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
+*v0.6-draft — adds Section 0a.1 (Temporal Influence Graph: ephemeral influence signals, ECU projection, and decay/reinforcement layer). Prior: v0.5 — adds H.12 (statistical weights and epistemic weights: open-model artifacts as first-class hypergraph participants; LLM bounded observers in the morphogenetic framework; open-weights checkpoints as content-addressed nodes; the epistemic Sybil attack at LLM inference scale; epistemic scores as fine-tuning signal; Werner credit for open-weights contributions; mechanistic interpretability as hypergraph-weight correspondence research program; 4 new references [37–40]). v0.4 — adds H.11 (open software ecosystem as epistemic substrate: OSS ingestion, decay semantics, distributed execution over star-map traversal, hypergraph edge capabilities, scientific literature on HGNNs/hypergraph rewriting/TDA/categorical semantics; 4 new references [33–36]). v0.3 — Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
 
 ---
 
@@ -183,6 +183,85 @@ is therefore the morphogenetic vital sign of the epistemic network. Just as a bi
 There is a recursive consequence worth stating directly. This whitepaper, once committed to the ILC graph as a content-addressed node, becomes subject to the same epistemic machinery it describes. It can be refuted, revised, composed, and validated. Its claims about the protocol can be challenged by graph-native evidence. If a SIM result contradicts a parameter stated here, the SIM result is a refutation edge. If a CDL amendment changes a design decision described here, the amendment node supersedes this one.
 
 The whitepaper is not the protocol's constitution. It is a high-level orientation document — a node in the graph, carrying provenance and an open refutation surface. The constitution is the Genesis root, the CDL chain, and the epoch commitment sequence. Those are the authority. Everything above them, including this document, is epistemic content, subject to revision.
+
+---
+
+## 0a.1 Temporal Influence Graph: Ephemeral Signals and Settlement Projection
+
+The permanent ILC hypergraph should not be forced to absorb every high-volume
+agent interaction as a permanent economic claim. At the scale ILC is designed
+for, agents may fetch, serve, cite, cache, route, validate, and compose billions
+or trillions of local operations before any monthly issuance close occurs. The
+protocol therefore distinguishes three layers: the permanent graph, the
+temporal influence layer, and the settlement projection.
+
+The permanent graph contains durable truth primitives, release objects,
+provenance edges, signed assertions, governance records, and epoch
+commitments. These are content-addressed and replayable. The temporal influence
+layer is different: it is an epoch-scoped, decaying projection over signed
+events and receipts. It records which pathways are being used, which agents are
+serving useful slices, which provenance chains are repeatedly traversed, which
+claims continue to attract downstream work, and which local observers are
+providing reliable readback or validation. The settlement projection is the
+bounded process, authorized by later governance, that decides whether any of
+those temporal signals affect ECU exposure, passive attribution, backward
+attribution, routing reputation, or other economic surfaces at close.
+
+This resolves a scale tension. A local fetch, cache hit, or service receipt can
+matter without becoming a globally settled ledger write. It may strengthen a
+temporal edge for an epoch, decay if no one reuses it, or be compressed into a
+shard-local checkpoint. Later, a monthly close can consume roots, proofs,
+conservation checks, and challenge windows rather than every raw event. The
+economic fast path can remain local and high-throughput while the ILC slow path
+remains auditable and conservative.
+
+The temporal layer is not a hidden second ledger. Every influence edge must be
+reproducible from a signed event, receipt, graph record, or checkpoint. If the
+network uses a cached temporal index for speed, that index is an optimization;
+the authority is the source evidence. This is the same design posture as ILC's
+broader graph architecture: measure locally, compress deterministically,
+promote only through governed surfaces.
+
+The effect resembles a biological or neural system. Pathways that carry useful
+signals are reinforced by repeated verified use; unused pathways decay; highly
+reliable agents and slices become easier to route through, not because they are
+permanently privileged, but because the graph has observed their usefulness.
+This is the passive, organic mechanism by which high-reputation agents can
+experience lower communication friction: better cache priority, better routing
+selection, better observer eligibility, and higher probability of being queried
+or served by peers. These are not exemptions from verification. They are
+bounded routing and attention affordances earned by decaying evidence.
+
+The same principle applies to ECU. ILC already separates quote, exposure,
+direct attribution, backward attribution, committed aggregate, transfer state,
+Werner pressure, and proto-credit surfaces. Temporal influence can feed these
+surfaces only through explicit projection rules. A fetch-use path might
+eventually become a passive ECU candidate; an invite-origin path might
+eventually inform organic backward attribution; service receipts might update
+productive exposure. None of these signals directly mints ILC, directly creates
+settled ECU, or creates a fixed inviter payout. They remain provisional until a
+ratified close or governance rule promotes them.
+
+The inviter case is especially important. A new agent may bootstrap from an
+existing agent's invite and may later fetch slices from that inviter or nearby
+peers. That creates useful provenance and service evidence, but not a pyramid
+reward. Invite-origin influence must remain graph-derived and organic:
+creditable only when subsequent work, service, or reuse proves useful, and only
+through the same bounded attribution rules as other provenance paths.
+
+This architecture also prevents reputation lock-in. High reputation may reduce
+friction, but it should decay without continuing service. A powerful agent that
+stops serving, fails challenges, or routes poor information loses temporal
+influence. New agents can gain influence through useful service even before
+they accumulate long-standing permanent graph authority. The temporal layer
+therefore acts as a living pressure field around the permanent graph: faster,
+more local, more plastic, and less dangerous than immediate settlement.
+
+In whitepaper terms, the claim is narrow: ILC separates permanent graph truth
+from temporal influence pressure and settlement projection. This is a design
+target, not a live economic authority. Its detailed candidate specification is
+recorded in `docs/specs/ilc_temporal_influence_graph_spec_v0.1.md`, and it
+requires SIM and CDL work before any close-bearing use.
 
 ---
 

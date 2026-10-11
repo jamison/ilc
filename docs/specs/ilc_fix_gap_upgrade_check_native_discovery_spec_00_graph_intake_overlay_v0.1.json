@@ -1,0 +1,50 @@
+{
+  "artifact": "ilc_fix_gap_upgrade_check_native_discovery_spec_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "cdl_mutation": false,
+    "network_or_p2p_activation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-UPGRADE-CHECK-NATIVE-DISCOVERY-SPEC-00 prompt, spec, and walkthrough."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_upgrade_check_native_discovery_spec_00_overlay_record",
+      "annotation_phase": "GAP-UPGRADE-CHECK-NATIVE-DISCOVERY-SPEC-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_gap_upgrade_check_native_discovery_spec_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_upgrade_check_native_discovery_spec_00_overlay_record",
+      "annotation_phase": "GAP-UPGRADE-CHECK-NATIVE-DISCOVERY-SPEC-00",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_upgrade_check_native_discovery_spec_00_g10_native_discovery_spec.md",
+      "target": "phase:GAP-UPGRADE-CHECK-NATIVE-DISCOVERY-SPEC-00"
+    },
+    {
+      "annotation_method": "gap_upgrade_check_native_discovery_spec_00_overlay_record",
+      "annotation_phase": "GAP-UPGRADE-CHECK-NATIVE-DISCOVERY-SPEC-00",
+      "edge_role": "SPECIFIES",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "spec_doc",
+      "repo_path": "docs/specs/ilc_upgrade_check_native_discovery_spec_GAP_UPGRADE_CHECK_NATIVE_DISCOVERY_SPEC_00_v0.1.md",
+      "target": "phase:GAP-UPGRADE-CHECK-NATIVE-DISCOVERY-SPEC-00"
+    },
+    {
+      "annotation_method": "gap_upgrade_check_native_discovery_spec_00_overlay_record",
+      "annotation_phase": "GAP-UPGRADE-CHECK-NATIVE-DISCOVERY-SPEC-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_upgrade_check_native_discovery_spec_00_walkthrough.md",
+      "target": "token:upgrade_check_native_discovery_spec_complete_GAP_UPGRADE_CHECK_NATIVE_DISCOVERY_SPEC_00"
+    }
+  ],
+  "schema_version": "fix39_graph_intake_overlay.v0.1",
+  "status": "support_only"
+}

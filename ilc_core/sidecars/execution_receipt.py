@@ -174,8 +174,20 @@ class SidecarExecutionReceiptStore:
             txn.put(key, encoded_receipt, db=self._receipts_db)
             txn.put(token_key, key, db=self._token_index_db)
 
-    def read_receipts_for_epoch(self, epoch: int) -> list[SidecarExecutionReceipt]:
+    def read_receipts_for_epoch(
+        self,
+        epoch: int,
+        *,
+        limit: int = MAX_SIDECAR_EXECUTION_RECEIPTS_PER_EPOCH,
+    ) -> list[SidecarExecutionReceipt]:
         normalized_epoch = _require_epoch(epoch)
+        if (
+            isinstance(limit, bool)
+            or not isinstance(limit, int)
+            or limit < 1
+            or limit > MAX_SIDECAR_EXECUTION_RECEIPTS_PER_EPOCH
+        ):
+            raise SidecarExecutionReceiptError("sidecar_execution_receipt_read_limit_invalid")
         prefix = normalized_epoch.to_bytes(8, "big", signed=False)
         receipts: list[SidecarExecutionReceipt] = []
         with self.env.begin(db=self._receipts_db) as txn:
@@ -186,6 +198,8 @@ class SidecarExecutionReceiptStore:
                     if not key.startswith(prefix):
                         break
                     receipts.append(_decode_receipt(value))
+                    if len(receipts) >= limit:
+                        break
         return receipts
 
     def lookup_by_token(self, token: str) -> SidecarExecutionReceipt | None:

@@ -188,7 +188,7 @@ def test_epoch_cap_accepts_final_slot_then_rejects_next(tmp_path: Path, monkeypa
 def test_epoch_rejects_uint64_overflow(tmp_path: Path) -> None:
     env = _env(tmp_path)
     try:
-        with pytest.raises(SidecarExecutionReceiptError, match="sidecar_execution_receipt_epoch_invalid"):
+        with pytest.raises(RouterReceiptError, match="sidecar_execution_receipt_epoch_invalid"):
             store_router_receipt(env, _receipt(epoch=0x10000000000000000), b"\x21" * 32)
     finally:
         env.close()
@@ -230,7 +230,7 @@ def test_hash_fields_are_64_lower_hex() -> None:
     int(receipt.inputs_hash, 16)
     int(receipt.outputs_hash, 16)
 
-    with pytest.raises(ValueError, match="sidecar_execution_receipt_inputs_hash_invalid"):
+    with pytest.raises(RouterReceiptError, match="sidecar_execution_receipt_inputs_hash_invalid"):
         _receipt(inputs_hash="not-a-sha256")
 
 

@@ -42,19 +42,28 @@ def test_default_guard_bypasses_application_path_with_neutral_result() -> None:
     assert result.base_ecu_amount == Decimal("100")
     assert result.cap_adjusted_base_ecu_amount == Decimal("100")
     assert result.conservation_check_passed is True
+    assert result.runtime_version == wiring.CAPPROOF_EPOCH_INIT_RUNTIME_VERSION
     assert result.activation_guard == "capproof_epoch_wiring_not_activated_phase_1607"
     assert result.epoch_seal_token == "capproof_epoch_wiring_bypassed_7"
 
 
 def test_guard_cleared_runs_full_six_step_flow(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(wiring, "CAPPROOF_EPOCH_WIRING_NOT_ACTIVATED", False)
+    monkeypatch.setattr(
+        wiring.probe_runner,
+        "CAPPROOF_DETERMINISM_PROBE_PRODUCTION_ACTIVATED",
+        True,
+    )
 
     result = wiring.process_capproof_epoch_init(_cv(), 7, Decimal("100"))
 
     assert result.protocol_executed is True
     assert Decimal("0") <= result.potential_updated <= Decimal("1")
     assert Decimal("0.85") <= result.band_multiplier <= Decimal("1.15")
-    assert result.cap_adjusted_base_ecu_amount == Decimal("100") * result.band_multiplier
+    assert result.cap_adjusted_base_ecu_amount == wiring._multiply_decimal(
+        Decimal("100"),
+        result.band_multiplier,
+    )
     assert result.epoch_seal_token.startswith("capproof_epoch_seal_7_")
 
 
@@ -95,6 +104,42 @@ def test_conservation_rejects_amount_mismatch() -> None:
     _assert_token(excinfo, "capproof_conservation_check_failed_amount_mismatch")
 
 
+def test_result_constructor_enforces_conservation_when_flag_is_true() -> None:
+    with pytest.raises(wiring.CapProofEpochWiringError) as excinfo:
+        wiring.CapProofEpochInitResult(
+            agent_id=_AGENT_ID,
+            epoch=7,
+            protocol_executed=True,
+            potential_updated=Decimal("0.5"),
+            band_multiplier=Decimal("1.15"),
+            base_ecu_amount=Decimal("100"),
+            cap_adjusted_base_ecu_amount=Decimal("100"),
+            conservation_check_passed=True,
+            epoch_seal_token="seal",
+            det_pass=True,
+        )
+
+    _assert_token(excinfo, "capproof_conservation_check_failed_amount_mismatch")
+
+
+def test_executed_result_cannot_claim_failed_conservation() -> None:
+    with pytest.raises(wiring.CapProofEpochWiringError) as excinfo:
+        wiring.CapProofEpochInitResult(
+            agent_id=_AGENT_ID,
+            epoch=7,
+            protocol_executed=True,
+            potential_updated=Decimal("0.5"),
+            band_multiplier=Decimal("1.00"),
+            base_ecu_amount=Decimal("100"),
+            cap_adjusted_base_ecu_amount=Decimal("100"),
+            conservation_check_passed=False,
+            epoch_seal_token="seal",
+            det_pass=True,
+        )
+
+    _assert_token(excinfo, "capproof_wiring_executed_result_requires_conservation_pass")
+
+
 def test_result_rejects_potential_outside_unit_interval() -> None:
     with pytest.raises(wiring.CapProofEpochWiringError) as excinfo:
         wiring.CapProofEpochInitResult(
@@ -113,12 +158,62 @@ def test_result_rejects_potential_outside_unit_interval() -> None:
     _assert_token(excinfo, "capproof_wiring_potential_out_of_unit_interval")
 
 
+def test_result_rejects_runtime_version_mismatch() -> None:
+    with pytest.raises(wiring.CapProofEpochWiringError) as excinfo:
+        wiring.CapProofEpochInitResult(
+            agent_id=_AGENT_ID,
+            epoch=7,
+            protocol_executed=False,
+            potential_updated=Decimal("0"),
+            band_multiplier=Decimal("1.00"),
+            base_ecu_amount=Decimal("100"),
+            cap_adjusted_base_ecu_amount=Decimal("100"),
+            conservation_check_passed=True,
+            epoch_seal_token="seal",
+            det_pass=True,
+            runtime_version="old-version",
+        )
+
+    _assert_token(excinfo, "capproof_wiring_runtime_version_mismatch")
+
+
 def test_activation_guard_token_present_in_executed_result(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(wiring, "CAPPROOF_EPOCH_WIRING_NOT_ACTIVATED", False)
+    monkeypatch.setattr(
+        wiring.probe_runner,
+        "CAPPROOF_DETERMINISM_PROBE_PRODUCTION_ACTIVATED",
+        True,
+    )
 
     result = wiring.process_capproof_epoch_init(_cv(), 7, Decimal("100"))
 
     assert result.activation_guard == "capproof_epoch_wiring_not_activated_phase_1607"
+
+
+def test_guard_clear_fails_closed_until_determinism_probe_is_production_ready(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(wiring, "CAPPROOF_EPOCH_WIRING_NOT_ACTIVATED", False)
+    monkeypatch.setattr(
+        wiring.probe_runner,
+        "CAPPROOF_DETERMINISM_PROBE_PRODUCTION_ACTIVATED",
+        False,
+    )
+
+    with pytest.raises(wiring.CapProofEpochWiringError) as excinfo:
+        wiring.process_capproof_epoch_init(_cv(), 7, Decimal("100"))
+
+    _assert_token(excinfo, "capproof_determinism_probe_not_production_ready")
+
+
+def test_step3_and_step4_are_inverse_inside_band() -> None:
+    cv = _cv()
+    potential = wiring.step3_update_potential(cv)
+    band = wiring.step4_compute_band_multiplier(cv)
+
+    assert potential == (band - wiring.CAPPROOF_BAND_FLOOR) / (
+        wiring.CAPPROOF_BAND_CEIL - wiring.CAPPROOF_BAND_FLOOR
+    )
 
 
 def test_epoch_seal_is_deterministic() -> None:

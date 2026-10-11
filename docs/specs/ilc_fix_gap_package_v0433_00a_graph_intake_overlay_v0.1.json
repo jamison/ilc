@@ -1,0 +1,32 @@
+{
+  "artifact": "ilc_fix_gap_package_v0433_00a_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-PACKAGE-V0433-00a local package-build records."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_package_v0433_00a_overlay_record",
+      "annotation_phase": "GAP-PACKAGE-V0433-00a",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_gap_package_v0433_00a_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_package_v0433_00a_overlay_record",
+      "annotation_phase": "GAP-PACKAGE-V0433-00a",
+      "edge_role": "PACKAGE_BUILD_RECEIPT",
+      "repo_path": "docs/specs/ilc_package_build_receipt_GAP_PACKAGE_V0433_00a_v0.1.json",
+      "target": "phase:GAP-PACKAGE-V0433-00a"
+    },
+    {
+      "annotation_method": "gap_package_v0433_00a_overlay_record",
+      "annotation_phase": "GAP-PACKAGE-V0433-00a",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_package_v0433_00a_walkthrough.md",
+      "target": "phase:GAP-PACKAGE-V0433-00a"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1"
+}

@@ -17,9 +17,11 @@ recipients. Negative deltas are rejected for every other account class.
 
 from __future__ import annotations
 
+import json
 import re
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation, ROUND_DOWN
+from pathlib import Path
 from typing import Any, Mapping, Protocol, runtime_checkable
 
 from ilc_core.epoch.allocation_distributor_runtime import (
@@ -103,6 +105,9 @@ CARRY_FORWARD_CONSUMED_EXACTLY_ONCE_WIRED_TOKEN = (
 EPOCH_ID_ZERO_PADDED_FORMAT_LOCKED_TOKEN = (
     "epoch_id_zero_padded_format_locked_GAP_PUBLIC_RC_DISTRIBUTION_WRITER_00"
 )
+FALLBACK_SET_EMPTY_OBSERVE_00_HARD_STOP_TOKEN = (
+    "fallback_set_empty_observe_00_hard_stop"
+)
 
 MAX_AGENT_ID_BYTES = 256
 MAX_ELIGIBLE_AGENTS = 65_536
@@ -112,6 +117,18 @@ _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 _RESERVED_REWARD_RECIPIENT_IDS = RESERVED_PROTOCOL_ACCOUNT_IDS | frozenset({GENESIS_AGENT1_AGENT_ID})
 _CARRY_FORWARD_ACCOUNT_IDS = CARRY_FORWARD_PROTOCOL_ACCOUNT_IDS
 _PROTOCOL_ACCOUNT_PREFIXES = RESERVED_PROTOCOL_ACCOUNT_PREFIXES
+_EMPTY_WEIGHT_FALLBACK_ELIGIBLE_SET_ARTIFACT = (
+    "docs/specs/ilc_ecu_empty_weight_fallback_eligible_set_v0.1.json"
+)
+_EMPTY_WEIGHT_FALLBACK_AGENTS = (
+    "8b4370fe4ffa16bbb9fc8430d638d9d19a12d8efad02964c85a867f65d942f98230a0b78baaa59b340ba88c6c480ac19",
+    "8c3b517ece61ca111a1e44939b40c2fb85e96d0295b935ce50b2f95204cd938d23c244178a7367b21fc1622f5a95e62f",
+    "97fc59d642f4df19bc017ede43e0e15202d933c89913201da5945b672d624fbf963262e795d23309362e5b419fd5ba09",
+    "b306d66948b4dca95aade079b42931dd553432131d7138cc2b6e8ba804807fc881689bfc7fc0d9568e198bdbbea8d1e9",
+    GENESIS_AGENT1_AGENT_ID,
+)
+_EMPTY_WEIGHT_FALLBACK_WEIGHT = Decimal("0.2")
+_FALLBACK_ARTIFACT_VALIDATION_CACHE: tuple[str, int, int] | None = None
 
 
 @runtime_checkable
@@ -212,6 +229,13 @@ class EpochDistributionOutput:
     def __post_init__(self) -> None:
         if not isinstance(self.conservation_record, EpochDistributionConservationRecord):
             return
+        if self.conservation_verified:
+            if (
+                self.conservation_record.difference_ilc != ZERO
+                or self.conservation_record.total_debit_ilc
+                != self.conservation_record.total_credit_ilc
+            ):
+                raise ValueError("epoch_distribution_output_conservation_mismatch")
         if self.monthly_maturity_proof is not None:
             require_monthly_issuance_maturity_proof(
                 self.monthly_maturity_proof,
@@ -236,6 +260,8 @@ def compute_epoch_distribution(inputs: EpochDistributionInput) -> EpochDistribut
     emission_quote: EpochEmissionQuote | None = None
     current_emission = ZERO
     if issuance_epoch > 0:
+        # Emission quote indices are zero-based; distribution issuance epoch N
+        # consumes the emission budget for matured issuance interval N - 1.
         emission_quote = build_epoch_emission_quote(
             issuance_epoch - 1,
             cumulative_issued_before_epoch,
@@ -272,6 +298,8 @@ def compute_epoch_distribution(inputs: EpochDistributionInput) -> EpochDistribut
     performer_allocations, unallocated_performer = _allocate_pool_to_agents(
         available_performer_pool,
         resolved["eligible_agents"],
+        fallback_on_empty=issuance_epoch > 0,
+        close_epoch_boundary=issuance_epoch,
     )
     auditor_weights = (
         resolved["eligible_auditor_agents"]
@@ -281,6 +309,8 @@ def compute_epoch_distribution(inputs: EpochDistributionInput) -> EpochDistribut
     auditor_allocations, unallocated_auditor = _allocate_pool_to_agents(
         available_auditor_pool,
         auditor_weights,
+        fallback_on_empty=issuance_epoch > 0,
+        close_epoch_boundary=issuance_epoch,
     )
     agent_deltas = _merge_agent_allocations(performer_allocations, auditor_allocations)
 
@@ -369,6 +399,25 @@ def format_epoch_id(issuance_epoch: int) -> str:
     if epoch > 9_999_999_999:
         raise ValueError("issuance_epoch_exceeds_zero_padded_width")
     return EPOCH_ID_FORMAT.format(epoch)
+
+
+def load_fallback_eligible_set(close_epoch_boundary: int) -> dict[str, Decimal]:
+    """Return the ratified empty-weight fallback set for OBSERVE-00.
+
+    Runtime uses embedded constants so installed wheels do not depend on the
+    repository ``docs/`` tree. Source checkouts additionally validate the
+    committed JSON artifact against those constants to catch policy drift.
+    """
+    epoch = _require_epoch(close_epoch_boundary, "close_epoch_boundary")
+    if epoch != 1:
+        raise ValueError("fallback_policy_epoch_not_ratified")
+    fallback = {
+        agent_id: _EMPTY_WEIGHT_FALLBACK_WEIGHT
+        for agent_id in _EMPTY_WEIGHT_FALLBACK_AGENTS
+    }
+    _require_fallback_weight_mapping(fallback)
+    _validate_fallback_artifact_if_present(fallback)
+    return dict(sorted(fallback.items()))
 
 
 def _require_inputs(inputs: EpochDistributionInput) -> dict[str, Any]:
@@ -613,27 +662,55 @@ def _sum_prior_carry_forward_by_role(
 def _allocate_pool_to_agents(
     pool: Decimal,
     weights: Mapping[str, Decimal],
+    *,
+    fallback_on_empty: bool = False,
+    close_epoch_boundary: int = 1,
 ) -> tuple[dict[str, Decimal], Decimal]:
     if pool == ZERO:
         return {}, ZERO
-    if not weights:
-        return {}, pool
-    positive_weights = {agent_id: weight for agent_id, weight in weights.items() if weight > ZERO}
+    active_weights = weights
+    if not active_weights:
+        if not fallback_on_empty:
+            return {}, pool
+        active_weights = load_fallback_eligible_set(close_epoch_boundary)
+    positive_weights = {
+        agent_id: weight
+        for agent_id, weight in active_weights.items()
+        if weight > ZERO
+    }
+    # This branch handles the case where `weights` was non-empty but contained only
+    # non-positive entries (e.g. all-zero attribution weights).  If `weights` was
+    # originally empty, `active_weights` was already replaced with the fallback set
+    # above, so `positive_weights` will be non-empty and this branch is not reached.
     if not positive_weights:
-        return {}, pool
+        if not fallback_on_empty:
+            return {}, pool
+        positive_weights = {
+            agent_id: weight
+            for agent_id, weight in load_fallback_eligible_set(close_epoch_boundary).items()
+            if weight > ZERO
+        }
+        if not positive_weights:
+            raise ValueError(FALLBACK_SET_EMPTY_OBSERVE_00_HARD_STOP_TOKEN)
 
     total_weight = sum(positive_weights.values(), ZERO)
     total_quanta = int(pool / ILC_QUANTUM)
     allocations_quanta: dict[str, int] = {}
     allocated_quanta = 0
-    # Deterministic dust assignment is lexicographic by AgentID for public RC.
+    remainders: dict[str, Decimal] = {}
     for agent_id, weight in sorted(positive_weights.items()):
-        share_quanta = int((Decimal(total_quanta) * weight / total_weight).to_integral_value(rounding=ROUND_DOWN))
+        exact_share = Decimal(total_quanta) * weight / total_weight
+        share_quanta = int(exact_share.to_integral_value(rounding=ROUND_DOWN))
         allocations_quanta[agent_id] = share_quanta
         allocated_quanta += share_quanta
+        remainders[agent_id] = exact_share - Decimal(share_quanta)
 
     remaining_quanta = total_quanta - allocated_quanta
-    for agent_id in sorted(allocations_quanta):
+    # Largest-remainder assignment; AgentID order is only the deterministic tie-break.
+    for agent_id, _remainder in sorted(
+        remainders.items(),
+        key=lambda item: (-item[1], item[0]),
+    ):
         if remaining_quanta <= 0:
             break
         allocations_quanta[agent_id] += 1
@@ -646,6 +723,80 @@ def _allocate_pool_to_agents(
     }
     allocated = sum(allocations.values(), ZERO)
     return allocations, pool - allocated
+
+
+def _require_fallback_weight_mapping(weights: Mapping[str, Decimal]) -> None:
+    if not weights:
+        raise ValueError(FALLBACK_SET_EMPTY_OBSERVE_00_HARD_STOP_TOKEN)
+    if len(weights) > MAX_ELIGIBLE_AGENTS:
+        raise ValueError("fallback_eligible_set_exceeds_max_count")
+    normalized: dict[str, Decimal] = {}
+    for agent_id, weight in weights.items():
+        normalized[_require_fallback_agent_id(agent_id)] = _require_non_negative_weight(
+            weight,
+            "fallback_eligible_weight",
+        )
+    if any(weight <= ZERO for weight in normalized.values()):
+        raise ValueError("fallback_eligible_weight_must_be_positive")
+    if sum(normalized.values(), ZERO) != Decimal("1"):
+        raise ValueError("fallback_eligible_weight_sum_invalid_observe_00")
+
+
+def _require_fallback_agent_id(value: object) -> str:
+    # Fallback eligibility is a pre-open policy set and may include Genesis.
+    # Normal attribution weights still reject reserved reward recipients upstream.
+    if not isinstance(value, str) or _AGENT_ID_RE.fullmatch(value) is None:
+        raise ValueError("fallback_eligible_agent_id_invalid_observe_00")
+    if len(value.encode("utf-8")) > MAX_AGENT_ID_BYTES:
+        raise ValueError("fallback_eligible_agent_id_exceeds_max_bytes")
+    return value
+
+
+def _validate_fallback_artifact_if_present(expected: Mapping[str, Decimal]) -> None:
+    global _FALLBACK_ARTIFACT_VALIDATION_CACHE
+    artifact_path = Path(__file__).resolve().parents[2] / _EMPTY_WEIGHT_FALLBACK_ELIGIBLE_SET_ARTIFACT
+    if not artifact_path.exists():
+        return
+    stat = artifact_path.stat()
+    cache_key = (str(artifact_path.resolve()), stat.st_mtime_ns, stat.st_size)
+    if _FALLBACK_ARTIFACT_VALIDATION_CACHE == cache_key:
+        return
+    try:
+        with artifact_path.open("r", encoding="utf-8") as handle:
+            artifact = json.load(handle)
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError("fallback_eligible_set_artifact_invalid") from exc
+    expected_fields = {
+        "discovery_rule": "no_grpc_list_agents_no_runtime_operator_expansion",
+        "eligibility_rule": "committed_pre_open_config_only",
+        "issuance_epoch": 1,
+        "issuance_epoch_open_anchor_ms": 1791007007082,
+        "network_id": "public-rc",
+        "phase": "GAP-ECU-MONTHLY-CLOSE-EMPTY-POOL-FALLBACK-POLICY-00",
+        "schema_version": "ilc.ecu_empty_weight_fallback_eligible_set.v0.1",
+        "tie_breaker": "largest_remainder_then_agent_id_lexicographic_ascending",
+        "total_weight": "1",
+        "weighting_rule": "equal_weight_per_agent",
+    }
+    for field_name, expected_value in expected_fields.items():
+        if artifact.get(field_name) != expected_value:
+            raise ValueError("fallback_eligible_set_artifact_invalid")
+    agents = artifact.get("agents")
+    weights = artifact.get("weights")
+    if not isinstance(agents, list) or not isinstance(weights, dict):
+        raise ValueError("fallback_eligible_set_artifact_invalid")
+    artifact_weights: dict[str, Decimal] = {}
+    for agent_id in agents:
+        if agent_id not in weights:
+            raise ValueError("fallback_eligible_set_artifact_invalid")
+        artifact_weights[_require_fallback_agent_id(agent_id)] = _require_non_negative_weight(
+            weights[agent_id],
+            "fallback_eligible_weight",
+        )
+    _require_fallback_weight_mapping(artifact_weights)
+    if dict(sorted(artifact_weights.items())) != dict(sorted(expected.items())):
+        raise ValueError("fallback_eligible_set_artifact_mismatch")
+    _FALLBACK_ARTIFACT_VALIDATION_CACHE = cache_key
 
 
 def _merge_agent_allocations(
@@ -825,6 +976,31 @@ def _build_zero_settlement_marker(epoch_id: str) -> dict[str, Any]:
     }
 
 
+def _build_epoch_commit_marker(
+    epoch_id: str,
+    settlements: Mapping[str, Decimal],
+) -> dict[str, Any]:
+    settlement_rows = [
+        {
+            "agent_id": agent_id,
+            "settlement_delta_ilc": decimal_to_canonical_string(delta),
+        }
+        for agent_id, delta in sorted(settlements.items())
+    ]
+    return {
+        "epoch_id": epoch_id,
+        "settlement_count": len(settlement_rows),
+        "settlement_digest": _stable_digest(
+            {
+                "epoch_id": epoch_id,
+                "settlements": settlement_rows,
+            }
+        ),
+        "settlements": settlement_rows,
+        "settlement_status": "verified_epoch_committed",
+    }
+
+
 def _process_agent_settlement(
     *,
     batch: Any,
@@ -951,14 +1127,51 @@ def _commit_lmdb_lifecycle_batch(
 ) -> list[dict[str, Any]]:
     wallet_store = _require_lmdb_wallet_store(lifecycle_runtime)
     epoch_number = _require_epoch_id_format(epoch_id)
+    normalized_settlements: dict[str, Decimal] = {}
+    for agent_id, amount in sorted(settlements.items()):
+        _require_agent_id(agent_id)
+        settlement_delta = _require_lifecycle_settlement_delta(agent_id, amount)
+        if settlement_delta != ZERO:
+            normalized_settlements[agent_id] = settlement_delta
+    expected_marker = (
+        _build_epoch_commit_marker(epoch_id, normalized_settlements)
+        if normalized_settlements
+        else _build_zero_settlement_marker(epoch_id)
+    )
     results: list[dict[str, Any]] = []
     with wallet_store.wallet_batch_transaction() as batch:
         replay_epoch = _validate_epoch_sequence(batch, epoch_number)
-        for agent_id, amount in sorted(settlements.items()):
-            _require_agent_id(agent_id)
-            settlement_delta = _require_lifecycle_settlement_delta(agent_id, amount)
-            if settlement_delta == ZERO:
-                continue
+        if replay_epoch:
+            existing_marker = batch.get_epoch_commit_marker(epoch_id)
+            if existing_marker is None:
+                raise EcuIlcLifecycleRuntimeError(
+                    "lifecycle_epoch_replay_manifest_missing",
+                    "same-epoch replay requires an existing epoch commit marker",
+                )
+            if existing_marker != expected_marker:
+                existing_rows = existing_marker.get("settlements")
+                expected_rows = expected_marker.get("settlements")
+                if isinstance(existing_rows, list) and isinstance(expected_rows, list):
+                    existing_agent_ids = {
+                        row.get("agent_id")
+                        for row in existing_rows
+                        if isinstance(row, dict)
+                    }
+                    expected_agent_ids = {
+                        row.get("agent_id")
+                        for row in expected_rows
+                        if isinstance(row, dict)
+                    }
+                    if not expected_agent_ids <= existing_agent_ids:
+                        raise EcuIlcLifecycleRuntimeError(
+                            "lifecycle_epoch_replay_recipient_extension",
+                            "same-epoch replay cannot add new settlement recipients",
+                        )
+                raise EcuIlcLifecycleRuntimeError(
+                    "lifecycle_epoch_replay_set_mismatch",
+                    "same-epoch replay must match the committed recipient set and deltas",
+                )
+        for agent_id, settlement_delta in sorted(normalized_settlements.items()):
             results.append(
                 _process_agent_settlement(
                     batch=batch,
@@ -968,8 +1181,8 @@ def _commit_lmdb_lifecycle_batch(
                     replay_epoch=replay_epoch,
                 )
             )
-    if not settlements:
-        wallet_store.put_epoch_commit_marker(epoch_id, _build_zero_settlement_marker(epoch_id))
+        if not replay_epoch:
+            batch.put_epoch_commit_marker(epoch_id, expected_marker)
     return results
 
 
@@ -1056,6 +1269,7 @@ __all__ = [
     "EpochDistributionConservationRecord",
     "EpochDistributionInput",
     "EpochDistributionOutput",
+    "FALLBACK_SET_EMPTY_OBSERVE_00_HARD_STOP_TOKEN",
     "GENESIS_CAP_ALWAYS_SUPPLIED_TOKEN",
     "MAX_ELIGIBLE_AGENTS",
     "MAX_PRIOR_CARRY_FORWARD_RECORDS",
@@ -1064,4 +1278,5 @@ __all__ = [
     "commit_epoch_distribution",
     "commit_verified_epoch_distribution",
     "format_epoch_id",
+    "load_fallback_eligible_set",
 ]

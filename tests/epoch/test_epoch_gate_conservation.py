@@ -68,16 +68,29 @@ def test_gate_rejects_unverified_output_with_phase_token() -> None:
 
 def test_gate_rejects_nonzero_difference_even_if_verified() -> None:
     valid_output = _output()
-    bad_difference = replace(
-        valid_output,
-        conservation_record=replace(
-            valid_output.conservation_record,
-            difference_ilc=Decimal("0.000000001"),
-        ),
-    )
 
-    with pytest.raises(ValueError, match=NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN):
-        verify_epoch_conservation_before_commit(bad_difference)
+    with pytest.raises(ValueError, match="epoch_distribution_output_conservation_mismatch"):
+        replace(
+            valid_output,
+            conservation_record=replace(
+                valid_output.conservation_record,
+                difference_ilc=Decimal("0.000000001"),
+            ),
+        )
+
+
+def test_distribution_output_rejects_verified_cross_field_mismatch() -> None:
+    valid_output = _output()
+
+    with pytest.raises(ValueError, match="epoch_distribution_output_conservation_mismatch"):
+        replace(
+            valid_output,
+            conservation_record=replace(
+                valid_output.conservation_record,
+                total_credit_ilc=valid_output.conservation_record.total_credit_ilc
+                + Decimal("0.000000001"),
+            ),
+        )
 
 
 def test_gate_rejects_forged_total_credit_even_if_difference_is_zero() -> None:
@@ -88,10 +101,9 @@ def test_gate_rejects_forged_total_credit_even_if_difference_is_zero() -> None:
         + Decimal("0.000000001"),
         difference_ilc=Decimal("0"),
     )
-    forged_output = replace(valid_output, conservation_record=forged_record)
 
-    with pytest.raises(ValueError, match=NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN):
-        verify_epoch_conservation_before_commit(forged_output)
+    with pytest.raises(ValueError, match="epoch_distribution_output_conservation_mismatch"):
+        replace(valid_output, conservation_record=forged_record)
 
 
 def test_gate_rejects_forged_total_debit_even_if_difference_is_zero() -> None:
@@ -102,10 +114,9 @@ def test_gate_rejects_forged_total_debit_even_if_difference_is_zero() -> None:
         - Decimal("0.000000001"),
         difference_ilc=Decimal("0"),
     )
-    forged_output = replace(valid_output, conservation_record=forged_record)
 
-    with pytest.raises(ValueError, match=NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN):
-        verify_epoch_conservation_before_commit(forged_output)
+    with pytest.raises(ValueError, match="epoch_distribution_output_conservation_mismatch"):
+        replace(valid_output, conservation_record=forged_record)
 
 
 @pytest.mark.parametrize("bad_difference", [Decimal("NaN"), Decimal("Infinity")])
@@ -113,16 +124,15 @@ def test_gate_rejects_non_finite_difference_with_phase_token(
     bad_difference: Decimal,
 ) -> None:
     valid_output = _output()
-    bad_output = replace(
-        valid_output,
-        conservation_record=replace(
-            valid_output.conservation_record,
-            difference_ilc=bad_difference,
-        ),
-    )
 
-    with pytest.raises(ValueError, match=NO_UNSETTLED_ILC_ISSUANCE_GATE_TOKEN):
-        verify_epoch_conservation_before_commit(bad_output)
+    with pytest.raises(ValueError, match="epoch_distribution_output_conservation_mismatch"):
+        replace(
+            valid_output,
+            conservation_record=replace(
+                valid_output.conservation_record,
+                difference_ilc=bad_difference,
+            ),
+        )
 
 
 def test_gate_is_idempotent_for_verified_balanced_output() -> None:

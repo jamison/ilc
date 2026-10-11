@@ -7,7 +7,7 @@ import json
 import re
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import Any
+from typing import Any, Mapping
 
 _AGENT_ID_RE = re.compile(r"^[0-9a-f]{96}$")
 CAPPROOF_MAX_METRIC_VALUE = Decimal("1E+18")
@@ -72,6 +72,45 @@ class CapabilityVector:
 
         return json.dumps(self.to_dict(), sort_keys=True, separators=(",", ":"))
 
+    @classmethod
+    def from_dict(cls, payload: Mapping[str, Any]) -> "CapabilityVector":
+        """Load a capability vector from the canonical JSON-ready mapping."""
+
+        if not isinstance(payload, Mapping):
+            raise CapProofValidationError("capproof_capability_vector_payload_invalid")
+        expected = {
+            "agent_id",
+            "bw_gbps",
+            "det_pass",
+            "epoch",
+            "gemm_gops",
+            "graph_mteps",
+            "infer_tps",
+        }
+        if set(payload) != expected:
+            raise CapProofValidationError("capproof_capability_vector_field_set_invalid")
+        return cls(
+            gemm_gops=_decimal_from_text(payload.get("gemm_gops"), "gemm_gops"),
+            infer_tps=_decimal_from_text(payload.get("infer_tps"), "infer_tps"),
+            bw_gbps=_decimal_from_text(payload.get("bw_gbps"), "bw_gbps"),
+            graph_mteps=_decimal_from_text(payload.get("graph_mteps"), "graph_mteps"),
+            det_pass=_required_bool(payload.get("det_pass")),
+            epoch=_required_epoch(payload.get("epoch")),
+            agent_id=_required_agent_id(payload.get("agent_id")),
+        )
+
+    @classmethod
+    def from_json(cls, payload: str) -> "CapabilityVector":
+        """Deserialize a deterministic JSON capability vector."""
+
+        if type(payload) is not str:
+            raise CapProofValidationError("capproof_capability_vector_json_invalid")
+        try:
+            decoded = json.loads(payload)
+        except json.JSONDecodeError as exc:
+            raise CapProofValidationError("capproof_capability_vector_json_invalid") from exc
+        return cls.from_dict(decoded)
+
 
 def _require_decimal_metric(value: Decimal, field_name: str) -> None:
     if not isinstance(value, Decimal):
@@ -98,3 +137,33 @@ def _require_decimal_metric(value: Decimal, field_name: str) -> None:
 
 def _decimal_text(value: Decimal) -> str:
     return format(value, "f")
+
+
+def _decimal_from_text(value: Any, field_name: str) -> Decimal:
+    if type(value) is not str or not value or value != value.strip():
+        raise CapProofValidationError(f"capproof_{field_name}_must_be_decimal_string")
+    try:
+        parsed = Decimal(value)
+    except Exception as exc:
+        raise CapProofValidationError(f"capproof_{field_name}_must_be_decimal_string") from exc
+    if _decimal_text(parsed) != value:
+        raise CapProofValidationError(f"capproof_{field_name}_must_be_canonical_decimal_string")
+    return parsed
+
+
+def _required_bool(value: Any) -> bool:
+    if type(value) is not bool:
+        raise CapProofValidationError("capproof_det_pass_must_be_bool")
+    return value
+
+
+def _required_epoch(value: Any) -> int:
+    if not isinstance(value, int) or type(value) is bool or value < 0:
+        raise CapProofValidationError("capproof_epoch_must_be_nonnegative_int")
+    return value
+
+
+def _required_agent_id(value: Any) -> str:
+    if not isinstance(value, str) or _AGENT_ID_RE.fullmatch(value) is None:
+        raise CapProofValidationError("capproof_agent_id_must_be_96_lower_hex")
+    return value

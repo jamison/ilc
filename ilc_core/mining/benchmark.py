@@ -8,6 +8,7 @@ import logging
 from ilc_core.identity.log_redaction_runtime import redact_agent_id_for_log
 
 logger = logging.getLogger(__name__)
+LEGACY_BENCHMARK_NOT_CAPPROOF_V1 = True
 
 
 # Hardware Acceleration Imports
@@ -90,7 +91,8 @@ class PoWBenchmark:
             - "total_time" : total benchmark wall-clock time (seconds)
         """
         logger.info(
-            "[Benchmark] Initializing CapProof for %s",
+            "[Benchmark] Initializing legacy hardware benchmark for %s "
+            "(not CDL-115 CapProof v1)",
             redact_agent_id_for_log(agent_id),
         )
 

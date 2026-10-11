@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from ilc_core.cli import d2e_submit_cli
 from ilc_core.cli.ecu_status_cli import normalize_ecu_status_payload
 from ilc_core.encoding.cidv1 import node_id_from_obj, parse_nodeid_strict
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 from ilc_core.server import (
     PUBLIC_TRUTH_SUBMIT_GRAPH_STORE_ENV,
     PUBLIC_TRUTH_SUBMIT_STORE_MISSING_TOKEN,
@@ -18,7 +19,17 @@ from ilc_core.server import (
 from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 
-VALID_AGENT_ID = "c" * 96
+TEST_SECRET_HEX, VALID_AGENT_ID = keypair_from_ikm_hex("60" * 32)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_bls_key(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
+    monkeypatch.setenv("ILC_AGENT_BLS_SIGNING_KEY", TEST_SECRET_HEX)
+    monkeypatch.setattr(
+        d2e_submit_cli,
+        "_ILC_AGENT_BLS_KEY_DEFAULT_PATH",
+        tmp_path / "no-default-bls-key.hex",
+    )
 
 
 def _assert_truth_payload() -> dict[str, object]:
@@ -41,7 +52,25 @@ def _submit_namespace(endpoint: str = "") -> argparse.Namespace:
         signing_key=None,
         source_refs=[],
         endpoint=endpoint,
+        quic_endpoint="",
+        tls_fingerprint="",
     )
+
+
+def _signed_submit_envelope() -> dict[str, object]:
+    envelope: dict[str, object] = {
+        "v": 1,
+        "primitive": "assert.truth",
+        "agent_id": VALID_AGENT_ID,
+        "epoch": 1,
+        "payload": _assert_truth_payload(),
+        "sig": "UNSIGNED",
+    }
+    envelope["sig"] = d2e_submit_cli._build_native_submit_sig_object(
+        envelope,
+        TEST_SECRET_HEX,
+    )
+    return envelope
 
 
 def test_public_truth_submit_route_persists_cdl075_node(
@@ -54,14 +83,7 @@ def test_public_truth_submit_route_persists_cdl075_node(
     with TestClient(create_app()) as client:
         response = client.post(
             "/api/v1/truth/submit",
-            json={
-                "v": 1,
-                "primitive": "assert.truth",
-                "agent_id": VALID_AGENT_ID,
-                "epoch": 1,
-                "payload": _assert_truth_payload(),
-                "sig": "UNSIGNED",
-            },
+            json=_signed_submit_envelope(),
         )
 
     assert response.status_code == 200
@@ -94,14 +116,7 @@ def test_public_truth_submit_route_fails_closed_without_configured_store() -> No
     with TestClient(create_app()) as client:
         response = client.post(
             "/api/v1/truth/submit",
-            json={
-                "v": 1,
-                "primitive": "assert.truth",
-                "agent_id": VALID_AGENT_ID,
-                "epoch": 1,
-                "payload": _assert_truth_payload(),
-                "sig": "UNSIGNED",
-            },
+            json=_signed_submit_envelope(),
         )
 
     assert response.status_code == 503

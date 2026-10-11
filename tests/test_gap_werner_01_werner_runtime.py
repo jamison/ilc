@@ -25,6 +25,7 @@ from decimal import Decimal
 import pytest
 
 from ilc_core.economics.werner_runtime import (
+    MAX_WERNER_SIGNAL_HISTORY,
     WERNER_CREDIT_WIRING_NOT_ACTIVATED,
     WERNER_RUNTIME_VERSION,
     TOPOLOGY_PRESSURE_MODEL,
@@ -494,6 +495,11 @@ class TestSmoothedPressureEMA:
         with pytest.raises(ValueError, match="non_empty"):
             compute_smoothed_pressure([], alpha=Decimal("0.5"))
 
+    def test_ema_sequence_above_maximum_rejected(self):
+        sequence = [Decimal("10")] * (MAX_WERNER_SIGNAL_HISTORY + 1)
+        with pytest.raises(ValueError, match="werner_raw_pressure_sequence_exceeds_maximum"):
+            compute_smoothed_pressure(sequence, alpha=Decimal("0.5"))
+
     def test_ema_nan_alpha_raises(self):
         """NaN alpha raises ValueError."""
         with pytest.raises(ValueError, match="non_finite_decimal"):
@@ -537,6 +543,19 @@ class TestSpectralTrustEligibility:
         betas = [Decimal("0.9"), Decimal("0.9")]   # only 2 < N=3
         pulses = [Decimal("0.9"), Decimal("0.9")]
         assert is_spectral_trust_eligible(betas, pulses) is False
+
+    def test_only_last_n_epochs_affect_eligibility(self):
+        betas = [Decimal("0.9"), Decimal("0.1"), Decimal("0.9"), Decimal("0.9")]
+        pulses = [Decimal("0.9"), Decimal("0.1"), Decimal("0.9"), Decimal("0.9")]
+
+        assert is_spectral_trust_eligible(betas, pulses, k=2, n=3) is True
+
+    def test_spectral_history_above_maximum_rejected(self):
+        betas = [Decimal("0.8")] * (MAX_WERNER_SIGNAL_HISTORY + 1)
+        pulses = [Decimal("0.8")] * (MAX_WERNER_SIGNAL_HISTORY + 1)
+
+        with pytest.raises(ValueError, match="werner_beta_signal_history_exceeds_maximum"):
+            is_spectral_trust_eligible(betas, pulses)
 
     def test_nan_beta_history_raises(self):
         """NaN in beta_signal_history raises ValueError."""
@@ -611,6 +630,48 @@ class TestMultiEpochSmoothedPriority:
                 beta_signal_sequence=[Decimal("0.5"), Decimal("1.1")],
                 alpha=Decimal("0.5"),
             )
+
+
+def test_partial_centrality_mapping_falls_back_to_degree_centrality() -> None:
+    adj = {"hub": ["leaf"], "leaf": ["hub"]}
+    explicit_absent = compute_werner_pressure_signal(
+        node_id="hub",
+        adjacency=adj,
+        centrality={"leaf": Decimal("0.01")},
+        alpha=Decimal("0.5"),
+        beta_signal=Decimal("0.7"),
+    )
+    computed = compute_werner_pressure_signal(
+        node_id="hub",
+        adjacency=adj,
+        centrality=compute_degree_centrality(adj),
+        alpha=Decimal("0.5"),
+        beta_signal=Decimal("0.7"),
+    )
+
+    assert explicit_absent == computed
+
+
+def test_single_epoch_pressure_alpha_is_validation_only() -> None:
+    adj = {"a": ["b"], "b": ["a"]}
+    centrality = compute_degree_centrality(adj)
+
+    low_alpha = compute_werner_pressure_signal(
+        node_id="a",
+        adjacency=adj,
+        centrality=centrality,
+        alpha=Decimal("0.1"),
+        beta_signal=Decimal("0.7"),
+    )
+    high_alpha = compute_werner_pressure_signal(
+        node_id="a",
+        adjacency=adj,
+        centrality=centrality,
+        alpha=Decimal("0.9"),
+        beta_signal=Decimal("0.7"),
+    )
+
+    assert low_alpha == high_alpha
 
 
 # ---------------------------------------------------------------------------

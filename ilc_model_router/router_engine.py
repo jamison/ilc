@@ -73,7 +73,7 @@ class RouterEngine:
                 request,
                 _failure_response("provider_adapter_interrupted"),
             )
-            finalize_reserved_router_receipt(self._store_env, receipt, nullifier)
+            _best_effort_finalize_reserved_receipt(self._store_env, receipt, nullifier)
             raise
         except SystemExit:
             # Preserve process-exit semantics after committing the local failure receipt.
@@ -81,7 +81,7 @@ class RouterEngine:
                 request,
                 _failure_response("provider_adapter_system_exit"),
             )
-            finalize_reserved_router_receipt(self._store_env, receipt, nullifier)
+            _best_effort_finalize_reserved_receipt(self._store_env, receipt, nullifier)
             raise
         except Exception:
             response = _failure_response("provider_adapter_exception")
@@ -111,6 +111,7 @@ def _build_inputs_hash(request: RouterRequest) -> str:
         "model_id": request.model_id,
         "provider": request.provider,
         "request_nonce": request.request_nonce.hex(),
+        "capability_class": request.capability_class,
     }
     return hashlib.sha256(_canonical_json_bytes(payload)).hexdigest()
 
@@ -155,7 +156,7 @@ def _build_router_receipt(request: RouterRequest, response: ProviderResponse) ->
         provider=request.provider,
         token_counts_input=response.token_counts_input,
         token_counts_output=response.token_counts_output,
-        capability_class="inference",
+        capability_class=request.capability_class,
         consent_status="local_only",
     )
     return RouterReceipt(
@@ -171,6 +172,23 @@ def _build_router_receipt(request: RouterRequest, response: ProviderResponse) ->
         tool_id=core.tool_id,
         companion=companion,
     )
+
+
+def _best_effort_finalize_reserved_receipt(
+    store_env,
+    receipt: RouterReceipt,
+    nullifier: bytes,
+) -> None:
+    """Try to finalize interrupt receipts without masking KeyboardInterrupt/SystemExit."""
+
+    try:
+        finalize_reserved_router_receipt(store_env, receipt, nullifier)
+    except Exception:
+        # Operator interrupts and process exits must retain their control-flow
+        # semantics. A failed best-effort finalization leaves the pending
+        # nullifier fail-closed rather than converting the interrupt into an
+        # unrelated storage exception.
+        return
 
 
 def _canonical_json_bytes(payload: object) -> bytes:
@@ -192,4 +210,5 @@ __all__ = [
     "_build_nullifier",
     "_build_outputs_hash",
     "_build_router_receipt",
+    "_best_effort_finalize_reserved_receipt",
 ]

@@ -23,6 +23,7 @@ import json
 import os
 import re
 import stat
+import subprocess
 import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
@@ -56,6 +57,7 @@ _SUBMIT_ENDPOINT_READ_CHUNK_BYTES = 64 * 1024
 _ILC_AGENT_BLS_SIGNING_KEY_ENV = "ILC_AGENT_BLS_SIGNING_KEY"
 _ILC_AGENT_BLS_KEY_DEFAULT_PATH = Path.home() / ".ilc" / "identity" / "signing_key.hex"
 _NATIVE_SUBMIT_NETWORK_ID_DEFAULT = "ilc-public-rc-01-testnet-harness"
+_QUIC_TLS_FINGERPRINT_RE = re.compile(r"^[0-9a-f]{64}$")
 
 if CDL_074_DEPENDENCY != "cdl_074_truth_primitive_runtime_ratified.v0.1":
     raise ValueError("submit_cli_dependency_mismatch")
@@ -600,6 +602,206 @@ def _post_submit_envelope(endpoint: str, envelope: dict[str, Any]) -> dict[str, 
     return _load_submit_endpoint_response(request, timeout=10.0)
 
 
+def _quic_endpoint_from_args(args: argparse.Namespace) -> str:
+    endpoint = str(getattr(args, "quic_endpoint", "") or "").strip()
+    if not endpoint:
+        return ""
+    if any(marker in endpoint for marker in ("://", "/", "?", "#", "@")):
+        raise SubmitCommandError(
+            "submit_quic_endpoint_invalid",
+            "QUIC submit endpoint must be host:port without scheme, path, query, or userinfo",
+        )
+    host, separator, port_text = endpoint.rpartition(":")
+    if not host or not separator or not port_text.isascii() or not port_text.isdigit():
+        raise SubmitCommandError(
+            "submit_quic_endpoint_invalid",
+            "QUIC submit endpoint must be host:port",
+        )
+    port = int(port_text)
+    if port < 1 or port > 65535:
+        raise SubmitCommandError(
+            "submit_quic_endpoint_invalid",
+            "QUIC submit endpoint port must be in 1..65535",
+        )
+    return endpoint
+
+
+def _tls_fingerprint_from_args(args: argparse.Namespace) -> str | None:
+    fingerprint = str(getattr(args, "tls_fingerprint", "") or "").strip()
+    if not fingerprint:
+        return None
+    if _QUIC_TLS_FINGERPRINT_RE.fullmatch(fingerprint) is None:
+        raise SubmitCommandError(
+            "submit_quic_tls_fingerprint_invalid",
+            "--tls-fingerprint must be exactly 64 lowercase hex chars",
+        )
+    return fingerprint
+
+
+def _check_submit_transport_unambiguous(
+    args: argparse.Namespace,
+    *,
+    quic_endpoint: str,
+) -> None:
+    if not quic_endpoint:
+        return
+    explicit_https_endpoint = str(getattr(args, "endpoint", "") or "").strip()
+    env_https_endpoint = os.environ.get("ILC_TRUTH_SUBMIT_ENDPOINT", "").strip()
+    if explicit_https_endpoint or env_https_endpoint:
+        raise SubmitCommandError(
+            "submit_transport_ambiguous",
+            "provide either --quic-endpoint or HTTPS --endpoint/ILC_TRUTH_SUBMIT_ENDPOINT, not both",
+        )
+
+
+def _submit_quic_dispatch(
+    envelope: dict[str, Any],
+    *,
+    quic_endpoint: str,
+    tls_fingerprint: str | None,
+) -> dict[str, Any]:
+    from ilc_core.consensus.binary_paths import installed_consensus_binary_command
+
+    body = json.dumps(
+        envelope,
+        sort_keys=True,
+        separators=(",", ":"),
+        allow_nan=False,
+    ).encode("utf-8")
+    if len(body) > _MAX_SUBMIT_PAYLOAD_BYTES:
+        raise SubmitCommandError(
+            "submit_payload_too_large",
+            "payload exceeds maximum submit payload size",
+        )
+    command = installed_consensus_binary_command("ilc_native_submit_client")
+    if command is None:
+        raise SubmitCommandError(
+            "native_submit_client_binary_not_found",
+            "ilc_native_submit_client helper binary was not found",
+        )
+    argv = [*command, "--endpoint", quic_endpoint]
+    if tls_fingerprint is not None:
+        argv.extend(["--expected-tls-fingerprint", tls_fingerprint])
+    try:
+        completed = subprocess.run(
+            argv,
+            input=body,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=15,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise SubmitCommandError(
+            "native_submit_quic_timeout",
+            "QUIC submit timed out",
+        ) from exc
+    except OSError as exc:
+        raise SubmitCommandError(
+            "native_submit_client_binary_not_found",
+            "ilc_native_submit_client helper binary could not be executed",
+        ) from exc
+
+    stdout = completed.stdout or b""
+    stderr = completed.stderr or b""
+    if len(stdout) > _MAX_SUBMIT_ENDPOINT_RESPONSE_BYTES:
+        raise SubmitCommandError(
+            "native_submit_quic_response_too_large",
+            "native QUIC submit client response exceeds maximum size",
+        )
+
+    payload: dict[str, Any] | None = None
+    if stdout:
+        try:
+            decoded = stdout.decode("utf-8")
+            parsed = json.loads(decoded, parse_constant=_reject_non_finite_json_constant)
+        except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
+            raise SubmitCommandError(
+                "native_submit_quic_response_invalid_json",
+                "native QUIC submit client response was not valid JSON",
+            ) from exc
+        if not isinstance(parsed, dict):
+            raise SubmitCommandError(
+                "native_submit_quic_response_not_object",
+                "native QUIC submit client response must be a JSON object",
+            )
+        payload = parsed
+
+    if completed.returncode != 0:
+        error_token = payload.get("error") if isinstance(payload, dict) else None
+        if isinstance(error_token, str) and error_token:
+            raise SubmitCommandError(error_token, "native QUIC submit client rejected submission")
+        stderr_excerpt = stderr[:200].decode("utf-8", errors="replace")
+        raise SubmitCommandError(
+            "native_submit_quic_error",
+            stderr_excerpt or "native QUIC submit client failed",
+        )
+    if payload is None:
+        raise SubmitCommandError(
+            "native_submit_quic_response_invalid_json",
+            "native QUIC submit client returned an empty response",
+        )
+    return payload
+
+
+def _normalize_submit_quic_response(
+    payload: dict[str, Any],
+    *,
+    result_creates_node: bool,
+    fallback_edges: list[dict[str, Any]],
+) -> dict[str, Any]:
+    ok = payload.get("ok")
+    if not isinstance(ok, bool) or ok != True:
+        error_token = payload.get("error")
+        if isinstance(error_token, str) and error_token:
+            raise SubmitCommandError(error_token, "native QUIC submit client rejected submission")
+        raise SubmitCommandError(
+            "native_submit_quic_rejected",
+            "native QUIC submit client did not return ok=true",
+        )
+    receipt = payload.get("receipt")
+    if not isinstance(receipt, dict):
+        raise SubmitCommandError(
+            "native_submit_quic_receipt_missing",
+            "native QUIC submit client response must include a receipt object",
+        )
+    node_id = payload.get("node_id", receipt.get("node_id"))
+    if result_creates_node:
+        if not isinstance(node_id, str) or not node_id:
+            raise SubmitCommandError(
+                "native_submit_quic_node_id_missing",
+                "native QUIC submit client did not return a node_id",
+            )
+        try:
+            parse_nodeid_strict(node_id)
+        except ValueError as exc:
+            raise SubmitCommandError(
+                "native_submit_quic_node_id_invalid",
+                "native QUIC submit client returned a non-CIDv1 node_id",
+            ) from exc
+    elif node_id is not None and not isinstance(node_id, str):
+        raise SubmitCommandError(
+            "native_submit_quic_node_id_invalid",
+            "native QUIC submit client returned an invalid node_id",
+        )
+    primitive = payload.get("primitive", receipt.get("primitive"))
+    if not isinstance(primitive, str) or not primitive:
+        raise SubmitCommandError(
+            "native_submit_quic_primitive_missing",
+            "native QUIC submit client response must include primitive",
+        )
+    return {
+        "node_id": node_id,
+        "edges": list(fallback_edges),
+        "graph_persistence": "persisted"
+        if receipt.get("nodes_written", 0) or receipt.get("edges_written", 0)
+        else "validated",
+        "gossip_delivery": "deferred",
+        "primitive": primitive,
+        "receipt": dict(receipt),
+    }
+
+
 def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     """Execute the submit command.
 
@@ -693,6 +895,44 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         {"edge_type": e.edge_type, "source": e.source, "target": e.target}
         for e in result.edges
     ]
+
+    quic_endpoint = _quic_endpoint_from_args(args)
+    _check_submit_transport_unambiguous(args, quic_endpoint=quic_endpoint)
+    if quic_endpoint:
+        quic_payload = _submit_quic_dispatch(
+            envelope,
+            quic_endpoint=quic_endpoint,
+            tls_fingerprint=_tls_fingerprint_from_args(args),
+        )
+        quic_data = _normalize_submit_quic_response(
+            quic_payload,
+            result_creates_node=result.creates_node,
+            fallback_edges=edges_out,
+        )
+        response = {
+            "subcommand": "submit",
+            "primitive": result.primitive,
+            "creates_node": result.creates_node,
+            "node_primitive_type": result.node_primitive_type,
+            "node_id": quic_data["node_id"],
+            "edges": quic_data["edges"],
+            "graph_persistence": quic_data["graph_persistence"],
+            "gossip_delivery": quic_data["gossip_delivery"],
+            "native_quic_endpoint": quic_endpoint,
+            "version": D2E_SUBMIT_CLI_VERSION,
+        }
+        sig_value = envelope.get("sig")
+        if sig_value is not None and sig_value != "" and sig_value != "UNSIGNED":
+            if isinstance(sig_value, dict):
+                response["native_submit_sig"] = dict(sig_value)
+            else:
+                response["signature"] = {
+                    "sig": str(envelope.get("sig", "")),
+                    "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
+                    "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
+                    "sig_scheme": str(envelope.get("sig_scheme", "")),
+                }
+        return response
 
     submit_endpoint = _submit_endpoint_from_args(args)
     if submit_endpoint:

@@ -21,10 +21,13 @@ from ilc_core.consensus.submit_ingress_endpoint_assertion import (
     parse_endpoint_assertion,
     parse_endpoint_revocation,
     submit_ingress_assertion_candidate_id,
+    submit_ingress_assertion_version_node_id,
     verify_endpoint_assertion_bls_signature,
+    write_public_submit_ingress_endpoint_assertion,
 )
 from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
 from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
+from ilc_core.storage.lmdb_public_runtime import LmdbGraphStore
 
 
 NETWORK_ID = "ilc-public-rc-01-testnet-harness"
@@ -373,3 +376,56 @@ def test_revocation_canonical_payload_excludes_signature() -> None:
     payload = json.loads(canonical_revocation_payload(_revocation_record()).decode("utf-8"))
     assert "bls_signature_hex" not in payload
     assert payload["bls_public_key_hex"] == BLS_KEY
+
+
+def test_write_public_submit_ingress_endpoint_assertion_preserves_supersession(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        endpoint,
+        "PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_NOT_ACTIVATED",
+        False,
+    )
+    old = _assertion_record(endpoint_uri_hint="http://127.0.0.1:8000")
+    new = _assertion_record(endpoint_uri_hint="quic://164.90.201.11:4433")
+    store = LmdbGraphStore(tmp_path / "atlas.lmdb")
+    try:
+        result = write_public_submit_ingress_endpoint_assertion(
+            store,
+            new,
+            verifier=lambda *_: True,
+            superseded_assertion=old,
+            source_phase="GAP-NATIVE-QUIC-RECEIVER-BRIDGE-VPS-00",
+        )
+        loaded = load_from_atlas(store, serving_agent_id=AGENT_ID, network_id=NETWORK_ID)
+        old_version = store.get_node(submit_ingress_assertion_version_node_id(old))
+        new_version = store.get_node(str(result["version_node_id"]))
+        edge = store.get_link(str(result["supersession_edge_id"]))
+    finally:
+        store.close()
+
+    assert loaded.endpoint_uri_hint == "quic://164.90.201.11:4433"
+    assert old_version is not None
+    assert old_version["endpoint_uri_hint"] == "http://127.0.0.1:8000"
+    assert old_version["revised_by"] == result["version_node_id"]
+    assert new_version is not None
+    assert edge is not None
+    assert edge["edge_type"] == "superseded_by"
+    assert edge["source_candidate_id"] == result["candidate_id"]
+    assert edge["target_candidate_id"] == result["candidate_id"]
+
+
+def test_write_public_submit_ingress_endpoint_assertion_requires_signature_verifier(
+    tmp_path,
+) -> None:
+    store = LmdbGraphStore(tmp_path / "atlas.lmdb")
+    try:
+        with pytest.raises(ValueError, match="submit_ingress_assertion_bls_not_verified_BRIDGE_VPS_00"):
+            write_public_submit_ingress_endpoint_assertion(
+                store,
+                _assertion_record(endpoint_uri_hint="quic://164.90.201.11:4433"),
+                verifier=lambda *_: False,
+            )
+    finally:
+        store.close()

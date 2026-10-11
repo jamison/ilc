@@ -2646,6 +2646,2400 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_V0432_00b.partial.json"
+    },
+    {
+      "annotation_batch": "manual_batch_185_gap_package_v0432_00b_completion",
+      "chronology_note": "2026-10-03 Rev 211 \u2014 GAP-PACKAGE-V0432-00b completion evidence after manual 0.4.31 yank, helper release, public mirror fetchback, and VPS sync verification.",
+      "manual_read_summary": "Complete 0.4.32 PyPI/upload/public mirror/helper/VPS-sync receipt; records final 0.4.31 yank state, helper release details, public mirror head, VPS helper hash, live gRPC epoch 1 not_before_unix_ms=0 evidence, output tokens, and clean-reset carry-forward.",
+      "node_kind": "release_receipt",
+      "phase_ref": "GAP-PACKAGE-V0432-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_v0432_00b_g10_package_0432_publish.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:package_v0432_published_GAP_PACKAGE_V0432_00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:vps_validators_synced_to_v0432_GAP_PACKAGE_V0432_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_pypi_upload_receipt_GAP_PACKAGE_V0432_00b_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_185_gap_package_v0432_00b_completion",
+      "chronology_note": "2026-10-03 Rev 211 \u2014 GAP-PACKAGE-V0432-00b completion evidence after manual 0.4.31 yank, helper release, public mirror fetchback, and VPS sync verification.",
+      "manual_read_summary": "Completion walkthrough for GAP-PACKAGE-V0432-00b: signs/upload/fetchback/yank/helper release/public mirror/VPS sync/live gRPC verification, output tokens, non-claims, and clean-reset frontier.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PACKAGE-V0432-00b",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_package_v0432_00b_g10_package_0432_publish.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:package_v0432_published_GAP_PACKAGE_V0432_00b"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:vps_validators_synced_to_v0432_GAP_PACKAGE_V0432_00b"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_package_v0432_00b_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Read-only LMDB census helper for public-RC epoch-anchor clean reset.",
+      "node_kind": "support_tool",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/lmdb_census_read.py"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Double-flag guarded public-RC epoch-anchor clean reset helper.",
+      "node_kind": "support_tool",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/testbed/public_rc_epoch_anchor_clean_reset.py"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Completion walkthrough for public-RC epoch-anchor clean reset.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_public_rc_epoch_anchor_clean_reset_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Pre-reset authorized-agent and LMDB census evidence.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/pre_reset_census.json"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Pre-reset hash-only LMDB archive receipts.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/pre_reset_lmdb_archive.json"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Machine-readable clean-reset deletion plan committed before destructive execution.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/reset_plan.json"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Guarded reset execution record.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/reset_execution_record.json"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Local per-validator epoch checkpoint signature evidence without secret material.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/epoch1_checkpoint_local_signatures.json"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Aggregate epoch checkpoint submission evidence.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/epoch1_checkpoint_submit.json"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Graph-bound gRPC epoch 1 anchor confirmation evidence.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/epoch_1_anchor_evidence.json"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Post-reset LMDB hash and forbidden-path verification evidence.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/post_reset_lmdb_receipts.json"
+    },
+    {
+      "annotation_batch": "manual_batch_186_gap_public_rc_epoch_anchor_clean_reset_00",
+      "chronology_note": "2026-10-03 Rev 212 \u2014 GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00 completed; epoch 1 anchor reset and confirmed.",
+      "manual_read_summary": "Validator consensus-key public alignment receipt.",
+      "node_kind": "phase_evidence",
+      "phase_ref": "GAP-PUBLIC-RC-EPOCH-ANCHOR-CLEAN-RESET-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_epoch_anchor_clean_reset_00_g10_epoch_anchor_clean_reset.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_anchor_clean_reset_confirmed_GAP_PUBLIC_RC_EPOCH_ANCHOR_CLEAN_RESET_00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "out/gap_public_rc_epoch_anchor_clean_reset_00/consensus_key_alignment_receipt.json"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Phase prompt hardened to check only proto RPC/message names for ListAgents, avoiding false positives from local attribution helper functions.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Walkthrough records MemPalace search, direct reads, prompt hardening, adapter construction check, read-only LMDB census, distribution dry run, verification commands, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:observe_live_accrual_census_complete_GAP_OBSERVE_LIVE_ACCRUAL_CENSUS_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_observe_live_accrual_census_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Machine-readable census evidence: five eligible committed-config agents; zero ECU balances; zero attribution weights; attribution surface empty; wallet ECU balance distinguished from agent_ecu_weight.",
+      "node_kind": "evidence_json",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:observe_live_accrual_census_complete_GAP_OBSERVE_LIVE_ACCRUAL_CENSUS_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=none",
+      "repo_path": "out/gap_observe_live_accrual_census_00/live_agent_census.json"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Machine-readable provisional distribution dry run: equal-weight evidence-only fallback, conservation pass, zero carry-forward records, no commit_epoch_distribution call.",
+      "node_kind": "evidence_json",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:observe_live_accrual_census_complete_GAP_OBSERVE_LIVE_ACCRUAL_CENSUS_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=none",
+      "repo_path": "out/gap_observe_live_accrual_census_00/distribution_dry_run.json"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Reference evidence linking the census phase to the clean-reset epoch 1 anchor; no re-ownership of epoch-anchor verification.",
+      "node_kind": "evidence_json",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:observe_live_accrual_census_complete_GAP_OBSERVE_LIVE_ACCRUAL_CENSUS_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=none",
+      "repo_path": "out/gap_observe_live_accrual_census_00/epoch_1_record.json"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Read-only raw LMDB census for public-RC validator 1 harness store.",
+      "node_kind": "evidence_json",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:observe_live_accrual_census_complete_GAP_OBSERVE_LIVE_ACCRUAL_CENSUS_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=none",
+      "repo_path": "out/gap_observe_live_accrual_census_00/raw_lmdb_census_validator_1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Read-only raw LMDB census for public-RC validator 2 harness store.",
+      "node_kind": "evidence_json",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:observe_live_accrual_census_complete_GAP_OBSERVE_LIVE_ACCRUAL_CENSUS_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=none",
+      "repo_path": "out/gap_observe_live_accrual_census_00/raw_lmdb_census_validator_2.json"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Read-only raw LMDB census for public-RC validator 3 harness store.",
+      "node_kind": "evidence_json",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:observe_live_accrual_census_complete_GAP_OBSERVE_LIVE_ACCRUAL_CENSUS_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=none",
+      "repo_path": "out/gap_observe_live_accrual_census_00/raw_lmdb_census_validator_3.json"
+    },
+    {
+      "annotation_batch": "manual_batch_187_gap_observe_live_accrual_census_00",
+      "chronology_note": "2026-10-03 - GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00 read-only live census and provisional distribution dry run.",
+      "manual_read_summary": "Read-only raw LMDB census for public-RC validator 4 harness store.",
+      "node_kind": "evidence_json",
+      "phase_ref": "GAP-OBSERVE-LIVE-ACCRUAL-CENSUS-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_observe_live_accrual_census_00_g10_live_census.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:observe_live_accrual_census_complete_GAP_OBSERVE_LIVE_ACCRUAL_CENSUS_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "graph_delta=none",
+      "repo_path": "out/gap_observe_live_accrual_census_00/raw_lmdb_census_validator_4.json"
+    },
+    {
+      "annotation_batch": "manual_batch_188_window_1625_1632_upgrade_distribution",
+      "chronology_note": "2026-10-05 phase GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING \u2014 window guidance doc for homoiconic release distribution first-pass window",
+      "manual_read_summary": "Window 1625-1632 candidate phase grouping guidance doc for ILC-native upgrade check CLI, release assertion publish tooling, background watcher, artifact fetch core, and build audit; places CDL open+ratify as SENSITIVE bookends",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/adr/ADR_0009_Four_Layer_Protocol_Native_Bundle_Distribution.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-HOMOICONIC-RELEASE-OBJECT-CDL-00"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-UPGRADE-CHECK-CLI-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_window_1625_1632_candidate_upgrade_distribution_v0.1.md",
+      "repo_path": "docs/specs/ilc_window_1625_1632_candidate_upgrade_distribution_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_188_window_1625_1632_upgrade_distribution",
+      "chronology_note": "2026-10-05 phase GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING \u2014 phase prompt stub for GAP-HOMOICONIC-RELEASE-OBJECT-CDL-00 SENSITIVE CDL opening",
+      "manual_read_summary": "Phase prompt stub for opening the homoiconic release object node taxonomy CDL; SENSITIVE; GO required; opens CDL-TBD governing SoftwareReleaseNode ArtifactNode BuildRecipeNode ReleaseAttestationEdge",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-HOMOICONIC-RELEASE-OBJECT-CDL-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-HOMOICONIC-RELEASE-OBJECT-CDL-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_release_object_cdl_00_g10_release_cdl.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_object_cdl_00_g10_release_cdl.md"
+    },
+    {
+      "annotation_batch": "manual_batch_188_window_1625_1632_upgrade_distribution",
+      "chronology_note": "2026-10-05 phase GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING \u2014 phase prompt stub for GAP-UPGRADE-CHECK-CLI-00 ilc upgrade check CLI",
+      "manual_read_summary": "Phase prompt stub for implementing ilc upgrade check and ilc upgrade status CLI commands; reads latest SoftwareReleaseNode assertion via HTTPS, verifies BLS signature, compares installed version; NON-SENSITIVE",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-UPGRADE-CHECK-CLI-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_upgrade_check_cli_00_g10_upgrade_check.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_upgrade_check_cli_00_g10_upgrade_check.md"
+    },
+    {
+      "annotation_batch": "manual_batch_188_window_1625_1632_upgrade_distribution",
+      "chronology_note": "2026-10-05 phase GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING \u2014 phase prompt stub for GAP-RELEASE-ASSERTION-PUBLISH-00 Genesis Agent publish tooling",
+      "manual_read_summary": "Phase prompt stub for tools/publish_release_assertion.py and operator runbook; constructs and submits SoftwareReleaseNode assert.truth via native QUIC receiver; atomically updates NGINX read endpoint cache; NON-SENSITIVE",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-RELEASE-ASSERTION-PUBLISH-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_00_g10_release_publish.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_00_g10_release_publish.md"
+    },
+    {
+      "annotation_batch": "manual_batch_188_window_1625_1632_upgrade_distribution",
+      "chronology_note": "2026-10-05 phase GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING \u2014 phase prompt stub for GAP-UPGRADE-BACKGROUND-WATCH-00 background watcher process",
+      "manual_read_summary": "Phase prompt stub for ilc upgrade watch foreground loop and --daemon fork; writes state to ~/.ilc/upgrade_state.json; PID file at ~/.ilc/upgrade_watcher.pid; --stop and --interval flags; NON-SENSITIVE",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-UPGRADE-BACKGROUND-WATCH-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-UPGRADE-BACKGROUND-WATCH-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_upgrade_background_watch_00_g10_upgrade_watch.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_upgrade_background_watch_00_g10_upgrade_watch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_188_window_1625_1632_upgrade_distribution",
+      "chronology_note": "2026-10-05 phase GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING \u2014 phase prompt stub for GAP-DISTRIBUTED-ARTIFACT-FETCH-CORE-00 ilc upgrade apply",
+      "manual_read_summary": "Phase prompt stub for ilc upgrade apply correctness-only fetch layer; fetch from graph peers/inviter hint/PyPI fallback; verify SHA-256 and CIDv1 before pip install; hard invariant enforced; no Werner wiring; NON-SENSITIVE",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-DISTRIBUTED-ARTIFACT-FETCH-CORE-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-DISTRIBUTED-ARTIFACT-FETCH-CORE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_distributed_artifact_fetch_core_00_g10_artifact_fetch.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_distributed_artifact_fetch_core_00_g10_artifact_fetch.md"
+    },
+    {
+      "annotation_batch": "manual_batch_188_window_1625_1632_upgrade_distribution",
+      "chronology_note": "2026-10-05 phase GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING \u2014 phase prompt stub for GAP-REPRODUCIBLE-BUILD-AUDIT-00 build determinism characterization",
+      "manual_read_summary": "Phase prompt stub for reproducible build audit; per-component verdicts for wheel sdist and Rust binaries; research/audit doc only; no runtime change; NON-SENSITIVE",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-REPRODUCIBLE-BUILD-AUDIT-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-REPRODUCIBLE-BUILD-AUDIT-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_reproducible_build_audit_00_g10_build_audit.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_reproducible_build_audit_00_g10_build_audit.md"
+    },
+    {
+      "annotation_batch": "manual_batch_188_window_1625_1632_upgrade_distribution",
+      "chronology_note": "2026-10-05 phase GAP-WINDOW-1625-1632-UPGRADE-DISTRIBUTION-PLANNING \u2014 phase prompt stub for GAP-RELEASE-OBJECT-CDL-RATIFY-00 SENSITIVE CDL ratification",
+      "manual_read_summary": "Phase prompt stub for ratifying homoiconic release object CDL after implementation validates schema; SENSITIVE; requires upgrade_check_cli_complete token plus CDL prelocked token as gates; incorporates any schema refinements from Phases 2-5 before ratifying",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-RELEASE-OBJECT-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-RELEASE-OBJECT-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_release_object_cdl_ratify_00_g10_release_cdl_ratify.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_object_cdl_ratify_00_g10_release_cdl_ratify.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "Phase prompt hardened for CDL-115 CapProof v1 ratification; corrected Gate-A field, test filenames, observed suite count, graph coverage path, and no-value-path scan.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_capproof_cdl_ratify_00_g10_cdl_115_ratification.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_capproof_cdl_ratify_00_g10_cdl_115_ratification.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "CDL-115 authority document updated from open to ratified with scaffold-governance ratification amendment, Q1-Q6 dispositions, non-claims, and guard-clear requirements.",
+      "node_kind": "cdl_authority_doc",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "RATIFIES_CDL",
+          "target": "cdl:CDL-115"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md",
+      "repo_path": "docs/specs/ilc_cdl_115_capproof_v1_opening_phase_1605_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "Constitutional Decision Log row for CDL-115 updated to ratified; records ratification token, completion token, Gate-A evidence SHA, and guard-retained runtime status.",
+      "node_kind": "cdl_register",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "RATIFIES_CDL",
+          "target": "cdl:CDL-115"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified:docs/specs/ilc_constitutional_decision_log_v0.1.md",
+      "repo_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "Phase walkthrough for GAP-CAPPROOF-CDL-RATIFY-00, including GO phrase, verification commands, Gate-A SHA, focused test result, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_capproof_cdl_115_ratify_00_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_capproof_cdl_115_ratify_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "Fix39 graph-intake overlay registering CDL-115 ratification prompt, authority document, register update, walkthrough, STATUS, PLANNING_INDEX, forward plan, and ECU lifecycle matrix updates.",
+      "node_kind": "graph_intake_overlay",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_fix_gap_capproof_cdl_ratify_00_graph_intake_overlay_v0.1.json",
+      "repo_path": "docs/specs/ilc_fix_gap_capproof_cdl_ratify_00_graph_intake_overlay_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "STATUS log appended with CDL-115 ratification output tokens, verification summary, non-claims, and Werner formula frontier.",
+      "node_kind": "phase_status_log",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/STATUS.md",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "PLANNING_INDEX Rev 240 entry and quick-reference row updated: CDL-115 ratified as scaffold governance; frontier advances to GAP-CDL-WERNER-FORMULA-00.",
+      "node_kind": "planning_index",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/PLANNING_INDEX.md",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "Forward plan Rev 240 restatement and execution tables updated to mark GAP-CAPPROOF-CDL-RATIFY-00 complete and GAP-CDL-WERNER-FORMULA-00 current.",
+      "node_kind": "forward_plan",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_capproof_cdl_ratify_00",
+      "chronology_note": "2026-10-05 phase GAP-CAPPROOF-CDL-RATIFY-00 \u2014 CDL-115 CapProof v1 scaffold ratification evidence and planning update",
+      "manual_read_summary": "ECU lifecycle matrix updated to mark CDL-115 ratification closed while preserving the CapProof guard-clear/production activation non-claim.",
+      "node_kind": "ecu_lifecycle_matrix",
+      "phase_ref": "GAP-CAPPROOF-CDL-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-CAPPROOF-CDL-RATIFY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.5.md",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.5.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_gap_homoiconic_release_object_spec_00",
+      "chronology_note": "2026-10-05 phase GAP-HOMOICONIC-RELEASE-OBJECT-SPEC-00 - prompt registration for homoiconic release object spec execution",
+      "manual_read_summary": "Phase prompt governing the non-sensitive homoiconic release object spec, including source reads, output token, non-claims, and graph-intake requirements.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-HOMOICONIC-RELEASE-OBJECT-SPEC-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "CLASSIFIED_BY",
+          "target": "policy:public_rc_excluded"
+        },
+        {
+          "edge_type": "INFORMS_PHASE",
+          "target": "GAP-HOMOICONIC-RELEASE-OBJECT-SPEC-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "CLASSIFIED_BY",
+        "INFORMS_PHASE"
+      ],
+      "recommended_graph_action": "support_only:docs/antigravity_tasks/antigravity_prompt__phase_gap_homoiconic_release_object_spec_00_g10_homoiconic_release_object_spec.md",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_homoiconic_release_object_spec_00_g10_homoiconic_release_object_spec.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_gap_homoiconic_release_object_spec_00",
+      "chronology_note": "2026-10-05 phase GAP-HOMOICONIC-RELEASE-OBJECT-SPEC-00 - homoiconic release object graph schema added",
+      "manual_read_summary": "Specifies SoftwareReleaseNode, ArtifactNode, BuildRecipeNode, and ReleaseAttestationEdge schemas plus CIDv1/hash linkage and release-signature compatibility.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-HOMOICONIC-RELEASE-OBJECT-SPEC-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_cdl_075_trace",
+          "target": "cdl:CDL-075"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_release_workflow_trace",
+          "target": "docs/specs/ilc_public_release_workflow_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate_forward_plan_trace",
+          "target": "docs/specs/ilc_comprehensive_forward_plan_post_1575c_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:homoiconic_release_object_spec_complete_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00"
+        },
+        {
+          "edge_type": "NEGATIVE_ASSERTS",
+          "target": "claim:no_cdl_mutation_no_runtime_activation_release_object_spec_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES",
+        "NEGATIVE_ASSERTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added:docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md -> cdl:CDL-075",
+      "repo_path": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_gap_homoiconic_release_object_spec_00",
+      "chronology_note": "2026-10-05 phase GAP-HOMOICONIC-RELEASE-OBJECT-SPEC-00 - walkthrough evidence for spec-only phase",
+      "manual_read_summary": "Walkthrough records source reads, verification command outputs, output token, and non-claims for the homoiconic release object spec phase.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-HOMOICONIC-RELEASE-OBJECT-SPEC-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "ATTESTATION",
+          "target": "phase:homoiconic_release_object_spec_complete_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "ATTESTATION"
+      ],
+      "recommended_graph_action": "support_only:docs/phases/phase_gap_homoiconic_release_object_spec_00_walkthrough.md",
+      "repo_path": "docs/phases/phase_gap_homoiconic_release_object_spec_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_homoiconic_release_object_cdl_00",
+      "chronology_note": "2026-10-05 Rev 243 - GAP-HOMOICONIC-RELEASE-OBJECT-CDL-00 CDL-121 opening authority document.",
+      "manual_read_summary": "CDL-121 opening document for the homoiconic release object node taxonomy: SoftwareReleaseNode, ArtifactNode, BuildRecipeNode, and ReleaseAttestationEdge; records open/prelocked status, SPEC-00 predecessor token, Phase 1335 release-signing compatibility, CDL-075 graph-persistence relationship, non-claims, and ratification deferral to GAP-RELEASE-OBJECT-CDL-RATIFY-00.",
+      "node_kind": "cdl_authority_doc",
+      "phase_ref": "GAP-HOMOICONIC-RELEASE-OBJECT-CDL-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "AMENDS_REGISTER",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md#CDL-121"
+        },
+        {
+          "edge_type": "INHERITS_AUTHORITY_FROM",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/adr/ADR_0036_Operational_Release_Key_Genesis_Binding.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "LOCKS_TAXONOMY_CANDIDATE",
+          "target": "node_kind:SoftwareReleaseNode"
+        },
+        {
+          "edge_type": "LOCKS_TAXONOMY_CANDIDATE",
+          "target": "node_kind:ArtifactNode"
+        },
+        {
+          "edge_type": "LOCKS_TAXONOMY_CANDIDATE",
+          "target": "node_kind:BuildRecipeNode"
+        },
+        {
+          "edge_type": "LOCKS_TAXONOMY_CANDIDATE",
+          "target": "edge_type:ReleaseAttestationEdge"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:homoiconic_release_object_cdl_opened_GAP_HOMOICONIC_RELEASE_OBJECT_CDL_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "AMENDS_REGISTER",
+        "INHERITS_AUTHORITY_FROM",
+        "REFERENCES_AUTHORITY",
+        "LOCKS_TAXONOMY_CANDIDATE",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_gap_homoiconic_release_object_cdl_00",
+      "chronology_note": "2026-10-05 Rev 243 - GAP-HOMOICONIC-RELEASE-OBJECT-CDL-00 phase walkthrough.",
+      "manual_read_summary": "Walkthrough records exact GO and CDL mutation environment, source reads, MemPalace search, CDL-121 assignment, files changed, verification command outputs, graph coverage, output token, frontier, and non-claim boundaries for the sensitive release object CDL opening.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-HOMOICONIC-RELEASE-OBJECT-CDL-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_object_cdl_00_g10_release_cdl.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUMMARIZES",
+          "target": "docs/specs/ilc_constitutional_decision_log_v0.1.md#CDL-121"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:homoiconic_release_object_cdl_opened_GAP_HOMOICONIC_RELEASE_OBJECT_CDL_00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUMMARIZES",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_homoiconic_release_object_cdl_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_UPGRADE_CHECK_CLI_00",
+      "chronology_note": "2026-10-05 - GAP-UPGRADE-CHECK-CLI-00 read-only homoiconic upgrade check CLI implementation.",
+      "manual_read_summary": "Upgrade-check endpoint, timeout, size-cap, and state-path constants.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-UPGRADE-CHECK-CLI-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:upgrade_check_cli_complete_GAP_UPGRADE_CHECK_CLI_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/release/constants.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_UPGRADE_CHECK_CLI_00",
+      "chronology_note": "2026-10-05 - GAP-UPGRADE-CHECK-CLI-00 read-only homoiconic upgrade check CLI implementation.",
+      "manual_read_summary": "Phase 1335 Ed25519 release authority public-key helper for upgrade checks.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-UPGRADE-CHECK-CLI-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:upgrade_check_cli_complete_GAP_UPGRADE_CHECK_CLI_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/release/release_authority.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_UPGRADE_CHECK_CLI_00",
+      "chronology_note": "2026-10-05 - GAP-UPGRADE-CHECK-CLI-00 read-only homoiconic upgrade check CLI implementation.",
+      "manual_read_summary": "Atomic upgrade_state.json read/write helper for ilc upgrade status/check.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-UPGRADE-CHECK-CLI-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:upgrade_check_cli_complete_GAP_UPGRADE_CHECK_CLI_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/release/upgrade_state.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_UPGRADE_CHECK_CLI_00",
+      "chronology_note": "2026-10-05 - GAP-UPGRADE-CHECK-CLI-00 read-only homoiconic upgrade check CLI implementation.",
+      "manual_read_summary": "Read-only SoftwareReleaseNode assertion fetch, Ed25519 preimage recomputation, signature verification, version compare, and state write.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-UPGRADE-CHECK-CLI-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:upgrade_check_cli_complete_GAP_UPGRADE_CHECK_CLI_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/release/upgrade_check.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_UPGRADE_CHECK_CLI_00",
+      "chronology_note": "2026-10-05 - GAP-UPGRADE-CHECK-CLI-00 read-only homoiconic upgrade check CLI implementation.",
+      "manual_read_summary": "CLI adapter for ilc upgrade check/status.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-UPGRADE-CHECK-CLI-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:upgrade_check_cli_complete_GAP_UPGRADE_CHECK_CLI_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/cli/upgrade_cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_UPGRADE_CHECK_CLI_00",
+      "chronology_note": "2026-10-05 - GAP-UPGRADE-CHECK-CLI-00 read-only homoiconic upgrade check CLI implementation.",
+      "manual_read_summary": "Focused tests for upgrade check happy path/current/bad signature/unreachable/insecure endpoint.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-UPGRADE-CHECK-CLI-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:upgrade_check_cli_complete_GAP_UPGRADE_CHECK_CLI_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_upgrade_check.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_UPGRADE_CHECK_CLI_00",
+      "chronology_note": "2026-10-05 - GAP-UPGRADE-CHECK-CLI-00 read-only homoiconic upgrade check CLI implementation.",
+      "manual_read_summary": "Walkthrough recording verification evidence and non-claims for GAP-UPGRADE-CHECK-CLI-00.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-UPGRADE-CHECK-CLI-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:upgrade_check_cli_complete_GAP_UPGRADE_CHECK_CLI_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_upgrade_check_cli_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_UPGRADE_CHECK_CLI_00",
+      "chronology_note": "2026-10-05 - GAP-UPGRADE-CHECK-CLI-00 release package export update.",
+      "manual_read_summary": "Release package __init__ now exports upgrade-check and upgrade-state helpers for the read-only homoiconic upgrade check CLI surface.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-UPGRADE-CHECK-CLI-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-UPGRADE-CHECK-CLI-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:upgrade_check_cli_complete_GAP_UPGRADE_CHECK_CLI_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_modified",
+      "repo_path": "ilc_core/release/__init__.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00",
+      "chronology_note": "2026-10-05 Rev 245 \u2014 GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00 dry-run release assertion publish tooling.",
+      "manual_read_summary": "Dry-run-only release assertion construction tool. Builds fixture-signed SoftwareReleaseNode assertion JSON, ReleaseAttestationEdge records with artifact_id, deterministic CIDv1 fields, and nested fixture BLS native-submit envelopes without live submit or Genesis-key paths.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_tooling_00_g10_release_publish_tooling.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:release_assertion_publish_tooling_complete_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "IMPLEMENTS",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "tools/publish_release_assertion.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00",
+      "chronology_note": "2026-10-05 Rev 245 \u2014 GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00 dry-run release assertion publish tooling.",
+      "manual_read_summary": "Focused regression tests for dry-run release assertion tooling: upgrade-check compatibility, nested fixture BLS signature, artifact_id preimage recomputation, atomic output writes, dry-run enforcement, and absence of live-submit or real-key paths.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_tooling_00_g10_release_publish_tooling.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "VERIFIES",
+          "target": "tools/publish_release_assertion.py"
+        },
+        {
+          "edge_type": "VERIFIES",
+          "target": "ilc_core/release/upgrade_check.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "VERIFIES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_publish_release_assertion.py"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00",
+      "chronology_note": "2026-10-05 Rev 245 \u2014 GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00 dry-run release assertion publish tooling.",
+      "manual_read_summary": "Operator workflow for release assertion publish tooling, documenting dry-run-only boundaries, fixture authority, atomic output behavior, verification requirements, and later sensitive live ceremony handoff.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_tooling_00_g10_release_publish_tooling.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SPECIFIES_WORKFLOW_FOR",
+          "target": "tools/publish_release_assertion.py"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:release_assertion_publish_tooling_complete_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SPECIFIES_WORKFLOW_FOR",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/specs/ilc_release_assertion_publish_workflow_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00",
+      "chronology_note": "2026-10-05 Rev 245 \u2014 GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00 dry-run release assertion publish tooling.",
+      "manual_read_summary": "Phase walkthrough recording prompt validation, input-token check, dry-run JSON proof, focused and adjacent tests, atomic-write grep, no-live-submit grep, graph coverage, output token, and non-claims.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_tooling_00_g10_release_publish_tooling.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:release_assertion_publish_tooling_complete_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_assertion_publish_tooling_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_189_phase_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00",
+      "chronology_note": "2026-10-05 Rev 245 \u2014 GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00 dry-run release assertion publish tooling.",
+      "manual_read_summary": "Hardened phase prompt for dry-run release assertion publish tooling, including exact-token input checks and non-sensitive boundaries against Genesis key use, live QUIC submit, LMDB writes, cache updates, package publication, and CDL mutation.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_tooling_00_g10_release_publish_tooling.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "AUTHORIZES_SCOPE_FOR",
+          "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-TOOLING-00"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "token:release_assertion_publish_tooling_complete_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "AUTHORIZES_SCOPE_FOR",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_tooling_00_g10_release_publish_tooling.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_phase_GAP_RELEASE_ASSERTION_PUBLISH_CEREMONY_00_BLOCKED_PREP",
+      "chronology_note": "2026-10-06 Rev 246 candidate \u2014 GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00 blocked-key gate hardening.",
+      "manual_read_summary": "Two-step release assertion ceremony tool: prepare hard-stops unless the Phase 1335 key is mounted, then finalize verifies human Ed25519 signatures, submits over native QUIC, and writes well-known JSON.",
+      "node_kind": "tool_script",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_release_assertion_publish_workflow_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/publish_release_assertion_ceremony.py"
+    },
+    {
+      "annotation_batch": "manual_batch_190_phase_GAP_RELEASE_ASSERTION_PUBLISH_CEREMONY_00_BLOCKED_PREP",
+      "chronology_note": "2026-10-06 Rev 246 candidate \u2014 GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00 blocked-key gate hardening.",
+      "manual_read_summary": "Regression tests for the release assertion ceremony tool covering missing and insecure Phase 1335 key hard-stops, unsigned skeleton preparation, signer mismatch rejection, and signed assertion validation.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_release_assertion_publish_workflow_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/publish_release_assertion_ceremony.py"
+        },
+        {
+          "edge_type": "REGRESSES",
+          "target": "invariant:release_assertion_ceremony_no_stub_signature_path"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "TESTS",
+        "REGRESSES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_publish_release_assertion_ceremony.py"
+    },
+    {
+      "annotation_batch": "manual_batch_190_phase_GAP_RELEASE_ASSERTION_PUBLISH_CEREMONY_00_BLOCKED_PREP",
+      "chronology_note": "2026-10-06 Rev 246 candidate \u2014 GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00 blocked-key gate hardening.",
+      "manual_read_summary": "Sensitive phase prompt for the release assertion publish ceremony, including Phase 1335 key-mount hard stop, human Ed25519 signing handoff, native QUIC submit, and well-known endpoint verification.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_release_assertion_publish_workflow_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "AUTHORIZES_SCOPE_FOR",
+          "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "AUTHORIZES_SCOPE_FOR",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_assertion_publish_ceremony_00_g10_release_assertion_publish_ceremony.md"
+    },
+    {
+      "annotation_batch": "manual_batch_190_phase_GAP_RELEASE_ASSERTION_PUBLISH_CEREMONY_00_BLOCKED_PREP",
+      "chronology_note": "2026-10-06 Rev 246 candidate \u2014 GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00 blocked-key gate hardening.",
+      "manual_read_summary": "Blocked-key walkthrough recording that the Phase 1335 key was not mounted, the SparseBundle exists but was not mounted, and no release assertion ceremony output token or live publication occurred.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_homoiconic_release_object_spec_GAP_HOMOICONIC_RELEASE_OBJECT_SPEC_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_release_assertion_publish_workflow_GAP_RELEASE_ASSERTION_PUBLISH_TOOLING_00_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "claim:phase_1335_release_key_missing"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "phase:GAP-RELEASE-ASSERTION-PUBLISH-CEREMONY-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY",
+        "EVIDENCES",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_release_assertion_publish_ceremony_00_blocked_key_mount_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_191_gap_fetch_server_release_endpoint_00",
+      "chronology_note": "2026-10-07 Rev 252 \u2014 GAP-FETCH-SERVER-RELEASE-ENDPOINT-00 phase prompt",
+      "manual_read_summary": "Phase prompt for adding do_GET /.well-known/ilc/software-release/latest.json to HttpFetchTransportRuntime and get_latest_release_assertion(channel) to TruthPrimitiveGraphStore; the first phase in the Rev 252 three-phase fetch-server sequence (NON-SENSITIVE, no GO required).",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-FETCH-SERVER-RELEASE-ENDPOINT-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_SPEC",
+          "target": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.5.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_SPEC"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_fetch_server_release_endpoint_00_g10_release_endpoint.md"
+    },
+    {
+      "annotation_batch": "manual_batch_191_gap_fetch_server_release_endpoint_00",
+      "chronology_note": "2026-10-07 Rev 252 \u2014 Codex rehydration brief: D2D communications infrastructure map",
+      "manual_read_summary": "Codex rehydration guidance document mapping the complete ILC D2D communications infrastructure (CDL-036/039/060/061/075-080, CCSS, spectral, gossip, WANT-HAVE/WANT-BLOCK), identifying the fetch server GET endpoint gap, and briefing the Rev 252 three-phase fix sequence.",
+      "node_kind": "spec_doc",
+      "phase_ref": "GAP-FETCH-SERVER-RELEASE-ENDPOINT-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_SPEC",
+          "target": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_SPEC"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/codex_brief__gap_comms_infrastructure_rehydration_2026_10_06.md"
+    },
+    {
+      "annotation_batch": "manual_batch_191_gap_fetch_server_release_endpoint_00",
+      "chronology_note": "2026-10-07 Rev 252 \u2014 GAP-FETCH-SERVER-RELEASE-ENDPOINT-00 endpoint regression tests",
+      "manual_read_summary": "Focused regression tests for the D2D fetch-server release assertion GET endpoint, graph-store release assertion extraction, bounded responses, 404/503 token behavior, and upgrade-check peer discovery consumption without HTTPS fallback.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-FETCH-SERVER-RELEASE-ENDPOINT-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/network/d2d/http_fetch_transport_runtime.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/storage/truth_primitive_graph_lmdb_adapter.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_release_assertion_get_endpoint.py"
+    },
+    {
+      "annotation_batch": "manual_batch_191_gap_fetch_server_release_endpoint_00",
+      "chronology_note": "2026-10-07 Rev 252 \u2014 GAP-FETCH-SERVER-RELEASE-ENDPOINT-00 walkthrough",
+      "manual_read_summary": "Phase walkthrough recording implementation scope, confirmed Ceremony-00 node structure, verification command outputs, output token, and non-claim boundaries for the D2D fetch-server release assertion endpoint.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-FETCH-SERVER-RELEASE-ENDPOINT-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-FETCH-SERVER-RELEASE-ENDPOINT-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_fetch_server_release_endpoint_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_192_native_comms_crypto_scale_synthesis",
+      "chronology_note": "2026-10-07 \u2014 Native communications, cryptography, and economic scale raw transcript preservation",
+      "manual_read_summary": "Raw transcript packet preserving the Codex and Sonnet conversational source material for native ILC communications, BLS/Ed25519 role separation, HTTP/3-over-QUIC versus raw QUIC, release discovery, and ECU fast-path economic scale discussion.",
+      "node_kind": "research_packet",
+      "phase_ref": "RESEARCH-NATIVE-COMMS-CRYPTO-SCALE-2026-10-07",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/research/ilc_native_comms_crypto_scale_synthesis_2026_10_07_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/research/ilc_native_comms_crypto_scale_raw_transcripts_2026_10_07_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_192_native_comms_crypto_scale_synthesis",
+      "chronology_note": "2026-10-07 \u2014 Native communications, cryptography, and economic scale synthesis guide",
+      "manual_read_summary": "Research synthesis reconciling immediate release-discovery work with native transport doctrine, BLS/Ed25519 role separation, graph-as-PKI precedent, and speculative ECU fast-path sharded economic scale planning. It is explicitly pre-canon and does not authorize phases or mutate protocol authority.",
+      "node_kind": "research_synthesis",
+      "phase_ref": "RESEARCH-NATIVE-COMMS-CRYPTO-SCALE-2026-10-07",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0010_Communication_Plane_Separation_and_Performance_Boundaries.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0011_Native_P2P_Transport_Baseline_for_Agent_Communication.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0025_D2d_HTTP_Gossip_Transport_Binding.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/adr/ADR_0045_ILC_Native_QUIC_Submit_Frame_Format.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_105_validator_operational_surface_registration_ratification_1577b_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_110_genesis_value_spend_guard_ratification_evidence_GAP_GENESIS_VALUE_01_v0.1.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "docs/research/ilc_native_comms_crypto_scale_raw_transcripts_2026_10_07_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/research/ilc_native_comms_crypto_scale_synthesis_2026_10_07_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_193_sim_werner_v1_blast_chamber_00",
+      "chronology_note": "2026-10-08 \u2014 Werner v1 blast chamber SIM evidence and CDL-116a amendment prompt hardening",
+      "manual_read_summary": "Prompt defining the non-sensitive Werner v1 blast chamber SIM execution contract.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "SIM-WERNER-V1-BLAST-CHAMBER-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116a_werner_formula_disposition_GAP_CDL_WERNER_FORMULA_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/werner_attribution_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_model_router/receipt_schema.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_sim_werner_v1_blast_chamber_00_g10_blast_chamber.md"
+    },
+    {
+      "annotation_batch": "manual_batch_193_sim_werner_v1_blast_chamber_00",
+      "chronology_note": "2026-10-08 \u2014 Werner v1 blast chamber SIM evidence and CDL-116a amendment prompt hardening",
+      "manual_read_summary": "Hardened sensitive CDL-116a SIM amendment prompt with exact GO and CDL mutation environment gates.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "SIM-WERNER-V1-BLAST-CHAMBER-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116a_werner_formula_disposition_GAP_CDL_WERNER_FORMULA_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/werner_attribution_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_model_router/receipt_schema.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl_werner_sim_amend_00_g10_sim_amendment.md"
+    },
+    {
+      "annotation_batch": "manual_batch_193_sim_werner_v1_blast_chamber_00",
+      "chronology_note": "2026-10-08 \u2014 Werner v1 blast chamber SIM evidence and CDL-116a amendment prompt hardening",
+      "manual_read_summary": "Deterministic Model Router receipt-population SIM for CDL-116 Q3 Werner calibration.",
+      "node_kind": "tooling",
+      "phase_ref": "SIM-WERNER-V1-BLAST-CHAMBER-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116a_werner_formula_disposition_GAP_CDL_WERNER_FORMULA_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/werner_attribution_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_model_router/receipt_schema.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/sim/sim_werner_v1_blast_chamber.py"
+    },
+    {
+      "annotation_batch": "manual_batch_193_sim_werner_v1_blast_chamber_00",
+      "chronology_note": "2026-10-08 \u2014 Werner v1 blast chamber SIM evidence and CDL-116a amendment prompt hardening",
+      "manual_read_summary": "Focused tests for Werner v1 blast chamber SIM invariants and adversarial scenarios.",
+      "node_kind": "test_file",
+      "phase_ref": "SIM-WERNER-V1-BLAST-CHAMBER-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116a_werner_formula_disposition_GAP_CDL_WERNER_FORMULA_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/werner_attribution_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_model_router/receipt_schema.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_sim_werner_v1_blast_chamber.py"
+    },
+    {
+      "annotation_batch": "manual_batch_193_sim_werner_v1_blast_chamber_00",
+      "chronology_note": "2026-10-08 \u2014 Werner v1 blast chamber SIM evidence and CDL-116a amendment prompt hardening",
+      "manual_read_summary": "Machine-readable Werner v1 blast chamber SIM artifact and percentile envelope.",
+      "node_kind": "sim_data",
+      "phase_ref": "SIM-WERNER-V1-BLAST-CHAMBER-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116a_werner_formula_disposition_GAP_CDL_WERNER_FORMULA_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/werner_attribution_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_model_router/receipt_schema.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/sims/sim_werner_v1_blast_chamber_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_193_sim_werner_v1_blast_chamber_00",
+      "chronology_note": "2026-10-08 \u2014 Werner v1 blast chamber SIM evidence and CDL-116a amendment prompt hardening",
+      "manual_read_summary": "Markdown Werner v1 blast chamber SIM report with candidate formula and non-claims.",
+      "node_kind": "sim_report",
+      "phase_ref": "SIM-WERNER-V1-BLAST-CHAMBER-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116a_werner_formula_disposition_GAP_CDL_WERNER_FORMULA_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/werner_attribution_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_model_router/receipt_schema.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "docs/sims/sim_werner_v1_blast_chamber_00_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_193_sim_werner_v1_blast_chamber_00",
+      "chronology_note": "2026-10-08 \u2014 Werner v1 blast chamber SIM evidence and CDL-116a amendment prompt hardening",
+      "manual_read_summary": "Phase walkthrough attesting SIM-WERNER-V1-BLAST-CHAMBER-00 completion.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "SIM-WERNER-V1-BLAST-CHAMBER-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116a_werner_formula_disposition_GAP_CDL_WERNER_FORMULA_00_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_core/economics/werner_attribution_bridge.py"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "ilc_model_router/receipt_schema.py"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "SUPPORTS",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "SUPPORTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_sim_werner_v1_blast_chamber_00_walkthrough.md"
     }
   ],
   "annotations": [
@@ -111268,6 +113662,486 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/phases/phase_gap_observe_maturity_bridge_00_v02_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_192_gap_cdl_model_router_ratify_00",
+      "chronology_note": "2026-10-08 Rev 260 \u2014 GAP-CDL-MODEL-ROUTER-RATIFY-00 prompt",
+      "manual_read_summary": "Sensitive CDL-116 Model Router ratification prompt: requires the CDL-116a SIM amendment blocker-resolution token, exact GO phrase, CDL mutation environment, Q1-Q7 dispositions, runtime-activation non-claims, and graph coverage verification.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-CDL-MODEL-ROUTER-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116a_werner_formula_disposition_GAP_CDL_WERNER_FORMULA_00_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl_model_router_ratify_00_g10_cdl_116_ratification.md"
+    },
+    {
+      "annotation_batch": "manual_batch_192_gap_cdl_model_router_ratify_00",
+      "chronology_note": "2026-10-08 Rev 260 \u2014 GAP-CDL-MODEL-ROUTER-RATIFY-00 walkthrough",
+      "manual_read_summary": "Phase walkthrough for CDL-116 Model Router governance ratification: records GO/env authorization, direct code and canon reads, Q1-Q7 dispositions, verification commands, output tokens, frontier update, and non-claim boundaries.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-CDL-MODEL-ROUTER-RATIFY-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_cdl_model_router_ratify_00_g10_cdl_116_ratification.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_cdl_model_router_ratify_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_193_gap_werner_v1_runtime_impl_00",
+      "chronology_note": "2026-10-08 Rev 261 \u2014 GAP-WERNER-V1-RUNTIME-IMPL-00 prompt",
+      "manual_read_summary": "Non-sensitive Werner v1 runtime implementation prompt: requires CDL-116 ratification tokens and the Werner blast chamber SIM token, creates but does not clear WERNER_MODEL_ROUTER_NOT_ACTIVATED, confines runtime bridge work to ilc_model_router, and requires Decimal-only no-stacking verification.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-WERNER-V1-RUNTIME-IMPL-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/sims/sim_werner_v1_blast_chamber_00_v0.1.json"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_v1_runtime_impl_00_g10_werner_model_router_bridge.md"
+    },
+    {
+      "annotation_batch": "manual_batch_193_gap_werner_v1_runtime_impl_00",
+      "chronology_note": "2026-10-08 Rev 261 \u2014 guarded Werner Model Router bridge runtime module",
+      "manual_read_summary": "Runtime bridge module for CDL-116 Werner Model Router context: computes Decimal-only WernerModelRouterContext from RouterCompanionRecord metadata, imports compute_flow_budget from ilc_core, keeps WERNER_MODEL_ROUTER_NOT_ACTIVATED true, and records no-stacking non-claims.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-WERNER-V1-RUNTIME-IMPL-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_v1_runtime_impl_00_g10_werner_model_router_bridge.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_model_router/werner_model_router_bridge.py"
+    },
+    {
+      "annotation_batch": "manual_batch_193_gap_werner_v1_runtime_impl_00",
+      "chronology_note": "2026-10-08 Rev 261 \u2014 Werner Model Router bridge focused tests",
+      "manual_read_summary": "Focused regression tests for the Werner Model Router bridge: cover empty fail-closed context, local_only zero signal, token cap, max agent signal cap, runtime policy cap, Decimal-only rejection, no-stacking non-claims, and guard default-on behavior.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-WERNER-V1-RUNTIME-IMPL-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_model_router/werner_model_router_bridge.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_werner_model_router_bridge_GAP_WERNER_V1_RUNTIME_IMPL_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_193_gap_werner_v1_runtime_impl_00",
+      "chronology_note": "2026-10-08 Rev 261 \u2014 GAP-WERNER-V1-RUNTIME-IMPL-00 walkthrough",
+      "manual_read_summary": "Phase walkthrough for Werner v1 runtime implementation: records prompt validation, token audit, MemPalace/direct reads, SIM constant verification, focused tests, no-float and guard checks, graph coverage, output tokens, and non-claim boundaries.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-WERNER-V1-RUNTIME-IMPL-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_v1_runtime_impl_00_g10_werner_model_router_bridge.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "ilc_model_router/werner_model_router_bridge.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_werner_v1_runtime_impl_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_194_gap_werner_v1_guard_clear_00",
+      "chronology_note": "2026-10-09 Rev 262 \u2014 GAP-WERNER-V1-GUARD-CLEAR-00 prompt",
+      "manual_read_summary": "Sensitive Werner Model Router guard-clear prompt: requires runtime bridge and CDL-116 ratification tokens, clears WERNER_MODEL_ROUTER_NOT_ACTIVATED, requires explicit guard-branch enforcement, adds read-only werner-context CLI verification, and preserves graph-promotion non-claims.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-WERNER-V1-GUARD-CLEAR-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "target": "docs/specs/ilc_cdl_116_model_router_v1_opening_phase_1615_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "REFERENCES_AUTHORITY"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_v1_guard_clear_00_g10_guard_clearance.md"
+    },
+    {
+      "annotation_batch": "manual_batch_194_gap_werner_v1_guard_clear_00",
+      "chronology_note": "2026-10-09 Rev 262 \u2014 Werner Model Router guard-clear runtime update",
+      "manual_read_summary": "Runtime bridge update clears WERNER_MODEL_ROUTER_NOT_ACTIVATED, adds guard-active absent context enforcement, adds explicit absent_token reporting, and removes the stale guard-not-cleared non-claim while retaining no graph-promotion and no-stacking boundaries.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-WERNER-V1-GUARD-CLEAR-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_v1_guard_clear_00_g10_guard_clearance.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_model_router/werner_model_router_bridge.py"
+    },
+    {
+      "annotation_batch": "manual_batch_194_gap_werner_v1_guard_clear_00",
+      "chronology_note": "2026-10-09 Rev 262 \u2014 Model Router werner-context CLI surface",
+      "manual_read_summary": "CLI update adds read-only ilc sidecar model-router werner-context for local receipt inspection by agent and epoch, returning Werner context JSON with stringified Decimal fields and no graph-promotion side effects.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-WERNER-V1-GUARD-CLEAR-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_v1_guard_clear_00_g10_guard_clearance.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "IMPLEMENTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "ilc_model_router/cli.py"
+    },
+    {
+      "annotation_batch": "manual_batch_194_gap_werner_v1_guard_clear_00",
+      "chronology_note": "2026-10-09 Rev 262 \u2014 Werner Model Router guard-clear focused tests",
+      "manual_read_summary": "Focused guard-clear tests cover guard-cleared constant, monkeypatched guard-active fail-closed behavior, absent-token differentiation, stale non-claim removal, werner-context parser registration, read-only CLI output, stringified Decimal flow budget, and promote-receipt remaining local-only.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-WERNER-V1-GUARD-CLEAR-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_model_router/werner_model_router_bridge.py"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_model_router/cli.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_werner_model_router_guard_clear_GAP_WERNER_V1_GUARD_CLEAR_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_194_gap_werner_v1_guard_clear_00",
+      "chronology_note": "2026-10-09 Rev 262 \u2014 GAP-WERNER-V1-GUARD-CLEAR-00 walkthrough",
+      "manual_read_summary": "Phase walkthrough records exact GO, precondition token audit, guard-clear implementation details, focused tests, py_compile, prompt validation, guard and non-claim verification commands, graph coverage, output tokens, and carry-forward to graph-promotion activation.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-WERNER-V1-GUARD-CLEAR-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_werner_v1_guard_clear_00_g10_guard_clearance.md"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-WERNER-V1-GUARD-CLEAR-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "EVIDENCES"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_werner_v1_guard_clear_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_upgrade_check_signed_assertion_http_peer_00",
+      "chronology_note": "2026-10-09 Rev 266 \u2014 signed-assertion HTTP peer discovery implementation",
+      "manual_read_summary": "Runtime update adds peer-discovery-only endpoint validation accepting http/https while preserving HTTPS-only explicit endpoint and fallback validation; signed assertion authority, no-redirect, byte caps, finite timeout, and hop-count enforcement remain intact.",
+      "node_kind": "runtime_module",
+      "phase_ref": "GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "IMPLEMENTS",
+          "target": "docs/antigravity_tasks/antigravity_prompt__phase_gap_upgrade_check_signed_assertion_http_peer_00_g10_http_peer_discovery.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "IMPLEMENTS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "load_bearing_artifact_added",
+      "repo_path": "ilc_core/release/upgrade_check.py"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_upgrade_check_signed_assertion_http_peer_00",
+      "chronology_note": "2026-10-09 Rev 266 \u2014 signed-assertion HTTP peer discovery implementation",
+      "manual_read_summary": "Focused regression tests cover live local HTTP peer discovery through the default peer fetcher, tampered payload fallback, explicit endpoint HTTPS-only behavior, hop-count header propagation, redirect rejection, byte-cap fallback, invalid peer scheme fallback, and HTTPS peer compatibility.",
+      "node_kind": "test_file",
+      "phase_ref": "GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "ilc_core/release/upgrade_check.py"
+        }
+      ],
+      "proposed_trace_roles": [
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_gap_upgrade_check_signed_assertion_http_peer_00.py"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_upgrade_check_signed_assertion_http_peer_00",
+      "chronology_note": "2026-10-09 Rev 266 \u2014 signed-assertion HTTP peer discovery implementation",
+      "manual_read_summary": "Prompt for the NON-SENSITIVE signed-assertion HTTP peer-discovery phase, scoped to a narrow peer-path validator split and explicit planning/coverage deliverables.",
+      "node_kind": "phase_prompt",
+      "phase_ref": "GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "GOVERNS",
+          "target": "phase:GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "GOVERNS",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_upgrade_check_signed_assertion_http_peer_00_g10_http_peer_discovery.md"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_upgrade_check_signed_assertion_http_peer_00",
+      "chronology_note": "2026-10-09 Rev 266 \u2014 signed-assertion HTTP peer discovery implementation",
+      "manual_read_summary": "Rev 266 planning index update records signed-assertion HTTP peer discovery complete and keeps fetch server VPS deploy as the sensitive frontier.",
+      "node_kind": "planning_index",
+      "phase_ref": "GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "phase:GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/PLANNING_INDEX.md"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_upgrade_check_signed_assertion_http_peer_00",
+      "chronology_note": "2026-10-09 Rev 266 \u2014 signed-assertion HTTP peer discovery implementation",
+      "manual_read_summary": "Forward plan Rev 266 inserts completed Row 21d.1 before the sensitive VPS deploy, and clarifies that peer discovery no longer requires an HTTPS reverse proxy or public domain.",
+      "node_kind": "planning_doc",
+      "phase_ref": "GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "phase:GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_forward_plan_phase_scope_list_reconciled_rev4_2026_09_05_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_upgrade_check_signed_assertion_http_peer_00",
+      "chronology_note": "2026-10-09 Rev 266 \u2014 signed-assertion HTTP peer discovery implementation",
+      "manual_read_summary": "ECU lifecycle row update records completed Row 21d.1 and advances Row 21e to the sensitive VPS deploy frontier after HTTP peer discovery.",
+      "node_kind": "planning_doc",
+      "phase_ref": "GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "phase:GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "REFERENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_ecu_lifecycle_flow_diagram_v0.5.md"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_upgrade_check_signed_assertion_http_peer_00",
+      "chronology_note": "2026-10-09 Rev 266 \u2014 signed-assertion HTTP peer discovery implementation",
+      "manual_read_summary": "STATUS entry emits upgrade_check_http_peer_discovery_impl_complete_GAP_UPGRADE_CHECK_SIGNED_ASSERTION_HTTP_PEER_00 and records tests/non-claims/frontier.",
+      "node_kind": "phase_status_log",
+      "phase_ref": "GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/STATUS.md"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_upgrade_check_signed_assertion_http_peer_00",
+      "chronology_note": "2026-10-09 Rev 266 \u2014 signed-assertion HTTP peer discovery implementation",
+      "manual_read_summary": "Walkthrough records token audit, implementation diff summary, verification command outputs, tests, graph coverage, output token, and non-claims for signed-assertion HTTP peer discovery.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-UPGRADE-CHECK-SIGNED-ASSERTION-HTTP-PEER-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_upgrade_check_signed_assertion_http_peer_00_walkthrough.md"
     }
   ],
   "phase": "1545p-Fix38",

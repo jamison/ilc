@@ -172,6 +172,7 @@ from .epoch_distribution_writer import (
     EPOCH_DISTRIBUTION_WRITER_VERSION,
     EPOCH_ID_FORMAT,
     EPOCH_ID_ZERO_PADDED_FORMAT_LOCKED_TOKEN,
+    FALLBACK_SET_EMPTY_OBSERVE_00_HARD_STOP_TOKEN,
     GENESIS_CAP_ALWAYS_SUPPLIED_TOKEN,
     MAX_ELIGIBLE_AGENTS,
     MAX_PRIOR_CARRY_FORWARD_RECORDS,
@@ -183,6 +184,7 @@ from .epoch_distribution_writer import (
     commit_epoch_distribution,
     compute_epoch_distribution,
     format_epoch_id,
+    load_fallback_eligible_set,
 )
 from .epoch_maturity_gate import (
     CDL_027_REF,
@@ -340,6 +342,7 @@ __all__ = [
     "ECU_PRICE_CLAMP_RUNTIME_VERSION",
     "EPOCH_SNAPSHOT_RUNTIME_VERSION",
     "EPOCH_BOUNDARY_WITNESS_RUNTIME_VERSION",
+    "FALLBACK_SET_EMPTY_OBSERVE_00_HARD_STOP_TOKEN",
     "ISSUANCE_ECONOMICS_INTEGRATION_GATE_BLOCKED",
     "ISSUANCE_ECONOMICS_INTEGRATION_GATE_PASS",
     "ISSUANCE_ECONOMICS_INTEGRATION_GATE_TOKEN",
@@ -483,6 +486,7 @@ __all__ = [
     "epoch_zero_emission_budget",
     "derive_cdl_030_price_bounds_from_cdl_027_schedule",
     "format_epoch_id",
+    "load_fallback_eligible_set",
     "require_monthly_issuance_maturity_proof",
     "canonical_epoch_snapshot_vectors",
     "generate_epoch_snapshot",

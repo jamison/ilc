@@ -142,13 +142,35 @@ class GraphNodeWriteTransaction:
         self._txn.put(_encode_key(node_id), _encode_json(payload), db=self._nodes_db)
 
 
+class GraphWriteTransaction(GraphNodeWriteTransaction):
+    """Public atomic graph node/link transaction facade."""
+
+    def __init__(self, txn: lmdb.Transaction, nodes_db: object, links_db: object) -> None:
+        super().__init__(txn=txn, nodes_db=nodes_db)
+        self._links_db = links_db
+
+    def get_link(self, link_id: str) -> dict[str, Any] | None:
+        payload = _decode_json(self._txn.get(_encode_key(link_id), db=self._links_db))
+        return payload if isinstance(payload, dict) else None
+
+    def put_link(self, link_id: str, payload: dict[str, Any]) -> None:
+        self._txn.put(_encode_key(link_id), _encode_json(payload), db=self._links_db)
+
+
 class WalletBatchTransaction:
     """Public atomic wallet/history transaction facade for lifecycle writers."""
 
-    def __init__(self, txn: lmdb.Transaction, wallets_db: object, history_db: object) -> None:
+    def __init__(
+        self,
+        txn: lmdb.Transaction,
+        wallets_db: object,
+        history_db: object,
+        epoch_commit_markers_db: object,
+    ) -> None:
         self._txn = txn
         self._wallets_db = wallets_db
         self._history_db = history_db
+        self._epoch_commit_markers_db = epoch_commit_markers_db
 
     def iter_wallet_rows(self) -> Iterator[tuple[str, dict[str, Any]]]:
         cursor = self._txn.cursor(db=self._wallets_db)
@@ -175,6 +197,19 @@ class WalletBatchTransaction:
         self._txn.put(_encode_key(agent_id), _encode_json(wallet_payload), db=self._wallets_db)
         self._txn.put(_encode_key(agent_id), _encode_json(history_payload), db=self._history_db)
 
+    def get_epoch_commit_marker(self, epoch_id: str) -> dict[str, Any] | None:
+        payload = _decode_json(
+            self._txn.get(_encode_key(epoch_id), db=self._epoch_commit_markers_db)
+        )
+        return payload if isinstance(payload, dict) else None
+
+    def put_epoch_commit_marker(self, epoch_id: str, payload: dict[str, Any]) -> None:
+        self._txn.put(
+            _encode_key(epoch_id),
+            _encode_json(payload),
+            db=self._epoch_commit_markers_db,
+        )
+
 
 class LmdbGraphStore(_LmdbRuntimeBase):
     def __init__(self, root: Path | str, *, map_size: int = DEFAULT_MAP_SIZE_BYTES) -> None:
@@ -195,6 +230,15 @@ class LmdbGraphStore(_LmdbRuntimeBase):
     def node_write_transaction(self) -> Iterator[GraphNodeWriteTransaction]:
         with self.env.begin(write=True) as txn:
             yield GraphNodeWriteTransaction(txn=txn, nodes_db=self._dbs[b"nodes"])
+
+    @contextmanager
+    def graph_write_transaction(self) -> Iterator[GraphWriteTransaction]:
+        with self.env.begin(write=True) as txn:
+            yield GraphWriteTransaction(
+                txn=txn,
+                nodes_db=self._dbs[b"nodes"],
+                links_db=self._dbs[b"links"],
+            )
 
     def put_link(self, link_id: str, payload: dict[str, Any]) -> None:
         self._put_json(b"links", link_id, payload)
@@ -257,6 +301,7 @@ class LmdbWalletStore(_LmdbRuntimeBase):
                 txn=txn,
                 wallets_db=self._dbs[b"wallets"],
                 history_db=self._dbs[b"wallet_history"],
+                epoch_commit_markers_db=self._dbs[b"epoch_commit_markers"],
             )
 
     def put_wallet_history(self, agent_id: str, payload: dict[str, Any]) -> None:

@@ -2,7 +2,7 @@
 """Phase 1607 CapProof epoch initialization wiring.
 
 NOT ACTIVATED: CAPPROOF_EPOCH_WIRING_NOT_ACTIVATED = True.
-Activation requires later CDL-115 ratification.
+Activation requires a later guard-clear phase after CDL-115 ratification.
 """
 
 from __future__ import annotations
@@ -21,6 +21,7 @@ from ilc_core.capproof.multiplier import (
     compute_capproof_multiplier,
 )
 from ilc_core.capproof.probe_runner import CAPPROOF_V1_NO_ILC_MINT
+from ilc_core.capproof import probe_runner
 
 CAPPROOF_EPOCH_INIT_RUNTIME_VERSION = "capproof_epoch_init_wiring_phase_1607.v0.1"
 CAPPROOF_EPOCH_WIRING_NOT_ACTIVATED = True
@@ -60,6 +61,7 @@ class CapProofEpochInitResult:
     conservation_check_passed: bool
     epoch_seal_token: str
     det_pass: bool
+    runtime_version: str = CAPPROOF_EPOCH_INIT_RUNTIME_VERSION
     activation_guard: str = CAPPROOF_EPOCH_GUARD_TOKEN
 
     def __post_init__(self) -> None:
@@ -88,8 +90,20 @@ class CapProofEpochInitResult:
             raise CapProofEpochWiringError("capproof_wiring_cap_adjusted_base_ecu_amount_negative")
         if not isinstance(self.epoch_seal_token, str) or not self.epoch_seal_token:
             raise CapProofEpochWiringError("capproof_wiring_epoch_seal_token_required")
+        if self.runtime_version != CAPPROOF_EPOCH_INIT_RUNTIME_VERSION:
+            raise CapProofEpochWiringError("capproof_wiring_runtime_version_mismatch")
         if self.activation_guard != CAPPROOF_EPOCH_GUARD_TOKEN:
             raise CapProofEpochWiringError("capproof_wiring_activation_guard_token_mismatch")
+        if self.conservation_check_passed:
+            step5_conservation_check(
+                self.base_ecu_amount,
+                self.cap_adjusted_base_ecu_amount,
+                self.band_multiplier,
+            )
+        elif self.protocol_executed:
+            raise CapProofEpochWiringError(
+                "capproof_wiring_executed_result_requires_conservation_pass"
+            )
 
 
 def step1_submit_probe(cv: CapabilityVector, epoch: int) -> str:
@@ -106,6 +120,11 @@ def step2_verify_probe(cv: CapabilityVector) -> bool:
     """Step 2: verify the capability-vector shape without adding eligibility rules."""
 
     _require_cv(cv)
+    if (
+        not CAPPROOF_EPOCH_WIRING_NOT_ACTIVATED
+        and not probe_runner.CAPPROOF_DETERMINISM_PROBE_PRODUCTION_ACTIVATED
+    ):
+        raise CapProofEpochWiringError("capproof_determinism_probe_not_production_ready")
     return True
 
 

@@ -220,6 +220,16 @@ def test_reproducibility_threshold_rejects_float_inputs() -> None:
     assert exc.value.token == "cdl_v7_popperian_invalid_numeric"
 
 
+def test_reproducibility_threshold_rejects_noncanonical_decimal_strings() -> None:
+    for agreement_score in ("+0.90", "9E-1"):
+        with pytest.raises(PopperianGateValidationError) as exc:
+            meets_reproducibility_threshold(
+                agreement_score=agreement_score,
+                reproducibility_threshold="0.85",
+            )
+        assert exc.value.token == "cdl_v7_popperian_invalid_numeric"
+
+
 def test_handoff_artifact_has_required_headings_and_tokens() -> None:
     assert HANDOFF_PATH.exists()
     text = HANDOFF_PATH.read_text(encoding="utf-8")

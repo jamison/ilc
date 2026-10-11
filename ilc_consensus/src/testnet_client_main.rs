@@ -85,12 +85,16 @@ struct Args {
     // epoch_settlement params
     start_epoch: Option<u64>,
     state_root_hex: Option<String>,
+    not_before_unix_ms: Option<u64>,
     count: u64,
     // full_transfer params
     listen_addr: Option<SocketAddr>,
     validators: Vec<(u32, SocketAddr)>,
     validator_certs: Vec<PathBuf>,
     quorum_keys: Vec<PathBuf>,
+    quorum_signers: Vec<AgentID>,
+    quorum_sigs: Vec<blst::min_pk::Signature>,
+    sign_checkpoint_only: bool,
     f: usize,
 }
 
@@ -112,11 +116,15 @@ fn parse_args() -> Result<Args, String> {
     let mut relay_route: Vec<AgentID> = Vec::new();
     let mut start_epoch: Option<u64> = None;
     let mut state_root_hex: Option<String> = None;
+    let mut not_before_unix_ms: Option<u64> = None;
     let mut count: u64 = 1;
     let mut listen_addr: Option<SocketAddr> = None;
     let mut validators: Vec<(u32, SocketAddr)> = Vec::new();
     let mut validator_certs: Vec<PathBuf> = Vec::new();
     let mut quorum_keys: Vec<PathBuf> = Vec::new();
+    let mut quorum_signers: Vec<AgentID> = Vec::new();
+    let mut quorum_sigs: Vec<blst::min_pk::Signature> = Vec::new();
+    let mut sign_checkpoint_only = false;
     let mut f: usize = 1;
 
     let mut i = 1;
@@ -237,6 +245,15 @@ fn parse_args() -> Result<Args, String> {
                         .clone(),
                 );
             }
+            "--not-before-unix-ms" => {
+                i += 1;
+                not_before_unix_ms = Some(
+                    raw.get(i)
+                        .ok_or("--not-before-unix-ms requires a number")?
+                        .parse()
+                        .map_err(|e| format!("--not-before-unix-ms: {}", e))?,
+                );
+            }
             "--count" => {
                 i += 1;
                 count = raw
@@ -287,10 +304,39 @@ fn parse_args() -> Result<Args, String> {
                     quorum_keys.push(PathBuf::from(p));
                 }
             }
+            "--quorum-signers" => {
+                i += 1;
+                let list = raw
+                    .get(i)
+                    .ok_or("--quorum-signers requires a comma-separated AgentID list")?;
+                for value in list.split(',') {
+                    quorum_signers.push(
+                        parse_agent_id_hex(value)
+                            .map_err(|e| format!("--quorum-signers: {}", e))?,
+                    );
+                }
+            }
+            "--quorum-sigs" => {
+                i += 1;
+                let list = raw
+                    .get(i)
+                    .ok_or("--quorum-sigs requires a comma-separated BLS signature list")?;
+                for value in list.split(',') {
+                    quorum_sigs.push(
+                        parse_bls_signature_hex(value)
+                            .map_err(|e| format!("--quorum-sigs: {}", e))?,
+                    );
+                }
+            }
+            "--sign-checkpoint-only" => {
+                sign_checkpoint_only = true;
+            }
             "--help" | "-h" => {
                 eprintln!("Usage:");
                 eprintln!("  testnet_client --validator <addr> --cert <pem> --key <pem> --peer-cert <der> --msg <broadcast|epoch_settlement|epoch_checkpoint>");
-                eprintln!("  testnet_client --msg epoch_checkpoint --epoch <N> --state-root <72hex> --quorum-keys <csv> --peer-agent-id <96hex> ...");
+                eprintln!("  testnet_client --msg epoch_checkpoint --epoch <N> --state-root <72hex> --not-before-unix-ms <u64> --quorum-keys <csv> --quorum-signers <csv> --peer-agent-id <96hex> ...");
+                eprintln!("  testnet_client --msg epoch_checkpoint --sign-checkpoint-only --epoch <N> --state-root <72hex> --not-before-unix-ms <u64> --quorum-keys <single> --quorum-signers <single> ...");
+                eprintln!("  testnet_client --msg epoch_checkpoint --epoch <N> --state-root <72hex> --not-before-unix-ms <u64> --quorum-sigs <csv> --quorum-signers <csv> ...");
                 eprintln!("  testnet_client --msg broadcast --sender-key <file> --to <hex> --amount <u64> --version <u64> [--batch-window-ms <N>] [--relay-count <N> --relay-route <id,id,..> --validators <id@addr,id@addr,..>]");
                 eprintln!("  testnet_client --msg full_transfer --listen-addr <addr> --f <N> --validators <addr,addr..> --validator-certs <der,der..> --sender-key <file> --to <hex> --amount <u64> --version <u64> --epoch <N> --cert <pem> --key <pem>");
                 std::process::exit(0);
@@ -317,11 +363,15 @@ fn parse_args() -> Result<Args, String> {
         relay_route,
         start_epoch,
         state_root_hex,
+        not_before_unix_ms,
         count,
         listen_addr,
         validators,
         validator_certs,
         quorum_keys,
+        quorum_signers,
+        quorum_sigs,
+        sign_checkpoint_only,
         f,
     })
 }
@@ -568,11 +618,6 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         MsgType::EpochCheckpoint => {
-            let direct_conn = network
-                .endpoint
-                .connect(args.validator_addr, "localhost")?
-                .await
-                .map_err(|e| format!("QUIC connect: {}", e))?;
             let start_epoch = args
                 .start_epoch
                 .ok_or("--epoch is required for --msg epoch_checkpoint")?;
@@ -586,18 +631,23 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 "--state-root is required for --msg epoch_checkpoint",
             )?;
             let mut bls_keys = Vec::new();
-            if args.quorum_keys.is_empty() {
-                return Err("--quorum-keys is required for epoch_checkpoint".into());
+            if args.quorum_sigs.is_empty() || args.sign_checkpoint_only {
+                if args.quorum_keys.is_empty() {
+                    return Err("--quorum-keys is required for epoch_checkpoint signing".into());
+                }
+                for key_path in &args.quorum_keys {
+                    let sk = load_bls_secret_key(key_path).map_err(|e| {
+                        format!(
+                            "EpochCheckpoint failed to load {}: {:?}",
+                            key_path.display(),
+                            e
+                        )
+                    })?;
+                    bls_keys.push(sk);
+                }
             }
-            for key_path in &args.quorum_keys {
-                let sk = load_bls_secret_key(key_path).map_err(|e| {
-                    format!(
-                        "EpochCheckpoint failed to load {}: {:?}",
-                        key_path.display(),
-                        e
-                    )
-                })?;
-                bls_keys.push(sk);
+            if !args.quorum_sigs.is_empty() && !args.quorum_keys.is_empty() {
+                return Err("--quorum-sigs cannot be combined with --quorum-keys".into());
             }
 
             let targets = if !args.validators.is_empty() {
@@ -611,7 +661,7 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 
             for i in 0..args.count {
                 let epoch = start_epoch + i;
-                let not_before_unix_ms = 0;
+                let not_before_unix_ms = args.not_before_unix_ms.unwrap_or(0);
                 let spectral_hash = [0u8; 32];
                 let record = EpochSettlementRecord {
                     epoch: EpochSeq(epoch),
@@ -627,17 +677,60 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                 };
 
                 let msg_bytes = bincode::serialize(&record).unwrap();
-                let mut sigs = Vec::new();
-                for sk in &bls_keys {
-                    sigs.push(sk.sign(&msg_bytes, ILC_EPOCH_SIG_DST, &[]));
+                let signers: Vec<AgentID> = if args.quorum_signers.is_empty() {
+                    if !args.quorum_sigs.is_empty() {
+                        return Err("--quorum-signers is required with --quorum-sigs".into());
+                    }
+                    bls_keys
+                        .iter()
+                        .map(|sk| AgentID(sk.sk_to_pk().compress()))
+                        .collect()
+                } else {
+                    if args.quorum_sigs.is_empty() && args.quorum_signers.len() != bls_keys.len() {
+                        return Err(
+                            "--quorum-signers length must match --quorum-keys length".into()
+                        );
+                    }
+                    if !args.quorum_sigs.is_empty()
+                        && args.quorum_signers.len() != args.quorum_sigs.len()
+                    {
+                        return Err(
+                            "--quorum-signers length must match --quorum-sigs length".into()
+                        );
+                    }
+                    args.quorum_signers.clone()
+                };
+                if args.sign_checkpoint_only {
+                    if bls_keys.len() != 1 || signers.len() != 1 {
+                        return Err(
+                            "--sign-checkpoint-only requires exactly one --quorum-key and one --quorum-signer"
+                                .into(),
+                        );
+                    }
+                    let sig = bls_keys[0].sign(&msg_bytes, ILC_EPOCH_SIG_DST, &[]);
+                    println!(
+                        "{{\"epoch\":{},\"not_before_unix_ms\":{},\"signer\":\"{}\",\"signature_hex\":\"{}\",\"state_root_hex\":\"{}\"}}",
+                        epoch,
+                        not_before_unix_ms,
+                        signers[0],
+                        hex_encode(&sig.to_bytes()),
+                        cidv1_root_hex(&state_root),
+                    );
+                    return Ok(());
+                }
+                let sigs = if args.quorum_sigs.is_empty() {
+                    bls_keys
+                        .iter()
+                        .map(|sk| sk.sign(&msg_bytes, ILC_EPOCH_SIG_DST, &[]))
+                        .collect::<Vec<_>>()
+                } else {
+                    args.quorum_sigs.clone()
+                };
+                if sigs.len() != signers.len() {
+                    return Err("--quorum-sigs length must match --quorum-signers length".into());
                 }
                 let sig_refs: Vec<&blst::min_pk::Signature> = sigs.iter().collect();
                 let agg = blst::min_pk::AggregateSignature::aggregate(&sig_refs, false).unwrap();
-
-                let signers: Vec<AgentID> = bls_keys
-                    .iter()
-                    .map(|sk| AgentID(sk.sk_to_pk().compress()))
-                    .collect();
                 let checkpoint = EpochCheckpoint {
                     record,
                     sigs: AggSig(agg),
@@ -652,6 +745,11 @@ async fn run(args: Args) -> Result<(), Box<dyn std::error::Error>> {
                     payload: GossipMessage::EpochCheckpointMsg(checkpoint),
                 };
 
+                let direct_conn = network
+                    .endpoint
+                    .connect(args.validator_addr, "localhost")?
+                    .await
+                    .map_err(|e| format!("QUIC connect: {}", e))?;
                 for addr in &targets {
                     let c = if *addr == args.validator_addr {
                         direct_conn.clone()
@@ -1049,6 +1147,19 @@ fn hex_decode_exact(hex: &str, expected_len: usize) -> Result<Vec<u8>, String> {
 
 fn hex_encode(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{:02x}", b)).collect()
+}
+
+fn cidv1_root_hex(root: &CIDv1Root) -> String {
+    let mut bytes = Vec::with_capacity(36);
+    bytes.extend_from_slice(&root.p1);
+    bytes.extend_from_slice(&root.p2);
+    hex_encode(&bytes)
+}
+
+fn parse_bls_signature_hex(hex: &str) -> Result<blst::min_pk::Signature, String> {
+    let bytes = hex_decode_exact_lowercase(hex, 96)?;
+    blst::min_pk::Signature::from_bytes(&bytes)
+        .map_err(|_| "invalid BLS signature bytes".to_string())
 }
 
 /// Read a PEM file and extract the DER bytes of the first block.

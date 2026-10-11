@@ -21,6 +21,7 @@ from .epoch_emission_runtime import (
     VALIDATION_EPOCH_SECONDS,
 )
 from .fee_burn_split_runtime import FEE_BURN_SPLIT_RUNTIME_VERSION
+from ilc_core.ledger.exact_numeric import decimal_to_canonical_string
 
 
 ALLOCATION_DISTRIBUTOR_RUNTIME_VERSION = "allocation_distributor_runtime_1347.v0.1"
@@ -254,7 +255,7 @@ def _split_residual_among_refutation_recipients(
 
 
 def _decimal_to_string(value: Decimal) -> str:
-    return format(value.normalize(), "f")
+    return decimal_to_canonical_string(value)
 
 
 def require_cdl_029_allocation_fractions(

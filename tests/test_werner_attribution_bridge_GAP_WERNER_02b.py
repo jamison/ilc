@@ -24,6 +24,7 @@ from ilc_core.economics.werner_attribution_bridge import (
     WERNER_CONTEXT_ABSENT_TOKEN,
     RUNTIME_POLICY_CAP,
     WernerAttributionContext,
+    WernerAttributionMultiplier,
     apply_werner_to_raw_score,
     compute_werner_multiplier,
 )
@@ -182,7 +183,24 @@ def test_apply_werner_to_raw_score_is_decimal_exact() -> None:
     )
 
     assert multiplier.multiplier == Decimal("1.050000000000")
-    assert adjusted == Decimal("0.47250000000000")
+    assert adjusted == Decimal("0.472500000000")
+
+
+def test_apply_werner_to_raw_score_returns_twelve_place_value() -> None:
+    adjusted, multiplier = apply_werner_to_raw_score(
+        Decimal("0.333333333333"),
+        WernerAttributionContext(
+            agent_id=AGENT_A,
+            epoch=7,
+            raw_werner_pressure=Decimal("0.10"),
+        ),
+        recipient_agent_id=AGENT_A,
+        event_epoch=7,
+    )
+
+    assert multiplier.multiplier == Decimal("1.100000000000")
+    assert adjusted == Decimal("0.366666666666")
+    assert adjusted.as_tuple().exponent == -12
 
 
 def test_apply_werner_to_raw_score_rejects_negative_raw_score() -> None:
@@ -202,6 +220,46 @@ def test_rejects_binary64_raw_score() -> None:
             None,
             recipient_agent_id=AGENT_A,
             event_epoch=7,
+        )
+
+
+def test_werner_context_rejects_binary64_pressure_at_construction() -> None:
+    with pytest.raises(ValueError, match="werner_raw_pressure_must_be_decimal"):
+        WernerAttributionContext(
+            agent_id=AGENT_A,
+            epoch=7,
+            raw_werner_pressure=0.10,  # type: ignore[arg-type]
+        )
+
+
+def test_werner_multiplier_rejects_incoherent_direct_construction() -> None:
+    with pytest.raises(ValueError, match="werner_present_context_requires_raw_pressure"):
+        WernerAttributionMultiplier(
+            cdl_version=WERNER_CDL_109_VERSION,
+            bridge_scope=WERNER_BRIDGE_SCOPE,
+            application_stage=WERNER_APPLICATION_STAGE,
+            formula="raw_path_score * (Decimal('1') + flow_budget)",
+            agent_id=AGENT_A,
+            epoch=7,
+            raw_werner_pressure=None,
+            flow_budget=Decimal("0.100000000000"),
+            multiplier=Decimal("1.100000000000"),
+            context_present=True,
+            disposition_token=None,
+        )
+    with pytest.raises(ValueError, match="werner_absent_context_requires_disposition_token"):
+        WernerAttributionMultiplier(
+            cdl_version=WERNER_CDL_109_VERSION,
+            bridge_scope=WERNER_BRIDGE_SCOPE,
+            application_stage=WERNER_APPLICATION_STAGE,
+            formula="raw_path_score * (Decimal('1') + flow_budget)",
+            agent_id=AGENT_A,
+            epoch=7,
+            raw_werner_pressure=None,
+            flow_budget=Decimal("0"),
+            multiplier=Decimal("1"),
+            context_present=False,
+            disposition_token=None,
         )
 
 
@@ -353,6 +411,41 @@ def test_absent_context_preserves_baseline_scores() -> None:
     ]
 
 
+def test_collapse_keeps_best_werner_reweighted_path_metadata() -> None:
+    result = BackwardAttributionTraversal(
+        {
+            "source": _node(AGENT_B),
+            "direct-a": _node(AGENT_A),
+            "mid": _node(AGENT_C),
+        },
+        [
+            _edge("source", "direct-a"),
+            _edge("source", "mid"),
+            _edge("mid", "direct-a"),
+        ],
+    ).traverse(
+        "source",
+        event_id="event-collapse-werner",
+        event_budget_ecu="100",
+        event_epoch=7,
+        werner_context_by_agent_id={
+            AGENT_A: WernerAttributionContext(
+                agent_id=AGENT_A,
+                epoch=7,
+                raw_werner_pressure=Decimal("0.10"),
+            )
+        },
+    )
+
+    direct_a = next(
+        score for score in result.path_scores if score.upstream_artifact_id == "direct-a"
+    )
+    assert direct_a.depth == 1
+    assert direct_a.werner_context_present is True
+    assert direct_a.werner_disposition_token is None
+    assert direct_a.werner_multiplier == Decimal("1.100000000000")
+
+
 def test_invalid_werner_context_does_not_wedge_zero_credit_intermediate() -> None:
     source = _node(AGENT_B)
     thin = _node(AGENT_A)
@@ -406,13 +499,55 @@ def test_cdl108_caps_apply_after_werner_reweighting() -> None:
         },
     )
 
-    credit_a = next(credit for credit in result.final_credits if credit.recipient_agent_id == AGENT_A)
+    credit_a = next(
+        credit for credit in result.final_credits if credit.recipient_agent_id == AGENT_A
+    )
     assert credit_a.pre_cap_credit_ecu > result.node_cap_amount_ecu
     assert credit_a.final_credit_ecu == (
         result.backward_pool_ecu * BACKWARD_ATTRIBUTION_PER_NODE_CAP
     )
     assert credit_a.node_cap_applied is True
     assert credit_a.werner_context_present is True
+
+
+def test_zeroed_credit_still_records_node_cap_applied() -> None:
+    result = BackwardAttributionTraversal(
+        {
+            "source": _node(AGENT_B),
+            "node-a": _node(AGENT_A),
+            "node-a-2": _node(AGENT_A),
+            "node-a-3": _node(AGENT_A),
+            "node-c": _node(AGENT_C),
+        },
+        [
+            _edge("source", "node-a"),
+            _edge("source", "node-a-2"),
+            _edge("source", "node-a-3"),
+            _edge("source", "node-c"),
+        ],
+    ).traverse(
+        "source",
+        event_id="event-zeroed-cap",
+        event_budget_ecu="1000",
+        event_epoch=7,
+        apply_antigaming_caps=True,
+        werner_context_by_agent_id={
+            AGENT_A: WernerAttributionContext(
+                agent_id=AGENT_A,
+                epoch=7,
+                raw_werner_pressure=Decimal("100"),
+            )
+        },
+    )
+
+    zeroed = [
+        credit
+        for credit in result.final_credits
+        if credit.final_credit_ecu == Decimal("0")
+        and credit.clipped_residual_ecu > Decimal("0")
+    ]
+    assert zeroed
+    assert any(credit.node_cap_applied or credit.agent_cap_applied for credit in zeroed)
 
 
 def test_bridge_passes_werner_context_and_records_evidence_fields() -> None:

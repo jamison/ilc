@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import math
+import json
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ from ilc_model_router.adapter import (
     RouterRequest,
 )
 from ilc_model_router.anthropic_adapter import AnthropicAdapter
+from ilc_model_router import router_engine
 from ilc_model_router.receipt_schema import RouterReceiptError
 from ilc_model_router.receipt_store import (
     check_nullifier,
@@ -125,7 +127,12 @@ def _partial_response() -> ProviderResponse:
     )
 
 
-def _request(*, nonce: bytes = b"\x01" * 16, epoch: int = 7) -> RouterRequest:
+def _request(
+    *,
+    nonce: bytes = b"\x01" * 16,
+    epoch: int = 7,
+    capability_class: str = "inference",
+) -> RouterRequest:
     return RouterRequest(
         model_id="anthropic/test-model",
         provider="anthropic",
@@ -133,6 +140,7 @@ def _request(*, nonce: bytes = b"\x01" * 16, epoch: int = 7) -> RouterRequest:
         agent_id_hex=AGENT_ID,
         epoch=epoch,
         request_nonce=nonce,
+        capability_class=capability_class,
     )
 
 
@@ -150,6 +158,7 @@ def test_router_engine_happy_path_stores_receipt(tmp_path: Path) -> None:
         assert receipt.status == "success"
         assert receipt.error_token == ""
         assert receipt.companion.consent_status == "local_only"
+        assert receipt.companion.capability_class == "inference"
         assert receipt.companion.model_id == "anthropic/test-model"
         assert lookup_by_token(env, receipt.receipt_token) == receipt
     finally:
@@ -177,6 +186,42 @@ def test_router_request_rejects_model_id_too_long_for_receipt_schema() -> None:
             epoch=7,
             request_nonce=b"\x01" * 16,
         )
+
+
+def test_router_request_rejects_unknown_capability_class() -> None:
+    with pytest.raises(ProviderAdapterError, match="model_router_capability_class_invalid"):
+        _request(capability_class="video")
+
+
+def test_router_request_deep_copies_messages_before_hashing() -> None:
+    message = {"role": "user", "content": {"text": "hello"}}
+    request = RouterRequest(
+        model_id="anthropic/test-model",
+        provider="anthropic",
+        messages=(message,),
+        agent_id_hex=AGENT_ID,
+        epoch=7,
+        request_nonce=b"\x01" * 16,
+    )
+    before = _build_inputs_hash(request)
+
+    message["content"]["text"] = "mutated"  # type: ignore[index]
+
+    assert request.messages[0]["content"]["text"] == "hello"
+    assert _build_inputs_hash(request) == before
+
+
+def test_router_engine_preserves_non_default_capability_class(tmp_path: Path) -> None:
+    env = _env(tmp_path)
+    try:
+        receipt = RouterEngine(StubAdapter(_success_response()), env).route(
+            _request(capability_class="embedding")
+        )
+
+        assert receipt.companion.capability_class == "embedding"
+        assert lookup_by_token(env, receipt.receipt_token) == receipt
+    finally:
+        env.close()
 
 
 def test_nullifier_collision_rejects_before_second_adapter_call(tmp_path: Path) -> None:
@@ -352,6 +397,23 @@ def test_keyboard_interrupt_finalizes_failure_receipt_before_reraising(tmp_path:
         env.close()
 
 
+def test_keyboard_interrupt_preserves_interrupt_when_finalize_fails(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    env = _env(tmp_path)
+    try:
+        def _raise_finalize(*_args, **_kwargs) -> None:
+            raise RouterReceiptError("lmdb_write_failed")
+
+        monkeypatch.setattr(router_engine, "finalize_reserved_router_receipt", _raise_finalize)
+
+        with pytest.raises(KeyboardInterrupt):
+            RouterEngine(InterruptingAdapter(), env).route(_request(nonce=b"\x0a" * 16))
+    finally:
+        env.close()
+
+
 def test_different_nonces_produce_distinct_input_hashes_and_receipt_tokens(tmp_path: Path) -> None:
     env = _env(tmp_path)
     try:
@@ -370,3 +432,23 @@ def test_anthropic_adapter_rejects_non_finite_timeout() -> None:
     assert not math.isfinite(float("inf"))
     with pytest.raises(ValueError, match="anthropic_adapter_timeout_non_finite_or_non_positive"):
         AnthropicAdapter(api_key="test", timeout=float("inf"))
+
+
+def test_anthropic_adapter_rejects_bare_https_endpoint() -> None:
+    with pytest.raises(ValueError, match="anthropic_adapter_endpoint_invalid"):
+        AnthropicAdapter(api_key="test", endpoint="https://")
+
+
+def test_anthropic_adapter_rejects_non_integer_usage_counts() -> None:
+    adapter = AnthropicAdapter(api_key="test")
+    response = adapter._parse_response(  # noqa: SLF001 - regression pins provider payload parsing.
+        json.dumps(
+            {
+                "content": [{"type": "text", "text": "ok"}],
+                "usage": {"input_tokens": 1.5, "output_tokens": 2},
+            }
+        ).encode("utf-8")
+    )
+
+    assert response.status == "failure"
+    assert response.error_token == "provider_response_usage_invalid"

@@ -41,6 +41,7 @@ from ilc_core.epoch import (
     require_cdl_029_allocation_fractions,
     require_production_allocation_distribution_activation,
 )
+from ilc_core.epoch.allocation_distributor_runtime import _decimal_to_string
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -164,6 +165,11 @@ def test_allocation_distributor_quantizes_down_and_preserves_total() -> None:
         + quote.auditor_reward_pool_ilc
         + quote.genesis_overhead_pool_ilc
     ) == quote.total_epoch_allocation_ilc
+
+
+def test_allocation_decimal_serializer_rejects_non_finite_values() -> None:
+    with pytest.raises(ValueError, match="invalid_exact_numeric_value"):
+        _decimal_to_string(Decimal("NaN"))
 
 
 def test_allocation_distributor_fails_closed_on_nonzero_genesis_base_when_cap_blocked() -> None:

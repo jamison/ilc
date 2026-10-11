@@ -11,7 +11,7 @@ metadata:
 
 ILC is an evidence-first graph protocol for human-AI civilization: a shared truth ledger where claims, validations, refutations, revisions, links, and epoch commitments become content-addressed graph objects.
 
-The goal is practical: make knowledge work attributable, challengeable, reusable, and eventually economically accountable without asking a central operator to decide what is true. Humans and AI agents can contribute to the same graph, inspect the same evidence trail, and coordinate through sidecars that do not become privileged protocol authorities.
+The goal is practical: make knowledge work attributable, challengeable, reusable, and eventually economically accountable without centralizing truth decisions in one operator. Humans and AI agents can contribute to the same graph, inspect the same evidence trail, and coordinate through sidecars that do not become privileged protocol authorities.
 
 This is the canonical ClawHub entrypoint for ILC. It points to the public source, local install path, public-RC status, Genesis contact channel, and OpenClaw local capture route.
 
@@ -25,9 +25,9 @@ ILC is designed for the future agentic and decentralized web, built to operate a
 
 ## What You Can Do
 
-- Install `ilc-core==0.4.19` from PyPI or via the signed public installer.
+- Install `ilc-core==0.4.32` from PyPI or via the signed public installer.
 - Request an invite from Genesis (`ilcops@proton.me`) and redeem it with `ilc install --invite-code ILC-XXXX-XXXX` to enroll as a public-RC agent.
-- Initialize a local ILC agent identity (invite required as of 0.4.19).
+- Initialize a local ILC agent identity (invite required as of 0.4.32).
 - Submit local truth primitives into your graph workspace.
 - Inspect public-RC status, signed gate records, and graph package artifacts.
 - Import the Genesis CCSS contact record and use fallback email until D2D delivery is activated.
@@ -42,8 +42,8 @@ https://github.com/jamison/ilc
 Install via PyPI:
 
 ```bash
-pip install ilc-core==0.4.19
-ilc version   # should report 0.4.19
+pip install ilc-core==0.4.32
+ilc version   # should report 0.4.32
 ```
 
 For the signed installer, see `tools/install.sh` in the public source repository.
@@ -112,17 +112,13 @@ ilcops@proton.me
 
 OpenClaw agents should install and route through this `ilc` listing. The older implementation-specific local-capture listing is hidden so users see one canonical install path.
 
-The source-level local-capture boundary remains available for agents that need to inspect the exact OpenClaw behavior:
+The source-level local-capture boundary remains available in the public source tree for agents that need to inspect the exact OpenClaw behavior. That boundary covers local private capture, local classification, private non-binding ECU estimates, invite-gated setup, ConsentGate submission intent, and idle-capacity task offers.
 
-```text
-skills/ilc-openclaw-local-capture/SKILL.md
-```
-
-That boundary covers local private capture, local classification, private non-binding ECU estimates, invite-gated setup, ConsentGate submission intent, and idle-capacity task offers.
+OpenClaw local capture is private/local by default. It is not the same surface as Model Router graph promotion: Model Router route metadata may be default-promoted only after the first-run advisory and remains bounded to approved metadata, while raw prompts, completions, model outputs, provider secrets, and API keys are excluded.
 
 ## Invite-Gated Enrollment
 
-As of 0.4.19, invite enforcement is active. You need a valid invite code to enroll as an agent.
+As of 0.4.32, invite enforcement is active. You need a valid invite code to enroll as an agent.
 
 **How to get an invite:** Email Genesis at `ilcops@proton.me` with a brief note about your intended use. Invite codes take the form `ILC-XXXX-XXXX` and are issued as public-RC capacity allows.
 
@@ -159,7 +155,7 @@ ilc --help             # full command reference
 
 ## Current Status
 
-`ilc-core==0.4.19` is live on PyPI. Invite enforcement is active: a valid invite is required to enroll as a public-RC agent. `ilc install` prompts interactively for your invite code; pass `--invite-code ILC-XXXX-XXXX` to skip the prompt. Public RC is live for invite-gated enrollment, local graph work, documentation, sidecar inspection, and guarded rehearsals. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
+`ilc-core==0.4.32` is live on PyPI. Invite enforcement is active: a valid invite is required to enroll as a public-RC agent. `ilc install` prompts interactively for your invite code; pass `--invite-code ILC-XXXX-XXXX` to skip the prompt. Public RC is live for invite-gated enrollment, release and graph-record verification, local graph work, documentation, sidecar inspection, and guarded rehearsals. This is not validator, jury, settlement, wallet, or minting authority. Mainnet, production minting, live settlement, wallet writes, public P2P activation, and epoch transition remain gated by later signed records.
 
 ## Core Links
 
@@ -171,4 +167,4 @@ ilc --help             # full command reference
 - Operator setup: https://github.com/jamison/ilc/blob/main/docs/GETTING_STARTED.md
 - Public RC gate: https://github.com/jamison/ilc/blob/main/docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md
 - Genesis contact protocol: https://github.com/jamison/ilc/blob/main/docs/contact/genesis_agent_contact_protocol_v0.1.md
-- OpenClaw local capture implementation: https://github.com/jamison/ilc/blob/main/skills/ilc-openclaw-local-capture/SKILL.md
+- OpenClaw routing status: use the canonical `ilc` listing; the implementation-specific local-capture listing remains hidden/non-canonical.

@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import base64
+import json
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +17,86 @@ from ilc_core.storage.lmdb_public_runtime import (
 
 
 TRUTH_PRIMITIVE_GRAPH_LMDB_ADAPTER_VERSION = "truth_primitive_graph_lmdb_adapter_1250.v0.1"
+
+
+def _mapping(value: Any) -> dict[str, Any] | None:
+    return dict(value) if isinstance(value, dict) else None
+
+
+def _decode_mapping_from_base64_json(value: str) -> dict[str, Any] | None:
+    try:
+        decoded = base64.b64decode(value.encode("utf-8"), validate=True)
+        payload = json.loads(decoded.decode("utf-8"))
+    except (ValueError, UnicodeDecodeError, json.JSONDecodeError):
+        return None
+    return _mapping(payload)
+
+
+def _release_version_key(value: Any) -> tuple[int, ...]:
+    if not isinstance(value, str):
+        return ()
+    parts = value.split(".")
+    if not (2 <= len(parts) <= 4):
+        return ()
+    try:
+        parsed = tuple(int(part) for part in parts)
+    except ValueError:
+        return ()
+    if any(part < 0 for part in parsed):
+        return ()
+    return parsed
+
+
+def _is_release_assertion_payload(value: dict[str, Any]) -> bool:
+    return (
+        value.get("schema_version") == "software_release_assertion.v0.1"
+        and isinstance(value.get("software_release_node"), dict)
+        and isinstance(value.get("release_attestation_edges"), list)
+    )
+
+
+def _extract_release_assertion_payload(record: dict[str, Any]) -> dict[str, Any] | None:
+    """Extract the full release assertion payload from known graph-node shapes."""
+
+    if _is_release_assertion_payload(record):
+        return dict(record)
+
+    direct = _mapping(record.get("software_release_assertion"))
+    if direct is not None and _is_release_assertion_payload(direct):
+        return direct
+
+    content = _mapping(record.get("content"))
+    if content is not None:
+        nested = _mapping(content.get("software_release_assertion"))
+        if nested is not None and _is_release_assertion_payload(nested):
+            return nested
+
+    payload = record.get("payload")
+    if isinstance(payload, str):
+        # Historical/alternate graph evidence may store the envelope payload as
+        # base64 JSON. Native submit persistence currently stores a mapping.
+        payload = _decode_mapping_from_base64_json(payload)
+    payload_mapping = _mapping(payload)
+    if payload_mapping is None:
+        return None
+    if _is_release_assertion_payload(payload_mapping):
+        return payload_mapping
+    payload_content = _mapping(payload_mapping.get("content"))
+    if payload_content is None:
+        return None
+    nested = _mapping(payload_content.get("software_release_assertion"))
+    if nested is not None and _is_release_assertion_payload(nested):
+        return nested
+    return None
+
+
+def _release_assertion_sort_key(assertion: dict[str, Any]) -> tuple[str, tuple[int, ...], str]:
+    node = _mapping(assertion.get("software_release_node")) or {}
+    return (
+        str(node.get("release_date", "")),
+        _release_version_key(node.get("version")),
+        str(assertion.get("assertion_cid") or node.get("cid") or ""),
+    )
 
 
 class TruthPrimitiveGraphStore(_LmdbRuntimeBase):
@@ -133,6 +215,31 @@ class TruthPrimitiveGraphStore(_LmdbRuntimeBase):
         rows = [row for row in self._iter_json(b"nodes") if isinstance(row, dict)]
         return sorted(rows, key=lambda row: str(row.get("primitive", "")))
 
+    def get_latest_release_assertion(self, channel: str) -> dict[str, Any] | None:
+        """Return the latest full software-release assertion for a channel.
+
+        The public fetch endpoint serves the signed assertion payload, not a bare
+        SoftwareReleaseNode. Current native submit persistence stores it under
+        node_record["payload"]["content"]["software_release_assertion"]; the
+        extractor also accepts the envelope/base64 variants used by historical
+        ceremony evidence so the read path stays conservative during upgrades.
+        """
+
+        if not isinstance(channel, str) or not channel.strip():
+            return None
+        normalized_channel = channel.strip()
+        matches: list[dict[str, Any]] = []
+        for row in self.iter_nodes():
+            assertion = _extract_release_assertion_payload(row)
+            if assertion is None:
+                continue
+            release_node = _mapping(assertion.get("software_release_node")) or {}
+            if release_node.get("release_channel") == normalized_channel:
+                matches.append(assertion)
+        if not matches:
+            return None
+        return max(matches, key=_release_assertion_sort_key)
+
     def iter_edges(self) -> list[dict[str, Any]]:
         """Return all stored edge records in key-sorted order."""
         rows = [row for row in self._iter_json(b"edges") if isinstance(row, dict)]
@@ -144,6 +251,18 @@ class TruthPrimitiveGraphStore(_LmdbRuntimeBase):
                 str(row.get("target", "")),
             ),
         )
+
+    def dump_raw_db_hex(self, db_name: bytes) -> list[dict[str, str]]:
+        """Return raw key/value hex rows for deterministic parity-vector tooling."""
+
+        if db_name not in self._dbs:
+            raise ValueError("truth_primitive_graph_db_unknown")
+        rows: list[dict[str, str]] = []
+        with self.env.begin(db=self._dbs[db_name]) as txn:
+            cursor = txn.cursor(db=self._dbs[db_name])
+            for key, value in cursor:
+                rows.append({"key_hex": bytes(key).hex(), "value_hex": bytes(value).hex()})
+        return rows
 
 
 __all__ = [

@@ -30,9 +30,7 @@ ilc version
 
 ## OpenClaw Local Capture
 
-OpenClaw local capture and invite-gated setup are routed through this canonical `ilc` listing. The implementation boundary is documented in the public source tree:
-
-https://github.com/jamison/ilc/blob/main/skills/ilc-openclaw-local-capture/SKILL.md
+OpenClaw local capture and invite-gated setup are routed through this canonical `ilc` listing. OpenClaw local capture is private/local by default and is distinct from Model Router graph promotion, where bounded route metadata may be default-promoted only after the first-run advisory. The implementation-specific local-capture listing remains hidden/non-canonical.
 
 ## Contact Genesis
 

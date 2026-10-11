@@ -16,6 +16,8 @@ class InstallableReleaseSignatureError(ValueError):
 SCHEMA_VERSION = "GAP_RELEASE_SIGN_00b_v0.2"
 SIGNED_PREIMAGE_DOMAIN = "ILC_RELEASE_ARTIFACT_SIGNATURE_V1"
 SIGNING_ALGORITHM = "Ed25519"
+# Release-envelope certificate reference only. This constant is not a validator
+# runtime clock baseline and must not be used to derive epoch anchor timestamps.
 SIGNED_AT_EPOCH_ZERO = "1970-01-01T00:00:00Z"
 SIGNED_PREIMAGE_ALGORITHM = "sha256_of_canonical_json"
 DEFAULT_RELEASE_KEY_REGISTRATION_REF = "adr-0036:public-rc-operational-release-key-registration"

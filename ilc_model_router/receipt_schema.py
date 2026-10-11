@@ -9,6 +9,7 @@ from typing import Any, Mapping
 from ilc_core.sidecars.execution_receipt import (
     SIDECAR_EXECUTION_RECEIPT_SCHEMA_VERSION,
     SidecarExecutionReceipt,
+    SidecarExecutionReceiptError,
 )
 
 from .adapter import MAX_ROUTER_TEXT_CHARS
@@ -124,7 +125,10 @@ class RouterReceipt:
             SIDECAR_EXECUTION_RECEIPT_SCHEMA_VERSION,
             "router_receipt_core_schema_version_invalid",
         )
-        core = self.to_core_receipt()
+        try:
+            core = self.to_core_receipt()
+        except SidecarExecutionReceiptError as exc:
+            raise RouterReceiptError(str(exc)) from exc
         if core.receipt_token != self.receipt_token:
             raise RouterReceiptError("router_receipt_token_mismatch")
         if self.companion.receipt_token != self.receipt_token:

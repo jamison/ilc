@@ -31,6 +31,28 @@ class PopperianGateValidationError(ValueError):
         self.token = token
 
 
+def _is_canonical_decimal_string(value: str) -> bool:
+    if (
+        not value
+        or value.startswith(("-", "+"))
+        or "e" in value
+        or "E" in value
+        or value == "."
+    ):
+        return False
+    dot_seen = False
+    digit_seen = False
+    for char in value:
+        if char.isdigit():
+            digit_seen = True
+            continue
+        if char == "." and not dot_seen:
+            dot_seen = True
+            continue
+        return False
+    return digit_seen
+
+
 def _require_string(name: str, value: str) -> str:
     if not isinstance(value, str):
         raise PopperianGateValidationError(
@@ -60,6 +82,11 @@ def _require_unit_interval(name: str, value: object) -> Decimal:
         raise PopperianGateValidationError(
             "cdl_v7_popperian_invalid_numeric",
             f"{name} must be an exact numeric value",
+        )
+    if isinstance(value, str) and not _is_canonical_decimal_string(value):
+        raise PopperianGateValidationError(
+            "cdl_v7_popperian_invalid_numeric",
+            f"{name} must be a canonical decimal string",
         )
     try:
         number = value if isinstance(value, Decimal) else Decimal(str(value))

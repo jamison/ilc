@@ -10,6 +10,7 @@ from .capability_vector import CapabilityVector
 CAPPROOF_MULTIPLIER_MIN = Decimal("0.85")
 CAPPROOF_MULTIPLIER_BASELINE = Decimal("1.00")
 CAPPROOF_MULTIPLIER_MAX = Decimal("1.15")
+CAPPROOF_MULTIPLIER_DECIMAL_PRECISION = 50
 
 _BAND_WIDTH = CAPPROOF_MULTIPLIER_MAX - CAPPROOF_MULTIPLIER_MIN
 _PROBE_COUNT = Decimal("4")
@@ -20,14 +21,14 @@ _GRAPH_SCALE = Decimal("10000")
 
 
 def compute_capproof_multiplier(cv: CapabilityVector) -> Decimal:
-    """Return one bounded Decimal multiplier for one capability vector."""
+    """Return one bounded high-precision Decimal multiplier for one capability vector."""
 
     if cv.det_pass is False:
         # CDL-115-DELIBERATION-Q3: det_pass=False behavior remains open.
         return CAPPROOF_MULTIPLIER_MIN
 
     with localcontext() as ctx:
-        ctx.prec = 50
+        ctx.prec = CAPPROOF_MULTIPLIER_DECIMAL_PRECISION
         score = (
             _unit_interval(cv.gemm_gops, _GEMM_SCALE)
             + _unit_interval(cv.infer_tps, _INFER_SCALE)

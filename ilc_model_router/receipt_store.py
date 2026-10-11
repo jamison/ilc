@@ -19,6 +19,7 @@ from ilc_core.sidecars.execution_receipt import (
 )
 
 from .receipt_schema import (
+    CONSENT_STATUSES,
     RouterCompanionRecord,
     RouterReceipt,
     RouterReceiptError,
@@ -153,6 +154,38 @@ def lookup_by_token(env: lmdb.Environment, receipt_token: str) -> RouterReceipt 
         core = _decode_core_receipt(core_raw)
         companion = _decode_companion(companion_raw)
     return RouterReceipt.from_core_and_companion(core, companion)
+
+
+def update_receipt_consent_status(
+    env: lmdb.Environment,
+    receipt_token: str,
+    new_status: str,
+) -> None:
+    """Atomically update the companion consent status for an existing receipt."""
+
+    token = _require_receipt_token(receipt_token)
+    if new_status not in CONSENT_STATUSES:
+        raise RouterReceiptError("model_router_consent_status_invalid")
+    _receipts_db, token_index_db, companion_db, _nullifiers_db = _open_dbs(env)
+    token_key = token.encode("ascii")
+    with env.begin(write=True) as txn:
+        if txn.get(token_key, db=token_index_db) is None:
+            raise RouterReceiptError("model_router_receipt_not_found")
+        companion_raw = txn.get(token_key, db=companion_db)
+        if companion_raw is None:
+            raise RouterReceiptError("model_router_companion_missing")
+        companion = _decode_companion(companion_raw)
+        updated = RouterCompanionRecord(
+            receipt_token=companion.receipt_token,
+            model_id=companion.model_id,
+            provider=companion.provider,
+            token_counts_input=companion.token_counts_input,
+            token_counts_output=companion.token_counts_output,
+            capability_class=companion.capability_class,
+            consent_status=new_status,
+            schema_version=companion.schema_version,
+        )
+        txn.put(token_key, _encode_companion(updated), db=companion_db)
 
 
 def list_router_receipts(env: lmdb.Environment, *, limit: int = 100) -> list[RouterReceipt]:
@@ -320,4 +353,5 @@ __all__ = [
     "open_router_receipt_env",
     "reserve_router_nullifier",
     "store_router_receipt",
+    "update_receipt_consent_status",
 ]

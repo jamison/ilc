@@ -6,12 +6,14 @@ from __future__ import annotations
 import hashlib
 import re
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, localcontext
 
 from .capability_vector import CapProofValidationError
 
 CAPPROOF_V1_NO_ILC_MINT = True
 CAPPROOF_RUNTIME_VERSION = "capproof_v1_phase_1606.v0.1"
+CAPPROOF_DETERMINISM_PROBE_PRODUCTION_ACTIVATED = False
+CAPPROOF_DETERMINISM_PROBE_MODE = "scaffold_digest_only"
 
 _EPOCH_SALT_RE = re.compile(r"^[0-9a-f]{64,128}$")
 
@@ -162,18 +164,19 @@ class DeterminismProbe:
     field_name = "det_pass"
 
     def run(self, epoch_salt: str) -> DeterminismProbeResult:
-        """Return the scaffold determinism result.
+        """Run the scaffold repeat-hash determinism check.
 
-        Phase 1606 records the digest and keeps `det_pass=True` until a later
-        production probe supplies a real reproducibility check.
+        This is a deterministic software scaffold, not the later production
+        hardware reproducibility probe. Live CapProof epoch-init wiring must
+        fail closed while
+        CAPPROOF_DETERMINISM_PROBE_PRODUCTION_ACTIVATED is False.
         """
 
         salt = _require_epoch_salt(epoch_salt)
-        digest = hashlib.sha256(
-            f"ILC_CAPPROOF_DETERMINISM_V1:{salt}".encode("utf-8")
-        ).hexdigest()
+        digests = tuple(_determinism_digest(salt) for _ in range(3))
+        digest = digests[0]
         return DeterminismProbeResult(
-            det_pass=True,
+            det_pass=all(item == digest for item in digests),
             determinism_hash=digest,
             epoch_salt=salt,
         )
@@ -205,4 +208,12 @@ def _derive_metric(epoch_salt: str, domain: str, scale: Decimal, quantum: Decima
     # Phase 1606 probes are deterministic stubs. 64 digest bits are ample for
     # bounded scaffold jitter; production probes must replace this sampler.
     raw = Decimal(int(digest[:16], 16) % 1000000)
-    return (raw / quantum) + scale
+    with localcontext() as ctx:
+        ctx.prec = 50
+        return (raw / quantum) + scale
+
+
+def _determinism_digest(epoch_salt: str) -> str:
+    return hashlib.sha256(
+        f"ILC_CAPPROOF_DETERMINISM_V1:{epoch_salt}".encode("utf-8")
+    ).hexdigest()

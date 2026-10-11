@@ -135,6 +135,21 @@ def test_store_appends_reads_epoch_in_ordinal_order_and_looks_up_token(tmp_path:
     assert store.lookup_by_token("f" * 64) is None
 
 
+def test_store_read_receipts_for_epoch_accepts_bounded_limit(tmp_path: Path) -> None:
+    store = SidecarExecutionReceiptStore(tmp_path / "receipts")
+    first = _receipt(epoch=2, tool_id="tool-a")
+    second = _receipt(epoch=2, tool_id="tool-b")
+    store.append_receipt(first)
+    store.append_receipt(second)
+
+    assert store.read_receipts_for_epoch(2, limit=1) == [first]
+    with pytest.raises(
+        SidecarExecutionReceiptError,
+        match="sidecar_execution_receipt_read_limit_invalid",
+    ):
+        store.read_receipts_for_epoch(2, limit=0)
+
+
 def test_store_rejects_duplicate_receipt_token(tmp_path: Path) -> None:
     store = SidecarExecutionReceiptStore(tmp_path / "receipts")
     receipt = _receipt()

@@ -1,0 +1,95 @@
+{
+  "artifact": "ilc_fix_gap_native_quic_receiver_rust_persistence_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "cdl_mutation": false,
+    "network_or_p2p_activation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00 Rust CDL-075 persistence port."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_gap_native_quic_receiver_rust_persistence_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_native_quic_receiver_rust_persistence_00_g10_rust_persistence.md",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "RUST_RUNTIME_MODULE",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_consensus/src/native_submit_persist.rs",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "RUST_RUNTIME_BINARY",
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_consensus/src/ilc_native_submit_receiver_full_main.rs",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "RUST_LIBRARY_EXPORT",
+      "graph_delta": "load_bearing_artifact_modified",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_consensus/src/lib.rs",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "RUST_VALIDATION_STRUCT_EXTENSION",
+      "graph_delta": "load_bearing_artifact_modified",
+      "node_kind": "runtime_module",
+      "repo_path": "ilc_consensus/src/native_submit_validate.rs",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "RUST_BINARY_REGISTRATION",
+      "graph_delta": "load_bearing_artifact_modified",
+      "node_kind": "build_config",
+      "repo_path": "ilc_consensus/Cargo.toml",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "TEST_FILE",
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "repo_path": "ilc_consensus/tests/test_gap_native_quic_receiver_rust_persistence_00.rs",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00"
+    },
+    {
+      "annotation_method": "gap_native_quic_receiver_rust_persistence_00_overlay_record",
+      "annotation_phase": "GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_native_quic_receiver_rust_persistence_00_walkthrough.md",
+      "target": "phase:GAP-NATIVE-QUIC-RECEIVER-RUST-PERSISTENCE-00"
+    }
+  ],
+  "schema_version": "fix39_graph_intake_overlay.v0.1",
+  "status": "support_only"
+}

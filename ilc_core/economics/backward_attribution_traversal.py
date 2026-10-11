@@ -13,7 +13,6 @@ from decimal import Decimal, InvalidOperation, localcontext
 from typing import Mapping
 
 from ilc_core.economics.werner_attribution_bridge import (
-    WERNER_CONTEXT_ABSENT_TOKEN,
     WernerAttributionContext,
     apply_werner_to_raw_score,
 )
@@ -548,7 +547,9 @@ class BackwardAttributionTraversal:
         if score_total > ZERO:
             running_credit = ZERO
             for score in positive_scores[:-1]:
-                pre_cap_credit = backward_pool * score.raw_path_score / score_total
+                with localcontext() as ctx:
+                    ctx.prec = 50
+                    pre_cap_credit = backward_pool * score.raw_path_score / score_total
                 running_credit += pre_cap_credit
                 credits.append(
                     BackwardAttributionCreditQuote(
@@ -822,10 +823,11 @@ class BackwardAttributionTraversal:
                 next_edge_types = (*path_edge_types, edge.edge_type)
                 next_confidence = confidence * edge.edge_confidence
                 next_edge_confidences = (*path_edge_confidences, edge.edge_confidence)
+                age_weight = _age_weight(upstream_node.created_epoch, event_epoch)
                 raw_score = self._score_path(
                     upstream_node,
                     next_depth,
-                    event_epoch,
+                    age_weight,
                     next_confidence,
                 )
                 if raw_score > ZERO:
@@ -845,10 +847,7 @@ class BackwardAttributionTraversal:
                             path_edge_types=next_edge_types,
                             raw_path_score=adjusted_score,
                             pre_werner_raw_path_score=raw_score,
-                            age_weight=_age_weight(
-                                upstream_node.created_epoch,
-                                event_epoch,
-                            ),
+                            age_weight=age_weight,
                             typed_path_weight=ONE,
                             artifact_weight=ONE,
                             status_quality_weight=upstream_node.status_quality_weight,
@@ -858,11 +857,7 @@ class BackwardAttributionTraversal:
                             werner_flow_budget=werner_multiplier.flow_budget,
                             werner_multiplier=werner_multiplier.multiplier,
                             werner_context_present=werner_multiplier.context_present,
-                            werner_disposition_token=(
-                                None
-                                if werner_multiplier.context_present
-                                else WERNER_CONTEXT_ABSENT_TOKEN
-                            ),
+                            werner_disposition_token=werner_multiplier.disposition_token,
                         )
                     )
                 # CDL-108 scores each upstream artifact as a terminal. A node
@@ -886,7 +881,7 @@ class BackwardAttributionTraversal:
     def _score_path(
         upstream_node: BackwardAttributionNode,
         depth: int,
-        event_epoch: int,
+        age_weight: Decimal,
         edge_confidence_weight: Decimal,
     ) -> Decimal:
         artifact_weight = _eligible_artifact_weight(upstream_node)
@@ -899,7 +894,7 @@ class BackwardAttributionTraversal:
             ctx.prec = 50
             return (
                 (BACKWARD_ATTRIBUTION_DECAY_ALPHA ** depth)
-                * _age_weight(upstream_node.created_epoch, event_epoch)
+                * age_weight
                 * edge_confidence_weight
                 * artifact_weight
                 * upstream_node.status_quality_weight
@@ -924,18 +919,9 @@ class BackwardAttributionTraversal:
             if current is None or score.raw_path_score > current.raw_path_score:
                 by_artifact[score.upstream_artifact_id] = score
 
-        by_triple: dict[
-            tuple[str, str, str],
-            BackwardAttributionPathScore,
-        ] = {}
-        for score in by_artifact.values():
-            key = (score.event_id, score.upstream_artifact_id, score.recipient_agent_id)
-            current = by_triple.get(key)
-            if current is None or score.raw_path_score > current.raw_path_score:
-                by_triple[key] = score
         return tuple(
             sorted(
-                by_triple.values(),
+                by_artifact.values(),
                 key=lambda item: (item.upstream_artifact_id, item.recipient_agent_id),
             )
         )

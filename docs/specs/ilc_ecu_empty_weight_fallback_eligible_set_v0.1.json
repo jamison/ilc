@@ -1,0 +1,68 @@
+{
+  "schema_version": "ilc.ecu_empty_weight_fallback_eligible_set.v0.1",
+  "phase": "GAP-ECU-MONTHLY-CLOSE-EMPTY-POOL-FALLBACK-POLICY-00",
+  "ratified_at_utc": "2026-10-03T00:00:00Z",
+  "network_id": "public-rc",
+  "issuance_epoch": 1,
+  "issuance_epoch_open_anchor_ms": 1791007007082,
+  "policy_doc": "docs/specs/ilc_ecu_empty_weight_fallback_policy_v0.1.md",
+  "eligibility_rule": "committed_pre_open_config_only",
+  "discovery_rule": "no_grpc_list_agents_no_runtime_operator_expansion",
+  "weighting_rule": "equal_weight_per_agent",
+  "tie_breaker": "largest_remainder_then_agent_id_lexicographic_ascending",
+  "total_weight": "1",
+  "agents": [
+    "8b4370fe4ffa16bbb9fc8430d638d9d19a12d8efad02964c85a867f65d942f98230a0b78baaa59b340ba88c6c480ac19",
+    "8c3b517ece61ca111a1e44939b40c2fb85e96d0295b935ce50b2f95204cd938d23c244178a7367b21fc1622f5a95e62f",
+    "97fc59d642f4df19bc017ede43e0e15202d933c89913201da5945b672d624fbf963262e795d23309362e5b419fd5ba09",
+    "b306d66948b4dca95aade079b42931dd553432131d7138cc2b6e8ba804807fc881689bfc7fc0d9568e198bdbbea8d1e9",
+    "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9"
+  ],
+  "weights": {
+    "8b4370fe4ffa16bbb9fc8430d638d9d19a12d8efad02964c85a867f65d942f98230a0b78baaa59b340ba88c6c480ac19": "0.2",
+    "8c3b517ece61ca111a1e44939b40c2fb85e96d0295b935ce50b2f95204cd938d23c244178a7367b21fc1622f5a95e62f": "0.2",
+    "97fc59d642f4df19bc017ede43e0e15202d933c89913201da5945b672d624fbf963262e795d23309362e5b419fd5ba09": "0.2",
+    "b306d66948b4dca95aade079b42931dd553432131d7138cc2b6e8ba804807fc881689bfc7fc0d9568e198bdbbea8d1e9": "0.2",
+    "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9": "0.2"
+  },
+  "eligibility_sources": {
+    "genesis_agent_id": {
+      "agent_id": "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9",
+      "path": "ilc_core/epoch/genesis_settlement_destination.py",
+      "symbol": "GENESIS_AGENT1_AGENT_ID"
+    },
+    "validator_agent_ids": {
+      "path": "config/public_rc_validators/genesis.json",
+      "validator_ids": [
+        "97fc59d642f4df19bc017ede43e0e15202d933c89913201da5945b672d624fbf963262e795d23309362e5b419fd5ba09",
+        "8c3b517ece61ca111a1e44939b40c2fb85e96d0295b935ce50b2f95204cd938d23c244178a7367b21fc1622f5a95e62f",
+        "8b4370fe4ffa16bbb9fc8430d638d9d19a12d8efad02964c85a867f65d942f98230a0b78baaa59b340ba88c6c480ac19",
+        "b306d66948b4dca95aade079b42931dd553432131d7138cc2b6e8ba804807fc881689bfc7fc0d9568e198bdbbea8d1e9"
+      ],
+      "harness_config_paths_read": [
+        "config/public_rc_validators/validator_1_config.json",
+        "config/public_rc_validators/validator_2_config.json",
+        "config/public_rc_validators/validator_3_config.json",
+        "config/public_rc_validators/validator_4_config.json"
+      ]
+    }
+  },
+  "epoch_1_worked_example": {
+    "total_epoch_allocation_ilc": "371609.891246338",
+    "performer_pool_ilc": "297287.91299707",
+    "auditor_pool_ilc": "55741.48368695",
+    "genesis_overhead_pool_ilc": "18580.494562318",
+    "combined_empty_weight_fallback_ilc": "353029.39668402",
+    "per_agent_empty_weight_fallback_share_ilc": "70605.879336804",
+    "genesis_total_with_overhead_ilc": "89186.373899122",
+    "carry_forward_record_count": 0,
+    "explicit_rounding_sinks_ilc": "0"
+  },
+  "hard_stops": {
+    "empty_fallback_set": "fallback_set_empty_observe_00_hard_stop",
+    "non_hex_agent_id": "fallback_eligible_agent_id_invalid_observe_00",
+    "weight_sum_mismatch": "fallback_eligible_weight_sum_invalid_observe_00",
+    "operator_runtime_discovery_attempted": "fallback_runtime_discovery_forbidden_observe_00"
+  },
+  "output_token": "fallback_policy_ratified_GAP_ECU_MONTHLY_CLOSE_EMPTY_POOL_FALLBACK_POLICY_00"
+}

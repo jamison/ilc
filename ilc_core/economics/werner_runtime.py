@@ -56,6 +56,7 @@ DEFAULT_SMOOTHING_ALPHA = Decimal("0.50")
 _TWELVE_PLACES = Decimal("0.000000000001")
 MAX_WERNER_ADJACENCY_NODES = 10_000
 MAX_WERNER_ADJACENCY_EDGES = 50_000
+MAX_WERNER_SIGNAL_HISTORY = 10_000
 
 # Non-activation token — embedded in runtime output to assert guard state
 WERNER_WIRING_NOT_ACTIVATED_TOKEN = "werner_credit_wiring_not_activated_gap_werner_01"
@@ -105,6 +106,15 @@ def _require_unit_interval(d: Decimal, name: str) -> Decimal:
     if d < Decimal("0") or d > Decimal("1"):
         raise ValueError(f"decimal_out_of_unit_interval_{name}")
     return d
+
+
+def _bounded_sequence(values: Sequence[Decimal], token: str) -> list[Decimal]:
+    materialized: list[Decimal] = []
+    for index, value in enumerate(values):
+        if index >= MAX_WERNER_SIGNAL_HISTORY:
+            raise ValueError(token)
+        materialized.append(value)
+    return materialized
 
 
 # ---------------------------------------------------------------------------
@@ -215,7 +225,10 @@ def compute_smoothed_pressure(
     if alpha <= Decimal("0") or alpha > Decimal("1"):
         raise ValueError("werner_smoothing_alpha_must_be_in_open_0_1_interval")
 
-    values = list(raw_pressure_sequence)
+    values = _bounded_sequence(
+        raw_pressure_sequence,
+        "werner_raw_pressure_sequence_exceeds_maximum",
+    )
     if not values:
         raise ValueError("werner_raw_pressure_sequence_must_be_non_empty")
 
@@ -313,8 +326,14 @@ def is_spectral_trust_eligible(
     _require_unit_interval(beta_floor, "beta_floor")
     _require_unit_interval(pulse_floor, "pulse_floor")
 
-    beta_vals = list(beta_signal_history)
-    pulse_vals = list(pulse_pressure_history)
+    beta_vals = _bounded_sequence(
+        beta_signal_history,
+        "werner_beta_signal_history_exceeds_maximum",
+    )
+    pulse_vals = _bounded_sequence(
+        pulse_pressure_history,
+        "werner_pulse_pressure_history_exceeds_maximum",
+    )
 
     # Take the last N epochs
     beta_window = beta_vals[-n:]
@@ -491,7 +510,10 @@ def compute_werner_smoothed_candidate_priority(
     if alpha <= Decimal("0") or alpha > Decimal("1"):
         raise ValueError("werner_smoothing_alpha_must_be_in_open_0_1_interval")
 
-    betas = list(beta_signal_sequence)
+    betas = _bounded_sequence(
+        beta_signal_sequence,
+        "werner_beta_signal_sequence_exceeds_maximum",
+    )
     if not betas:
         raise ValueError("werner_beta_signal_sequence_must_be_non_empty")
 

@@ -19,6 +19,7 @@ RUNTIME_POLICY_CAP = Decimal("0.10")
 WERNER_RUNTIME_POLICY_CAP = RUNTIME_POLICY_CAP
 ZERO = Decimal("0")
 ONE = Decimal("1")
+TWELVE_PLACES = Decimal("0.000000000001")
 _BINARY64_TYPE = type(0.0)
 
 
@@ -29,6 +30,25 @@ class WernerAttributionContext:
     agent_id: str
     epoch: int
     raw_werner_pressure: Decimal | None
+
+    def __post_init__(self) -> None:
+        _require_non_empty_string(
+            self.agent_id,
+            "werner_context_agent_id_required",
+        )
+        _require_non_negative_int(
+            self.epoch,
+            "werner_context_epoch_must_be_non_negative_int",
+        )
+        if self.raw_werner_pressure is None:
+            return
+        if (
+            isinstance(self.raw_werner_pressure, bool)
+            or type(self.raw_werner_pressure) is _BINARY64_TYPE
+        ):
+            raise ValueError("werner_raw_pressure_must_be_decimal")
+        if not isinstance(self.raw_werner_pressure, Decimal):
+            raise ValueError("werner_raw_pressure_must_be_decimal")
 
 
 @dataclass(frozen=True)
@@ -46,6 +66,33 @@ class WernerAttributionMultiplier:
     multiplier: Decimal
     context_present: bool
     disposition_token: str | None
+
+    def __post_init__(self) -> None:
+        _require_non_empty_string(self.cdl_version, "werner_cdl_version_required")
+        _require_non_empty_string(self.bridge_scope, "werner_bridge_scope_required")
+        _require_non_empty_string(self.application_stage, "werner_application_stage_required")
+        _require_non_empty_string(self.formula, "werner_formula_required")
+        _require_non_empty_string(self.agent_id, "werner_multiplier_agent_id_required")
+        _require_non_negative_int(self.epoch, "werner_multiplier_epoch_must_be_non_negative_int")
+        flow_budget = _require_decimal(self.flow_budget, "werner_flow_budget_must_be_decimal")
+        multiplier = _require_decimal(self.multiplier, "werner_multiplier_must_be_decimal")
+        if flow_budget < ZERO:
+            raise ValueError("werner_flow_budget_must_be_non_negative")
+        if multiplier <= ZERO:
+            raise ValueError("werner_multiplier_must_be_positive")
+        if type(self.context_present) is not bool:
+            raise ValueError("werner_context_present_must_be_bool")
+        if self.context_present:
+            if self.raw_werner_pressure is None:
+                raise ValueError("werner_present_context_requires_raw_pressure")
+            _require_decimal(self.raw_werner_pressure, "werner_raw_pressure_must_be_decimal")
+            if self.disposition_token is not None:
+                raise ValueError("werner_present_context_disposition_must_be_none")
+        else:
+            if self.raw_werner_pressure is not None:
+                raise ValueError("werner_absent_context_raw_pressure_must_be_none")
+            if self.disposition_token != WERNER_CONTEXT_ABSENT_TOKEN:
+                raise ValueError("werner_absent_context_requires_disposition_token")
 
 
 def _require_non_empty_string(value: object, token: str) -> str:
@@ -183,4 +230,5 @@ def apply_werner_to_raw_score(
     )
     with localcontext() as ctx:
         ctx.prec = 50
-        return raw_score * multiplier.multiplier, multiplier
+        adjusted = (raw_score * multiplier.multiplier).quantize(TWELVE_PLACES)
+        return adjusted, multiplier

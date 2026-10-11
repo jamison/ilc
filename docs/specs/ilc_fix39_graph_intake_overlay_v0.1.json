@@ -101,6 +101,167 @@
       "edge_role": "UPDATES_WINDOW_GUIDANCE",
       "repo_path": "docs/specs/ilc_window_1596_1616_candidate_phase_grouping_v0.1.md",
       "target": "phase:1597_ecu_balance_write_smoke"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_model_router_graph_promotion_00",
+      "annotation_method": "phase_gap_model_router_graph_promotion_00_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_model_router_graph_promotion_00_g10_graph_promotion_activation.md",
+      "target": "phase:GAP_MODEL_ROUTER_GRAPH_PROMOTION_00"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_model_router_graph_promotion_00",
+      "annotation_method": "phase_gap_model_router_graph_promotion_00_overlay_record",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_gap_model_router_graph_promotion_00.py",
+      "target": "phase:GAP_MODEL_ROUTER_GRAPH_PROMOTION_00"
+    },
+    {
+      "annotation_batch": "manual_batch_195_gap_model_router_graph_promotion_00",
+      "annotation_method": "phase_gap_model_router_graph_promotion_00_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_model_router_graph_promotion_00_walkthrough.md",
+      "target": "phase:GAP_MODEL_ROUTER_GRAPH_PROMOTION_00"
+    },
+    {
+      "annotation_batch": "manual_batch_196_gap_fetch_server_vps_deploy_00",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_fetch_server_vps_deploy_00_g10_fetch_server_vps_deploy.md",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_196_gap_fetch_server_vps_deploy_00",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "repo_path": "tools/vps_fetch_server_launch.py",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_196_gap_fetch_server_vps_deploy_00",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_fetch_server_vps_deploy_00_walkthrough.md",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_196_gap_fetch_server_vps_deploy_00",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_fetch_server_vps_deploy_00/deploy_evidence.json",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_196_gap_fetch_server_vps_deploy_00",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_fetch_server_vps_deploy_00/latest_release_assertion_from_fetch_server.json",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_196_gap_fetch_server_vps_deploy_00",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_fetch_server_vps_deploy_00/live_command_outputs.txt",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_196_gap_fetch_server_vps_deploy_00",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_fetch_server_vps_deploy_00/verification_outputs.txt",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_196_gap_fetch_server_vps_deploy_00",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_fetch_server_vps_deploy_00/do_firewall_status.txt",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_197_fetch_server_vps_deploy_audit_hardening",
+      "annotation_method": "phase_gap_fetch_server_vps_deploy_00_audit_hardening_overlay_record",
+      "edge_role": "TESTS",
+      "repo_path": "tests/test_vps_fetch_server_launch.py",
+      "target": "phase:GAP_FETCH_SERVER_VPS_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_182_gap_distributed_release_fetch_smoke_00",
+      "annotation_method": "phase_gap_distributed_release_fetch_smoke_00_overlay_record",
+      "edge_role": "PLANNING_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_distributed_release_fetch_smoke_00_g10_distributed_fetch_smoke.md",
+      "target": "phase:GAP_DISTRIBUTED_RELEASE_FETCH_SMOKE_00"
+    },
+    {
+      "annotation_batch": "manual_batch_182_gap_distributed_release_fetch_smoke_00",
+      "annotation_method": "phase_gap_distributed_release_fetch_smoke_00_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "repo_path": "tools/smoke_distributed_release_fetch.py",
+      "target": "phase:GAP_DISTRIBUTED_RELEASE_FETCH_SMOKE_00"
+    },
+    {
+      "annotation_batch": "manual_batch_182_gap_distributed_release_fetch_smoke_00",
+      "annotation_method": "phase_gap_distributed_release_fetch_smoke_00_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_distributed_release_fetch_smoke_00_walkthrough.md",
+      "target": "phase:GAP_DISTRIBUTED_RELEASE_FETCH_SMOKE_00"
+    },
+    {
+      "annotation_batch": "manual_batch_182_gap_distributed_release_fetch_smoke_00",
+      "annotation_method": "phase_gap_distributed_release_fetch_smoke_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_distributed_release_fetch_smoke_00/smoke_result.json",
+      "target": "phase:GAP_DISTRIBUTED_RELEASE_FETCH_SMOKE_00"
+    },
+    {
+      "annotation_batch": "manual_batch_182_gap_distributed_release_fetch_smoke_00",
+      "annotation_method": "phase_gap_distributed_release_fetch_smoke_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_distributed_release_fetch_smoke_00/bootstrap_fetch_peers_smoke.json",
+      "target": "phase:GAP_DISTRIBUTED_RELEASE_FETCH_SMOKE_00"
+    },
+    {
+      "annotation_batch": "manual_batch_182_gap_distributed_release_fetch_smoke_00",
+      "annotation_method": "phase_gap_distributed_release_fetch_smoke_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_distributed_release_fetch_smoke_00/upgrade_state_smoke.json",
+      "target": "phase:GAP_DISTRIBUTED_RELEASE_FETCH_SMOKE_00"
+    },
+    {
+      "annotation_batch": "manual_batch_183_gap_rc_install_surface_reconcile_00",
+      "annotation_method": "phase_gap_rc_install_surface_reconcile_00_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_rc_install_surface_reconcile_00_walkthrough.md",
+      "target": "phase:GAP_RC_INSTALL_SURFACE_RECONCILE_00"
+    },
+    {
+      "annotation_batch": "manual_batch_184_gap_rc_clawhub_skill_refresh_00",
+      "annotation_method": "phase_gap_rc_clawhub_skill_refresh_00_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "repo_path": "skills/ilc/SKILL.md",
+      "target": "phase:GAP_RC_CLAWHUB_SKILL_REFRESH_00"
+    },
+    {
+      "annotation_batch": "manual_batch_184_gap_rc_clawhub_skill_refresh_00",
+      "annotation_method": "phase_gap_rc_clawhub_skill_refresh_00_overlay_record",
+      "edge_role": "IMPLEMENTS",
+      "repo_path": "skills/ilc/skill-card.md",
+      "target": "phase:GAP_RC_CLAWHUB_SKILL_REFRESH_00"
+    },
+    {
+      "annotation_batch": "manual_batch_184_gap_rc_clawhub_skill_refresh_00",
+      "annotation_method": "phase_gap_rc_clawhub_skill_refresh_00_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_rc_clawhub_skill_refresh_00_walkthrough.md",
+      "target": "phase:GAP_RC_CLAWHUB_SKILL_REFRESH_00"
+    },
+    {
+      "annotation_batch": "manual_batch_184_gap_rc_clawhub_skill_refresh_00",
+      "annotation_method": "phase_gap_rc_clawhub_skill_refresh_00_overlay_record",
+      "edge_role": "PHASE_EVIDENCE",
+      "repo_path": "out/gap_rc_clawhub_skill_refresh_00/evidence_summary.json",
+      "target": "phase:GAP_RC_CLAWHUB_SKILL_REFRESH_00"
     }
   ],
   "status": "review_queue_support_only"

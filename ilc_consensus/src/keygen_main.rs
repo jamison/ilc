@@ -13,6 +13,8 @@
 ///   keygen --print                Print both keys to stdout (for piping / testing).
 ///   keygen --pubkey-from-ikm-hex-stdin
 ///                                Read 64hex IKM from stdin; print only the derived public key.
+///   keygen --pubkey-from-secret-hex-stdin
+///                                Read serialized 64hex secret key from stdin; print public key.
 ///   keygen --keypair-from-ikm-hex-stdin --out <path>
 ///                                Read 64hex IKM from stdin; write derived secret key; print public key.
 ///   keygen --help
@@ -70,6 +72,24 @@ fn main() {
             };
             let result = public_key_from_ikm_hex(ikm_hex.trim());
             ikm_hex.zeroize();
+            match result {
+                Ok(pk_hex) => println!("{}", pk_hex),
+                Err(err) => {
+                    eprintln!("Error: {}", err);
+                    std::process::exit(1);
+                }
+            }
+        }
+        Mode::PubkeyFromSecretHexStdin => {
+            let mut secret_hex = match read_ikm_hex_from_stdin() {
+                Ok(value) => value,
+                Err(err) => {
+                    eprintln!("Error: {}", err);
+                    std::process::exit(1);
+                }
+            };
+            let result = public_key_from_secret_hex(secret_hex.trim());
+            secret_hex.zeroize();
             match result {
                 Ok(pk_hex) => println!("{}", pk_hex),
                 Err(err) => {
@@ -161,6 +181,15 @@ fn public_key_from_ikm_hex(ikm_hex: &str) -> Result<String, String> {
     Ok(pk_hex)
 }
 
+fn public_key_from_secret_hex(secret_hex: &str) -> Result<String, String> {
+    let mut sk_bytes = decode_32_byte_hex(secret_hex)?;
+    let sk = blst::min_pk::SecretKey::from_bytes(&sk_bytes)
+        .map_err(|_| "invalid serialized BLS secret key".to_string())?;
+    let result = hex_encode(&sk.sk_to_pk().compress());
+    sk_bytes.zeroize();
+    Ok(result)
+}
+
 fn keypair_from_ikm_hex(ikm_hex: &str) -> Result<(String, String), String> {
     let mut ikm = decode_32_byte_hex(ikm_hex)?;
     let sk = blst::min_pk::SecretKey::key_gen(&ikm, &[])
@@ -229,6 +258,7 @@ enum Mode {
     WriteFile(PathBuf),
     Print,
     PubkeyFromIkmHexStdin,
+    PubkeyFromSecretHexStdin,
     KeypairFromIkmHexStdin(PathBuf),
 }
 
@@ -236,6 +266,7 @@ enum Mode {
 enum ModeFlag {
     Print,
     PubkeyFromIkmHexStdin,
+    PubkeyFromSecretHexStdin,
     KeypairFromIkmHexStdin,
 }
 
@@ -265,6 +296,9 @@ fn parse_args(args: &[String]) -> Result<Config, String> {
             "--pubkey-from-ikm-hex-stdin" => {
                 set_mode_flag(&mut mode_flag, ModeFlag::PubkeyFromIkmHexStdin)?;
             }
+            "--pubkey-from-secret-hex-stdin" => {
+                set_mode_flag(&mut mode_flag, ModeFlag::PubkeyFromSecretHexStdin)?;
+            }
             "--keypair-from-ikm-hex-stdin" => {
                 set_mode_flag(&mut mode_flag, ModeFlag::KeypairFromIkmHexStdin)?;
             }
@@ -290,6 +324,10 @@ fn parse_args(args: &[String]) -> Result<Config, String> {
         (Some(ModeFlag::PubkeyFromIkmHexStdin), Some(_)) => {
             return Err("--pubkey-from-ikm-hex-stdin cannot be combined with --out".to_string())
         }
+        (Some(ModeFlag::PubkeyFromSecretHexStdin), None) => Mode::PubkeyFromSecretHexStdin,
+        (Some(ModeFlag::PubkeyFromSecretHexStdin), Some(_)) => {
+            return Err("--pubkey-from-secret-hex-stdin cannot be combined with --out".to_string())
+        }
         (Some(ModeFlag::KeypairFromIkmHexStdin), Some(path)) => Mode::KeypairFromIkmHexStdin(path),
         (Some(ModeFlag::KeypairFromIkmHexStdin), None) => {
             return Err("--keypair-from-ikm-hex-stdin requires --out <path>".to_string())
@@ -310,6 +348,7 @@ fn print_usage() {
     eprintln!("Usage: keygen --out <path>   # write random sk to file, print pk to stdout");
     eprintln!("       keygen --print        # print random keypair to stdout");
     eprintln!("       keygen --pubkey-from-ikm-hex-stdin");
+    eprintln!("       keygen --pubkey-from-secret-hex-stdin");
     eprintln!("       keygen --keypair-from-ikm-hex-stdin --out <path>");
 }
 

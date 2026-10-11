@@ -63,6 +63,7 @@ OPERATIONAL_COMMANDS = (
     "identity",
     "install",
     "update",
+    "upgrade",
     "bundle",
     "shard",
     "capproof",
@@ -2594,6 +2595,50 @@ def _build_parser() -> JsonArgumentParser:
             )
             continue
 
+        if command == "upgrade":
+            upgrade_parser = subparsers.add_parser(
+                "upgrade",
+                help="Check graph-native ILC release assertions without installing",
+                description=(
+                    "Read-only upgrade commands. `check` fetches and verifies the "
+                    "latest signed SoftwareReleaseNode assertion; `status` reads "
+                    "the local cached check result."
+                ),
+            )
+            upgrade_subparsers = upgrade_parser.add_subparsers(
+                dest="upgrade_subcommand",
+                required=True,
+            )
+            p_upgrade_check = upgrade_subparsers.add_parser(
+                "check",
+                help="Fetch, verify, compare, and cache the latest release assertion",
+            )
+            p_upgrade_check.add_argument(
+                "--endpoint",
+                default="",
+                help="HTTPS release assertion endpoint override",
+            )
+            p_upgrade_check.add_argument(
+                "--json",
+                action="store_true",
+                help="Emit machine-readable JSON (the default CLI transport is JSON-first)",
+            )
+            p_upgrade_status = upgrade_subparsers.add_parser(
+                "status",
+                help="Read the cached upgrade-check state without network access",
+            )
+            p_upgrade_status.add_argument(
+                "--state-path",
+                default="",
+                help="Optional upgrade_state.json path override",
+            )
+            p_upgrade_status.add_argument(
+                "--json",
+                action="store_true",
+                help="Emit machine-readable JSON (the default CLI transport is JSON-first)",
+            )
+            continue
+
         if command == "validator":
             validator_parser = subparsers.add_parser(
                 "validator",
@@ -3774,6 +3819,18 @@ def _build_parser() -> JsonArgumentParser:
                 default="",
                 help="Truth submit endpoint URL. Defaults to ILC_TRUTH_SUBMIT_ENDPOINT.",
             )
+            submit_parser.add_argument(
+                "--quic-endpoint",
+                dest="quic_endpoint",
+                default="",
+                help="Native QUIC truth submit endpoint as host:port.",
+            )
+            submit_parser.add_argument(
+                "--tls-fingerprint",
+                dest="tls_fingerprint",
+                default="",
+                help="Optional 64-char lowercase SHA-256 TLS certificate fingerprint for --quic-endpoint.",
+            )
             continue
 
         if command != "identity":
@@ -4111,6 +4168,7 @@ def _run_top_level_command(
         "sidecar",
         "skills",
         "update",
+        "upgrade",
         "verify",
         "validator",
         "wallet",
@@ -4174,6 +4232,14 @@ def _run_top_level_command(
         return _success_payload(command, data)
     if command == "update":
         data = _run_update_subcommand(args)
+        return _success_payload(command, data)
+    if command == "upgrade":
+        from ilc_core.cli.upgrade_cli import UpgradeCliError, run_upgrade_command
+
+        try:
+            data = run_upgrade_command(args)
+        except UpgradeCliError as exc:
+            raise ValueError(exc.token) from exc
         return _success_payload(command, data)
     if command == "node":
         if getattr(args, "node_subcommand", None) in {"init", "check", "readiness", "firewall-plan"}:

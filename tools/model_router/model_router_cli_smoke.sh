@@ -4,6 +4,7 @@ set -euo pipefail
 
 OUT_DIR="${ILC_MODEL_ROUTER_SMOKE_OUT_DIR:-out/phase_1614_model_router_cli_smoke}"
 STORE_PATH="${ILC_MODEL_ROUTER_STORE_PATH:-${OUT_DIR}/router_receipts.lmdb}"
+GRAPH_STORE_PATH="${ILC_MODEL_ROUTER_GRAPH_STORE_PATH:-${OUT_DIR}/truth_graph.lmdb}"
 PROMOTION_DIR="${ILC_MODEL_ROUTER_PROMOTION_DIR:-${OUT_DIR}/promotions}"
 mkdir -p "${OUT_DIR}" "${PROMOTION_DIR}"
 
@@ -16,6 +17,8 @@ ROUTE_OUT="$("${ILC_CMD[@]}" sidecar model-router route \
   --provider anthropic \
   --message '{"role":"user","content":"ping"}' \
   --store-path "${STORE_PATH}" \
+  --graph-store-path "${GRAPH_STORE_PATH}" \
+  --no-promote \
   --dry-run)"
 printf '%s\n' "${ROUTE_OUT}" > "${OUT_DIR}/route_output.json"
 echo "route output: ${ROUTE_OUT}"
@@ -39,11 +42,12 @@ echo "list-receipts output: ${LIST_OUT}"
 
 PROMOTE_OUT="$("${ILC_CMD[@]}" sidecar model-router promote-receipt "${RECEIPT_TOKEN}" \
   --store-path "${STORE_PATH}" \
+  --graph-store-path "${GRAPH_STORE_PATH}" \
   --out-dir "${PROMOTION_DIR}")"
 printf '%s\n' "${PROMOTE_OUT}" > "${OUT_DIR}/promote_output.json"
 echo "promote-receipt output: ${PROMOTE_OUT}"
-echo "${PROMOTE_OUT}" | grep "local_only_stub" >/dev/null
-echo "${PROMOTE_OUT}" | grep "graph_promotion_requires_cdl_116_phase_1615" >/dev/null
+echo "${PROMOTE_OUT}" | grep '"promotion_status": "promoted"' >/dev/null
+echo "${PROMOTE_OUT}" | grep '"node_id": "b' >/dev/null
 
 python3 - <<'PY' "${OUT_DIR}" "${RECEIPT_TOKEN}" "${STORE_PATH}" "${PROMOTION_DIR}"
 import json
@@ -65,8 +69,8 @@ evidence = {
     "model_router_cli_smoke_pass_phase_1614": True,
     "non_claims": [
         "no_live_provider_api_call",
-        "no_graph_promotion",
-        "no_cdl_116_opening",
+        "no_raw_prompt_or_completion_publication",
+        "no_genesis_atlas_lmdb_write",
         "no_ecu_or_ilc_settlement",
     ],
     "output_token": "model_router_cli_smoke_pass_phase_1614",

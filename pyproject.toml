@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ilc-core"
-version = "0.4.32"
+version = "0.4.33"
 description = "ILC Protocol Core Library"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -156,6 +156,7 @@ markers = [
 [tool.setuptools.packages.find]
 where = ["."]
 include = [
+    "ilc_model_router",
     "ilc_core",
     "ilc_core.analysis",
     "ilc_core.bundle",
@@ -217,6 +218,14 @@ fix82_public_protocol_graph_additions = [
     "tools/build_test_registry_frontier_report.py",
     "tools/evaluators/sim_genesis_atlas_fix66_hub_artifact_removal.py",
 ]
+
+[tool.ilc.consensus-helper-binaries]
+native_quic_receiver_bridge_phase = "GAP-NATIVE-QUIC-RECEIVER-RUST-BRIDGE-AND-CLIENT-00"
+binaries = [
+    "ilc_native_submit_client",
+    "ilc_native_submit_receiver_bridge",
+]
+installer_tarball_status = "not_refreshed_by_this_phase"
 
 [project.scripts]
 ilc = "ilc_core.cli.main:main"

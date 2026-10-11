@@ -534,6 +534,95 @@ def _require_non_empty_bridge_string(value: Any, token: str) -> str:
     return value
 
 
+def _require_stance_bridge_string(value: Any) -> str:
+    normalized = _require_non_empty_bridge_string(
+        value,
+        "iec_k_stance_must_be_non_empty_bridge_string",
+    )
+    if any(char.isspace() for char in normalized):
+        raise AttributionBatchBridgeError(
+            "iec_k_stance_must_be_single_token_bridge_string",
+            "iec_k_stance_must_be_single_token_bridge_string",
+        )
+    return normalized
+
+
+def _optional_iec_k_identifier(
+    event: dict[str, Any],
+    field_name: str,
+    token: str,
+) -> str | None:
+    if field_name not in event:
+        return None
+    value = event.get(field_name)
+    if value is None:
+        return None
+    return _require_non_empty_bridge_string(value, token)
+
+
+def _optional_iec_k_stance(event: dict[str, Any]) -> str | None:
+    if "stance" not in event:
+        return None
+    value = event.get("stance")
+    if value is None:
+        return None
+    return _require_stance_bridge_string(value)
+
+
+def _optional_iec_k_survival_flag(event: dict[str, Any]) -> bool | None:
+    if "has_surviving_descendant" not in event:
+        return None
+    value = event.get("has_surviving_descendant")
+    if value is None:
+        return None
+    if not isinstance(value, bool):
+        raise AttributionBatchBridgeError(
+            "iec_k_has_surviving_descendant_must_be_bool",
+            "iec_k_has_surviving_descendant_must_be_bool",
+        )
+    return value
+
+
+def _iec_k_diagnostic_fields(event: dict[str, Any]) -> dict[str, Any]:
+    """Return optional CDL-120 diagnostic fields for Python event logs only."""
+
+    fields: dict[str, Any] = {}
+    origin_id = _optional_iec_k_identifier(
+        event,
+        "origin_id",
+        "iec_k_origin_id_must_be_non_empty_bridge_string",
+    )
+    if origin_id is not None:
+        fields["origin_id"] = origin_id
+    context_id = _optional_iec_k_identifier(
+        event,
+        "context_id",
+        "iec_k_context_id_must_be_non_empty_bridge_string",
+    )
+    if context_id is not None:
+        fields["context_id"] = context_id
+    stance = _optional_iec_k_stance(event)
+    if stance is not None:
+        fields["stance"] = stance
+    has_surviving_descendant = _optional_iec_k_survival_flag(event)
+    if has_surviving_descendant is not None:
+        fields["has_surviving_descendant"] = has_surviving_descendant
+    return fields
+
+
+def _event_log_record_with_iec_k_fields(
+    record: dict[str, Any],
+    iec_k_fields: dict[str, Any],
+) -> dict[str, Any]:
+    collisions = set(record).intersection(iec_k_fields)
+    if collisions:
+        raise AttributionBatchBridgeError(
+            "iec_k_diagnostic_field_collision",
+            f"IEC/K diagnostic fields collide with event-log keys: {sorted(collisions)}",
+        )
+    return {**record, **iec_k_fields}
+
+
 def _append_attribution_event_log(
     attribution_event_log: list[dict[str, Any]],
     record: dict[str, Any],
@@ -756,6 +845,10 @@ def build_attribution_batch_from_claims(
         settled_ids = frozenset(cdl084_settled_event_ids or ())
         seen_backward_event_ids: set[str] = set()
         traversal: BackwardAttributionTraversal | None = None
+        werner_context_epochs = frozenset(
+            werner_context.epoch for werner_context in werner_contexts.values()
+        )
+        werner_context_epoch_checked = False
         for ordinal, raw_event in enumerate(context["events"]):
             event = _require_backward_event(raw_event)
             event_id = _require_non_empty_bridge_string(
@@ -775,16 +868,18 @@ def build_attribution_batch_from_claims(
                     "backward attribution events must share the batch epoch",
                 )
             selected_epoch = event_epoch
-            for werner_context in werner_contexts.values():
-                if werner_context.epoch != event_epoch:
+            if not werner_context_epoch_checked:
+                if werner_context_epochs and werner_context_epochs != frozenset({event_epoch}):
                     raise AttributionBatchBridgeError(
                         "werner_context_epoch_must_match_event_epoch",
                         "Werner context epoch must match the attribution event epoch",
                     )
+                werner_context_epoch_checked = True
             source_node_id = _require_non_empty_bridge_string(
                 event["source_node_id"],
                 "backward_source_node_id_required",
             )
+            iec_k_fields = _iec_k_diagnostic_fields(event)
             event_budget = _require_decimal_amount(event["event_budget_ecu"])
             log_key = _attribution_event_log_key(event_epoch, ordinal)
             source_ref_node_ids = _source_ref_node_ids(event)
@@ -821,28 +916,29 @@ def build_attribution_batch_from_claims(
                     total_backward_unissued += (
                         event_budget * BACKWARD_ATTRIBUTION_BACKWARD_POOL_SHARE_BETA
                     )
+                    block_record = {
+                        "cdl114_sybil_diversity_guard_applied": True,
+                        "credit_amount": "0",
+                        "dedup_reason": source_refs_guard_token,
+                        "distinct_source_ref_creator_count": (
+                            source_refs_distinct_creator_count
+                        ),
+                        "edge_type": "PROVENANCE",
+                        "epoch": event_epoch,
+                        "event_id": event_id,
+                        "lmdb_key_hex": log_key,
+                        "source_node_cid": source_node_id,
+                        "source_ref_count": len(source_ref_node_ids),
+                        "source_refs": source_ref_node_ids,
+                        "submitting_agent_id": submitting_agent_id,
+                        "sybil_diversity_scope": CDL_114_SYBIL_DIVERSITY_SCOPE,
+                        "sybil_diversity_threshold": (
+                            CDL_114_SYBIL_DIVERSITY_THRESHOLD
+                        ),
+                    }
                     _append_attribution_event_log(
                         attribution_event_log,
-                        {
-                            "cdl114_sybil_diversity_guard_applied": True,
-                            "credit_amount": "0",
-                            "dedup_reason": source_refs_guard_token,
-                            "distinct_source_ref_creator_count": (
-                                source_refs_distinct_creator_count
-                            ),
-                            "edge_type": "PROVENANCE",
-                            "epoch": event_epoch,
-                            "event_id": event_id,
-                            "lmdb_key_hex": log_key,
-                            "source_node_cid": source_node_id,
-                            "source_ref_count": len(source_ref_node_ids),
-                            "source_refs": source_ref_node_ids,
-                            "submitting_agent_id": submitting_agent_id,
-                            "sybil_diversity_scope": CDL_114_SYBIL_DIVERSITY_SCOPE,
-                            "sybil_diversity_threshold": (
-                                CDL_114_SYBIL_DIVERSITY_THRESHOLD
-                            ),
-                        }
+                        _event_log_record_with_iec_k_fields(block_record, iec_k_fields),
                     )
                     continue
                 source_refs_guard_pass_count += 1
@@ -857,7 +953,10 @@ def build_attribution_batch_from_claims(
                     "lmdb_key_hex": log_key,
                     "source_node_cid": source_node_id,
                 }
-                _append_attribution_event_log(attribution_event_log, log_record)
+                _append_attribution_event_log(
+                    attribution_event_log,
+                    _event_log_record_with_iec_k_fields(log_record, iec_k_fields),
+                )
                 continue
 
             if source_ref_node_ids is not None:
@@ -971,7 +1070,10 @@ def build_attribution_batch_from_claims(
                         }
                     )
                 _require_agent_id(final_credit.recipient_agent_id)
-                _append_attribution_event_log(attribution_event_log, entry)
+                _append_attribution_event_log(
+                    attribution_event_log,
+                    _event_log_record_with_iec_k_fields(entry, iec_k_fields),
+                )
                 backward_entries.append(entry)
                 if final_credit.final_credit_ecu > Decimal("0"):
                     _, dust = _append_amount(

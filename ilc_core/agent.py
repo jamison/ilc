@@ -89,8 +89,11 @@ class EveAgent:
 
     def perform_pow_benchmark(self) -> float:
         """
-        Run a hardware / PoW-style benchmark and update this agent's
+        Run the legacy hardware / PoW-style benchmark and update this agent's
         trust_vector["potential"].
+
+        This path is not CDL-115 CapProof v1 and must not be used as a
+        production economic multiplier.
 
         The resulting score ∈ [0, 1] is used as a proxy for hardware capability
         (and, in future phases, can inform how aggressively the agent chooses

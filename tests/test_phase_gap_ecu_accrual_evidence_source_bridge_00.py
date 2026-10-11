@@ -357,15 +357,16 @@ def test_int_amount_ban_enforced(tmp_path: Path) -> None:
         )
 
 
-def test_decimal_canonical_form_enforced_symmetrically(tmp_path: Path) -> None:
-    with pytest.raises(ValueError, match="attribution_receipt_amount_must_be_canonical_decimal"):
-        record_attribution_origin_receipt(
-            _store(tmp_path),
-            agent_id=AGENT_A,
-            amount_ecu=Decimal("1.50"),
-            epoch=1,
-            receipt_ref="decimal-scale-test",
-        )
+def test_decimal_amount_inputs_are_canonicalized(tmp_path: Path) -> None:
+    receipt = record_attribution_origin_receipt(
+        _store(tmp_path),
+        agent_id=AGENT_A,
+        amount_ecu=Decimal("1.50"),
+        epoch=1,
+        receipt_ref="decimal-scale-test",
+    )
+
+    assert receipt.amount_ecu == "1.5"
 
 
 @pytest.mark.parametrize("amount", [Decimal("NaN"), Decimal("Infinity")])

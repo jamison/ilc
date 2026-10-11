@@ -1,0 +1,50 @@
+{
+  "artifact": "ilc_fix_gap_public_rc_native_ingress_vps_smoke_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "cdl_mutation": false,
+    "network_or_p2p_activation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00 live VPS native QUIC network acceptance evidence."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_public_rc_native_ingress_vps_smoke_00_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_public_rc_native_ingress_vps_smoke_00_g10_vps_network_acceptance_smoke.md",
+      "target": "phase:GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_native_ingress_vps_smoke_00_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00",
+      "edge_role": "SMOKE_TOOL",
+      "graph_delta": "support_only",
+      "node_kind": "tool_script",
+      "repo_path": "tools/native_submit/run_vps_smoke.py",
+      "target": "phase:GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_native_ingress_vps_smoke_00_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_public_rc_native_ingress_vps_smoke_00_walkthrough.md",
+      "target": "phase:GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00"
+    },
+    {
+      "annotation_method": "gap_public_rc_native_ingress_vps_smoke_00_overlay_record",
+      "annotation_phase": "GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_gap_public_rc_native_ingress_vps_smoke_00_graph_intake_overlay_v0.1.json",
+      "target": "phase:GAP-PUBLIC-RC-NATIVE-INGRESS-VPS-SMOKE-00"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1",
+  "status": "support_only"
+}

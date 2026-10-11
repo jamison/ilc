@@ -45,6 +45,12 @@ PUBLIC_SUBMIT_INGRESS_ENDPOINT_REVOCATION_SCHEMA_VERSION = (
 PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_CANDIDATE_PREFIX = (
     "public_submit_ingress_endpoint_assertion:"
 )
+PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_VERSION_PREFIX = (
+    "public_submit_ingress_endpoint_assertion_record:"
+)
+PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_SUPERSESSION_PREFIX = (
+    "public_submit_ingress_endpoint_assertion_supersession:"
+)
 PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_BLS_COMMAND_ENV = (
     "ILC_PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_BLS_VERIFY_COMMAND"
 )
@@ -484,6 +490,161 @@ def submit_ingress_assertion_candidate_id(serving_agent_id: str, network_id: str
     )
 
 
+def submit_ingress_assertion_version_node_id(
+    assertion: PublicSubmitIngressEndpointAssertion | Mapping[str, Any],
+) -> str:
+    normalized = (
+        assertion
+        if isinstance(assertion, PublicSubmitIngressEndpointAssertion)
+        else PublicSubmitIngressEndpointAssertion.from_dict(assertion)
+    )
+    return (
+        f"{PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_VERSION_PREFIX}"
+        f"{normalized.network_id}:{normalized.serving_agent_id}:"
+        f"{assertion_content_sha256(normalized)}"
+    )
+
+
+def submit_ingress_assertion_supersession_edge_id(
+    old_assertion: PublicSubmitIngressEndpointAssertion | Mapping[str, Any],
+    new_assertion: PublicSubmitIngressEndpointAssertion | Mapping[str, Any],
+) -> str:
+    old_normalized = (
+        old_assertion
+        if isinstance(old_assertion, PublicSubmitIngressEndpointAssertion)
+        else PublicSubmitIngressEndpointAssertion.from_dict(old_assertion)
+    )
+    new_normalized = (
+        new_assertion
+        if isinstance(new_assertion, PublicSubmitIngressEndpointAssertion)
+        else PublicSubmitIngressEndpointAssertion.from_dict(new_assertion)
+    )
+    _require_assertion_pair(
+        new_normalized,
+        old_normalized.serving_agent_id,
+        old_normalized.network_id,
+    )
+    return (
+        f"{PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_SUPERSESSION_PREFIX}"
+        f"{old_normalized.network_id}:{old_normalized.serving_agent_id}:"
+        f"{assertion_content_sha256(old_normalized)}:{assertion_content_sha256(new_normalized)}"
+    )
+
+
+def write_public_submit_ingress_endpoint_assertion(
+    atlas_store: Any,
+    assertion: PublicSubmitIngressEndpointAssertion | Mapping[str, Any],
+    *,
+    verifier: BlsVerifier,
+    superseded_assertion: PublicSubmitIngressEndpointAssertion | Mapping[str, Any] | None = None,
+    source_phase: str | None = None,
+) -> dict[str, str | bool | None]:
+    """Atomically persist the current public-submit endpoint assertion.
+
+    The candidate id is the current alias for a ``(serving_agent_id,
+    network_id)`` pair. Versioned node ids preserve assertion bodies by content
+    hash, while a supersession edge records old and new hashes without mutating
+    the signed payload bytes.
+    """
+
+    if atlas_store is None:
+        raise ValueError("submit_ingress_assertion_store_missing_BRIDGE_VPS_00")
+    normalized = (
+        assertion
+        if isinstance(assertion, PublicSubmitIngressEndpointAssertion)
+        else PublicSubmitIngressEndpointAssertion.from_dict(assertion)
+    )
+    if not verify_endpoint_assertion_bls_signature(normalized, verifier=verifier):
+        raise ValueError("submit_ingress_assertion_bls_not_verified_BRIDGE_VPS_00")
+
+    candidate_id = submit_ingress_assertion_candidate_id(
+        normalized.serving_agent_id,
+        normalized.network_id,
+    )
+    content_sha256 = assertion_content_sha256(normalized)
+    version_node_id = submit_ingress_assertion_version_node_id(normalized)
+    current_payload = _assertion_graph_payload(
+        normalized,
+        candidate_id=candidate_id,
+        content_sha256=content_sha256,
+        source_phase=source_phase,
+    )
+    version_payload = dict(current_payload)
+
+    edge_id: str | None = None
+    old_version_node_id: str | None = None
+    old_content_sha256: str | None = None
+    old_version_payload: dict[str, Any] | None = None
+    edge_payload: dict[str, Any] | None = None
+    if superseded_assertion is not None:
+        old_normalized = (
+            superseded_assertion
+            if isinstance(superseded_assertion, PublicSubmitIngressEndpointAssertion)
+            else PublicSubmitIngressEndpointAssertion.from_dict(superseded_assertion)
+        )
+        _require_assertion_pair(
+            old_normalized,
+            normalized.serving_agent_id,
+            normalized.network_id,
+        )
+        old_content_sha256 = assertion_content_sha256(old_normalized)
+        if old_content_sha256 == content_sha256:
+            raise ValueError("submit_ingress_assertion_supersession_noop_BRIDGE_VPS_00")
+        old_version_node_id = submit_ingress_assertion_version_node_id(old_normalized)
+        old_version_payload = _assertion_graph_payload(
+            old_normalized,
+            candidate_id=candidate_id,
+            content_sha256=old_content_sha256,
+            source_phase=source_phase,
+            revised_by=version_node_id,
+        )
+        edge_id = submit_ingress_assertion_supersession_edge_id(old_normalized, normalized)
+        edge_payload = {
+            "id": edge_id,
+            "edge_type": "superseded_by",
+            "source_candidate_id": candidate_id,
+            "target_candidate_id": candidate_id,
+            "source_assertion_sha256": old_content_sha256,
+            "target_assertion_sha256": content_sha256,
+            "source_id": old_version_node_id,
+            "target_id": version_node_id,
+            "source_phase": source_phase,
+        }
+
+    graph_txn = getattr(atlas_store, "graph_write_transaction", None)
+    if callable(graph_txn):
+        with graph_txn() as txn:
+            if old_version_payload is not None and old_version_node_id is not None:
+                txn.put_node(old_version_node_id, old_version_payload)
+            txn.put_node(version_node_id, version_payload)
+            txn.put_node(candidate_id, current_payload)
+            if edge_payload is not None and edge_id is not None:
+                txn.put_link(edge_id, edge_payload)
+    else:
+        put_node = getattr(atlas_store, "put_node", None)
+        put_link = getattr(atlas_store, "put_link", None)
+        if not callable(put_node):
+            raise ValueError("submit_ingress_assertion_store_missing_BRIDGE_VPS_00")
+        if old_version_payload is not None and old_version_node_id is not None:
+            put_node(old_version_node_id, old_version_payload)
+        put_node(version_node_id, version_payload)
+        put_node(candidate_id, current_payload)
+        if edge_payload is not None and edge_id is not None:
+            if not callable(put_link):
+                raise ValueError("submit_ingress_assertion_link_store_missing_BRIDGE_VPS_00")
+            put_link(edge_id, edge_payload)
+
+    return {
+        "candidate_id": candidate_id,
+        "version_node_id": version_node_id,
+        "content_sha256": content_sha256,
+        "superseded": superseded_assertion is not None,
+        "superseded_version_node_id": old_version_node_id,
+        "superseded_content_sha256": old_content_sha256,
+        "supersession_edge_id": edge_id,
+    }
+
+
 def assertion_is_superseded(
     atlas_reader: Any,
     assertion: PublicSubmitIngressEndpointAssertion,
@@ -553,6 +714,24 @@ def _require_assertion_pair(
 ) -> None:
     if assertion.serving_agent_id != serving_agent_id or assertion.network_id != network_id:
         raise ValueError("submit_ingress_assertion_pair_mismatch_IMPL_00")
+
+
+def _assertion_graph_payload(
+    assertion: PublicSubmitIngressEndpointAssertion,
+    *,
+    candidate_id: str,
+    content_sha256: str,
+    source_phase: str | None,
+    revised_by: str | None = None,
+) -> dict[str, Any]:
+    payload = assertion.to_dict(include_graph_metadata=True)
+    payload["candidate_id"] = candidate_id
+    payload["content_sha256"] = content_sha256
+    if source_phase is not None:
+        payload["source_phase"] = source_phase
+    if revised_by is not None:
+        payload["revised_by"] = revised_by
+    return payload
 
 
 def _require_revocation_policy(value: Any) -> Mapping[str, Any]:
@@ -636,6 +815,8 @@ __all__ = [
     "PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_NOT_ACTIVATED",
     "PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_RUNTIME_VERSION",
     "PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_SCHEMA_VERSION",
+    "PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_SUPERSESSION_PREFIX",
+    "PUBLIC_SUBMIT_INGRESS_ENDPOINT_ASSERTION_VERSION_PREFIX",
     "PUBLIC_SUBMIT_INGRESS_ENDPOINT_REVOCATION_BLS_DST_PREFIX",
     "PUBLIC_SUBMIT_INGRESS_ENDPOINT_REVOCATION_NODE_KIND",
     "PUBLIC_SUBMIT_INGRESS_ENDPOINT_REVOCATION_SCHEMA_VERSION",
@@ -649,5 +830,8 @@ __all__ = [
     "parse_endpoint_assertion",
     "parse_endpoint_revocation",
     "submit_ingress_assertion_candidate_id",
+    "submit_ingress_assertion_supersession_edge_id",
+    "submit_ingress_assertion_version_node_id",
     "verify_endpoint_assertion_bls_signature",
+    "write_public_submit_ingress_endpoint_assertion",
 ]

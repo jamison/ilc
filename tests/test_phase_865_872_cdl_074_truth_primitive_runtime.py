@@ -28,6 +28,7 @@ from ilc_core.epistemic.truth_primitive_submission_runtime import (
     TRUTH_PRIMITIVE_RUNTIME_VERSION,
     EdgeSpec,
     TruthPrimitiveResult,
+    _validate_decimal_confidence,
     validate_truth_primitive_submission,
 )
 from ilc_core.epistemic.node_submission_runtime import (
@@ -405,6 +406,21 @@ def test_validate_claim_confidence_not_string_rejected():
     with pytest.raises(EpistemicSubmissionError) as exc_info:
         validate_truth_primitive_submission(_outer("validate.claim", payload))
     assert "confidence" in exc_info.value.token
+
+
+def test_validate_claim_confidence_rejects_noncanonical_decimal_spelling():
+    for confidence in ("+0.9", "9E-1"):
+        with pytest.raises(EpistemicSubmissionError) as exc_info:
+            _validate_decimal_confidence("confidence", confidence)
+        assert exc_info.value.token == "field_invalid_confidence"
+
+
+def test_payload_rejects_non_integer_json_number_before_persistence():
+    payload = _assert_truth_payload()
+    payload["content"]["non_integer"] = 0.5
+    with pytest.raises(EpistemicSubmissionError) as exc_info:
+        validate_truth_primitive_submission(_outer("assert.truth", payload))
+    assert exc_info.value.token == "payload_non_integer_number_rejected"
 
 
 def test_validate_claim_evidence_summary_too_long_rejected():

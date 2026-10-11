@@ -309,6 +309,29 @@ def test_graph_store_put_and_get_edge(tmp_path: Path) -> None:
         store.close()
 
 
+def test_graph_store_dump_raw_db_hex_uses_public_adapter_surface(tmp_path: Path) -> None:
+    store = TruthPrimitiveGraphStore(tmp_path / "store")
+    try:
+        record = {"primitive": "assert.truth", "cdl_version": "cdl_075.v0.1", "epoch": 1}
+        store.put_node_if_absent("bafy-test-node", record)
+        rows = store.dump_raw_db_hex(b"nodes")
+        assert rows == [
+            {
+                "key_hex": "bafy-test-node".encode("utf-8").hex(),
+                "value_hex": json.dumps(
+                    record,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                ).encode("utf-8").hex(),
+            }
+        ]
+        with pytest.raises(ValueError, match="truth_primitive_graph_db_unknown"):
+            store.dump_raw_db_hex(b"missing")
+    finally:
+        store.close()
+
+
 # ---------------------------------------------------------------------------
 # Evidence item 7: write_truth_primitive_result for all six primitives
 # ---------------------------------------------------------------------------
