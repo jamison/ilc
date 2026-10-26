@@ -10,7 +10,7 @@ import shutil
 import tempfile
 from pathlib import Path
 from typing import Any, Mapping
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import requests
 
@@ -29,8 +29,16 @@ ARTIFACT_DOWNLOAD_EXTRA_BYTES = 1_048_576
 MAX_ARTIFACT_DOWNLOAD_BYTES = 1_073_741_824
 ARTIFACT_DISK_SAFETY_BYTES = 16_777_216
 MAX_ARTIFACT_SOURCE_URLS = 8
+MAX_ARTIFACT_REDIRECTS = 3
 MAX_ARTIFACT_FILENAME_CHARS = 255
 _HEX_32_BYTES_RE = re.compile(r"^[0-9a-f]{64}$")
+_REDIRECT_STATUS_CODES = frozenset({301, 302, 303, 307, 308})
+_ALLOWED_CROSS_HOST_REDIRECTS = frozenset(
+    {
+        ("github.com", "release-assets.githubusercontent.com"),
+        ("pypi.org", "files.pythonhosted.org"),
+    }
+)
 
 
 class ArtifactFetchError(ValueError):
@@ -241,17 +249,49 @@ def _require_download_space(expected_size: int) -> None:
         raise ArtifactFetchError("artifact_fetch_insufficient_free_space")
 
 
+def _validated_redirect_url(current_url: str, location: Any) -> str:
+    if not isinstance(location, str) or not location:
+        raise ArtifactFetchError("artifact_fetch_redirect_location_invalid")
+    target_url = _validate_download_url(urljoin(current_url, location))
+    current = urlparse(current_url)
+    target = urlparse(target_url)
+    current_host = (current.hostname or "").lower()
+    target_host = (target.hostname or "").lower()
+    if current_host != target_host and (
+        current_host,
+        target_host,
+    ) not in _ALLOWED_CROSS_HOST_REDIRECTS:
+        raise ArtifactFetchError("artifact_fetch_redirect_target_forbidden")
+    return target_url
+
+
 def _open_download_response(url: str):
-    try:
-        return requests.get(
-            _validate_download_url(url),
-            stream=True,
-            timeout=ARTIFACT_DOWNLOAD_TIMEOUT_SECONDS,
-            verify=True,
-            allow_redirects=False,
-        )
-    except requests.RequestException as exc:
-        raise ArtifactFetchError("artifact_fetch_source_failed") from exc
+    current_url = _validate_download_url(url)
+    for redirect_count in range(MAX_ARTIFACT_REDIRECTS + 1):
+        try:
+            response = requests.get(
+                current_url,
+                stream=True,
+                timeout=ARTIFACT_DOWNLOAD_TIMEOUT_SECONDS,
+                verify=True,
+                allow_redirects=False,
+            )
+        except requests.RequestException as exc:
+            raise ArtifactFetchError("artifact_fetch_source_failed") from exc
+        if response.status_code not in _REDIRECT_STATUS_CODES:
+            return response
+        if redirect_count == MAX_ARTIFACT_REDIRECTS:
+            response.close()
+            raise ArtifactFetchError("artifact_fetch_redirect_limit_exceeded")
+        try:
+            next_url = _validated_redirect_url(
+                current_url,
+                response.headers.get("Location"),
+            )
+        finally:
+            response.close()
+        current_url = next_url
+    raise ArtifactFetchError("artifact_fetch_redirect_limit_exceeded")
 
 
 def _validate_content_length(response: Any, *, cap: int) -> None:

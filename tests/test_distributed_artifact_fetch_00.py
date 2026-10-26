@@ -45,6 +45,16 @@ class _Response:
         return None
 
 
+class _RedirectResponse:
+    def __init__(self, location: str) -> None:
+        self.status_code = 302
+        self.headers = {"Location": location}
+        self.closed = False
+
+    def close(self) -> None:
+        self.closed = True
+
+
 def _policy_input(*, marker: str = "initial") -> CurrentPolicyEvaluationInput:
     return CurrentPolicyEvaluationInput(
         release_assertion_cid=f"fixture-assertion-{marker}",
@@ -225,6 +235,51 @@ def test_authorization_precedes_transport(monkeypatch) -> None:
     finally:
         path.unlink(missing_ok=True)
         path.parent.rmdir()
+
+
+def test_github_release_redirect_is_bounded_and_explicit(monkeypatch) -> None:
+    redirect = _RedirectResponse(
+        "https://release-assets.githubusercontent.com/github-production-release-asset.whl"
+    )
+    final = _Response(WHEEL_BYTES)
+    requested: list[str] = []
+
+    def get(url, **kwargs):
+        requested.append(url)
+        assert kwargs["allow_redirects"] is False
+        return redirect if len(requested) == 1 else final
+
+    monkeypatch.setattr(artifact_fetch.requests, "get", get)
+    response = artifact_fetch._open_download_response(
+        "https://github.com/jamison/ilc/releases/download/v0.4.34/artifact.whl"
+    )
+    assert response is final
+    assert redirect.closed is True
+    assert requested == [
+        "https://github.com/jamison/ilc/releases/download/v0.4.34/artifact.whl",
+        "https://release-assets.githubusercontent.com/"
+        "github-production-release-asset.whl",
+    ]
+
+
+def test_unknown_cross_host_redirect_fails_before_second_request(monkeypatch) -> None:
+    redirect = _RedirectResponse("https://metadata.invalid/private")
+    requested: list[str] = []
+
+    def get(url, **_kwargs):
+        requested.append(url)
+        return redirect
+
+    monkeypatch.setattr(artifact_fetch.requests, "get", get)
+    with pytest.raises(ArtifactFetchError) as exc:
+        artifact_fetch._open_download_response(
+            "https://github.com/jamison/ilc/releases/download/v0.4.34/artifact.whl"
+        )
+    assert exc.value.token == "artifact_fetch_redirect_target_forbidden"
+    assert redirect.closed is True
+    assert requested == [
+        "https://github.com/jamison/ilc/releases/download/v0.4.34/artifact.whl"
+    ]
 
 
 def test_dry_run_requires_authorization_and_verifies_bytes_without_install(
