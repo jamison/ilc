@@ -25,19 +25,23 @@ AGENT_ID = "c" * 96
 def _route_args(
     tmp_path: Path,
     *,
+    force_promote: bool = False,
     no_promote: bool = False,
     graph_store_path: Path | None = None,
+    promotion_override: str = "default",
 ) -> Namespace:
     return Namespace(
         agent_id=AGENT_ID,
         capability_class="inference",
         dry_run=True,
         epoch=0,
+        force_promote=force_promote,
         graph_store_path=str(graph_store_path or tmp_path / "truth_graph.lmdb"),
         message='{"role":"user","content":"ping"}',
         model_id="claude-haiku-4-5",
         model_router_command="route",
         no_promote=no_promote,
+        promotion_override=promotion_override,
         provider="anthropic",
         store_path=str(tmp_path / "router_receipts.lmdb"),
         timeout=30.0,
@@ -58,10 +62,46 @@ def _set_consent_args(state: str) -> Namespace:
     return Namespace(model_router_command="set-consent", state=state)
 
 
+def _retry_pending_args(tmp_path: Path) -> Namespace:
+    return Namespace(
+        limit=100,
+        model_router_command="retry-pending",
+        queue_path=str(tmp_path / "promotion_retry_queue.json"),
+    )
+
+
+def _list_pending_args(tmp_path: Path) -> Namespace:
+    return Namespace(
+        model_router_command="list-pending",
+        queue_path=str(tmp_path / "promotion_retry_queue.json"),
+    )
+
+
+def _status_args(tmp_path: Path, *, no_retry: bool = False) -> Namespace:
+    return Namespace(
+        limit=100,
+        model_router_command="status",
+        no_retry=no_retry,
+        queue_path=str(tmp_path / "promotion_retry_queue.json"),
+    )
+
+
+def _network_doctor_args(tmp_path: Path) -> Namespace:
+    return Namespace(
+        limit=100,
+        model_router_command="network-doctor",
+        queue_path=str(tmp_path / "promotion_retry_queue.json"),
+    )
+
+
 @pytest.fixture(autouse=True)
 def _isolated_consent(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     path = tmp_path / "consent.json"
     monkeypatch.setenv("ILC_MODEL_ROUTER_CONSENT_PATH", str(path))
+    monkeypatch.setenv(
+        "ILC_MODEL_ROUTER_PROMOTION_QUEUE_PATH",
+        str(tmp_path / "promotion_retry_queue.json"),
+    )
     return path
 
 
@@ -85,6 +125,66 @@ def test_route_no_promote_flag_creates_local_only(tmp_path: Path) -> None:
     assert receipt is not None
     assert receipt.companion.consent_status == "local_only"
     assert not graph_store.exists()
+
+
+def test_route_force_local_override_creates_local_only_when_global_enabled(
+    tmp_path: Path,
+) -> None:
+    graph_store = tmp_path / "truth_graph.lmdb"
+    model_router_cli.run_model_router_command(_set_consent_args("enabled"))
+
+    result = model_router_cli.run_model_router_command(
+        _route_args(
+            tmp_path,
+            graph_store_path=graph_store,
+            promotion_override="force-local",
+        )
+    )
+
+    receipt = _lookup(tmp_path, result["receipt_token"])
+    assert result["promotion_override"] == "force-local"
+    assert result["promotion_policy_result"] == "force_local"
+    assert result["promotion_status"] == "suppressed_force_local"
+    assert receipt is not None
+    assert receipt.companion.consent_status == "local_only"
+    assert not graph_store.exists()
+
+
+def test_route_force_promote_override_promotes_when_global_disabled(
+    tmp_path: Path,
+) -> None:
+    graph_store = tmp_path / "truth_graph.lmdb"
+    model_router_cli.run_model_router_command(_set_consent_args("disabled"))
+
+    result = model_router_cli.run_model_router_command(
+        _route_args(
+            tmp_path,
+            force_promote=True,
+            graph_store_path=graph_store,
+        )
+    )
+
+    receipt = _lookup(tmp_path, result["receipt_token"])
+    consent = json.loads((tmp_path / "consent.json").read_text(encoding="utf-8"))
+    assert result["global_promotion_enabled"] is False
+    assert result["promotion_override"] == "force-promote"
+    assert result["promotion_policy_result"] == "force_promote"
+    assert result["promotion_status"] == "promoted"
+    assert consent["promotion_enabled"] is False
+    assert consent["first_run_notice_acknowledged"] is True
+    assert receipt is not None
+    assert receipt.companion.consent_status == "promoted"
+
+
+def test_route_rejects_conflicting_promotion_overrides(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="model_router_promotion_override_conflict"):
+        model_router_cli.run_model_router_command(
+            _route_args(
+                tmp_path,
+                force_promote=True,
+                no_promote=True,
+            )
+        )
 
 
 def test_route_consent_disabled_creates_local_only(tmp_path: Path) -> None:
@@ -141,8 +241,113 @@ def test_route_graph_store_unavailable_leaves_promotion_pending(
     assert result["catch_up_token"] == result["receipt_token"]
     assert receipt is not None
     assert receipt.companion.consent_status == "promotion_pending"
+    assert result["retry_queue_status"] == "queued"
+    pending = model_router_cli.run_model_router_command(_list_pending_args(tmp_path))
+    assert pending["queue_status"]["pending"] == 1
+    assert pending["pending_records"][0]["receipt_token"] == result["receipt_token"]
     context = compute_werner_model_router_context(AGENT_ID, 0, [receipt])
     assert context.flow_budget == Decimal("0E-12")
+
+
+def test_retry_pending_promotes_queued_receipt_and_clears_queue(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    model_router_cli.run_model_router_command(_set_consent_args("enabled"))
+    original_write_promotion_node = model_router_cli._write_promotion_node
+
+    def _boom(*_args, **_kwargs):
+        raise OSError("store unavailable")
+
+    monkeypatch.setattr(model_router_cli, "_write_promotion_node", _boom)
+    result = model_router_cli.run_model_router_command(_route_args(tmp_path))
+    queued = model_router_cli.run_model_router_command(_list_pending_args(tmp_path))
+    queued_node_id = queued["pending_records"][0]["node_id"]
+    monkeypatch.setattr(
+        model_router_cli,
+        "_write_promotion_node",
+        original_write_promotion_node,
+    )
+
+    retry = model_router_cli.run_model_router_command(_retry_pending_args(tmp_path))
+
+    receipt = _lookup(tmp_path, result["receipt_token"])
+    pending = model_router_cli.run_model_router_command(_list_pending_args(tmp_path))
+    assert retry["retry_summary"]["attempted"] == 1
+    assert retry["retry_summary"]["succeeded"] == 1
+    assert retry["retry_summary"]["promoted_node_ids"] == [queued_node_id]
+    assert pending["queue_status"]["pending"] == 0
+    assert receipt is not None
+    assert receipt.companion.consent_status == "promoted"
+
+
+def test_retry_pending_is_idempotent_when_node_already_exists(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    model_router_cli.run_model_router_command(_set_consent_args("enabled"))
+    original_write_promotion_node = model_router_cli._write_promotion_node
+
+    def _boom(*_args, **_kwargs):
+        raise OSError("store unavailable")
+
+    monkeypatch.setattr(model_router_cli, "_write_promotion_node", _boom)
+    result = model_router_cli.run_model_router_command(_route_args(tmp_path))
+    receipt = _lookup(tmp_path, result["receipt_token"])
+    assert receipt is not None
+    monkeypatch.setattr(
+        model_router_cli,
+        "_write_promotion_node",
+        original_write_promotion_node,
+    )
+    prewrite = model_router_cli._write_promotion_node(
+        receipt,
+        graph_store_path=tmp_path / "truth_graph.lmdb",
+    )
+
+    retry = model_router_cli.run_model_router_command(_retry_pending_args(tmp_path))
+    updated = _lookup(tmp_path, result["receipt_token"])
+
+    assert retry["retry_summary"]["promoted_node_ids"] == [prewrite["node_id"]]
+    assert updated is not None
+    assert updated.companion.consent_status == "promoted"
+
+
+def test_list_receipts_pending_only_filters_to_pending_receipts(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    model_router_cli.run_model_router_command(_set_consent_args("enabled"))
+
+    def _boom(*_args, **_kwargs):
+        raise OSError("store unavailable")
+
+    model_router_cli.run_model_router_command(_route_args(tmp_path, no_promote=True))
+    monkeypatch.setattr(model_router_cli, "_write_promotion_node", _boom)
+    pending_result = model_router_cli.run_model_router_command(_route_args(tmp_path))
+
+    listed = model_router_cli.run_model_router_command(
+        Namespace(
+            limit=100,
+            model_router_command="list-receipts",
+            pending_only=True,
+            store_path=str(tmp_path / "router_receipts.lmdb"),
+        )
+    )
+
+    assert [item["receipt_token"] for item in listed["receipts"]] == [
+        pending_result["receipt_token"]
+    ]
+
+
+def test_status_and_network_doctor_report_retry_queue(tmp_path: Path) -> None:
+    status = model_router_cli.run_model_router_command(_status_args(tmp_path, no_retry=True))
+    doctor = model_router_cli.run_model_router_command(_network_doctor_args(tmp_path))
+
+    assert status["queue_status"]["total"] == 0
+    assert status["retry_summary"]["trigger"] == "status_no_retry"
+    assert doctor["connectivity_probe"] == "local_graph_store_retry_only"
+    assert "no_public_p2p_probe" in doctor["non_claims"]
 
 
 def test_route_graph_promotion_guard_fails_before_pending_status(

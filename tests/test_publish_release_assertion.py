@@ -17,15 +17,10 @@ FIXTURE_RELEASE_SECRET_HEX = "22" * 32
 
 
 def _payload(tmp_path: Path | None = None) -> dict:
-    artifact_cid = tooling.node_id_from_obj({
-        "kind": "fixture_artifact",
-        "sha256": "aa" * 32,
-        "size": 1234,
-    })
     return tooling.build_release_assertion(
         version="0.4.33",
         artifact_sha256="aa" * 32,
-        artifact_cid=artifact_cid,
+        artifact_cid=None,
         artifact_size=1234,
         source_commit="b" * 40,
         channel="stable",
@@ -45,7 +40,8 @@ def test_build_release_assertion_validates_with_upgrade_checker(monkeypatch: pyt
     assert result["available_version"] == "0.4.33"
     assert result["release_signature_verified"] is True
     assert result["verified_attestation_count"] == 1
-    assert result["graph_provenance_status"] == "present_not_validated_in_phase"
+    assert result["graph_provenance_status"] == "verified_native_submit_sig_v0.1"
+    assert result["graph_provenance_delegation_valid_at_submission"] is False
 
 
 def test_native_envelope_uses_nested_fixture_sig_without_secret_material() -> None:
@@ -88,7 +84,6 @@ def test_atomic_output_write_replaces_existing_file(tmp_path: Path) -> None:
 
 def test_cli_requires_dry_run_and_writes_output(tmp_path: Path) -> None:
     output = tmp_path / "assertion.json"
-    artifact_cid = tooling.node_id_from_obj({"artifact": "wheel", "sha256": "aa" * 32})
     command = [
         sys.executable,
         "tools/publish_release_assertion.py",
@@ -96,8 +91,6 @@ def test_cli_requires_dry_run_and_writes_output(tmp_path: Path) -> None:
         "0.4.33",
         "--artifact-sha256",
         "aa" * 32,
-        "--artifact-cid",
-        artifact_cid,
         "--artifact-size",
         "1234",
         "--source-commit",
@@ -117,17 +110,11 @@ def test_cli_requires_dry_run_and_writes_output(tmp_path: Path) -> None:
     stdout_payload = json.loads(result.stdout)
     file_payload = json.loads(output.read_text(encoding="utf-8"))
     assert stdout_payload == file_payload
-    assert stdout_payload["non_claims"] == [
-        "fixture_signatures_only",
-        "no_genesis_key_use",
-        "no_live_native_quic_submit",
-        "no_lmdb_write",
-        "no_public_cache_update",
-    ]
+    assert "fixture_release_authority" not in stdout_payload
+    assert "non_claims" not in stdout_payload
 
 
 def test_cli_without_dry_run_rejects_live_publish() -> None:
-    artifact_cid = tooling.node_id_from_obj({"artifact": "wheel", "sha256": "aa" * 32})
     result = subprocess.run(
         [
             sys.executable,
@@ -136,8 +123,6 @@ def test_cli_without_dry_run_rejects_live_publish() -> None:
             "0.4.33",
             "--artifact-sha256",
             "aa" * 32,
-            "--artifact-cid",
-            artifact_cid,
             "--artifact-size",
             "1234",
             "--source-commit",

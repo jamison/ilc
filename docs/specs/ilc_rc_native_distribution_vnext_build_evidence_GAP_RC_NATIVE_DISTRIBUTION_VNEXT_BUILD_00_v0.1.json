@@ -1,0 +1,339 @@
+{
+  "PUBLIC_RC_EXCLUDE": "unsigned_vnext_build_candidate",
+  "artifact_inventory": [
+    {
+      "artifact_id": "ilc-artifact:ilc-consensus-linux-x86-64-0434@phase-1628",
+      "artifact_type": "binary_tarball",
+      "cid": "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+      "filename": "ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+      "node_kind": "ArtifactNode",
+      "package_name": "ilc-core",
+      "package_version": "0.4.34",
+      "pypi_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+      "schema_version": "artifact_node.v0.1",
+      "sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+      "size_bytes": 5053300
+    },
+    {
+      "artifact_id": "ilc-artifact:ilc-core-python-sdist-0434@phase-1628",
+      "artifact_type": "sdist",
+      "cid": "bafyreihus47ys2afv3cixlsocx6caejfjwejttrssv6gxf57paz7mfkdfi",
+      "filename": "ilc_core-0.4.34.tar.gz",
+      "node_kind": "ArtifactNode",
+      "package_name": "ilc-core",
+      "package_version": "0.4.34",
+      "pypi_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc_core-0.4.34.tar.gz",
+      "schema_version": "artifact_node.v0.1",
+      "sha256": "5e0f621934b239d76900f9d546e3a26ff943f38cdc81a87c469592a8f2f71c8c",
+      "size_bytes": 1326598
+    },
+    {
+      "artifact_id": "ilc-artifact:ilc-core-python-wheel-0434@phase-1628",
+      "artifact_type": "wheel",
+      "cid": "bafyreicmtne3imutiezvfs5v5mslzkfriti2g4n4czwznnceiliejvjul4",
+      "filename": "ilc_core-0.4.34-py3-none-any.whl",
+      "node_kind": "ArtifactNode",
+      "package_name": "ilc-core",
+      "package_version": "0.4.34",
+      "pypi_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc_core-0.4.34-py3-none-any.whl",
+      "schema_version": "artifact_node.v0.1",
+      "sha256": "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2",
+      "size_bytes": 1630572
+    }
+  ],
+  "authorization": {
+    "amendment_sha256": "25956f78996c5995bc7181a4175a393427142d82cdc470b2f5f0807a996888dd",
+    "baseline_manifest_sha256": "58ec4371586db19eb9cd044ed74f004dbde05f0fec5353fd112aa957fc0ffdd0"
+  },
+  "build_environment": {
+    "cargo": "1.97.1 (c980f4866 2026-06-30)",
+    "cargo_incremental": "0",
+    "python": "3.14.3",
+    "python_build": "1.5.0",
+    "python_platform": "macOS-x86_64",
+    "pythondontwritebytecode": "not_set",
+    "pythonhashseed": "0",
+    "rust_lc_all": "C",
+    "rust_platform": "linux-x86_64",
+    "rust_source_date_epoch": "0",
+    "rust_tz": "UTC",
+    "rustc": "1.97.1 (8bab26f4f 2026-07-14)",
+    "rustflags": "--remap-path-prefix=<isolated-source>=/workspace --remap-path-prefix=<isolated-target>=/build/target",
+    "setuptools": "84.2.1",
+    "source_date_epoch": "0",
+    "wheel": "0.48.0"
+  },
+  "build_recipe_node": {
+    "build_command": "python -m build --no-isolation --wheel --sdist; cargo build --release --locked with seven explicit --bin targets; GNU tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner | gzip -n",
+    "build_date": "2026-10-25T17:08:17Z",
+    "build_env_hash": "d62a21623b03a4c2aed152d63b37113836901a671706c3811beb79ab9d5ff44b",
+    "build_toolchain": "python-3.14.3/build-1.5.0/setuptools-84.2.1/wheel-0.48.0 + rustc-1.97.1/cargo-1.97.1",
+    "builder_agent_id": "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9",
+    "cid": "bafyreiaekl2hvx6cw5y3aspo53qzdatujp4bhbhkwkrt32oawltjaztpum",
+    "node_kind": "BuildRecipeNode",
+    "reproducibility_hash": "ab74c5cc7dd8687abf77f08735cfe23350a1828238145148df74de32968e5abd",
+    "schema_version": "build_recipe_node.v0.1",
+    "source_commit": "63b4d8db9313250d9ccd20bef91501732f32177f"
+  },
+  "builder_execution_context": {
+    "agent_id": "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9",
+    "phase": "GAP-RC-NATIVE-DISTRIBUTION-VNEXT-BUILD-00",
+    "role": "builder_operator",
+    "role_separation": "This field records the builder role only. Release signing and current-policy authorization remain separate later-phase acts."
+  },
+  "candidate_release_assertion": {
+    "artifact_nodes": [
+      {
+        "artifact_id": "ilc-artifact:ilc-consensus-linux-x86-64-0434@phase-1628",
+        "artifact_type": "binary_tarball",
+        "cid": "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+        "filename": "ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+        "node_kind": "ArtifactNode",
+        "package_name": "ilc-core",
+        "package_version": "0.4.34",
+        "pypi_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+        "schema_version": "artifact_node.v0.1",
+        "sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+        "size_bytes": 5053300
+      },
+      {
+        "artifact_id": "ilc-artifact:ilc-core-python-sdist-0434@phase-1628",
+        "artifact_type": "sdist",
+        "cid": "bafyreihus47ys2afv3cixlsocx6caejfjwejttrssv6gxf57paz7mfkdfi",
+        "filename": "ilc_core-0.4.34.tar.gz",
+        "node_kind": "ArtifactNode",
+        "package_name": "ilc-core",
+        "package_version": "0.4.34",
+        "pypi_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc_core-0.4.34.tar.gz",
+        "schema_version": "artifact_node.v0.1",
+        "sha256": "5e0f621934b239d76900f9d546e3a26ff943f38cdc81a87c469592a8f2f71c8c",
+        "size_bytes": 1326598
+      },
+      {
+        "artifact_id": "ilc-artifact:ilc-core-python-wheel-0434@phase-1628",
+        "artifact_type": "wheel",
+        "cid": "bafyreicmtne3imutiezvfs5v5mslzkfriti2g4n4czwznnceiliejvjul4",
+        "filename": "ilc_core-0.4.34-py3-none-any.whl",
+        "node_kind": "ArtifactNode",
+        "package_name": "ilc-core",
+        "package_version": "0.4.34",
+        "pypi_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc_core-0.4.34-py3-none-any.whl",
+        "schema_version": "artifact_node.v0.1",
+        "sha256": "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2",
+        "size_bytes": 1630572
+      }
+    ],
+    "assertion_cid": "bafyreiaosj4xs2vlptam7y7akklch46x6nzskvlzm6o7wu3wk3j4rkjh3q",
+    "build_recipe_nodes": [
+      {
+        "build_command": "python -m build --no-isolation --wheel --sdist; cargo build --release --locked with seven explicit --bin targets; GNU tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner | gzip -n",
+        "build_date": "2026-10-25T17:08:17Z",
+        "build_env_hash": "d62a21623b03a4c2aed152d63b37113836901a671706c3811beb79ab9d5ff44b",
+        "build_toolchain": "python-3.14.3/build-1.5.0/setuptools-84.2.1/wheel-0.48.0 + rustc-1.97.1/cargo-1.97.1",
+        "builder_agent_id": "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9",
+        "cid": "bafyreiaekl2hvx6cw5y3aspo53qzdatujp4bhbhkwkrt32oawltjaztpum",
+        "node_kind": "BuildRecipeNode",
+        "reproducibility_hash": "ab74c5cc7dd8687abf77f08735cfe23350a1828238145148df74de32968e5abd",
+        "schema_version": "build_recipe_node.v0.1",
+        "source_commit": "63b4d8db9313250d9ccd20bef91501732f32177f"
+      }
+    ],
+    "release_attestation_edges": [],
+    "schema_version": "software_release_assertion.v0.1",
+    "software_release_node": {
+      "artifact_cids": [
+        "bafyreicmtne3imutiezvfs5v5mslzkfriti2g4n4czwznnceiliejvjul4",
+        "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+        "bafyreihus47ys2afv3cixlsocx6caejfjwejttrssv6gxf57paz7mfkdfi"
+      ],
+      "build_recipe_cid": "bafyreiaekl2hvx6cw5y3aspo53qzdatujp4bhbhkwkrt32oawltjaztpum",
+      "changelog_hash": "0c39511c536f05d1546f936fdc374f2854e7ea9676db905eb5ec005402a45c6a",
+      "cid": "bafyreia77sx3vbzbyki5xc6wz4vw47d5segxhuvebrfokaqe2mhixiitai",
+      "node_kind": "SoftwareReleaseNode",
+      "package_name": "ilc-core",
+      "release_channel": "public_rc",
+      "release_date": "2026-10-25T17:08:17Z",
+      "release_key_pubkey": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+      "release_signature_ref": "docs/specs/ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json",
+      "schema_version": "software_release_node.v0.1",
+      "source_commit": "63b4d8db9313250d9ccd20bef91501732f32177f",
+      "version": "0.4.34"
+    }
+  },
+  "identity_boundary": {
+    "candidate_assertion_identity": "bafyreiaosj4xs2vlptam7y7akklch46x6nzskvlzm6o7wu3wk3j4rkjh3q",
+    "candidate_assertion_status": "unsigned_non_authoritative_build_candidate",
+    "final_assertion_identity_rule": "The final assertion CID is recomputed after verified release-attestation edges are attached in the authorized sign/publish phase.",
+    "software_release_identity": "bafyreia77sx3vbzbyki5xc6wz4vw47d5segxhuvebrfokaqe2mhixiitai",
+    "software_release_identity_stability": "The SoftwareReleaseNode binds a stable tracked release-envelope record path and therefore does not change when signatures are attached."
+  },
+  "non_claims": [
+    "unsigned_candidate_not_authoritative",
+    "no_release_or_policy_signature",
+    "no_upload_or_provider_publication",
+    "no_graph_write",
+    "no_public_mirror_push",
+    "no_live_host_or_service_mutation",
+    "no_epoch_or_economic_state_change",
+    "no_public_rc_activation"
+  ],
+  "phase": "GAP-RC-NATIVE-DISTRIBUTION-VNEXT-BUILD-00",
+  "policy_update_candidate": {
+    "fixed_policy_body_fields": {
+      "action": "select",
+      "authority_basis": "CDL-122",
+      "channel": "public_rc",
+      "effective_validation_epoch": 0,
+      "genesis_lineage_ref": "artifact:genesis_agent1_pubkey_record_838a",
+      "max_observer_lag_epochs": 0,
+      "network_id": "ilc-public-rc-01-testnet-harness",
+      "policy_id": "ilc-public-rc-current-policy-v1",
+      "policy_sequence": 2,
+      "previous_policy_claim_cid": "bafyreiblyg3bvbb26c37cixhxurlkadsxcqgelk7u5rakamdui4fjwbk7y",
+      "rejected_release_assertion_cids": [],
+      "release_signer_profile": "ed25519_phase_1335",
+      "release_signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+      "selected_artifact_cids": [
+        "bafyreicmtne3imutiezvfs5v5mslzkfriti2g4n4czwznnceiliejvjul4",
+        "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+        "bafyreihus47ys2afv3cixlsocx6caejfjwejttrssv6gxf57paz7mfkdfi"
+      ],
+      "selected_software_release_cid": "bafyreia77sx3vbzbyki5xc6wz4vw47d5segxhuvebrfokaqe2mhixiitai",
+      "valid_through_validation_epoch": 0,
+      "withdrawn_release_assertion_cids": []
+    },
+    "pending_fields": [
+      "selected_release_assertion_cid",
+      "policy_authorization.signature_hex",
+      "policy_claim_cid",
+      "native_submit_sig"
+    ],
+    "schema_version": "release_current_policy_claim.v0.1",
+    "status": "unsigned_template"
+  },
+  "publication_inventory": [
+    {
+      "artifact_cid": "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+      "artifact_type": "binary_tarball",
+      "filename": "ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+      "intended_providers": [
+        "github_release",
+        "ilc_peer"
+      ],
+      "publication_status": "not_published",
+      "retrieval_hint": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+      "retrieval_hint_authoritative": false
+    },
+    {
+      "artifact_cid": "bafyreicmtne3imutiezvfs5v5mslzkfriti2g4n4czwznnceiliejvjul4",
+      "artifact_type": "wheel",
+      "filename": "ilc_core-0.4.34-py3-none-any.whl",
+      "intended_providers": [
+        "github_release",
+        "pypi"
+      ],
+      "publication_status": "not_published",
+      "retrieval_hint": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc_core-0.4.34-py3-none-any.whl",
+      "retrieval_hint_authoritative": false
+    },
+    {
+      "artifact_cid": "bafyreihus47ys2afv3cixlsocx6caejfjwejttrssv6gxf57paz7mfkdfi",
+      "artifact_type": "sdist",
+      "filename": "ilc_core-0.4.34.tar.gz",
+      "intended_providers": [
+        "github_release",
+        "pypi"
+      ],
+      "publication_status": "not_published",
+      "retrieval_hint": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc_core-0.4.34.tar.gz",
+      "retrieval_hint_authoritative": false
+    }
+  ],
+  "release_changelog": "v0.4.34 packages the current Python runtime and seven consensus helpers, and admits the ratified binary_tarball ArtifactNode type in strict release-graph validation.",
+  "reproducibility": {
+    "python_artifacts": {
+      "sdist": {
+        "byte_identical": false,
+        "classification": "content_equal_archive_not_reproducible",
+        "member_count_each": 532,
+        "member_names_equal": true,
+        "member_payloads_equal": true,
+        "metadata_mtime_difference_count": 8,
+        "retained_run": "run1",
+        "run1_sha256": "5e0f621934b239d76900f9d546e3a26ff943f38cdc81a87c469592a8f2f71c8c",
+        "run2_sha256": "cefacb05f733d4b8a75c3fdec4d9d48d80684127cd463f0232d2cfde34bca4df"
+      },
+      "wheel": {
+        "byte_identical": true,
+        "classification": "byte_reproducible",
+        "run1_sha256": "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2",
+        "run2_sha256": "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2"
+      }
+    },
+    "rust_artifacts": {
+      "binary_count": 7,
+      "classification": "byte_reproducible",
+      "helper_sha256": {
+        "attribution_batch_ingest": "91678e30f20417c4440117c4876af16e17c6d9c6e949994df0361f2aaff022ab",
+        "bls_verify_digest": "5c16eafaef616e3ccda0fa6cdae532616a5a7750757b6fb416ba6b4af71aa347",
+        "ilc_p2p_bridge": "1bdac447af3cca162d300b458242cca53ce6b9b25c4e9c8f74cbad754706b1e0",
+        "invite_pop_bls": "7861312b3ed3a3f447daaa4189cf1b5e50a8d50ca92c98dc0e523639447e3e9e",
+        "keygen": "c36d3da8329ff5f2730ea57f500a08ede3455d0d72e6c9f6eec397a906eb801c",
+        "validator_endpoint_assertion_bls": "2888b532758021b0d5f0a037a41ff0b0e36c86f2bb65febb0b771d3a0693af78",
+        "validator_harness": "3c3b8ea0c6d697c597f53fcd1572625422ea2f5823a3a64d67da0a3f64d71449"
+      },
+      "helper_size_bytes": {
+        "attribution_batch_ingest": 1229224,
+        "bls_verify_digest": 785880,
+        "ilc_p2p_bridge": 595624,
+        "invite_pop_bls": 798784,
+        "keygen": 578280,
+        "validator_endpoint_assertion_bls": 795792,
+        "validator_harness": 8956424
+      },
+      "initial_attempt": {
+        "affected_helper": "validator_harness",
+        "classification": "non_reproducible_absolute_target_path",
+        "diagnosis": "Generated protobuf source path embedded the isolated Cargo target directory because only the source directory was remapped.",
+        "remediation": "Rebuilt twice from clean source and target trees with both paths remapped, SOURCE_DATE_EPOCH=0, TZ=UTC, and LC_ALL=C.",
+        "run1_sha256": "020a99e8e231fb00474346c2c76538c71b4fa74d68864c95135b90e250a074a3",
+        "run2_sha256": "0abcd588dc93fd1d874f25445258db4fa0d134b83c95b01ddaf6675f225c0bc4"
+      },
+      "source_and_target_paths_remapped": true,
+      "tarball_byte_identical": true,
+      "tarball_sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+      "tarball_size_bytes": 5053300
+    }
+  },
+  "retained_artifact_directory": "out/gap_rc_native_distribution_vnext_build_00/artifacts",
+  "retrieval_hint_boundary": "The legacy ArtifactNode field name pypi_url is used as a transport-neutral HTTPS retrieval-hint alias. GitHub and PyPI providers are byte sources, not release authority; CID, digest, signature, lineage, and current-policy checks remain independently required.",
+  "schema_version": "ilc.rc_native_distribution_vnext_build_evidence.v0.1",
+  "source": {
+    "commit": "63b4d8db9313250d9ccd20bef91501732f32177f",
+    "full_git_archive_sha256": "dead12d705ff93996f56f5deeccf727adde987b73e4e79547fc0f0a140176ce1",
+    "rust_config_git_archive_sha256": "e11ca7ae908b7029463c0cbba7a7b6b760c0dedf5d3ceb45f30fa2f94a6dd68f",
+    "rust_subtree_git_archive_sha256": "8e317dbcc58d8954fdcb9292a99cf9cec79c36f7b12ae2c115e9a1ab283ef51c",
+    "tree_clean_before_build": true
+  },
+  "status": "unsigned_build_complete_pending_phase_verification",
+  "verification_summary": {
+    "broad_release_regression": {
+      "deselected": 17197,
+      "passed": 1339,
+      "skipped": 179
+    },
+    "focused_release_and_deploy_tests": {
+      "passed": 95
+    },
+    "python_clean_install_smokes": {
+      "sdist": "pass",
+      "wheel": "pass"
+    },
+    "rust_lib_tests": {
+      "failed": 0,
+      "ignored": 0,
+      "passed": 154
+    }
+  },
+  "version": "0.4.34"
+}

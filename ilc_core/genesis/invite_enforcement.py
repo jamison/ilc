@@ -1,25 +1,34 @@
 # SPDX-License-Identifier: AGPL-3.0-only
-"""Default-off invite enforcement gate for agent enrollment.
+"""Invite enforcement gate for agent enrollment.
 
-Phase 1576n implements the enforcement boundary without activating it. The guard
-must remain False until a later SENSITIVE public-RC guard-clearance phase.
+The public-RC guard has been cleared. Production enrollment paths must treat
+invite enforcement as active; this module intentionally exposes no public
+runtime toggle for disabling enforcement.
 """
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Callable, Mapping
 
 from ilc_core.epoch.genesis_settlement_destination import GENESIS_AGENT1_AGENT_ID
 from ilc_core.genesis.invite_nullifier_registry import InviteNullifierRegistry
 
 INVITE_ENFORCEMENT_RUNTIME_VERSION = "invite_enforcement_gate_1576n.v0.1"
-INVITE_ENFORCEMENT_ENABLED: bool = True
+
+
+@dataclass(frozen=True)
+class InviteEnforcementPolicy:
+    enforced: bool
+
+
+_INVITE_ENFORCEMENT_POLICY = InviteEnforcementPolicy(enforced=True)
 
 
 def is_enrollment_invite_enforced() -> bool:
     """Return the live invite-enforcement guard state."""
 
-    return bool(INVITE_ENFORCEMENT_ENABLED)
+    return bool(_INVITE_ENFORCEMENT_POLICY.enforced)
 
 
 def require_invite_for_enrollment(
@@ -33,12 +42,11 @@ def require_invite_for_enrollment(
 ) -> None:
     """Require a valid invite redemption record for new agent enrollment.
 
-    The gate is a no-op while ``INVITE_ENFORCEMENT_ENABLED`` is False. When the
-    guard is later cleared, Genesis Agent 1 remains exempt because its identity
-    predates invite-gated enrollment.
+    Genesis Agent 1 remains exempt because its identity predates invite-gated
+    enrollment.
     """
 
-    if not INVITE_ENFORCEMENT_ENABLED:
+    if not is_enrollment_invite_enforced():
         return
     if agent_id == GENESIS_AGENT1_AGENT_ID:
         return
@@ -74,7 +82,6 @@ def require_invite_for_enrollment(
 
 
 __all__ = [
-    "INVITE_ENFORCEMENT_ENABLED",
     "INVITE_ENFORCEMENT_RUNTIME_VERSION",
     "is_enrollment_invite_enforced",
     "require_invite_for_enrollment",

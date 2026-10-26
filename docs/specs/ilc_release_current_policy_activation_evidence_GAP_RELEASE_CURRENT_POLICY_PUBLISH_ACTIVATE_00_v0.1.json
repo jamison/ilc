@@ -1,0 +1,73 @@
+{
+  "activation_commit": "0c222ba3b2237b7bfb620d7e6501112788f0e6f4",
+  "artifact_hashes": {
+    "activated_resolution_receipt_sha256": "e1d9af26e905cb16c4c8e11b6f076144452d29abceb155d29aba0fc38500ff57",
+    "bootstrap_binding_invite_bundle_sha256": "4a09338fb4e8caf84aa68e90d7a028419cfdb7f5e24b66b58b6893fde6ddc2ee",
+    "graph_publication_receipt_sha256": "a552fec4191a0a72f2766a6f5e559ddc3c285610640d17cc9f7cc43318aa8e1a",
+    "graph_readback_receipt_sha256": "078650abf96a64a7950680813e93af7d8212ea2cd3d28c0f92fefed1e02b1748",
+    "high_water_activation_receipt_sha256": "4aa31ac8197e539af4b223d9b5877933733488359511e7fb4d6d40839f61f0a2",
+    "native_submit_envelope_sha256": "396b2a0d4af3140602c99ce3e824396e430e89585976739f2096cd8497365633",
+    "policy_body_sha256": "729540837db17def52f8cf5a048adae2c29d9fa1f33ce1491ec129b5ca2e529d",
+    "policy_claim_node_record_sha256": "e49a89fbdb1b535bee8bd2676a8f84ac71f8860d9aaa417dc366c9bac76315c3",
+    "policy_signature_payload_sha256": "451fdac5207f0b9b8c1fd065039361160cda9350ec51183110bc9de2439a8f03",
+    "upgrade_state_rollback_sha256": "a313c3a2bfa29d2a3182e3893d3c5dad42ac49e9dc47709bb555a971bcaee2b1"
+  },
+  "authority": {
+    "artifact_signature_profile": "ed25519_phase_1335",
+    "bootstrap_authentication_contract": "CDL-113",
+    "native_submission_contract": "CDL-118",
+    "policy_authority": "CDL-122",
+    "policy_signature_context": "ILC_GENESIS_ROOT_ENVELOPE_V1",
+    "policy_signature_domain": "ILC_RELEASE_CURRENT_POLICY_CLAIM_V1",
+    "policy_signature_scheme": "mldsa65_genesis_agent1_838a"
+  },
+  "bootstrap_binding_evidence_cid": "bafyreihrb2myefyvtf6x3ucvbfaqfw5zukczyk3wvjxzj3ucb76ewquhue",
+  "graph_publication": {
+    "cid_recomputed_after_readback": true,
+    "gossip_delivery": "deferred",
+    "graph_persistence": "persisted",
+    "live_record_sha256": "5e252f453300f688d5dbdcbc2572ed421f1b1c3fb4c73f9e66f27284d79fbbf9",
+    "live_record_size_bytes": 8758,
+    "receiver_profile": "native_quic_full_rust",
+    "record_matches_local_claim": true
+  },
+  "high_water_transition": {
+    "after_sequence": 1,
+    "before_sequence": 0,
+    "channel": "public_rc",
+    "network_id": "ilc-public-rc-01-testnet-harness",
+    "policy_id": "ilc-public-rc-current-policy-v1",
+    "rollback_artifact_preserved_privately": true
+  },
+  "manifest_sha256": "58ec4371586db19eb9cd044ed74f004dbde05f0fec5353fd112aa957fc0ffdd0",
+  "non_claims": [
+    "no_private_key_material_recorded",
+    "no_public_rc_activation",
+    "no_new_release_artifact_signed",
+    "no_package_publication",
+    "no_public_mirror_push",
+    "no_epoch_transition",
+    "no_wallet_or_settlement_mutation",
+    "no_ecu_or_ilc_minting",
+    "no_mainnet_activation"
+  ],
+  "phase": "GAP-RELEASE-CURRENT-POLICY-PUBLISH-ACTIVATE-00",
+  "policy_claim_cid": "bafyreiblyg3bvbb26c37cixhxurlkadsxcqgelk7u5rakamdui4fjwbk7y",
+  "policy_sequence": 1,
+  "resolver_result": {
+    "guard_not_activated": false,
+    "reason": "verified_current_policy",
+    "status": "verified_current_policy",
+    "deployment_scope": "source_branch_only_pending_vnext_package_publication"
+  },
+  "schema_version": "ilc.release_current_policy.activation_evidence.v0.1",
+  "selected_release": {
+    "artifact_cids": [
+      "bafyreiducxg5icoh3laopqwgn57377bparmagl2xiwvuyzjl4emwhwrkma",
+      "bafyreifqv34wxxqwknqyqpk7nrddvwssshheszaplcyl5kkscbjwoprodu"
+    ],
+    "release_assertion_cid": "bafyreig47oqtnwxvd6feryuaw72qximlvzqb2e4oxz4c25dscmsogrurga",
+    "software_release_cid": "bafyreidyzsgcy4zkuzl7spujcw5aio4nulrxibqrdkr4bbadlklidolz6e",
+    "source_commit": "849aec59b5acdd67f4961b9291d9e2d5e2d4fb9c"
+  }
+}

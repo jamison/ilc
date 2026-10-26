@@ -12,7 +12,10 @@ import pytest
 
 import ilc_core
 from ilc_core.cli import main as cli_main
+from ilc_core.genesis import invite_issuer_authority
 from ilc_core.genesis import invite_enforcement
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
+from ilc_core.network.relay.relay_server import attach_shortcode_invite_bundle_auth
 from ilc_core.genesis.invitation_provenance_record import (
     build_invite_batch_record,
     build_invite_redemption_record,
@@ -29,6 +32,7 @@ FIXTURE_MANIFEST = ROOT / "tests/fixtures/starmap/core_public_rc_slice_fixture.j
 IDENTITY_SEED_HEX = "99" * 32
 REDEEMER_AGENT_ID = derive_agent_id_from_identity_seed(IDENTITY_SEED_HEX)
 OUTPUT_TOKEN = "invite_bootstrap_smoke_0421_rerun_pass_GAP_PUBLIC_RC_INVITE_00c"
+TEST_INVITE_ISSUER_IKM_HEX = "42" * 32
 
 
 def _redemption(nonce_byte: str = "ab") -> tuple[dict[str, object], str]:
@@ -63,7 +67,13 @@ def _install_bundle(nonce_hex: str = "22" * 32) -> dict[str, object]:
     bundle["starmap_manifest_payload"] = json.loads(
         FIXTURE_MANIFEST.read_text(encoding="utf-8")
     )
-    return bundle
+    secret_key, public_key = keypair_from_ikm_hex(TEST_INVITE_ISSUER_IKM_HEX)
+    return attach_shortcode_invite_bundle_auth(
+        bundle,
+        inviting_agent_id=public_key,
+        inviting_bls_public_key_hex=public_key,
+        inviting_bls_secret_key_hex=secret_key,
+    )
 
 
 def _install_args(code: str, target: Path, receipt: Path) -> argparse.Namespace:
@@ -84,6 +94,8 @@ def _install_args(code: str, target: Path, receipt: Path) -> argparse.Namespace:
 
 
 def _install_fake_bls_helpers(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    _secret_key, public_key = keypair_from_ikm_hex(TEST_INVITE_ISSUER_IKM_HEX)
+    monkeypatch.setattr(invite_issuer_authority, "GENESIS_INVITE_ISSUER_PK_HEX", public_key)
     keygen = tmp_path / "fake_keygen.py"
     keygen.write_text(
         "\n".join(
@@ -117,7 +129,7 @@ def _install_fake_bls_helpers(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 
 
 def test_enforcement_is_active_for_smoke() -> None:
-    assert invite_enforcement.INVITE_ENFORCEMENT_ENABLED is True
+    assert invite_enforcement.is_enrollment_invite_enforced() is True
 
 
 def test_first_redemption_accepted_lmdb(tmp_path: Path) -> None:
@@ -202,8 +214,8 @@ def test_smoke_evidence_exists_and_all_pass() -> None:
     assert all(value == "PASS" for value in evidence["scenarios"].values())
 
 
-def test_package_version_is_0421() -> None:
-    assert ilc_core.__version__ == "0.4.21"
+def test_package_version_matches_vnext_source_lock() -> None:
+    assert ilc_core.__version__ == "0.4.34"
 
 
 def test_output_token_in_status() -> None:

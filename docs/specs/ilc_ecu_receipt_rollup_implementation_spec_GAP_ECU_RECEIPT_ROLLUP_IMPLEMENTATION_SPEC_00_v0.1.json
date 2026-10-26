@@ -1,0 +1,151 @@
+{
+  "activation_authorized": false,
+  "date": "2026-10-14",
+  "fast_path_ecu_cdl_open_precondition_satisfied": false,
+  "non_claims": [
+    "no_runtime_code",
+    "no_runtime_tests",
+    "no_cdl_mutation",
+    "no_cdl_opening",
+    "no_fast_path_ecu_activation",
+    "no_passive_ecu_activation",
+    "no_bls_signer_activation",
+    "no_slow_path_ilc_settlement_change",
+    "no_direct_ecu_minting",
+    "no_direct_ilc_minting",
+    "no_wallet_write",
+    "no_monthly_close",
+    "no_public_mirror_push",
+    "no_package_publication",
+    "no_vps_mutation",
+    "no_live_graph_atlas_lmdb_write",
+    "no_public_rc_activation",
+    "no_mainnet_activation",
+    "no_epoch_transition"
+  ],
+  "output_token": "ecu_receipt_rollup_implementation_spec_complete_GAP_ECU_RECEIPT_ROLLUP_IMPLEMENTATION_SPEC_00",
+  "phase": "GAP-ECU-RECEIPT-ROLLUP-IMPLEMENTATION-SPEC-00",
+  "spec_section_count": 14,
+  "spec_sections": {
+    "S1": {
+      "correctness_invariant_count": "5",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "durable_queue_log_backpressure_design",
+        "durable_append_before_ack_and_idempotent_replay_gate"
+      ]
+    },
+    "S10": {
+      "correctness_invariant_count": "5",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "receipt_status_integrity_gate_gap",
+        "receipt_status_commitment_and_transition_proof_gate"
+      ]
+    },
+    "S11": {
+      "correctness_invariant_count": "4",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "projection_family_adjudication_gap"
+      ]
+    },
+    "S12": {
+      "correctness_invariant_count": "6",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "receipt_economic_admissibility_and_service_quality_gate",
+        "service_receipt_attempt_cap_and_value_evidence_gate",
+        "sybil_diversity_and_independent_origin_gate",
+        "root_committed_novelty_and_quality_evidence_gate",
+        "global_nullifier_cap_and_admission_accounting_gate",
+        "challenge_sampling_floor_independent_of_reputation_gate"
+      ]
+    },
+    "S13": {
+      "correctness_invariant_count": "4",
+      "oq_dispositioned": "OQ3,OQ4",
+      "row_21q_gaps_addressed": [
+        "private_public_proof_boundary_gap",
+        "private_public_proof_boundary_from_rows_21l_21n",
+        "OQ3_private_topology_preserving_shard_membership",
+        "OQ4_privacy_preserving_proof_eligibility"
+      ]
+    },
+    "S14": {
+      "correctness_invariant_count": "5",
+      "oq_dispositioned": "OQ2",
+      "row_21q_gaps_addressed": [
+        "bls_signer_roster_reference_and_activation_boundary",
+        "OQ2_minimal_registered_fast_signer_scheme"
+      ]
+    },
+    "S2": {
+      "correctness_invariant_count": "5",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "exact_nullifier_store_false_positive_recovery_design",
+        "atomic_nullifier_reservation_gate"
+      ]
+    },
+    "S3": {
+      "correctness_invariant_count": "5",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "bloom_prefilter_only_with_exact_recovery_gate",
+        "exact_nullifier_store_false_positive_recovery_design"
+      ]
+    },
+    "S4": {
+      "correctness_invariant_count": "5",
+      "oq_dispositioned": "OQ1",
+      "row_21q_gaps_addressed": [
+        "canonical_checkpoint_tree_and_inclusion_proof_verifier_binding",
+        "inclusion_proof_verifier_binding_gap",
+        "OQ1_canonical_hash_tree_choice"
+      ]
+    },
+    "S5": {
+      "correctness_invariant_count": "5",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "manifest_root_completeness_and_receipt_root_binding_gate"
+      ]
+    },
+    "S6": {
+      "correctness_invariant_count": "6",
+      "oq_dispositioned": "OQ5",
+      "row_21q_gaps_addressed": [
+        "challenge_window_state_machine_and_proof_protocol",
+        "challenge_window_state_machine_gap",
+        "challenge_rate_limit_deposit_and_priority_gate",
+        "proof_availability_timeout_and_checkpoint_ineligibility_gate",
+        "OQ5_exact_challenge_window_durations"
+      ]
+    },
+    "S7": {
+      "correctness_invariant_count": "5",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "settlement_consumer_proof_selection_rules"
+      ]
+    },
+    "S8": {
+      "correctness_invariant_count": "4",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "sender_authorization_projection_gate_gap",
+        "sender_authorization_and_genesis_policy_reference_proof_binding"
+      ]
+    },
+    "S9": {
+      "correctness_invariant_count": "4",
+      "oq_dispositioned": "none",
+      "row_21q_gaps_addressed": [
+        "genesis_policy_reference_projection_gate_gap",
+        "sender_authorization_and_genesis_policy_reference_proof_binding"
+      ]
+    }
+  },
+  "status": "Complete"
+}

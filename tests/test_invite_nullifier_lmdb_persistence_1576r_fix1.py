@@ -53,10 +53,8 @@ def test_lmdb_register_if_new_rejects_duplicate_after_restart(tmp_path: Path) ->
 
 
 def test_invite_enforcement_rejects_lmdb_persisted_replay_after_restart(
-    monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
     _batch, redemption = _build_single_redemption(batch_id="batch-1576r-fix1-restart")
     store_path = tmp_path / "invite-nullifiers.lmdb"
     with InviteNullifierLmdbRegistry(store_path) as registry:

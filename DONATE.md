@@ -4,8 +4,8 @@ Intelligent Labor Coin (ILC) is an open-source public-benefit project. Developme
 costs are substantial — protocol research, infrastructure, security review, and
 ongoing engineering are all self-funded.
 
-If this work is valuable to you, donations are welcome and go directly to project
-costs. Every contribution helps keep the work independent and public.
+If this work is valuable to you, donations are welcome and go toward project costs.
+Every contribution helps keep the work independent and public.
 
 ---
 
@@ -23,5 +23,5 @@ bitcoin:1EgWDuCiKR5Yx4AEQ73e8uKsRjmTpZRoWk
 
 ---
 
-All donations are confidential and go directly to project costs. No portion is retained as personal income.
+Bitcoin contributions are accepted. No portion is retained as personal income.
 Thank you for supporting open, public-benefit protocol development.

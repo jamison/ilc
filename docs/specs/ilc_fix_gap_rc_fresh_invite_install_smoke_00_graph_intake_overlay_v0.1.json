@@ -1,0 +1,47 @@
+{
+  "artifact": "ilc_fix_gap_rc_fresh_invite_install_smoke_00_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for GAP-RC-FRESH-INVITE-INSTALL-SMOKE-00 completion evidence and documentation."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_rc_fresh_invite_install_smoke_00_overlay_record",
+      "annotation_phase": "GAP-RC-FRESH-INVITE-INSTALL-SMOKE-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "repo_path": "docs/specs/ilc_fix_gap_rc_fresh_invite_install_smoke_00_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_rc_fresh_invite_install_smoke_00_overlay_record",
+      "annotation_phase": "GAP-RC-FRESH-INVITE-INSTALL-SMOKE-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "repo_path": "docs/phases/phase_gap_rc_fresh_invite_install_smoke_00_walkthrough.md",
+      "target": "phase:GAP-RC-FRESH-INVITE-INSTALL-SMOKE-00"
+    },
+    {
+      "annotation_method": "gap_rc_fresh_invite_install_smoke_00_overlay_record",
+      "annotation_phase": "GAP-RC-FRESH-INVITE-INSTALL-SMOKE-00",
+      "edge_role": "PHASE_PROMPT",
+      "graph_delta": "support_only",
+      "node_kind": "phase_prompt",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_fresh_invite_install_smoke_00_g10_fresh_invite_install_smoke.md",
+      "target": "phase:GAP-RC-FRESH-INVITE-INSTALL-SMOKE-00"
+    },
+    {
+      "annotation_method": "gap_rc_fresh_invite_install_smoke_00_overlay_record",
+      "annotation_phase": "GAP-RC-FRESH-INVITE-INSTALL-SMOKE-00",
+      "edge_role": "STATUS_LOG",
+      "graph_delta": "support_only",
+      "node_kind": "phase_status_log",
+      "repo_path": "docs/phases/STATUS.md",
+      "target": "phase:GAP-RC-FRESH-INVITE-INSTALL-SMOKE-00"
+    }
+  ],
+  "schema_version": "fix39_graph_intake_overlay.v0.1"
+}

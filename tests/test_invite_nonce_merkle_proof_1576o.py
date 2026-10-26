@@ -9,6 +9,7 @@ from ilc_core.genesis.invitation_provenance_record import (
     INVITE_NONCE_LEAF_DOMAIN,
     INVITE_NONCE_NODE_DOMAIN,
     InvitationProvenanceError,
+    MAX_INVITE_BATCH_SIZE,
     build_invite_batch_record,
     invite_nonce_merkle_root,
     verify_nonce_membership_proof,
@@ -67,6 +68,34 @@ def test_nonce_bytes_must_be_exactly_32_bytes() -> None:
             count=1,
             proof=(),
         )
+
+
+def test_invite_batch_count_cap_rejects_oversized_batch() -> None:
+    assert MAX_INVITE_BATCH_SIZE == 500
+    with pytest.raises(InvitationProvenanceError, match="invite_batch_count_exceeds_max"):
+        build_invite_batch_record(
+            inviter_cid="genesis_agent:01",
+            batch_id="oversized-batch",
+            count=MAX_INVITE_BATCH_SIZE + 1,
+            created_epoch=0,
+            inviter_sig="genesis",
+        )
+
+
+def test_invite_batch_count_cap_accepts_maximum_with_supplied_nonces() -> None:
+    nonces = tuple(index.to_bytes(INVITE_NONCE_BYTES, "big") for index in range(MAX_INVITE_BATCH_SIZE))
+
+    record, private_nonces = build_invite_batch_record(
+        inviter_cid="genesis_agent:01",
+        batch_id="max-sized-batch",
+        count=MAX_INVITE_BATCH_SIZE,
+        created_epoch=0,
+        inviter_sig="genesis",
+        nonces=nonces,
+    )
+
+    assert record.count == MAX_INVITE_BATCH_SIZE
+    assert len(private_nonces) == MAX_INVITE_BATCH_SIZE
 
 
 def test_valid_proof_two_nonces_left() -> None:

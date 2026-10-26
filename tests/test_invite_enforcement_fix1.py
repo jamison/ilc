@@ -16,7 +16,6 @@ from ilc_core.genesis.invitation_provenance_record import (
     derive_agent_id_from_identity_seed,
     validate_invite_redemption_record,
 )
-from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
 
 
 IDENTITY_SEED_HEX = "44" * 32
@@ -59,58 +58,31 @@ def _invite_batch_file(tmp_path: Path, *, nonce_byte: str = "55") -> Path:
     return path
 
 
-def test_identity_init_invite_registers_nullifier_durably_when_enforcement_off(
+def test_identity_init_legacy_invite_rejected_without_pop_binding(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     invite_path = _invite_batch_file(tmp_path)
 
-    result = _run_identity_subcommand(_identity_init_args(invite_path), tmp_path / "first_graph.json")
-    redemption = validate_invite_redemption_record(result["state"]["invite_redemption_record"])
-
-    with InviteNullifierLmdbRegistry(tmp_path / "home" / ".ilc" / "lmdb" / "nullifiers") as registry:
-        assert registry.is_known(redemption.redemption_nullifier)
+    with pytest.raises(ValueError, match="invite_redemption_redeemer_key_binding_required"):
+        _run_identity_subcommand(_identity_init_args(invite_path), tmp_path / "first_graph.json")
 
 
-def test_identity_init_invite_replay_rejected_after_lmdb_restart_when_enforcement_off(
+def test_identity_init_without_invite_rejected_when_enforced(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
-    monkeypatch.setenv("HOME", str(tmp_path / "home"))
-    invite_path = _invite_batch_file(tmp_path)
-
-    first_dir = tmp_path / "first"
-    second_dir = tmp_path / "second"
-    first_dir.mkdir()
-    second_dir.mkdir()
-
-    _run_identity_subcommand(_identity_init_args(invite_path), first_dir / "graph.json")
-
-    with pytest.raises(ValueError, match="invite_nullifier_already_used_for_enrollment"):
-        _run_identity_subcommand(_identity_init_args(invite_path), second_dir / "graph.json")
-
-
-def test_identity_init_without_invite_does_not_create_nullifier_lmdb_when_enforcement_off(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
-) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
 
-    result = _run_identity_subcommand(_identity_init_args(""), tmp_path / "graph.json")
-
-    assert result["action"] == "init"
-    assert not (tmp_path / "home" / ".ilc" / "lmdb" / "nullifiers").exists()
+    with pytest.raises(ValueError, match="invite_required_for_enrollment"):
+        _run_identity_subcommand(_identity_init_args(""), tmp_path / "graph.json")
 
 
 def test_identity_init_does_not_double_register_when_enforcement_enabled(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     invite_path = _invite_batch_file(tmp_path, nonce_byte="66")
 

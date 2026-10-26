@@ -1,0 +1,140 @@
+{
+  "artifact_and_target_lock": {
+    "bootstrap_policy_sequence_1": {
+      "artifact_cids": [
+        "bafyreiducxg5icoh3laopqwgn57377bparmagl2xiwvuyzjl4emwhwrkma",
+        "bafyreifqv34wxxqwknqyqpk7nrddvwssshheszaplcyl5kkscbjwoprodu"
+      ],
+      "release_assertion_cid": "bafyreig47oqtnwxvd6feryuaw72qximlvzqb2e4oxz4c25dscmsogrurga",
+      "software_release_cid": "bafyreidyzsgcy4zkuzl7spujcw5aio4nulrxibqrdkr4bbadlklidolz6e",
+      "version": "0.4.32"
+    },
+    "live_hosts": [
+      "ilc-node-2",
+      "ilc-node-3",
+      "ilc-node-6"
+    ],
+    "network_id": "ilc-public-rc-01-testnet-harness",
+    "policy_channel": "public_rc",
+    "policy_id": "ilc-public-rc-current-policy-v1",
+    "policy_signer": {
+      "algorithm": "ML-DSA-65",
+      "agent_id": "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9",
+      "public_key_ref": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+    },
+    "release_signer": {
+      "algorithm": "Ed25519",
+      "profile": "ed25519_phase_1335",
+      "public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
+    },
+    "vnext": {
+      "artifact_set": [
+        "ilc_core-0.4.34-py3-none-any.whl",
+        "ilc_core-0.4.34.tar.gz",
+        "ilc-consensus-linux-x86_64-v0.4.34.tar.gz"
+      ],
+      "artifact_source_rule": "exact byte/hash/CID set independently verified by GAP-RC-NATIVE-DISTRIBUTION-VNEXT-BUILD-00",
+      "policy_predecessor_rule": "exact verified sequence-1 policy-claim CID produced by GAP-RELEASE-CURRENT-POLICY-PUBLISH-ACTIVATE-00",
+      "source_commit_rule": "exact clean commit recorded and built twice by GAP-RC-NATIVE-DISTRIBUTION-VNEXT-BUILD-00",
+      "version": "0.4.34"
+    },
+    "byte_providers": [
+      "PyPI files.pythonhosted.org for Python package bytes",
+      "GitHub release assets for consensus tarball bytes",
+      "ILC peers/inviter for authenticated graph evidence and available artifact bytes"
+    ]
+  },
+  "authorization": {
+    "compound_prefix": "GO Strike Force RC-NATIVE-DISTRIBUTION-CLOSURE-00 STAGE-2-AUTHORIZED",
+    "sensitive_clauses": [
+      "GO Phase GAP-RELEASE-CURRENT-POLICY-CDL-RATIFY-00 RELEASE-CURRENT-POLICY-CDL-122-RATIFY-AUTHORIZED",
+      "GO Phase GAP-RELEASE-CURRENT-POLICY-PUBLISH-ACTIVATE-00 RELEASE-CURRENT-POLICY-PUBLISH-ACTIVATE-AUTHORIZED",
+      "GO Phase GAP-HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-00 HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-AUTHORIZED",
+      "GO Phase GAP-RC-NATIVE-DISTRIBUTION-VNEXT-SIGN-PUBLISH-00 RC-NATIVE-DISTRIBUTION-VNEXT-SIGN-PUBLISH-AUTHORIZED",
+      "GO Phase GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00 RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-AUTHORIZED"
+    ],
+    "stage_1_authorization_does_not_authorize_stage_2": true,
+    "stage_2_status": "PENDING_COMPOUND_HUMAN_AUTHORIZATION"
+  },
+  "campaign_id": "RC-NATIVE-DISTRIBUTION-CLOSURE-STRIKE-FORCE-00",
+  "execution_order": [
+    {
+      "order": 1,
+      "phase": "GAP-RELEASE-CURRENT-POLICY-CDL-RATIFY-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_current_policy_cdl_ratify_00_g10_cdl_122.md",
+      "sensitive": true
+    },
+    {
+      "order": 2,
+      "phase": "GAP-RELEASE-CURRENT-POLICY-RESOLVER-IMPL-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_current_policy_resolver_impl_00_g10.md",
+      "sensitive": false
+    },
+    {
+      "order": 3,
+      "phase": "GAP-RELEASE-CURRENT-POLICY-PUBLISH-ACTIVATE-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_current_policy_publish_activate_00_g10.md",
+      "sensitive": true
+    },
+    {
+      "order": 4,
+      "phase": "GAP-DISTRIBUTED-ARTIFACT-FETCH-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_distributed_artifact_fetch_00_g10.md",
+      "sensitive": false
+    },
+    {
+      "blocking": false,
+      "order": 5,
+      "phase": "GAP-DISTRIBUTION-WERNER-CREDIT-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_distribution_werner_credit_00_g10.md",
+      "sensitive": false
+    },
+    {
+      "order": 6,
+      "phase": "GAP-HOMOICONIC-CONSENSUS-BINARY-DEPLOY-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_homoiconic_consensus_binary_deploy_00_g10.md",
+      "sensitive": false
+    },
+    {
+      "order": 7,
+      "phase": "GAP-HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_homoiconic_consensus_binary_live_deploy_00_g10.md",
+      "sensitive": true
+    },
+    {
+      "order": 8,
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-VNEXT-BUILD-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_vnext_build_00_g10.md",
+      "sensitive": false
+    },
+    {
+      "order": 9,
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-VNEXT-SIGN-PUBLISH-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_vnext_sign_publish_00_g10.md",
+      "sensitive": true
+    },
+    {
+      "order": 10,
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_fresh_invite_smoke_00_g10.md",
+      "sensitive": true
+    },
+    {
+      "order": 11,
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00",
+      "prompt": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_00_g10.md",
+      "sensitive": false
+    }
+  ],
+  "hard_stops": [
+    "any sensitive clause absent from the compound authorization",
+    "CDL-122 content differs from the Stage 1 design",
+    "future derived CID/hash/source commit fails its named predecessor verification rule",
+    "private key material unavailable or unsafe to use",
+    "host/provider/version/key/network/channel drift",
+    "resolver performs I/O or treats missing evidence as eligible",
+    "tests, independent verification, rollback readiness, or worktree integrity fail"
+  ],
+  "schema_version": "ilc.strike_force.execution_manifest.v0.2",
+  "stage_1_manifest_sha256": "9d336e995eb0c021fb0a5c386e0bdce0f1a859462e08a90237a4e12d3a6b4a9c"
+}

@@ -9,9 +9,13 @@ from typing import Any, Mapping
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.release import upgrade_check
 from ilc_core.release.constants import UPGRADE_CHECK_D2D_HOP_COUNT_HEADER
 from ilc_core.release.installable_release_signature import (
+    DEFAULT_GENESIS_LINEAGE_REF,
+    DEFAULT_PRIOR_RELEASE_ENVELOPE_REF,
+    DEFAULT_RELEASE_KEY_REGISTRATION_REF,
     SIGNED_PREIMAGE_DOMAIN,
     compute_signed_preimage_sha256,
 )
@@ -40,41 +44,71 @@ def _release_assertion_payload(
         artifact_id=artifact_id,
         artifact_sha256=artifact_sha256,
     )
-    return {
-        "assertion_cid": "bafy-upgrade-native-discovery-v1",
-        "schema_version": "software_release_assertion.v0.1",
-        "software_release_node": {
-            "artifact_cids": ["bafy-artifact-wheel-v1"],
-            "build_recipe_cid": "bafy-build-recipe-v1",
-            "changelog_hash": "33" * 32,
-            "cid": "bafy-release-node-v1",
-            "node_kind": "SoftwareReleaseNode",
-            "package_name": "ilc-core",
-            "release_channel": "public_rc",
-            "release_date": "2026-10-05T12:00:00Z",
-            "release_key_pubkey": public_key_hex,
-            "release_signature_ref": "release-attestation:wheel",
-            "schema_version": "software_release_node.v0.1",
-            "source_commit": "44" * 32,
-            "version": version,
-        },
-        "release_attestation_edges": [
-            {
-                "artifact_id": artifact_id,
-                "artifact_sha256": artifact_sha256,
-                "attestation_date": "2026-10-05T12:00:00Z",
-                "edge_type": "RELEASE_ATTESTS_ARTIFACT",
-                "schema_version": "release_attestation_edge.v0.1",
-                "signed_preimage_domain": SIGNED_PREIMAGE_DOMAIN,
-                "signed_preimage_sha256": signed_preimage_sha256,
-                "signer_public_key_hex": public_key_hex,
-                "signature_hex": private_key.sign(bytes.fromhex(signed_preimage_sha256)).hex(),
-                "signing_algorithm": "Ed25519",
-                "source": "bafy-release-node-v1",
-                "target": "bafy-artifact-wheel-v1",
-            }
-        ],
+    artifact_body = {
+        "artifact_id": artifact_id,
+        "artifact_type": "wheel",
+        "filename": f"ilc_core-{version}-py3-none-any.whl",
+        "node_kind": "ArtifactNode",
+        "package_name": "ilc-core",
+        "package_version": version,
+        "pypi_url": "https://example.test/release.whl",
+        "schema_version": "artifact_node.v0.1",
+        "sha256": artifact_sha256,
+        "size_bytes": 1234,
     }
+    artifact = {**artifact_body, "cid": node_id_from_obj(artifact_body)}
+    recipe_body = {
+        "build_command": "python -m build",
+        "build_date": "2026-10-05T12:00:00Z",
+        "build_env_hash": "66" * 32,
+        "build_toolchain": "python-build",
+        "builder_agent_id": "phase:native-discovery-test",
+        "node_kind": "BuildRecipeNode",
+        "reproducibility_hash": "77" * 32,
+        "schema_version": "build_recipe_node.v0.1",
+        "source_commit": "44" * 32,
+    }
+    recipe = {**recipe_body, "cid": node_id_from_obj(recipe_body)}
+    release_body = {
+        "artifact_cids": [artifact["cid"]],
+        "build_recipe_cid": recipe["cid"],
+        "changelog_hash": "33" * 32,
+        "node_kind": "SoftwareReleaseNode",
+        "package_name": "ilc-core",
+        "release_channel": "public_rc",
+        "release_date": "2026-10-05T12:00:00Z",
+        "release_key_pubkey": public_key_hex,
+        "release_signature_ref": "release-attestation:wheel",
+        "schema_version": "software_release_node.v0.1",
+        "source_commit": "44" * 32,
+        "version": version,
+    }
+    release = {**release_body, "cid": node_id_from_obj(release_body)}
+    edge = {
+        "artifact_id": artifact_id,
+        "artifact_sha256": artifact_sha256,
+        "attestation_date": "2026-10-05T12:00:00Z",
+        "edge_type": "RELEASE_ATTESTS_ARTIFACT",
+        "genesis_lineage_ref": DEFAULT_GENESIS_LINEAGE_REF,
+        "prior_release_envelope_ref": DEFAULT_PRIOR_RELEASE_ENVELOPE_REF,
+        "release_key_registration_ref": DEFAULT_RELEASE_KEY_REGISTRATION_REF,
+        "schema_version": "release_attestation_edge.v0.1",
+        "signed_preimage_domain": SIGNED_PREIMAGE_DOMAIN,
+        "signed_preimage_sha256": signed_preimage_sha256,
+        "signer_public_key_hex": public_key_hex,
+        "signature_hex": private_key.sign(bytes.fromhex(signed_preimage_sha256)).hex(),
+        "signing_algorithm": "Ed25519",
+        "source": release["cid"],
+        "target": artifact["cid"],
+    }
+    body = {
+        "artifact_nodes": [artifact],
+        "build_recipe_nodes": [recipe],
+        "release_attestation_edges": [edge],
+        "schema_version": "software_release_assertion.v0.1",
+        "software_release_node": release,
+    }
+    return {**body, "assertion_cid": node_id_from_obj(body)}
 
 
 def _fixed_now() -> datetime:

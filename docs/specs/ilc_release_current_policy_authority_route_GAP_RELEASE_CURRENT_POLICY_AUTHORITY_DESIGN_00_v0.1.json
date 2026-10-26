@@ -1,0 +1,62 @@
+{
+  "dimensions": [
+    {
+      "authority_source": "CDL-122 plus Genesis Agent 1 ML-DSA-65 bootstrap signature",
+      "dimension": "channel_selection",
+      "evidence": "release_current_policy_claim.v0.1 selected release fields",
+      "remaining_gap": "CDL-122 ratification and initial signed claim publication",
+      "selected_phase": "GAP-RELEASE-CURRENT-POLICY-CDL-RATIFY-00",
+      "sensitive": true,
+      "type_mapping": "assert.truth/knowledge_claim existing primitive payload"
+    },
+    {
+      "authority_source": "CDL-122 append-only negative policy actions",
+      "dimension": "withdrawal_resolution",
+      "evidence": "withdrawn_release_assertion_cids and rejected_release_assertion_cids in the selected policy head",
+      "remaining_gap": "resolver implementation and initial complete policy view",
+      "selected_phase": "GAP-RELEASE-CURRENT-POLICY-RESOLVER-IMPL-00",
+      "sensitive": false,
+      "type_mapping": "same knowledge_claim policy payload; no separate withdrawal node"
+    },
+    {
+      "authority_source": "CDL-121 and Phase 1335 Ed25519 compatibility profile",
+      "dimension": "release_signer_authority_binding",
+      "evidence": "existing ReleaseAttestationEdge signature verification",
+      "remaining_gap": null,
+      "selected_phase": null,
+      "sensitive": false,
+      "type_mapping": "existing ratified release taxonomy"
+    },
+    {
+      "authority_source": "CDL-122 policy-view checkpoint and zero-lag validation-epoch lease",
+      "dimension": "freshness_counter",
+      "evidence": "effective_validation_epoch, valid_through_validation_epoch, max_observer_lag_epochs, authenticated head checkpoint, observer checkpoint",
+      "remaining_gap": "initial head must be bound into the fresh invite/bootstrap view",
+      "selected_phase": "GAP-RELEASE-CURRENT-POLICY-PUBLISH-ACTIVATE-00",
+      "sensitive": true,
+      "type_mapping": "fields inside the current-policy knowledge_claim payload"
+    },
+    {
+      "authority_source": "CDL-122 sequence, predecessor, competing-head, and rollback rules",
+      "dimension": "supersession_lineage",
+      "evidence": "policy_sequence and previous_policy_claim_cid chain",
+      "remaining_gap": "initial sequence-1 claim and persistent highest-seen state",
+      "selected_phase": "GAP-RELEASE-CURRENT-POLICY-PUBLISH-ACTIVATE-00",
+      "sensitive": true,
+      "type_mapping": "same knowledge_claim policy payload; no ReleaseChannelIndexNode activation"
+    }
+  ],
+  "phase": "GAP-RELEASE-CURRENT-POLICY-AUTHORITY-DESIGN-00",
+  "route": {
+    "new_node_kind_required": false,
+    "policy_payload_schema": "release_current_policy_claim.v0.1",
+    "policy_primitive_type": "knowledge_claim",
+    "policy_submission_primitive": "assert.truth",
+    "release_artifact_signature": "ed25519_phase_1335",
+    "selected_cdl": "CDL-122",
+    "stage_2_phase_count": 11,
+    "stage_2_sensitive_phase_count": 5
+  },
+  "schema_version": "ilc.release_current_policy_authority_route.v0.1",
+  "status": "DESIGN_ONLY_STAGE_2_NOT_AUTHORIZED"
+}

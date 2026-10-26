@@ -20,23 +20,23 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0432_GAP_PACKAGE_V0432_00b_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0433_GAP_PACKAGE_V0433_00b_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/d9/d9/"
-    "ad2851b3166b9f38e2cd9bc73bf3bb39d830a6ec2797649bc01c4d1e31d5/"
-    "ilc_core-0.4.32-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/3f/63/"
+    "b275945ba7c14bd0397a40b56398f508b2789d60167bc82e644b4b37de1d/"
+    "ilc_core-0.4.33-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "f5486b0b20cfef77aeba18d9dbe371d385cb58ec04b83fb7765f652695171c90"
-EXPECTED_SIZE = "1549382"
-EXPECTED_RELEASE_ID = "ilc-core-0.4.32"
-EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0432@phase-1628"
-EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0432@phase-1628"
-EXPECTED_SDIST_SHA256 = "172cd72d62393fae7785cf0bb321153d8ffdae368e8163f2183769d0dc7bfa4d"
-EXPECTED_SDIST_SIZE = "1267446"
+EXPECTED_SHA256 = "45047599ab76cbb81f880d17bd48a1fdfa492e1120292a988aae3a656648b871"
+EXPECTED_SIZE = "1596564"
+EXPECTED_RELEASE_ID = "ilc-core-0.4.33"
+EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0433@phase-1628"
+EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0433@phase-1628"
+EXPECTED_SDIST_SHA256 = "4b083cb0f8f0cb433be625139db80a9436beb11166e27f93c382bc2aa96ecc89"
+EXPECTED_SDIST_SIZE = "1307602"
 EXPECTED_RELEASE_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0432_release_envelopes_GAP_PACKAGE_V0432_00b_v0.1.json"
+    "ilc_core_0433_release_envelopes_GAP_PACKAGE_V0433_00b_v0.1.json"
 )
 EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX = (
     "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"

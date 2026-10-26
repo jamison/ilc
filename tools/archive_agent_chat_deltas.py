@@ -233,9 +233,15 @@ def _render_record(record: dict[str, Any], line_no: int, max_chars: int) -> tupl
     return None
 
 
-def _iter_delta_lines(path: Path, start_line_exclusive: int) -> Iterable[tuple[int, str]]:
+def _iter_delta_lines(
+    path: Path,
+    start_line_exclusive: int,
+    end_line_inclusive: int | None = None,
+) -> Iterable[tuple[int, str]]:
     with path.open("r", encoding="utf-8", errors="replace") as handle:
         for line_no, line in enumerate(handle, start=1):
+            if end_line_inclusive is not None and line_no > end_line_inclusive:
+                break
             if line_no > start_line_exclusive:
                 yield line_no, line
 
@@ -245,6 +251,7 @@ def _extract_markdown(
     *,
     extracted_at: str,
     max_chars: int,
+    end_line_inclusive: int | None = None,
 ) -> tuple[str, int, int, int, int | None, int | None]:
     rendered_messages = 0
     invalid_json_lines = 0
@@ -261,7 +268,11 @@ def _extract_markdown(
         "---\n\n",
     ]
 
-    for line_no, line in _iter_delta_lines(source.path, source.start_line_exclusive):
+    for line_no, line in _iter_delta_lines(
+        source.path,
+        source.start_line_exclusive,
+        end_line_inclusive,
+    ):
         decoded_lines += 1
         first_line = first_line if first_line is not None else line_no
         last_line = line_no
@@ -378,16 +389,28 @@ def archive_sources(
         extract_path = archive_dir / extract_file
         index_path = archive_dir / index_file
 
-        raw_sha, raw_size = _atomic_write_gzip(
-            raw_path,
-            (line for _, line in _iter_delta_lines(source.path, source.start_line_exclusive)),
-            overwrite=overwrite,
-        )
+        raw_first_line: int | None = None
+        raw_last_line: int | None = None
+        raw_line_count = 0
+
+        def bounded_raw_lines() -> Iterable[str]:
+            nonlocal raw_first_line, raw_last_line, raw_line_count
+            for line_no, line in _iter_delta_lines(source.path, source.start_line_exclusive):
+                if raw_first_line is None:
+                    raw_first_line = line_no
+                raw_last_line = line_no
+                raw_line_count += 1
+                yield line
+
+        raw_sha, raw_size = _atomic_write_gzip(raw_path, bounded_raw_lines(), overwrite=overwrite)
         markdown, decoded, rendered, invalid_json, first_line, last_line = _extract_markdown(
             source,
             extracted_at=extracted_at,
             max_chars=max_chars,
+            end_line_inclusive=raw_last_line,
         )
+        if (decoded, first_line, last_line) != (raw_line_count, raw_first_line, raw_last_line):
+            raise RuntimeError(f"source changed before bounded extraction completed: {source.label}")
         _atomic_write_text(extract_path, markdown, overwrite=overwrite)
         extract_sha, extract_size = _sha256_file(extract_path)
         provisional = SourceReceipt(

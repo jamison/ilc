@@ -13,6 +13,7 @@ from typing import Any, Mapping
 
 from .adapter import (
     MAX_PROVIDER_CONTENT_CHARS,
+    ProviderAdapterError,
     ProviderAdapter,
     ProviderResponse,
     RouterRequest,
@@ -94,6 +95,8 @@ class AnthropicAdapter(ProviderAdapter):
             return _failure(f"provider_http_{int(exc.code)}")
         except (urllib.error.URLError, OSError):
             return _failure("provider_network_error")
+        except ProviderAdapterError as exc:
+            return _failure(str(exc))
         except Exception:
             return _failure("provider_adapter_exception")
 

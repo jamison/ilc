@@ -15,7 +15,9 @@ import pytest
 
 from ilc_core.cli import main as cli_main
 from ilc_core.genesis import invite_enforcement
+from ilc_core.genesis import invite_issuer_authority
 from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 from ilc_core.identity.first_run_provisioning import (
     POP_DOMAIN,
     generate_invite_pop,
@@ -23,6 +25,7 @@ from ilc_core.identity.first_run_provisioning import (
     provision_new_identity,
     verify_invite_pop,
 )
+from ilc_core.network.relay.relay_server import attach_shortcode_invite_bundle_auth
 from ilc_core.sidecars.openclaw_invite_bootstrap import (
     build_synthetic_invite_bundle,
     derive_redemption_nullifier,
@@ -34,6 +37,7 @@ FIXTURE_MANIFEST = ROOT / "tests/fixtures/starmap/core_public_rc_slice_fixture.j
 INVITE_ID = "invite-gap-agent-onboarding-00d"
 PROFILE = "openclaw_public_rc_bootstrap"
 NONCE_HEX = "44" * 32
+TEST_INVITE_ISSUER_IKM_HEX = "42" * 32
 
 
 @pytest.fixture(scope="session")
@@ -72,7 +76,13 @@ def _bundle(*, batch_id: str = "batch-gap-agent-onboarding-00d") -> dict[str, ob
     bundle["invite_id"] = INVITE_ID
     bundle["atlas_slice_manifest_witness"] = {"slice_id": "test-slice"}
     bundle["starmap_manifest_payload"] = json.loads(FIXTURE_MANIFEST.read_text(encoding="utf-8"))
-    return bundle
+    secret_key, public_key = keypair_from_ikm_hex(TEST_INVITE_ISSUER_IKM_HEX)
+    return attach_shortcode_invite_bundle_auth(
+        bundle,
+        inviting_agent_id=public_key,
+        inviting_bls_public_key_hex=public_key,
+        inviting_bls_secret_key_hex=secret_key,
+    )
 
 
 def _write_bundle(path: Path, payload: dict[str, object]) -> Path:
@@ -101,6 +111,8 @@ def install_env(
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: home)
+    _secret_key, public_key = keypair_from_ikm_hex(TEST_INVITE_ISSUER_IKM_HEX)
+    monkeypatch.setattr(invite_issuer_authority, "GENESIS_INVITE_ISSUER_PK_HEX", public_key)
     monkeypatch.setenv("ILC_ONBOARDING_BLS_KEYGEN_COMMAND", bls_bins["keygen"])
     monkeypatch.setenv("ILC_ONBOARDING_BLS_POP_COMMAND", bls_bins["pop"])
 
@@ -225,18 +237,15 @@ def test_duplicate_nullifier_rejected(
         )
 
 
-def test_install_records_nullifier_before_public_rc_enforcement_activation(
+def test_install_records_nullifier_with_invite_enforcement_active(
     tmp_path: Path,
     install_env: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
-    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-guard-false"))
+    invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-enforced"))
     result = cli_main._run_install_subcommand(
         _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
     )
 
-    assert invite_enforcement.INVITE_ENFORCEMENT_ENABLED is False
     invite_enforcement.require_invite_for_enrollment(
         result["identity_provisioning"]["agent_id"],
         result["invite_redemption_record"],
@@ -246,9 +255,7 @@ def test_install_records_nullifier_before_public_rc_enforcement_activation(
 def test_enabled_install_reports_recorded_nullifier_status(
     tmp_path: Path,
     install_env: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
     invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-enabled-status"))
 
     result = cli_main._run_install_subcommand(
@@ -263,7 +270,6 @@ def test_enabled_install_reports_recorded_nullifier_status(
 def test_enabled_enforcement_rejects_missing_pop(
     tmp_path: Path,
     install_env: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-missing-pop"))
     result = cli_main._run_install_subcommand(
@@ -271,7 +277,6 @@ def test_enabled_enforcement_rejects_missing_pop(
     )
     record = dict(result["invite_redemption_record"])
     record["redeemer_key_binding"] = None
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
 
     with InviteNullifierLmdbRegistry(install_env / ".ilc/lmdb/other-nullifiers") as registry:
         with pytest.raises(ValueError, match="invite_redemption_redeemer_key_binding_required"):
@@ -285,7 +290,6 @@ def test_enabled_enforcement_rejects_missing_pop(
 def test_enabled_enforcement_rejects_pop_payload_mismatch(
     tmp_path: Path,
     install_env: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-pop-mismatch"))
     result = cli_main._run_install_subcommand(
@@ -295,7 +299,6 @@ def test_enabled_enforcement_rejects_pop_payload_mismatch(
     binding = dict(record["redeemer_key_binding"])
     binding["payload_ref"] = "0" * 96
     record["redeemer_key_binding"] = binding
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
 
     with InviteNullifierLmdbRegistry(install_env / ".ilc/lmdb/other-nullifiers") as registry:
         with pytest.raises(ValueError, match="invite_redemption_redeemer_key_binding_payload_mismatch"):
@@ -310,14 +313,12 @@ def test_enabled_enforcement_rejects_pop_payload_mismatch(
 def test_enabled_enforcement_accepts_verified_pop_and_registers_nullifier(
     tmp_path: Path,
     install_env: Path,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     invite_path = _write_bundle(tmp_path / "invite.json", _bundle(batch_id="batch-pop-enforced"))
     result = cli_main._run_install_subcommand(
         _args(invite_path, tmp_path / "target", tmp_path / "install_receipt.json")
     )
     registry_path = install_env / ".ilc/lmdb/enforced-nullifiers"
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
 
     with InviteNullifierLmdbRegistry(registry_path) as registry:
         invite_enforcement.require_invite_for_enrollment(

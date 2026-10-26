@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 
@@ -17,6 +18,7 @@ from ilc_core.epoch.genesis_settlement_destination import (
     GENESIS_PUBLIC_SUBMIT_INGRESS_BLS_PK_HEX,
 )
 from ilc_core.identity.bls_backend import verify_endpoint_assertion_bytes
+from tools.native_status_evidence import assemble_00b as assemble_00b_module
 from tools.native_status_evidence.assemble_00b import (
     ASSERTIONS_VERIFIED,
     DEFAULT_OUTPUT_PATH,
@@ -163,7 +165,12 @@ def test_no_genesis_key_used_as_test_agent() -> None:
     assert prefix != GENESIS_CAPSULE_SIGNING_PK_HEX[:20]
 
 
-def test_assemble_evidence_fresh_tmp_store(tmp_path: Path) -> None:
+def test_assemble_evidence_fresh_tmp_store(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    prior_store_path = "/preexisting/truth-graph.lmdb"
+    monkeypatch.setenv("ILC_TRUTH_GRAPH_STORE_PATH", prior_store_path)
     output_path = tmp_path / "native_status_evidence_00b.json"
     store_path = tmp_path / "truth_graph.lmdb"
     ev = assemble_evidence(
@@ -175,6 +182,28 @@ def test_assemble_evidence_fresh_tmp_store(tmp_path: Path) -> None:
     assert store_path.exists()
     assert ev["result"] == "pass"
     assert re.fullmatch(r"[0-9a-f]{20}", ev["signed_submission"]["test_agent_id_prefix"])
+    assert os.environ["ILC_TRUTH_GRAPH_STORE_PATH"] == prior_store_path
+
+
+def test_assemble_evidence_exception_does_not_create_graph_store_env(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("ILC_TRUTH_GRAPH_STORE_PATH", raising=False)
+
+    def _fail_after_store_setup(_ikm_hex: str) -> tuple[str, str]:
+        raise RuntimeError("synthetic_key_generation_failure")
+
+    monkeypatch.setattr(assemble_00b_module, "keypair_from_ikm_hex", _fail_after_store_setup)
+
+    with pytest.raises(RuntimeError, match="synthetic_key_generation_failure"):
+        assemble_evidence(
+            output_path=tmp_path / "native_status_evidence_00b.json",
+            store_path=tmp_path / "truth_graph.lmdb",
+            produced_at_utc="2026-09-29T00:00:00Z",
+        )
+
+    assert "ILC_TRUTH_GRAPH_STORE_PATH" not in os.environ
 
 
 def test_verify_endpoint_assertion_rejects_signature_tamper(tmp_path: Path) -> None:

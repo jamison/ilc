@@ -1,0 +1,92 @@
+{
+  "core_slice_0": {
+    "detached_verification_record": "release_artifacts/genesis_v05/core_slice_0/genesis_core_slice_0_authority_package.verification.json",
+    "node_0_candidate_id": "artifact:genesis_intent_attestation_init_authority_map",
+    "node_count": 58,
+    "package_path": "release_artifacts/genesis_v05/core_slice_0/genesis_core_slice_0_authority_package.json",
+    "package_sha256": "38a9f7351d00a1b92b6476c894552d78936400cf707076ccb6967fb5af5541e1",
+    "signature_file_sha256": "99a9ecf6717df58768fab8729b45feacdd824a252f014ca0b7ada2cde99cedd8",
+    "signature_path": "release_artifacts/genesis_v05/core_slice_0/genesis_core_slice_0_authority_package.signature.hex",
+    "signature_payload_path": "release_artifacts/genesis_v05/core_slice_0/genesis_core_slice_0_authority_package.signature_payload.bin",
+    "signature_payload_sha256": "e33d5e7f9d57661c08a06e6e6e8012dc701d46b187b5c5e965b4d769f94643b6",
+    "signature_sha256": "1cdabe3cac6203dc89fe7ed5175a02138e7242ebe0d665d36441387c11c4cc08",
+    "signature_verification": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "signature_verified"
+    },
+    "signature_verification_command": [
+      "ilc_consensus/target/debug/pq_sign",
+      "verify",
+      "--input-file",
+      "release_artifacts/genesis_v05/core_slice_0/genesis_core_slice_0_authority_package.signature_payload.bin",
+      "--pubkey-record",
+      "docs/genesis/genesis_agent1_pubkey_record_838a.txt",
+      "--signature-hex",
+      "<normalized contents of release_artifacts/genesis_v05/core_slice_0/genesis_core_slice_0_authority_package.signature.hex>"
+    ],
+    "signer_public_key_record": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+  },
+  "non_claims": [
+    "no_signed_artifact_modified",
+    "no_live_graph_write",
+    "no_canonical_sufficiency_object_materialized",
+    "no_cdl_opened"
+  ],
+  "overall_result": "verified",
+  "phase": "GAP-SUFFICIENCY-GENESIS-LINEAGE-INTEGRATION-00",
+  "schema": "ILCSufficiencyGenesisLineageAuditV1",
+  "signed_root": {
+    "envelope_file_sha256": "ce09a46fd54e53c0eab1abe2fd59138aa261f2ba7d5655498faa5b3c585d7b4f",
+    "envelope_hash": "ddc686019018e05f3d88be1a879663c7c2756823bf8bc7fbf980743a92fc6c3c",
+    "envelope_hash_preimage_rule": "canonical_json_with_envelope_hash_null",
+    "envelope_path": "out/genesis_signing_root_envelope_v0.1.json",
+    "signature_file_sha256": "07b70c5a20b9392e10a2104263dffcfaf55b206431050a4509f3182d8bd24d21",
+    "signature_path": "out/genesis_signing_root_envelope_v0.1.sig",
+    "signature_sha256": "1928627acedfa9ae8835b09a9c5a7fb8b717ca491bca71835d05fcdbcd5d8959",
+    "signature_verification": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "signature_verified"
+    },
+    "signature_verification_command": [
+      "ilc_consensus/target/debug/pq_sign",
+      "verify",
+      "--input-file",
+      "out/genesis_signing_root_envelope_v0.1.json",
+      "--pubkey-record",
+      "docs/genesis/genesis_agent1_pubkey_record_838a.txt",
+      "--signature-hex",
+      "<normalized contents of out/genesis_signing_root_envelope_v0.1.sig>"
+    ],
+    "signer_public_key_record": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+  },
+  "slice_1": {
+    "core_slice_0_authority_package_sha256": "38a9f7351d00a1b92b6476c894552d78936400cf707076ccb6967fb5af5541e1",
+    "detached_verification_record": "release_artifacts/genesis_v05/public_rc_baseline_slice_1/genesis_v05_public_rc_baseline_slice_1.verification.json",
+    "node_count": 1035,
+    "package_path": "release_artifacts/genesis_v05/public_rc_baseline_slice_1/genesis_v05_public_rc_baseline_slice_1.json",
+    "package_sha256": "37e57cb137a849d77ab3f386235ec672edc091a22d0120b5bca226ebd87ef278",
+    "signature_file_sha256": "7cd15616c90b406372a5303074335759b5439b6565582b61621e00fcbd53bcbc",
+    "signature_path": "release_artifacts/genesis_v05/public_rc_baseline_slice_1/genesis_v05_public_rc_baseline_slice_1.signature.hex",
+    "signature_payload_path": "release_artifacts/genesis_v05/public_rc_baseline_slice_1/genesis_v05_public_rc_baseline_slice_1.signature_payload.bin",
+    "signature_payload_sha256": "1912afd8de4f7088cc04b624d7cb2b69d6705aa4d7e25fe6a8a56cf7ddb8f8d0",
+    "signature_sha256": "08e4e971ae7ba6d8b9b56ef2660a736840442f107ed47f3936ee7b5582f43fb5",
+    "signature_verification": {
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "signature_verified"
+    },
+    "signature_verification_command": [
+      "ilc_consensus/target/debug/pq_sign",
+      "verify",
+      "--input-file",
+      "release_artifacts/genesis_v05/public_rc_baseline_slice_1/genesis_v05_public_rc_baseline_slice_1.signature_payload.bin",
+      "--pubkey-record",
+      "docs/genesis/genesis_agent1_pubkey_record_838a.txt",
+      "--signature-hex",
+      "<normalized contents of release_artifacts/genesis_v05/public_rc_baseline_slice_1/genesis_v05_public_rc_baseline_slice_1.signature.hex>"
+    ],
+    "signer_public_key_record": "docs/genesis/genesis_agent1_pubkey_record_838a.txt"
+  }
+}

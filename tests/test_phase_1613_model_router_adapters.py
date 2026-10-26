@@ -452,3 +452,45 @@ def test_anthropic_adapter_rejects_non_integer_usage_counts() -> None:
 
     assert response.status == "failure"
     assert response.error_token == "provider_response_usage_invalid"
+
+
+def test_anthropic_adapter_preserves_provider_response_validation_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    adapter = AnthropicAdapter(api_key="test")
+
+    class _Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_args):
+            return None
+
+        def read(self, _limit: int) -> bytes:
+            return json.dumps(
+                {
+                    "content": [{"type": "text", "text": "ok"}],
+                    "usage": {"input_tokens": 1, "output_tokens": True},
+                }
+            ).encode("utf-8")
+
+    class _Opener:
+        def open(self, *_args, **_kwargs):
+            return _Response()
+
+    monkeypatch.setattr(adapter, "_opener", _Opener())
+    monkeypatch.setattr(
+        adapter,
+        "_parse_response",
+        lambda _body: ProviderResponse(
+            status="success",
+            content="ok",
+            error_token="forbidden",
+            token_counts_input=1,
+            token_counts_output=1,
+        ),
+    )
+    response = adapter.route(_request())
+
+    assert response.status == "failure"
+    assert response.error_token == "provider_response_success_error_token_forbidden"

@@ -357,7 +357,8 @@ Stop and surface to human before proceeding if:
    mode, or force-with-lease previous-head binding cannot be proven in filtered
    mirror replacement mode
 5. Smoke test fails any scenario
-6. `INVITE_ENFORCEMENT_ENABLED` is not `True` in the published wheel
+6. A clean published-wheel import of `is_enrollment_invite_enforced()` does not
+   return `True`
 7. ClawHub security scan returns `suspicious` on the `latest` version after retry
 
 ---

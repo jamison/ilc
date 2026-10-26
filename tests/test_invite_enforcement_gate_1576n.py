@@ -63,22 +63,12 @@ def _invite_batch_file(tmp_path: Path) -> Path:
     return path
 
 
-def test_enforcement_disabled_no_invite_required(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
-
-    invite_enforcement.require_invite_for_enrollment("agent:without-invite", None)
-
-
-def test_enforcement_enabled_none_invite_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
-
+def test_enforcement_none_invite_rejected() -> None:
     with pytest.raises(ValueError, match="invite_required_for_enrollment"):
         invite_enforcement.require_invite_for_enrollment("agent:without-invite", None)
 
 
-def test_enforcement_enabled_invalid_invite_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
-
+def test_enforcement_invalid_invite_rejected() -> None:
     with pytest.raises(ValueError):
         invite_enforcement.require_invite_for_enrollment(
             "agent:bad-invite",
@@ -86,8 +76,7 @@ def test_enforcement_enabled_invalid_invite_rejected(monkeypatch: pytest.MonkeyP
         )
 
 
-def test_enforcement_enabled_valid_invite_passes(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_enforcement_valid_invite_passes() -> None:
     redemption = _valid_redemption()
 
     invite_enforcement.require_invite_for_enrollment(
@@ -113,27 +102,17 @@ def test_legacy_redemption_without_invite_id_omits_nullable_field() -> None:
     assert "invite_id" not in payload
 
 
-def test_genesis_agent_bypass_when_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
-
+def test_genesis_agent_bypass_when_enforced() -> None:
     invite_enforcement.require_invite_for_enrollment(GENESIS_AGENT1_AGENT_ID, None)
 
 
-def test_genesis_agent_bypass_when_enabled(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
-
-    invite_enforcement.require_invite_for_enrollment(GENESIS_AGENT1_AGENT_ID, None)
-
-
-def test_is_enrollment_invite_enforced_returns_bool(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
-
+def test_is_enrollment_invite_enforced_returns_bool() -> None:
     assert isinstance(invite_enforcement.is_enrollment_invite_enforced(), bool)
     assert invite_enforcement.is_enrollment_invite_enforced() is True
 
 
-def test_invite_enforcement_module_guard_is_boolean() -> None:
-    assert isinstance(invite_enforcement.INVITE_ENFORCEMENT_ENABLED, bool)
+def test_invite_enforcement_public_flag_removed() -> None:
+    assert not hasattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED")
 
 
 def test_validate_invite_redemption_record_accepts_dict_and_dataclass() -> None:
@@ -143,24 +122,21 @@ def test_validate_invite_redemption_record_accepts_dict_and_dataclass() -> None:
     assert validate_invite_redemption_record(redemption.to_dict()) == redemption
 
 
-def test_redeemer_agent_id_mismatch_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_redeemer_agent_id_mismatch_rejected() -> None:
     redemption = _valid_redemption()
 
     with pytest.raises(ValueError, match="invite_redeemer_agent_id_mismatch"):
         invite_enforcement.require_invite_for_enrollment("not-the-redeemer", redemption.to_dict())
 
 
-def test_missing_agent_id_rejected_for_valid_invite(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_missing_agent_id_rejected_for_valid_invite() -> None:
     redemption = _valid_redemption(batch_id="batch-missing-agent")
 
     with pytest.raises(ValueError, match="invite_enrollment_agent_id_required"):
         invite_enforcement.require_invite_for_enrollment("", redemption)
 
 
-def test_nullifier_already_used_rejected(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_nullifier_already_used_rejected() -> None:
     redemption = _valid_redemption(batch_id="batch-nullifier-replay")
     registry = InviteNullifierRegistry()
     registry.register_nullifier(redemption.redemption_nullifier)
@@ -174,8 +150,7 @@ def test_nullifier_already_used_rejected(monkeypatch: pytest.MonkeyPatch) -> Non
         )
 
 
-def test_register_nullifier_requires_registry(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_register_nullifier_requires_registry() -> None:
     redemption = _valid_redemption(batch_id="batch-nullifier-register")
 
     with pytest.raises(ValueError, match="invite_nullifier_registry_required_for_registration"):
@@ -191,7 +166,6 @@ def test_cli_identity_init_rejects_missing_invite_when_enforcement_enabled(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     args = argparse.Namespace(
         identity_subcommand="init",
@@ -208,33 +182,10 @@ def test_cli_identity_init_rejects_missing_invite_when_enforcement_enabled(
         _run_identity_subcommand(args, tmp_path / "graph.json")
 
 
-def test_cli_identity_init_disabled_ignores_optional_bad_seed(
-    monkeypatch: pytest.MonkeyPatch,
-    tmp_path: Path,
-) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
-    args = argparse.Namespace(
-        identity_subcommand="init",
-        lineage_id="lineage-local",
-        key_ref="key-local-0",
-        invite="",
-        enable_invites=False,
-        identity_seed_hex="not-hex",
-        redeemer_pubkey_cid="",
-        redemption_epoch=0,
-    )
-
-    result = _run_identity_subcommand(args, tmp_path / "graph.json")
-
-    assert result["action"] == "init"
-    assert "invite_redemption_record" not in result["state"]
-
-
 def test_cli_identity_init_with_legacy_invite_rejected_when_enforcement_enabled(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     invite_path = _invite_batch_file(tmp_path)
     args = argparse.Namespace(

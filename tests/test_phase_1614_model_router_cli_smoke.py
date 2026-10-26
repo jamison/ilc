@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+import importlib
 from argparse import Namespace
 from pathlib import Path
 
@@ -55,6 +56,73 @@ def test_model_router_help_lists_four_subcommands() -> None:
     assert "list-receipts" in result.stdout
     assert "set-consent" in result.stdout
     assert "werner-context" in result.stdout
+
+
+def test_sidecar_passthrough_reports_missing_model_router_package(
+    monkeypatch,
+    capsys,
+) -> None:
+    cli_main = importlib.import_module("ilc_core.cli.main")
+    real_import_module = importlib.import_module
+
+    def fake_import_module(name: str, *args, **kwargs):
+        if name == "ilc_model_router.cli":
+            raise ModuleNotFoundError(
+                "No module named 'ilc_model_router'",
+                name="ilc_model_router",
+            )
+        return real_import_module(name, *args, **kwargs)
+
+    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(sys, "argv", ["ilc", "sidecar", "model-router", "--help"])
+
+    assert cli_main.main() == 1
+    payload = json.loads(capsys.readouterr().err)
+    assert payload["code"] == "sidecar_not_installed"
+
+
+def test_sidecar_passthrough_reports_missing_sidecar_dependency(
+    monkeypatch,
+    capsys,
+) -> None:
+    cli_main = importlib.import_module("ilc_core.cli.main")
+    real_import_module = importlib.import_module
+
+    def fake_import_module(name: str, *args, **kwargs):
+        if name == "ilc_model_router.cli":
+            raise ModuleNotFoundError(
+                "No module named 'missing_dependency'",
+                name="missing_dependency",
+            )
+        return real_import_module(name, *args, **kwargs)
+
+    monkeypatch.setattr(importlib, "import_module", fake_import_module)
+    monkeypatch.setattr(sys, "argv", ["ilc", "sidecar", "model-router", "--help"])
+
+    assert cli_main.main() == 1
+    payload = json.loads(capsys.readouterr().err)
+    assert payload["code"] == "sidecar_dependency_missing"
+    assert "missing_dependency" in payload["message"]
+
+
+def test_route_cli_rejects_non_finite_timeout_before_routing() -> None:
+    result = _run_cli(
+        "sidecar",
+        "model-router",
+        "route",
+        "--model",
+        "claude-haiku-4-5",
+        "--provider",
+        "anthropic",
+        "--message",
+        '{"role":"user","content":"ping"}',
+        "--timeout",
+        "nan",
+        "--dry-run",
+    )
+
+    assert result.returncode != 0
+    assert "model_router_timeout_invalid" in result.stderr
 
 
 def test_sidecar_list_includes_model_router() -> None:

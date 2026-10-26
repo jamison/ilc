@@ -1,0 +1,214 @@
+{
+  "schema_version": "ilc.mempalace.row25_preparation_receipt.v0.1",
+  "phase": "GAP-MEMPALACE-ROW25-PREPARATION-00",
+  "status": "complete",
+  "date": "2026-10-15",
+  "phase_start_sha": "722693e033cde2883083eabb8f859d65aaabdc00",
+  "planning_revision": 300,
+  "row25": {
+    "phase": "GAP-RELEASE-OBJECT-CDL-RATIFY-00",
+    "status": "pending_sensitive_go",
+    "exact_go_phrase": "GO Phase GAP-RELEASE-OBJECT-CDL-RATIFY-00 RELEASE-OBJECT-CDL-RATIFY-AUTHORIZED",
+    "go_consumed": false,
+    "cdl": "CDL-121",
+    "cdl_status": "open_prelocked_not_ratified"
+  },
+  "pre_refresh": {
+    "manifest_produced": "2026-09-26",
+    "manifest_frontier": "Rev 153 / native submit ingress CDL-117 awaiting GO / Phase 1605 CapProof CDL-115 awaiting GO / OBSERVE-00 time-gated",
+    "manifest_sha256": "5ee1d4b9f6609fb71a9e658481c8accc7ca79ead69d4195799d7429281ec79e6",
+    "manifest_tier_counts": {
+      "tier_a_canonical": 116,
+      "tier_b_planning": 55,
+      "tier_c_evidence": 23,
+      "tier_d_historical": 21
+    },
+    "palace_filesystem_timestamp_captured_before_first_attempt": false,
+    "limitation": "The pre-refresh palace filesystem timestamp was not captured before the first clean rebuild invocation; the committed manifest date, frontier, and SHA-256 are the reproducible pre-refresh anchors."
+  },
+  "manifest": {
+    "path": "docs/tools/mempalace/ilc_mempalace_current_frontier_manifest_v0.2.json",
+    "produced": "2026-10-15",
+    "frontier": "Rev 300 / Row 25 GAP-RELEASE-OBJECT-CDL-RATIFY-00 awaiting exact GO / OBSERVE-00 and Werner Row 16a time-gated",
+    "sha256": "7b260305913d65410f4d9f6d7e92134179e2949f899e734c4a374646fe32b384",
+    "tier_counts": {
+      "tier_a_canonical": 116,
+      "tier_b_planning": 66,
+      "tier_c_evidence": 33,
+      "tier_d_historical": 0
+    },
+    "source_count": 215,
+    "duplicate_source_count": 0,
+    "missing_source_count": 0,
+    "raw_chat_source_count": 0,
+    "historical_policy": "Raw and redacted transcript corpora are excluded from the active working set. Archived transcripts remain direct-read evidence for separately scoped historical work."
+  },
+  "rebuild": {
+    "command": "bash tools/mempalace/build_active_working_set.sh",
+    "final_exit_code": 0,
+    "incremental": false,
+    "mode": "copy",
+    "tiers": {
+      "tier_a_canonical": {
+        "files_processed": 116,
+        "drawers_filed": 5762
+      },
+      "tier_b_planning": {
+        "files_processed": 66,
+        "drawers_filed": 1991
+      },
+      "tier_c_evidence": {
+        "files_processed": 33,
+        "drawers_filed": 508
+      },
+      "tier_d_historical": {
+        "files_processed": 0,
+        "drawers_filed": 0
+      }
+    },
+    "embedding_count": 8261,
+    "content_hash_source_count": 215,
+    "bm25_document_count": 215,
+    "artifacts": {
+      "chroma_sqlite": {
+        "path": "out/mempalace_active_palace/chroma.sqlite3",
+        "size_bytes": 51535872,
+        "mtime": "2026-10-15T02:29:26+0200",
+        "sha256": "e578c671ce44897870345f79a85363852527c879b8601eb00fb4d3e15af1999b"
+      },
+      "content_hashes": {
+        "path": "out/mempalace_active_palace/.ilc_content_hashes.json",
+        "size_bytes": 31676,
+        "mtime": "2026-10-15T02:29:30+0200",
+        "sha256": "8190ffd552fb948d3c1b388a113cbba23d6895db9356a8636da59d4f852767d3"
+      },
+      "bm25_index": {
+        "path": "out/mempalace_active_palace/.ilc_bm25_index.pkl",
+        "size_bytes": 2086744,
+        "mtime": "2026-10-15T02:29:31+0200",
+        "sha256": "f16a63a64973222853d29be3acda4410a2d14b4baa5dadb946fb54a6c82036da"
+      }
+    },
+    "raw_chat_staged_path_count": 0,
+    "raw_chat_content_hash_key_count": 0,
+    "interrupted_attempts": [
+      {
+        "attempt": 1,
+        "exit_code": 130,
+        "reason": "The inherited manifest still included raw historical transcript sources. The run was stopped during Tier A, before Tier D mining, and the manifest was corrected to exclude those sources."
+      },
+      {
+        "attempt": 2,
+        "exit_code": 1,
+        "reason": "The run was stopped during Tier A after detecting that Rev 300 completion planning needed to be staged before the final clean build; otherwise the active palace would have been stale immediately after phase closure."
+      }
+    ]
+  },
+  "sentinel_queries": [
+    {
+      "id": "phase_1431_amnesia_guard",
+      "query": "Phase 1431 rehearsal identity ceremony permanently complete pq_keygen",
+      "source_filter": "PLANNING_INDEX.md",
+      "top_source": "out/mempalace_active_stage/tier_a_canonical/docs/PLANNING_INDEX.md",
+      "supporting_excerpt": "Phase 1431 Rehearsal Identity Ceremony: PERMANENTLY COMPLETE. All keypairs off-machine. Do NOT run pq_keygen for Phase 1431 under any circumstances.",
+      "direct_read_confirmed": true,
+      "pass": true
+    },
+    {
+      "id": "row25_frontier_and_exact_go",
+      "query": "GAP-RELEASE-OBJECT-CDL-RATIFY-00 Row 25 Rev 300 exact GO RELEASE-OBJECT-CDL-RATIFY-AUTHORIZED",
+      "source_filter": "antigravity_prompt__phase_gap_release_object_cdl_ratify_00",
+      "top_source": "out/mempalace_active_stage/tier_b_planning/docs/antigravity_tasks/antigravity_prompt__phase_gap_release_object_cdl_ratify_00_g10_release_cdl_ratify.md",
+      "supporting_excerpt": "GO required: GO Phase GAP-RELEASE-OBJECT-CDL-RATIFY-00 RELEASE-OBJECT-CDL-RATIFY-AUTHORIZED",
+      "direct_read_confirmed": true,
+      "pass": true
+    },
+    {
+      "id": "public_rc_live",
+      "query": "public_rc_live_phase_1575c",
+      "source_filter": "ilc_public_rc_gate_001_1575c",
+      "top_source": "out/mempalace_active_stage/tier_c_evidence/docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md",
+      "supporting_excerpt": "public_rc_live_phase_1575c | emitted",
+      "direct_read_confirmed": true,
+      "pass": true
+    },
+    {
+      "id": "epoch_1_anchor",
+      "query": "epoch 1 anchor 1791007007082",
+      "source_filter": "phase_gap_public_rc_epoch_anchor_clean_reset_00_walkthrough",
+      "top_source": "out/mempalace_active_stage/tier_c_evidence/docs/phases/phase_gap_public_rc_epoch_anchor_clean_reset_00_walkthrough.md",
+      "supporting_excerpt": "epoch_1_anchor_confirmed_GAP_OBSERVE_EPOCH_ANCHOR_VERIFY_00 [epoch_1_anchor_ms=1791007007082]",
+      "direct_read_confirmed": true,
+      "pass": true
+    },
+    {
+      "id": "reproducibility_split_verdict",
+      "query": "wheel reproducible_with_pinning sdist not_reproducible Rust deferred",
+      "source_filter": "ilc_reproducible_build_audit_GAP_REPRODUCIBLE_BUILD_AUDIT_00",
+      "top_source": "out/mempalace_active_stage/tier_b_planning/docs/specs/ilc_reproducible_build_audit_GAP_REPRODUCIBLE_BUILD_AUDIT_00_v0.1.md",
+      "supporting_excerpt": "Python wheel: reproducible_with_pinning; Python sdist: not_reproducible; Rust empirical build comparison was not possible because rustc is not installed.",
+      "direct_read_confirmed": true,
+      "pass": true
+    },
+    {
+      "id": "row25_schema_delta",
+      "query": "signature_scheme complete artifact attestation ReleaseAuthoritySetNode ReleaseChannelIndexNode verified apply",
+      "source_filter": "antigravity_prompt__phase_gap_release_object_cdl_ratify_00",
+      "top_source": "out/mempalace_active_stage/tier_b_planning/docs/antigravity_tasks/antigravity_prompt__phase_gap_release_object_cdl_ratify_00_g10_release_cdl_ratify.md",
+      "supporting_excerpt": "The schema-delta matrix must cover signature_scheme dispatch, complete artifact attestation coverage, artifact digest distinctions, ReleaseAuthoritySetNode, ReleaseChannelIndexNode, verified apply, and reproducibility verdicts.",
+      "direct_read_confirmed": true,
+      "pass": true
+    }
+  ],
+  "row25_prompt_hardening": {
+    "path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_release_object_cdl_ratify_00_g10_release_cdl_ratify.md",
+    "validation_result": "VALID",
+    "required_prerequisite_tokens_named": true,
+    "named_evidence_chain_required": true,
+    "field_by_field_schema_delta_required": true,
+    "incompatible_authority_delta_hard_stop": true,
+    "phase_start_sha_required": true,
+    "committed_range_runtime_diff_required": true,
+    "working_tree_runtime_diff_required": true,
+    "verbatim_command_output_required": true,
+    "exact_go_phrase_preserved": true
+  },
+  "phase_prompt_validation": "VALID",
+  "queue_sync": {
+    "result": "Queue sync complete: added=0, updated=0, total_items=1433",
+    "limitation": "The existing queue-sync helper recognizes numeric phase identifiers and therefore did not add this named GAP phase. Planning, STATUS, prompt, receipt, walkthrough, and graph ledger are the authoritative phase records."
+  },
+  "verification": {
+    "phase_prompt_valid": true,
+    "row25_prompt_valid": true,
+    "manifest_json_valid": true,
+    "receipt_json_valid": true,
+    "ledger_json_valid": true,
+    "graph_coverage_status": "pass",
+    "graph_coverage_missing_count": 0,
+    "fix38_batch": "manual_batch_208_gap_mempalace_row25_preparation_00",
+    "fix38_record_count": 11,
+    "fix38_records_missing_source_tree_member": 0,
+    "all_staged_sources_match_repository": true,
+    "focused_release_test_count": 61,
+    "focused_release_tests_passed": true,
+    "git_diff_check_passed": true,
+    "runtime_diff_empty": true,
+    "cdl_and_constitutional_register_diff_empty": true
+  },
+  "output_token": "mempalace_row25_preparation_complete_GAP_MEMPALACE_ROW25_PREPARATION_00",
+  "non_claims": [
+    "no_row25_execution",
+    "no_sensitive_go_consumption",
+    "no_cdl_121_mutation_or_ratification",
+    "no_runtime_or_test_change",
+    "no_package_or_build_toolchain_mutation",
+    "no_release_assertion_publication",
+    "no_public_mirror_push",
+    "no_vps_validator_or_network_mutation",
+    "no_wallet_ecu_ilc_settlement_or_minting_mutation",
+    "no_epoch_transition",
+    "no_threshold_bls_activation",
+    "no_release_authority_set_or_channel_index_publication"
+  ]
+}

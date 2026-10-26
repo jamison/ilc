@@ -57,7 +57,7 @@ def _valid_redemption() -> dict[str, object]:
 
 
 def test_enforcement_is_active() -> None:
-    assert invite_enforcement.INVITE_ENFORCEMENT_ENABLED is True
+    assert not hasattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED")
     assert invite_enforcement.is_enrollment_invite_enforced() is True
 
 

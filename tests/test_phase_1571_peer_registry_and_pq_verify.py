@@ -136,6 +136,28 @@ def test_verify_mldsa65_signature_wrong_message_false_with_cryptography_backend(
     assert verify_mldsa65_signature(b"tampered", signature.hex(), public_key.hex()) is False
 
 
+def test_verify_mldsa65_signature_requires_exact_fips204_context() -> None:
+    private_key = MLDSA65PrivateKey.generate()
+    public_key = private_key.public_key().public_bytes_raw()
+    message = b"context-bound-mldsa-message"
+    context = b"ILC_GENESIS_ROOT_ENVELOPE_V1"
+    signature = private_key.sign(message, context)
+
+    assert verify_mldsa65_signature(
+        message,
+        signature.hex(),
+        public_key.hex(),
+        context=context,
+    ) is True
+    assert verify_mldsa65_signature(message, signature.hex(), public_key.hex()) is False
+    assert verify_mldsa65_signature(
+        message,
+        signature.hex(),
+        public_key.hex(),
+        context=b"wrong-context",
+    ) is False
+
+
 def test_dependency_token_exported() -> None:
     assert (
         pq_signature_verify.CDL_101_PQ_VERIFY_DEPENDENCY

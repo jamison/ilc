@@ -163,7 +163,7 @@ if [[ "${DRY_RUN}" == "1" ]]; then
   fi
   printf 'invite_bundle=%s\n' "${INVITE_BUNDLE}"
   if [[ -n "${INVITE_CODE}" ]]; then
-    printf 'invite_code=%s\n' "${INVITE_CODE}"
+    printf 'invite_code=***%s\n' "${INVITE_CODE: -4}"
   fi
   if [[ -n "${RELAY_URL}" ]]; then
     printf 'relay_url=%s\n' "${RELAY_URL}"

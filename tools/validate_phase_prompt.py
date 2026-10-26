@@ -20,6 +20,7 @@ FILENAME_RE = re.compile(
     r"(?P<phase>"
     r"(?:\d+[a-z]{0,2}(?:_fix\d+[a-z]{0,2})?)"              # numeric: 1234, 1234a, 1234_fix1
     r"|(?:gap_[a-z][a-z0-9]*(?:_[a-z][a-z0-9]*)*_\d+[a-z]{0,2})"  # GAP with terminal slot: gap_agent_harness_00, gap_werner_02a
+    r"|(?:sim_[a-z][a-z0-9]*(?:_[a-z0-9][a-z0-9]*)*_\d+[a-z]{0,2})"  # SIM with terminal slot: sim_launder_02_00, sim_ratchet_02_00a
     r")"
     r"(?:_g(?P<group>\d+))?"       # optional _g<N> group (Type A has it; Type B does not)
     r"_(?P<slug>[a-z0-9_]+)\.md$"
@@ -29,6 +30,7 @@ H1_RE = re.compile(
     r"(?P<phase>"
     r"(?:\d+[a-z]{0,2}(?:[_-]Fix\d+[a-z]{0,2})?)"        # numeric: 1234, 1234a, 1234-Fix1
     r"|(?:GAP-[A-Z0-9](?:[A-Z0-9_]|-(?![Gg]\d))*)"        # GAP-series: stops before -G<digit> suffix
+    r"|(?:SIM-[A-Z0-9](?:[A-Z0-9_]|-(?![Gg]\d))*)"        # SIM-series: stops before -G<digit> suffix
     r")"
     r"(?:-G(?P<group>\d+))?\b",
     re.IGNORECASE,
@@ -160,18 +162,20 @@ def validate(path: Path) -> list[str]:
     numeric_m = re.match(r"\d+", expected_phase)
     expected_phase_number = int(numeric_m.group(0)) if numeric_m else None
     is_gap_series = expected_phase.startswith("gap_")
+    is_sim_series = expected_phase.startswith("sim_")
+    is_named_series = is_gap_series or is_sim_series
 
     if expected_phase_number is not None and expected_phase_number >= UNKNOWN_UNKNOWN_DISCOVERY_PHASE_FLOOR:
         for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
             if section not in text:
                 errors.append(f"missing_unknown_unknown_discovery_section:{section}")
-    elif is_gap_series:
-        # GAP-series prompts must always include §0 discovery sections.
+    elif is_named_series:
+        # GAP-series and SIM-series prompts must always include §0 discovery sections.
         for section in UNKNOWN_UNKNOWN_DISCOVERY_SECTIONS:
             if section not in text:
                 errors.append(f"missing_unknown_unknown_discovery_section:{section}")
 
-    if (expected_phase_number is not None and expected_phase_number >= LMDB_NODE_REGISTRATION_PHASE_FLOOR) or is_gap_series:
+    if (expected_phase_number is not None and expected_phase_number >= LMDB_NODE_REGISTRATION_PHASE_FLOOR) or is_named_series:
         # Require a dedicated LMDB node registration section.
         # This enforces the Graph Intake Protocol: every new file in
         # docs/specs/, docs/antigravity_tasks/, ilc_core/, tools/, tests/
@@ -179,7 +183,7 @@ def validate(path: Path) -> list[str]:
         if "lmdb node registration" not in headings:
             errors.append("missing_section:lmdb_node_registration")
 
-    if (expected_phase_number is not None and expected_phase_number >= PUBLIC_MIRROR_MAINTENANCE_PHASE_FLOOR) or is_gap_series:
+    if (expected_phase_number is not None and expected_phase_number >= PUBLIC_MIRROR_MAINTENANCE_PHASE_FLOOR) or is_named_series:
         # Require explicit sanitized public mirror disposition. This prevents
         # phases from silently making the generated private mirror stale or
         # implying public mirror publication authority.

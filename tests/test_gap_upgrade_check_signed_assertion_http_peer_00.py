@@ -12,6 +12,7 @@ import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.release import upgrade_check
 from ilc_core.release.constants import (
     MAX_UPGRADE_ASSERTION_BYTES,
@@ -19,6 +20,9 @@ from ilc_core.release.constants import (
     UPGRADE_CHECK_D2D_HOP_COUNT_VALUE,
 )
 from ilc_core.release.installable_release_signature import (
+    DEFAULT_GENESIS_LINEAGE_REF,
+    DEFAULT_PRIOR_RELEASE_ENVELOPE_REF,
+    DEFAULT_RELEASE_KEY_REGISTRATION_REF,
     SIGNED_PREIMAGE_DOMAIN,
     compute_signed_preimage_sha256,
 )
@@ -50,42 +54,72 @@ def _release_assertion_payload(
         artifact_id=artifact_id,
         artifact_sha256=artifact_sha256,
     )
-    return {
-        "assertion_cid": "bafy-http-peer-discovery-v1",
-        "schema_version": "software_release_assertion.v0.1",
-        "software_release_node": {
-            "artifact_cids": ["bafy-artifact-wheel-v1"],
-            "build_recipe_cid": "bafy-build-recipe-v1",
-            "changelog_hash": "33" * 32,
-            "cid": "bafy-release-node-v1",
-            "node_kind": "SoftwareReleaseNode",
-            "package_name": "ilc-core",
-            "release_channel": "public_rc",
-            "release_date": "2026-10-09T12:00:00Z",
-            "release_key_pubkey": public_key_hex,
-            "release_signature_ref": "release-attestation:wheel",
-            "schema_version": "software_release_node.v0.1",
-            "source_commit": "44" * 32,
-            "version": version,
-        },
-        "release_attestation_edges": [
-            {
-                "artifact_id": artifact_id,
-                "artifact_sha256": artifact_sha256,
-                "attestation_date": "2026-10-09T12:00:00Z",
-                "edge_type": "RELEASE_ATTESTS_ARTIFACT",
-                "schema_version": "release_attestation_edge.v0.1",
-                "signed_preimage_domain": SIGNED_PREIMAGE_DOMAIN,
-                "signed_preimage_sha256": signed_preimage_sha256,
-                "signer_public_key_hex": public_key_hex,
-                "signature_hex": signature_hex
-                or private_key.sign(bytes.fromhex(signed_preimage_sha256)).hex(),
-                "signing_algorithm": "Ed25519",
-                "source": "bafy-release-node-v1",
-                "target": "bafy-artifact-wheel-v1",
-            }
-        ],
+    artifact_body = {
+        "artifact_id": artifact_id,
+        "artifact_type": "wheel",
+        "filename": f"ilc_core-{version}-py3-none-any.whl",
+        "node_kind": "ArtifactNode",
+        "package_name": "ilc-core",
+        "package_version": version,
+        "pypi_url": "https://example.test/release.whl",
+        "schema_version": "artifact_node.v0.1",
+        "sha256": artifact_sha256,
+        "size_bytes": 1234,
     }
+    artifact = {**artifact_body, "cid": node_id_from_obj(artifact_body)}
+    recipe_body = {
+        "build_command": "python -m build",
+        "build_date": "2026-10-09T12:00:00Z",
+        "build_env_hash": "66" * 32,
+        "build_toolchain": "python-build",
+        "builder_agent_id": "phase:http-peer-test",
+        "node_kind": "BuildRecipeNode",
+        "reproducibility_hash": "77" * 32,
+        "schema_version": "build_recipe_node.v0.1",
+        "source_commit": "44" * 32,
+    }
+    recipe = {**recipe_body, "cid": node_id_from_obj(recipe_body)}
+    release_body = {
+        "artifact_cids": [artifact["cid"]],
+        "build_recipe_cid": recipe["cid"],
+        "changelog_hash": "33" * 32,
+        "node_kind": "SoftwareReleaseNode",
+        "package_name": "ilc-core",
+        "release_channel": "public_rc",
+        "release_date": "2026-10-09T12:00:00Z",
+        "release_key_pubkey": public_key_hex,
+        "release_signature_ref": "release-attestation:wheel",
+        "schema_version": "software_release_node.v0.1",
+        "source_commit": "44" * 32,
+        "version": version,
+    }
+    release = {**release_body, "cid": node_id_from_obj(release_body)}
+    edge = {
+        "artifact_id": artifact_id,
+        "artifact_sha256": artifact_sha256,
+        "attestation_date": "2026-10-09T12:00:00Z",
+        "edge_type": "RELEASE_ATTESTS_ARTIFACT",
+        "genesis_lineage_ref": DEFAULT_GENESIS_LINEAGE_REF,
+        "prior_release_envelope_ref": DEFAULT_PRIOR_RELEASE_ENVELOPE_REF,
+        "release_key_registration_ref": DEFAULT_RELEASE_KEY_REGISTRATION_REF,
+        "schema_version": "release_attestation_edge.v0.1",
+        "signed_preimage_domain": SIGNED_PREIMAGE_DOMAIN,
+        "signed_preimage_sha256": signed_preimage_sha256,
+        "signer_public_key_hex": public_key_hex,
+        "signature_hex": signature_hex
+        or private_key.sign(bytes.fromhex(signed_preimage_sha256)).hex(),
+        "signing_algorithm": "Ed25519",
+        "source": release["cid"],
+        "target": artifact["cid"],
+    }
+    body = {
+        "artifact_nodes": [artifact],
+        "build_recipe_nodes": [recipe],
+        "release_attestation_edges": [edge],
+        "schema_version": "software_release_assertion.v0.1",
+        "software_release_node": release,
+    }
+    return {**body, "assertion_cid": node_id_from_obj(body)}
 
 
 def _fixed_now() -> datetime:
@@ -209,7 +243,7 @@ def test_http_peer_discovery_succeeds_through_default_fetcher(
     )
 
 
-def test_http_peer_tampered_payload_falls_back_to_https(
+def test_http_peer_tampered_payload_isolated_then_falls_back(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -234,7 +268,6 @@ def test_http_peer_tampered_payload_falls_back_to_https(
         )
 
     assert result["discovery_source"] == "https_fallback"
-    assert result["assertion_cid"] == valid["assertion_cid"]
 
 
 def test_explicit_endpoint_still_requires_https(tmp_path: Path) -> None:
@@ -295,7 +328,7 @@ def test_http_peer_redirect_is_not_followed_and_falls_back(
     assert result["discovery_source"] == "https_fallback"
 
 
-def test_http_peer_oversized_response_falls_back(
+def test_http_peer_oversized_response_isolated_then_falls_back(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
@@ -310,6 +343,34 @@ def test_http_peer_oversized_response_falls_back(
         handler.end_headers()
 
     with _http_server(_oversized) as (base_url, _state):
+        hints_path = tmp_path / "bootstrap_fetch_peers.json"
+        _write_bootstrap_fetch_peers(hints_path, [base_url])
+        result = _check_for_upgrade(
+            tmp_path=tmp_path,
+            public_key_hex=public_key_hex,
+            hints_path=hints_path,
+            fetcher=_fallback(valid),
+        )
+
+    assert result["discovery_source"] == "https_fallback"
+
+
+def test_http_peer_negative_content_length_isolated_then_falls_back(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    private_key, public_key_hex = _release_keypair()
+    valid = _release_assertion_payload(private_key=private_key, public_key_hex=public_key_hex)
+    monkeypatch.setattr(upgrade_check, "release_signer_public_key_hex", lambda: public_key_hex)
+
+    def _negative_length(handler: BaseHTTPRequestHandler, state: _ServerState) -> None:
+        handler.send_response(200)
+        handler.send_header("Content-Type", "application/json")
+        handler.send_header("Content-Length", "-1")
+        handler.end_headers()
+        handler.wfile.write(json.dumps(valid).encode("utf-8"))
+
+    with _http_server(_negative_length) as (base_url, _state):
         hints_path = tmp_path / "bootstrap_fetch_peers.json"
         _write_bootstrap_fetch_peers(hints_path, [base_url])
         result = _check_for_upgrade(

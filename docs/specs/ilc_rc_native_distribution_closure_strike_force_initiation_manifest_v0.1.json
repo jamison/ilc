@@ -1,0 +1,40 @@
+{
+  "authorization_label": "RC-NATIVE-DISTRIBUTION-CLOSURE-00-STAGE-1",
+  "baseline": {
+    "phase_1624_commit": "efb1e5cb1",
+    "row_25_2_stage_a_commit": "ed4e4d8a8",
+    "row_25_2_stage_a_token_fix_commit": "3f228ed61"
+  },
+  "campaign_id": "RC-NATIVE-DISTRIBUTION-CLOSURE-STRIKE-FORCE-00",
+  "created_at": "2026-10-24",
+  "endpoint": {
+    "claim": "A clean invited agent can establish Genesis-rooted identity, derive the authorized release from authenticated ILC evidence, verify present eligibility locally, fetch release and consensus artifacts from arbitrary byte providers, and complete a clean upgrade or bootstrap smoke.",
+    "excludes": [
+      "mainnet activation",
+      "production minting or settlement activation",
+      "threshold-BLS release governance",
+      "Sufficiency Phase 1624 re-opening",
+      "epistemic Rows 38-43",
+      "time-gated OBSERVE execution"
+    ]
+  },
+  "schema_version": "ilc.strike_force.initiation_manifest.v0.1",
+  "stage_1": {
+    "execution_order": [
+      "GAP-RELEASE-CURRENT-POLICY-AUTHORITY-DESIGN-00",
+      "GAP-REPRODUCIBLE-BUILD-ATTESTATION-00"
+    ],
+    "phase_sensitivity": "NON-SENSITIVE",
+    "purpose": "Freeze the minimum authority route and reproducibility evidence before any constitutional publication, resolver activation, package publication, live deployment, or release ceremony.",
+    "status": "PENDING_EXACT_HUMAN_AUTHORIZATION"
+  },
+  "stage_2": {
+    "authorization": "NOT_AUTHORIZED_BY_THIS_MANIFEST",
+    "requirements": [
+      "Stage 1 completion",
+      "validated prompts for every sensitive action",
+      "immutable execution manifest v0.2 with exact phase IDs, scopes, GO clauses, and hard stops",
+      "one later compound human authorization quoting every sensitive clause"
+    ]
+  }
+}

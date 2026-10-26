@@ -103,10 +103,7 @@ def _build_single_redemption(*, batch_id: str = "batch-1576r-single"):
     return batch, redemption
 
 
-def test_batch_creation_and_single_redemption_end_to_end(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_batch_creation_and_single_redemption_end_to_end() -> None:
     _batch, redemption = _build_single_redemption()
     registry = InviteNullifierRegistry()
     remote_registry = InviteNullifierRegistry()
@@ -179,10 +176,7 @@ def test_single_nonce_batch_no_proof_required() -> None:
     assert redemption.redeemer_agent_id == LEFT_AGENT_ID
 
 
-def test_double_redemption_rejected_by_nullifier_registry(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_double_redemption_rejected_by_nullifier_registry() -> None:
     _batch, redemption = _build_single_redemption(batch_id="batch-1576r-replay")
     registry = InviteNullifierRegistry()
 
@@ -204,8 +198,7 @@ def test_double_redemption_rejected_by_nullifier_registry(
         )
 
 
-def test_different_nonce_from_same_batch_accepted(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_different_nonce_from_same_batch_accepted() -> None:
     batch, private_nonces = _build_two_nonce_batch(batch_id="batch-1576r-distinct")
     registry = InviteNullifierRegistry()
     left = build_invite_redemption_record(
@@ -246,19 +239,7 @@ def test_different_nonce_from_same_batch_accepted(monkeypatch: pytest.MonkeyPatc
     assert len(registry) == 2
 
 
-def test_enforcement_disabled_allows_enrollment_without_invite(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", False)
-
-    invite_enforcement.require_invite_for_enrollment("agent-without-invite", None)
-
-
-def test_enforcement_enabled_blocks_enrollment_without_invite(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
-
+def test_enforcement_blocks_enrollment_without_invite() -> None:
     with pytest.raises(ValueError, match="invite_required_for_enrollment"):
         invite_enforcement.require_invite_for_enrollment("agent-without-invite", None)
 

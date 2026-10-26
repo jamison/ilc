@@ -186,10 +186,7 @@ def test_handle_registers_incoming_nullifier_once() -> None:
     assert len(registry) == 1
 
 
-def test_cross_node_gossip_blocks_redeemed_invite_when_enforcement_enabled(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(invite_enforcement, "INVITE_ENFORCEMENT_ENABLED", True)
+def test_cross_node_gossip_blocks_redeemed_invite_when_enforcement_enabled() -> None:
     registry_node_b = InviteNullifierRegistry()
     redemption = _valid_redemption()
     message = build_nullifier_gossip_message(

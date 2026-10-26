@@ -626,17 +626,16 @@ def publish_assembled_assertion(
     if not isinstance(response, Mapping) or response.get("ok") is not True:
         raise ReleaseAssertionCeremonyError("native_submit_live_publish_failed")
     release_date = _utc_now_z()
-    well_known_latest = {
-        **assertion_core,
-        "graph_publication": {
-            "native_submit_node_id": response.get("node_id"),
-            "receiver_profile": response.get("receiver_profile"),
-            "submitted_at_utc": release_date,
-            "target_receiver_uri": receiver["endpoint_uri"],
-            "transport_profile": "native_quic_full_rust",
-        },
-        "native_submit_envelope": native_envelope,
+    graph_publication = {
+        "native_submit_node_id": response.get("node_id"),
+        "receiver_profile": response.get("receiver_profile"),
+        "submitted_at_utc": release_date,
+        "target_receiver_uri": receiver["endpoint_uri"],
+        "transport_profile": "native_quic_full_rust",
     }
+    # Publication receipts are evidence about transport execution, not fields
+    # of the immutable software_release_assertion.v0.1 wire object.
+    well_known_latest = {**assertion_core, "native_submit_envelope": native_envelope}
     _atomic_write_json(out_dir / "native_submit_envelope.json", native_envelope, mode=0o600)
     _atomic_write_json(out_dir / "native_submit_result.json", submit_result)
     local_well_known = _atomic_write_json(out_dir / "well_known_latest.json", well_known_latest)
@@ -668,6 +667,7 @@ def publish_assembled_assertion(
         "assertion_cid": assertion_core["assertion_cid"],
         "date": release_date,
         "epoch": epoch,
+        "graph_publication": graph_publication,
         "https_well_known_endpoint": https_well_known_endpoint,
         "nginx_well_known_path": nginx_written,
         "non_claims": [

@@ -21,8 +21,8 @@ contradiction, governance authority, and more.
 Key public documentation:
 - `README.md` — project overview and quickstart
 - `QUICKSTART.md` — running a local node
-- `docs/architecture/` — Architecture Decision Records (ADRs) and canonical glossary
-- `docs/adr/` — formal governance decisions
+- `docs/adr/` — Architecture Decision Records (ADRs); formal architectural decisions with rationale
+- `docs/architecture/` — canonical glossary and architecture reference specs
 - `economics.md` — ECU and ILC economic model overview
 - `metaphysics.md` — epistemological foundations
 - `WHITEPAPER.md` — full whitepaper

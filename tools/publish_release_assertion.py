@@ -131,7 +131,7 @@ def build_release_assertion(
     *,
     version: str,
     artifact_sha256: str,
-    artifact_cid: str,
+    artifact_cid: str | None,
     artifact_size: int,
     source_commit: str,
     channel: str = "stable",
@@ -171,16 +171,23 @@ def build_release_assertion(
         fixture_release_signing_key_hex,
         signed_preimage_sha256,
     )
-    artifact_node = {
+    artifact_node_body = {
+        "artifact_id": artifact_id,
         "artifact_type": "wheel",
-        "cid": artifact_cid,
+        "filename": f"ilc_core-{version}-py3-none-any.whl",
         "node_kind": "ArtifactNode",
         "package_name": "ilc-core",
         "package_version": version,
+        "pypi_url": f"https://example.invalid/fixtures/ilc_core-{version}-py3-none-any.whl",
         "schema_version": "artifact_node.v0.1",
         "sha256": artifact_sha256,
         "size_bytes": artifact_size,
     }
+    computed_artifact_cid = node_id_from_obj(artifact_node_body)
+    if artifact_cid is not None and artifact_cid != computed_artifact_cid:
+        raise ReleaseAssertionToolingError("artifact_cid_mismatch")
+    artifact_cid = computed_artifact_cid
+    artifact_node = {**artifact_node_body, "cid": artifact_cid}
     build_recipe = {
         "build_command": "python -m build",
         "build_date": release_date,
@@ -192,7 +199,10 @@ def build_release_assertion(
         "schema_version": "build_recipe_node.v0.1",
         "source_commit": source_commit,
     }
-    build_recipe_cid = build_recipe_cid or node_id_from_obj(build_recipe)
+    computed_build_recipe_cid = node_id_from_obj(build_recipe)
+    if build_recipe_cid is not None and build_recipe_cid != computed_build_recipe_cid:
+        raise ReleaseAssertionToolingError("build_recipe_cid_mismatch")
+    build_recipe_cid = computed_build_recipe_cid
     release_node_body = {
         "artifact_cids": [artifact_cid],
         "build_recipe_cid": build_recipe_cid,
@@ -239,18 +249,7 @@ def build_release_assertion(
         fixture_bls_signing_key_hex=fixture_bls_signing_key_hex,
         epoch=epoch,
     )
-    return {
-        **assertion_core,
-        "fixture_release_authority": True,
-        "native_submit_envelope": native_envelope,
-        "non_claims": [
-            "fixture_signatures_only",
-            "no_genesis_key_use",
-            "no_live_native_quic_submit",
-            "no_lmdb_write",
-            "no_public_cache_update",
-        ],
-    }
+    return {**assertion_core, "native_submit_envelope": native_envelope}
 
 
 def build_fixture_native_submit_envelope(
@@ -288,7 +287,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--version", required=True)
     parser.add_argument("--artifact-sha256", required=True)
-    parser.add_argument("--artifact-cid", required=True)
+    parser.add_argument(
+        "--artifact-cid",
+        default="",
+        help="Optional expected ArtifactNode CID; mismatch fails closed",
+    )
     parser.add_argument("--artifact-size", required=True)
     parser.add_argument("--source-commit", required=True)
     parser.add_argument("--artifact-id", default="")
@@ -316,7 +319,7 @@ def main(argv: list[str] | None = None) -> int:
         payload = build_release_assertion(
             version=str(args.version),
             artifact_sha256=str(args.artifact_sha256),
-            artifact_cid=str(args.artifact_cid),
+            artifact_cid=str(args.artifact_cid or "") or None,
             artifact_size=_require_positive_int(str(args.artifact_size), "artifact_size_invalid"),
             source_commit=str(args.source_commit),
             channel=str(args.channel),

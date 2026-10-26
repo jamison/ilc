@@ -25,6 +25,8 @@ def verify_mldsa65_signature(
     message_bytes: bytes,
     signature_hex: str,
     pubkey_hex: str,
+    *,
+    context: bytes | None = None,
 ) -> bool:
     """Verify an ML-DSA-65 signature. Return False on any error.
 
@@ -33,6 +35,8 @@ def verify_mldsa65_signature(
     """
 
     if not isinstance(message_bytes, bytes):
+        return False
+    if context is not None and not isinstance(context, bytes):
         return False
     if not _is_hex_string(signature_hex, _MLDSA_SIG_HEX_LENGTH):
         return False
@@ -50,12 +54,17 @@ def verify_mldsa65_signature(
     else:
         try:
             public_key = MLDSA65PublicKey.from_public_bytes(pubkey_bytes)
-            public_key.verify(sig_bytes, message_bytes)
+            public_key.verify(sig_bytes, message_bytes, context)
             return True
         except InvalidSignature:
             return False
         except (AttributeError, TypeError, ValueError, RuntimeError):
             return False
+
+    if context is not None:
+        # This liboqs API has no FIPS 204 context parameter. Never silently
+        # verify a contextual signature as though it were contextless.
+        return False
 
     try:
         import oqs  # type: ignore[import]

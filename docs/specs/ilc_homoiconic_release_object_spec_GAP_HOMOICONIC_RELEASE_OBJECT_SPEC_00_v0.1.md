@@ -226,6 +226,7 @@ Optional fields:
 | `prior_release_envelope_ref` | string | Prior release envelope lineage reference |
 | `release_key_registration_ref` | string | Release-key authority reference |
 | `genesis_lineage_ref` | string | Genesis lineage authority reference |
+| `signature_scheme` | string | Forward-compatible release authority scheme label. If absent, current validators treat the edge as `ed25519_phase_1335`; explicit `ed25519_phase_1335` is active; `threshold_bls_v1` is recognized but inactive and must fail closed until a later activation phase. |
 
 Signature compatibility:
 

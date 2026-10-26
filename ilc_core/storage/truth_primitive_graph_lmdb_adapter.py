@@ -17,6 +17,8 @@ from ilc_core.storage.lmdb_public_runtime import (
 
 
 TRUTH_PRIMITIVE_GRAPH_LMDB_ADAPTER_VERSION = "truth_primitive_graph_lmdb_adapter_1250.v0.1"
+MAX_RELEASE_ASSERTION_GRAPH_SCAN_NODES = 4_096
+MAX_RELEASE_ASSERTION_CANDIDATES = 128
 
 
 def _mapping(value: Any) -> dict[str, Any] | None:
@@ -55,6 +57,41 @@ def _is_release_assertion_payload(value: dict[str, Any]) -> bool:
     )
 
 
+def _reconstruct_native_submit_envelope(record: dict[str, Any]) -> dict[str, Any] | None:
+    required = {"v", "primitive", "agent_id", "epoch", "payload", "native_submit_sig"}
+    if not required <= set(record):
+        return None
+    envelope = {
+        "v": record["v"],
+        "primitive": record["primitive"],
+        "agent_id": record["agent_id"],
+        "epoch": record["epoch"],
+        "payload": record["payload"],
+        "sig": record["native_submit_sig"],
+    }
+    from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
+    from ilc_core.epistemic.truth_primitive_submission_runtime import (
+        verify_native_submit_sig_envelope,
+    )
+
+    try:
+        verify_native_submit_sig_envelope(envelope)
+    except EpistemicSubmissionError:
+        return None
+    return envelope
+
+
+def _with_reconstructed_provenance(
+    assertion: dict[str, Any],
+    record: dict[str, Any],
+) -> dict[str, Any]:
+    result = dict(assertion)
+    envelope = _reconstruct_native_submit_envelope(record)
+    if envelope is not None:
+        result["native_submit_envelope"] = envelope
+    return result
+
+
 def _extract_release_assertion_payload(record: dict[str, Any]) -> dict[str, Any] | None:
     """Extract the full release assertion payload from known graph-node shapes."""
 
@@ -63,13 +100,13 @@ def _extract_release_assertion_payload(record: dict[str, Any]) -> dict[str, Any]
 
     direct = _mapping(record.get("software_release_assertion"))
     if direct is not None and _is_release_assertion_payload(direct):
-        return direct
+        return _with_reconstructed_provenance(direct, record)
 
     content = _mapping(record.get("content"))
     if content is not None:
         nested = _mapping(content.get("software_release_assertion"))
         if nested is not None and _is_release_assertion_payload(nested):
-            return nested
+            return _with_reconstructed_provenance(nested, record)
 
     payload = record.get("payload")
     if isinstance(payload, str):
@@ -80,13 +117,13 @@ def _extract_release_assertion_payload(record: dict[str, Any]) -> dict[str, Any]
     if payload_mapping is None:
         return None
     if _is_release_assertion_payload(payload_mapping):
-        return payload_mapping
+        return _with_reconstructed_provenance(payload_mapping, record)
     payload_content = _mapping(payload_mapping.get("content"))
     if payload_content is None:
         return None
     nested = _mapping(payload_content.get("software_release_assertion"))
     if nested is not None and _is_release_assertion_payload(nested):
-        return nested
+        return _with_reconstructed_provenance(nested, record)
     return None
 
 
@@ -228,14 +265,33 @@ class TruthPrimitiveGraphStore(_LmdbRuntimeBase):
         if not isinstance(channel, str) or not channel.strip():
             return None
         normalized_channel = channel.strip()
+        from ilc_core.release.upgrade_check import UpgradeCheckError, validate_release_assertion
+
         matches: list[dict[str, Any]] = []
-        for row in self.iter_nodes():
+        scanned = 0
+        bounds_exceeded = False
+        for row in self._iter_json(b"nodes"):
+            scanned += 1
+            if scanned > MAX_RELEASE_ASSERTION_GRAPH_SCAN_NODES:
+                bounds_exceeded = True
+                break
+            if not isinstance(row, dict):
+                continue
             assertion = _extract_release_assertion_payload(row)
             if assertion is None:
                 continue
             release_node = _mapping(assertion.get("software_release_node")) or {}
             if release_node.get("release_channel") == normalized_channel:
+                try:
+                    validate_release_assertion(assertion)
+                except UpgradeCheckError:
+                    continue
+                if len(matches) >= MAX_RELEASE_ASSERTION_CANDIDATES:
+                    bounds_exceeded = True
+                    break
                 matches.append(assertion)
+        if bounds_exceeded:
+            return None
         if not matches:
             return None
         return max(matches, key=_release_assertion_sort_key)

@@ -2619,6 +2619,11 @@ def _build_parser() -> JsonArgumentParser:
                 help="HTTPS release assertion endpoint override",
             )
             p_upgrade_check.add_argument(
+                "--state-path",
+                default="",
+                help="Optional upgrade_state.json path override",
+            )
+            p_upgrade_check.add_argument(
                 "--json",
                 action="store_true",
                 help="Emit machine-readable JSON (the default CLI transport is JSON-first)",
@@ -2633,6 +2638,82 @@ def _build_parser() -> JsonArgumentParser:
                 help="Optional upgrade_state.json path override",
             )
             p_upgrade_status.add_argument(
+                "--json",
+                action="store_true",
+                help="Emit machine-readable JSON (the default CLI transport is JSON-first)",
+            )
+            p_upgrade_watch = upgrade_subparsers.add_parser(
+                "watch",
+                help="Poll upgrade checks in the foreground or as a local background watcher",
+            )
+            p_upgrade_watch.add_argument(
+                "--endpoint",
+                default="",
+                help="HTTPS release assertion endpoint override",
+            )
+            p_upgrade_watch.add_argument(
+                "--state-path",
+                default="",
+                help="Optional upgrade_state.json path override",
+            )
+            p_upgrade_watch.add_argument(
+                "--pid-path",
+                default="",
+                help="Optional watcher PID file path override",
+            )
+            p_upgrade_watch.add_argument(
+                "--log-path",
+                default="",
+                help="Optional daemon log path override",
+            )
+            p_upgrade_watch.add_argument(
+                "--interval",
+                default="86400",
+                help="Positive whole-number polling interval in seconds",
+            )
+            p_upgrade_watch.add_argument(
+                "--daemon",
+                action="store_true",
+                help="Fork a local background watcher and write a PID file",
+            )
+            p_upgrade_watch.add_argument(
+                "--stop",
+                action="store_true",
+                help="Stop a background watcher using its PID file",
+            )
+            p_upgrade_watch.add_argument(
+                "--json",
+                action="store_true",
+                help="Emit machine-readable JSON (the default CLI transport is JSON-first)",
+            )
+            p_upgrade_apply = upgrade_subparsers.add_parser(
+                "apply",
+                help="Fetch, verify, and install the latest signed release artifact",
+            )
+            p_upgrade_apply.add_argument(
+                "--endpoint",
+                default="",
+                help="HTTPS release assertion endpoint override",
+            )
+            p_upgrade_apply.add_argument(
+                "--state-path",
+                default="",
+                help="Optional upgrade_state.json path override",
+            )
+            p_upgrade_apply.add_argument(
+                "--policy-view",
+                required=True,
+                help=(
+                    "Path to an untrusted signed current-policy view bundle; "
+                    "the path supplies bytes, not authority"
+                ),
+            )
+            p_upgrade_apply.add_argument(
+                "--dry-run",
+                action="store_true",
+                help="Fetch and verify the artifact without invoking pip",
+            )
+            p_upgrade_apply.add_argument(
                 "--json",
                 action="store_true",
                 help="Emit machine-readable JSON (the default CLI transport is JSON-first)",
@@ -4900,6 +4981,7 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
         invite_bundle = _fetch_invite_bundle_by_shortcode(
             _normalize_invite_code(invite_code)
         )
+        _verify_install_invite_bundle_authority(invite_bundle)
     else:
         # Interactive prompt: no flags provided
         if not sys.stdin.isatty():
@@ -4916,6 +4998,7 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
         if not raw_code:
             raise ValueError("install_invite_source_missing")
         invite_bundle = _fetch_invite_bundle_by_shortcode(_normalize_invite_code(raw_code))
+        _verify_install_invite_bundle_authority(invite_bundle)
     expected_profile = _install_expected_profile(invite_bundle)
     current_epoch = _install_current_epoch(invite_bundle)
     invite_id = _install_invite_id(invite_bundle)
@@ -5063,12 +5146,14 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
             )
 
             verify_invite_redemption_redeemer_key_binding(redemption_record)
+            enrollment_nullifier_recorded = False
             require_invite_for_enrollment(
                 agent_id,
                 redemption_record,
                 nullifier_registry=nullifier_registry,
                 register_nullifier=True,
             )
+            enrollment_nullifier_recorded = True
             invite_verification = decision.to_dict()
             if not is_enrollment_invite_enforced():
                 if not nullifier_registry.register_if_new(str(decision.redemption_nullifier)):
@@ -5180,6 +5265,11 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                 "target_dir": str(target_dir),
             }
         except Exception:
+            if locals().get("enrollment_nullifier_recorded"):
+                try:
+                    nullifier_registry.discard_nullifier(str(decision.redemption_nullifier))
+                except Exception:
+                    pass
             if created_fresh_identity:
                 shutil.rmtree(identity_root(Path.home()), ignore_errors=True)
             _rollback_install_side_effects(
@@ -5230,12 +5320,22 @@ def _load_install_invite_bundle(source: str) -> dict[str, Any]:
     if not isinstance(payload, dict):
         raise ValueError("install_invite_bundle_not_object")
     _reject_float(payload, "install_invite_float_not_allowed")
-    if "shortcode_auth" in payload:
-        from ilc_core.network.relay.relay_server import verify_shortcode_invite_bundle
-
-        if not verify_shortcode_invite_bundle(payload):
-            raise ValueError("install_sh_invite_code_bundle_signature_invalid")
+    _verify_install_invite_bundle_authority(payload)
     return payload
+
+
+def _verify_install_invite_bundle_authority(payload: Mapping[str, Any]) -> None:
+    if "shortcode_auth" not in payload:
+        raise ValueError("install_invite_bundle_shortcode_auth_missing")
+    from ilc_core.genesis.invite_issuer_authority import GENESIS_INVITE_ISSUER_PK_HEX
+    from ilc_core.network.relay.relay_server import verify_shortcode_invite_bundle
+
+    if not verify_shortcode_invite_bundle(
+        payload,
+        inviting_agent_id=GENESIS_INVITE_ISSUER_PK_HEX,
+        inviting_bls_public_key_hex=GENESIS_INVITE_ISSUER_PK_HEX,
+    ):
+        raise ValueError("install_sh_invite_code_bundle_signature_invalid")
 
 
 def _read_install_invite_bundle_file(path: Path) -> bytes:
@@ -6010,8 +6110,30 @@ def main() -> int:
         try:
             import importlib
             mod = importlib.import_module(module_path)
-            raise SystemExit(mod.main(sidecar_argv))
-        except ModuleNotFoundError:
+        except ModuleNotFoundError as exc:
+            missing_top_level = str(exc).split("'", 2)[1] if "'" in str(exc) else ""
+            if exc.name and exc.name != module_path.split(".", 1)[0]:
+                _write_json_payload(
+                    {
+                        "ok": False,
+                        "error": True,
+                        "code": "sidecar_dependency_missing",
+                        "message": f"sidecar '{sidecar_name}' dependency is missing: {exc.name}",
+                    },
+                    stderr=True,
+                )
+                return 1
+            if missing_top_level and missing_top_level != module_path.split(".", 1)[0]:
+                _write_json_payload(
+                    {
+                        "ok": False,
+                        "error": True,
+                        "code": "sidecar_dependency_missing",
+                        "message": f"sidecar '{sidecar_name}' dependency is missing: {missing_top_level}",
+                    },
+                    stderr=True,
+                )
+                return 1
             _write_json_payload(
                 {
                     "ok": False,
@@ -6021,6 +6143,19 @@ def main() -> int:
                         f"sidecar '{sidecar_name}' is not installed. "
                         f"Run install.sh from the ilc-graphics-sidecar repo."
                     ),
+                },
+                stderr=True,
+            )
+            return 1
+        try:
+            raise SystemExit(mod.main(sidecar_argv))
+        except ModuleNotFoundError as exc:
+            _write_json_payload(
+                {
+                    "ok": False,
+                    "error": True,
+                    "code": "sidecar_dependency_missing",
+                    "message": f"sidecar '{sidecar_name}' dependency is missing: {exc.name}",
                 },
                 stderr=True,
             )

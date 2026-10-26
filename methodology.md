@@ -745,15 +745,9 @@ All figures are from a pre-publication snapshot taken during Window 1429-1458 re
 
 The documentation LOC figure (~716,000 total, ~547,000 non-empty) is one of the most distinctive numbers in the project. It reflects the cost of running a multi-agent development process with full audit trails: every phase produces a walkthrough, every window produces a guidance doc and closure handoff, and every CDL and ADR has its own spec document. The documentation is not overhead — it is the epistemic record that makes the protocol's construction verifiable.
 
-### Development cost
-
-The total AI inference budget for the project through public RC is approximately **$950 USD** in API costs, covering all implementer, reviewer, research reviewer, and simulation sessions from January 2026 through Window 1429-1458. This covers all LLM inference and agentic provider costs for the entire repository since January 2026, excluding the human authority's time.
-
-This figure is worth recording as a reference point: a project with ~860,000 non-empty lines of code and documentation, ~110 CDL rows, ~42 ADRs, ~1,460 phase walkthroughs, and ~3,410 commits was designed, governed, implemented, tested, and prepared for public release for less than $1,000 in AI inference costs. The methodology — token-based specification, structured adversarial review, phased windows with full artifact chains — is what made that tractable. Unstructured prompting at the same scale would not have produced a coherent, auditable result at any cost.
-
 These figures grow with every window. The canonical source of truth is the repository itself.
 
-See [FUNDING.md](FUNDING.md) for information on contributing to project inference costs.
+See [FUNDING.md](FUNDING.md) for contribution information.
 
 ### Test philosophy
 
@@ -850,7 +844,6 @@ stats_snapshot_2026_05_24:
   phase_walkthroughs: ~1460
   total_commits: ~3410
   windows_completed: ~120
-  total_inference_cost_usd: ~950
 security_standards: 10_mandatory_taboos_enforced_by_pre_commit
 sensitive_gate_triggers: cdl_ratification+window_closure+release_signing+production_activation
 non_claims[3]: no_phase_skips_four_eyes,no_unverified_token_assertions,no_chat_memory_as_canon

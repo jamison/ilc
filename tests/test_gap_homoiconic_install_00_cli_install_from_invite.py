@@ -14,10 +14,13 @@ from pathlib import Path
 import pytest
 
 from ilc_core.cli import main as cli_main
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
+from ilc_core.network.relay.relay_server import attach_shortcode_invite_bundle_auth
 from ilc_core.sidecars.openclaw_invite_bootstrap import build_synthetic_invite_bundle
 
 
 FIXTURE_MANIFEST = Path("tests/fixtures/starmap/core_public_rc_slice_fixture.json")
+TEST_INVITE_ISSUER_IKM_HEX = "42" * 32
 
 
 class _Decision:
@@ -33,11 +36,18 @@ class _Decision:
         }
 
 
-def _bundle() -> dict[str, object]:
+def _bundle(*, include_witness: bool = True) -> dict[str, object]:
     bundle = build_synthetic_invite_bundle()
-    bundle["atlas_slice_manifest_witness"] = {"slice_id": "test-slice"}
+    if include_witness:
+        bundle["atlas_slice_manifest_witness"] = {"slice_id": "test-slice"}
     bundle["starmap_manifest_payload"] = json.loads(FIXTURE_MANIFEST.read_text(encoding="utf-8"))
-    return bundle
+    secret_key, public_key = keypair_from_ikm_hex(TEST_INVITE_ISSUER_IKM_HEX)
+    return attach_shortcode_invite_bundle_auth(
+        bundle,
+        inviting_agent_id=public_key,
+        inviting_bls_public_key_hex=public_key,
+        inviting_bls_secret_key_hex=secret_key,
+    )
 
 
 def _write_bundle(path: Path, payload: dict[str, object] | None = None) -> Path:
@@ -70,9 +80,13 @@ def _code_args(code: str, target: Path, receipt: Path) -> argparse.Namespace:
 
 @pytest.fixture(autouse=True)
 def _isolated_install_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from ilc_core.genesis import invite_issuer_authority
+
     home = tmp_path / "home"
     home.mkdir()
     monkeypatch.setattr(Path, "home", lambda: home)
+    _secret_key, public_key = keypair_from_ikm_hex(TEST_INVITE_ISSUER_IKM_HEX)
+    monkeypatch.setattr(invite_issuer_authority, "GENESIS_INVITE_ISSUER_PK_HEX", public_key)
     keygen = tmp_path / "fake_keygen.py"
     keygen.write_text(
         "\n".join(
@@ -212,10 +226,42 @@ def test_install_from_invite_invalid_json_file_exits_error(tmp_path: Path) -> No
 
 
 def test_install_from_invite_missing_manifest_witness_in_bundle(tmp_path: Path) -> None:
-    bundle = build_synthetic_invite_bundle()
+    bundle = _bundle(include_witness=False)
     invite_path = _write_bundle(tmp_path / "invite.json", bundle)
 
     with pytest.raises(ValueError, match="invite_bundle_missing_atlas_slice_manifest_witness"):
+        cli_main._run_install_subcommand(
+            _args(invite_path, tmp_path / "target", tmp_path / "receipt.json")
+        )
+
+
+def test_install_from_invite_rejects_unsigned_bundle(tmp_path: Path) -> None:
+    bundle = build_synthetic_invite_bundle()
+    bundle["atlas_slice_manifest_witness"] = {"slice_id": "test-slice"}
+    bundle["starmap_manifest_payload"] = json.loads(FIXTURE_MANIFEST.read_text(encoding="utf-8"))
+    invite_path = _write_bundle(tmp_path / "invite.json", bundle)
+
+    with pytest.raises(ValueError, match="install_invite_bundle_shortcode_auth_missing"):
+        cli_main._run_install_subcommand(
+            _args(invite_path, tmp_path / "target", tmp_path / "receipt.json")
+        )
+
+
+def test_install_from_invite_rejects_untrusted_shortcode_signer(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from ilc_core.genesis import invite_issuer_authority
+
+    _secret_key, trusted_public_key = keypair_from_ikm_hex("43" * 32)
+    monkeypatch.setattr(
+        invite_issuer_authority,
+        "GENESIS_INVITE_ISSUER_PK_HEX",
+        trusted_public_key,
+    )
+    invite_path = _write_bundle(tmp_path / "invite.json")
+
+    with pytest.raises(ValueError, match="install_sh_invite_code_bundle_signature_invalid"):
         cli_main._run_install_subcommand(
             _args(invite_path, tmp_path / "target", tmp_path / "receipt.json")
         )
@@ -281,6 +327,42 @@ def test_install_from_invite_successful_path_writes_receipt(
     assert receipt_path.exists()
     assert json.loads(receipt_path.read_text(encoding="utf-8"))["receipt_sha256"]
     assert len(list((tmp_path / "target").rglob("*.node.json"))) == 5
+
+
+def test_install_from_invite_discards_registered_nullifier_on_late_failure(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ilc_core.bundle.atlas_slice_verifier as verifier
+    import ilc_core.identity.first_run_provisioning as provisioning
+    from ilc_core.genesis.invite_nullifier_lmdb_store import InviteNullifierLmdbRegistry
+    from ilc_core.sidecars.openclaw_invite_bootstrap import derive_redemption_nullifier
+
+    monkeypatch.setattr(
+        verifier,
+        "verify_portable_manifest_witness",
+        lambda witness: {"verified": True, "slice_id": witness["slice_id"]},
+    )
+    monkeypatch.setattr(
+        provisioning,
+        "write_invitee_install_receipt",
+        lambda *args, **kwargs: (_ for _ in ()).throw(ValueError("late_receipt_failure")),
+    )
+    bundle = _bundle()
+    batch = bundle["invite_batch_record"]
+    nullifier = derive_redemption_nullifier(
+        str(batch["batch_id"]),
+        str(bundle["private_invite_nonce"]),
+    )
+    invite_path = _write_bundle(tmp_path / "invite.json", bundle)
+
+    with pytest.raises(ValueError, match="late_receipt_failure"):
+        cli_main._run_install_subcommand(
+            _args(invite_path, tmp_path / "target", tmp_path / "receipt.json")
+        )
+
+    with InviteNullifierLmdbRegistry(Path.home() / ".ilc" / "lmdb" / "nullifiers") as registry:
+        assert registry.is_known(nullifier) is False
 
 
 def test_install_from_invite_rejects_legacy_valid_without_verified(

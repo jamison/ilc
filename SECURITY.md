@@ -4,26 +4,10 @@
 
 **Do not open a public GitHub issue for security findings.**
 
-### Preferred channel — CCSS (sealed sender, Tor-anonymized)
+### Active reporting channel — Email
 
-Submit a sealed envelope to Genesis Agent's CCSS inbound relay:
-
-```
-http://ONION_ADDRESS_PLACEHOLDER/submit
-```
-
-Connect via **Tor Browser** or `torsocks` for network-layer sender anonymization.
-Envelope content is sealed; the relay operator cannot read it.
-See [docs/contact/genesis_agent_contact_protocol_v0.1.md](docs/contact/genesis_agent_contact_protocol_v0.1.md)
-for the full submission protocol, envelope format, and sender SDK reference.
-
-### Email fallback
-
-- `genesis@ilc.foundation` (primary, once active)
-- `ilcops@proton.me` (active now)
-
-Use email for non-confidential correspondence or if CCSS sender tooling is not
-yet available to you.
+- `ilcops@proton.me` (active)
+- `genesis@ilc.foundation` (planned; not yet active)
 
 Include in your report:
 - Description of the vulnerability and affected component
@@ -33,14 +17,24 @@ Include in your report:
 
 We will acknowledge receipt within 72 hours and provide an initial assessment within 7 days. We will keep you informed of remediation progress and credit you in the disclosure unless you prefer to remain anonymous.
 
+### CCSS (sealed-sender D2D channel — published recipient; delivery pending activation)
+
+Genesis Agent's CCSS recipient identity and hybrid encryption key are published. The
+envelope format supports encrypted submissions, but D2D delivery is not activated.
+Do not use this route for security reports until delivery is activated and verified.
+
+See [docs/contact/genesis_agent_contact_protocol_v0.1.md](docs/contact/genesis_agent_contact_protocol_v0.1.md)
+for the published recipient key, envelope format (CCSS-003 H013 outer, 4156 bytes fixed),
+and activation status.
+
 ---
 
 ## Scope
 
-The repository is still pre-publication and Epoch 0 has not transitioned to a
-production mainnet. Security scope is therefore limited to implemented or staged
-public-RC code surfaces, release tooling, and any component that could affect a
-future public artifact if published.
+The project is in public RC. Mainnet is not yet active and production economic
+settlement is not live. Security scope covers implemented public-RC code surfaces,
+release tooling, and any component that could affect a future production artifact.
+Current activation status is recorded in the [public RC gate record](docs/specs/ilc_public_rc_gate_001_1575c_v0.1.md).
 
 **In scope:**
 - [`ilc_core/`](ilc_core/) Python protocol implementation
@@ -52,7 +46,7 @@ future public artifact if published.
 - Any component that could affect settlement correctness, key material security, or consensus safety
 
 **Out of scope (design decisions, not vulnerabilities):**
-- The fact that [Epoch 0 is not mainnet and minting is not active](docs/phases/STATUS.md)
+- The fact that Epoch 0 is not mainnet and minting is not active
 - The use of provisional algorithms documented as pre-production
 - Protocol behaviors that are the intended result of a ratified CDL
 - Aspirational features described in research documents but not yet implemented

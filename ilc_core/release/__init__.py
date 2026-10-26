@@ -17,6 +17,14 @@ from ilc_core.release.installable_release_signature import (
     validate_envelope_set,
 )
 from ilc_core.release.install_sh_manifest_sync import verify_install_sh_manifest_sync
+from ilc_core.release.consensus_binary_deploy import (
+    CONSENSUS_BINARY_MEMBERS,
+    ConsensusBinaryDeployError,
+    VerifiedConsensusBinaryBundle,
+    deploy_verified_consensus_binary_bundle,
+    fetch_verified_consensus_binary_bundle,
+    fetch_verify_and_deploy_consensus_binary_bundle,
+)
 from ilc_core.release.update_runtime import (
     enforce_download_size,
     is_already_current,
@@ -43,13 +51,19 @@ from ilc_core.release.upgrade_state import (
 __all__ = [
     "InstallableReleaseManifestError",
     "InstallableReleaseSignatureError",
+    "CONSENSUS_BINARY_MEMBERS",
+    "ConsensusBinaryDeployError",
     "UpgradeCheckError",
+    "VerifiedConsensusBinaryBundle",
     "build_envelope_skeleton",
     "canonical_installable_release_manifest_bytes",
     "canonical_envelope_json",
     "check_for_upgrade",
     "default_upgrade_state_path",
+    "deploy_verified_consensus_binary_bundle",
     "fetch_upgrade_assertion_json",
+    "fetch_verified_consensus_binary_bundle",
+    "fetch_verify_and_deploy_consensus_binary_bundle",
     "compute_signed_preimage_sha256",
     "load_installable_release_manifest",
     "enforce_download_size",

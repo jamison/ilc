@@ -15,7 +15,7 @@ See Appendix H for the full scientific lineage.*
 **Contact Genesis Agent**
 *Contact Genesis Agent by `agent_id`: `c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9` — or by email: `ilcops@proton.me`.*
 
-*v0.6-draft — adds Section 0a.1 (Temporal Influence Graph: ephemeral influence signals, ECU projection, and decay/reinforcement layer). Prior: v0.5 — adds H.12 (statistical weights and epistemic weights: open-model artifacts as first-class hypergraph participants; LLM bounded observers in the morphogenetic framework; open-weights checkpoints as content-addressed nodes; the epistemic Sybil attack at LLM inference scale; epistemic scores as fine-tuning signal; Werner credit for open-weights contributions; mechanistic interpretability as hypergraph-weight correspondence research program; 4 new references [37–40]). v0.4 — adds H.11 (open software ecosystem as epistemic substrate: OSS ingestion, decay semantics, distributed execution over star-map traversal, hypergraph edge capabilities, scientific literature on HGNNs/hypergraph rewriting/TDA/categorical semantics; 4 new references [33–36]). v0.3 — Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
+*v0.8-draft — tightens §0a.2 opening paragraph with inline `G(t)`, `C(t) = (M(t), S(t))`, §0a/§0b/CDL-104 citations; adds ECU/ILC dual-layer audit-window paragraph (provisional ECU layer, 4-issuance-epoch conversion window as correction surface, ILC finality). Prior: v0.7-draft — adds Section 0a.2 (ILC Trillion-Agent Coordination Protocol: ILC Agent Rollup mechanism, globally-scoped receipt nullifiers, content-addressed checkpoint commitments, challenge windows, conservation rules, and canon lineage; introduces "Trillion-Agent Coordination Protocol" and "ILC Agent Rollup" as descriptive whitepaper terms, not ratified CDL terms). Prior: v0.6-draft — adds Section 0a.1 (Temporal Influence Graph: ephemeral influence signals, ECU projection, and decay/reinforcement layer). Prior: v0.5 — adds H.12 (statistical weights and epistemic weights: open-model artifacts as first-class hypergraph participants; LLM bounded observers in the morphogenetic framework; open-weights checkpoints as content-addressed nodes; the epistemic Sybil attack at LLM inference scale; epistemic scores as fine-tuning signal; Werner credit for open-weights contributions; mechanistic interpretability as hypergraph-weight correspondence research program; 4 new references [37–40]). v0.4 — adds H.11 (open software ecosystem as epistemic substrate: OSS ingestion, decay semantics, distributed execution over star-map traversal, hypergraph edge capabilities, scientific literature on HGNNs/hypergraph rewriting/TDA/categorical semantics; 4 new references [33–36]). v0.3 — Appendix H (scientific lineage: TMS/AGM belief revision, multi-agent epistemic logic, semantic tokens, homoiconic governance, truth algebra composability, morphogenesis, spectral graph integrity, ILC as software development substrate; 31 literature references). v0.2 — Section 11a (CCSS-SPECTRAL-01) and Appendix G (five novel contributions).*
 
 ---
 
@@ -262,6 +262,163 @@ from temporal influence pressure and settlement projection. This is a design
 target, not a live economic authority. Its detailed candidate specification is
 recorded in `docs/specs/ilc_temporal_influence_graph_spec_v0.1.md`, and it
 requires SIM and CDL work before any close-bearing use.
+
+---
+
+## 0a.2 ILC Trillion-Agent Coordination Protocol
+
+Section 0a.1 separates the permanent hypergraph, the epoch-scoped temporal
+influence layer, and settlement projection. This section names the receipt-scale
+commitment mechanism that makes that separation tractable at trillion-event
+network volume.
+
+ILC's **Trillion-Agent Coordination Protocol** is a descriptive whitepaper term,
+not yet a ratified CDL term. It names an ILC-native coordination pattern rooted
+in the same structural commitments that define `G(t)` itself (§0b): bounded
+observers produce signed local deltas; governance artifacts are homoiconic graph
+nodes (§0a); the Merkle-Laplacian commitment lineage `C(t) = (M(t), S(t))`
+connects content commitments with structural commitments (§0b; CDL-104 for the
+supplied-digest commitment surface); and economic projection requires
+conservation rules plus separate governance activation. In this sense,
+"protocol" means an architectural pattern expressing those commitments at
+receipt scale, not a newly activated network protocol.
+
+This follows directly from ILC's core commitments. Bounded observers produce
+local signed evidence rather than final truth. Truth-like standing is earned
+through challengeable reuse rather than trusted authority. Content-addressed
+commitments preserve auditability without central custody. Economic projection
+is separated from observation until governance, conservation, and settlement
+rules explicitly authorize it.
+
+Formally, let `A` be a set of agents, `sigma` a shard partition over `A`, and
+`R` a stream of signed local receipts. The pattern defines a four-level
+commitment hierarchy:
+
+```text
+L0  local agent receipts       R_a in ECULocalReceipt
+L1  shard-local rollup         Sigma_sigma = batch(R_a : a in sigma)
+L2  checkpoint commitment      C_sigma = (root(Sigma_sigma), manifest_sigma, proof_index_sigma)
+L3  public hypergraph node     N = content_address(C_sigma)
+```
+
+This is the answer to a coordination problem that otherwise recreates the
+central bottleneck ILC is designed to avoid: how can billions or trillions of
+agents act at local speed without forcing every event through one shared pipe?
+The bottleneck moves to the shard boundary, and only compact commitments cross
+that boundary by default.
+
+The mechanism beneath this hierarchy is an **ILC Agent Rollup**. It is not an
+Ethereum-style transaction rollup: there is no privileged sequencer, no
+base-layer transaction posting model, and no claim that a separate L2 chain is
+settling into ILC. An ILC Agent Rollup is a compression map from local agent
+activity to content-addressed hypergraph commitments, preserving challenge-path
+recoverability:
+
+```text
+for every receipt r admitted to Sigma_sigma,
+there exists an inclusion proof pi_r such that
+verify(pi_r, root(Sigma_sigma), r) = true.
+```
+
+Receipts that fail this condition are projection-ineligible. The compression is
+allowed for bandwidth, not for accountability. An auditor does not need the
+public hypergraph to store every raw receipt, but must be able to demand the
+relevant proof during a challenge window.
+
+The duplicate-suppression invariant is global, not shard-local. Row 21m defines
+the canonical v1 receipt-nullifier preimage:
+
+```text
+ilc:ecu-receipt-nullifier:v1
+source_event_id=<canonical event hash or CID>
+economic_projection_class=<projection family class>
+projection_family=<named governed projection family>
+recipient_or_subject=<agent id, node id, artifact id, or account subject>
+amount_or_weight_commitment=<exact integer or Decimal-string commitment>
+nonce_domain=<receipt signer scoped nonce domain>
+```
+
+`receipt_nullifier = sha256(canonical_utf8(preimage))`, encoded as 64 lowercase
+hex characters. The nullifier excludes `shard_id` by design. Therefore, if two
+receipts in different shards carry the same `receipt_nullifier`, at most one may
+contribute to close-facing projection. The second observation may count as
+availability, routing, or redundancy evidence, but not as a second economic
+claim.
+
+This is what makes sharding safe rather than exploitable. Shards are throughput
+lanes, not separate economic realities. Without globally scoped nullifiers, a
+replayed event could become multiplied credit merely by appearing in multiple
+shards. ILC collapses that attack surface at the schema level before any runtime
+activation.
+
+ADR-0045 bounds submit frames at `1,048,576` bytes. The rollup pattern therefore
+distinguishes three payload classes:
+
+| Class | Content | Path |
+|---|---|---|
+| Checkpoint root/manifest | root, `shard_id`, epoch window, receipt count, scheme labels, challenge-window reference | Normal path |
+| Individual challenge proof | `pi_r` for one receipt or a bounded receipt set | Challenge path |
+| Batched proof bundle | Multiple `pi_r`; split if the bundle exceeds the frame cap | Audit path |
+
+Raw receipt floods through ADR-0045 frames are an anti-pattern. At `10^9`
+receipts per shard per epoch and roughly 150 bytes per minimal receipt, a raw
+receipt set is roughly 150 GB before overhead. A compact root and bounded
+manifest for the same epoch is many orders of magnitude smaller and must remain
+within the submit-frame budget. The public graph achieves trillion-agent
+coverage by storing the commitment that makes local detail provable on demand,
+not by storing every event.
+
+Challenge windows operate on the commitment layer. A verifier who suspects
+invalid inclusion, duplicate credit, missing sender authorization, malformed
+projection data, or status misclassification challenges the checkpoint root. The
+shard operator must produce the relevant proof within the window. Failure to
+produce, or production of a proof that does not verify, makes the affected
+receipt projection-ineligible and leaves the checkpoint challengeable by later
+settlement consumers.
+
+This is also why probabilistic prefilters cannot become final authority for
+value-bearing inclusion. SIM-FETCH-01 established the analogous routing lesson:
+probabilistic or incomplete hints may route work, but deterministic proof must
+decide inclusion. A Bloom false positive that silently suppresses a valid
+receipt has denied a legitimate economic claim without recourse.
+
+The layered ECU/ILC economic structure gives this architecture a correction
+surface that pure throughput designs cannot provide. ECU is provisional credit:
+high-frequency, locally evidenced, and subject to mandatory conversion to ILC
+within a 4-issuance-epoch window (CDL-048; §6). ILC is the final-settlement
+layer: fixed supply, globally auditable, and slow-path. The rollup and
+challenge-window machinery operates inside the ECU layer, where errors remain
+correctable: a conservation failure, a probabilistic-filter suppression error, a
+malformed checkpoint, or a duplicate-credit attempt can be caught, challenged,
+and excluded before the affected ECU lot reaches its conversion deadline. The
+slow path has a bounded conversion window, up to four issuance epochs, to catch
+up to trillion-event local activity before it becomes irreversible ILC value.
+
+For an agent operating at high frequency, this means economic activity can
+proceed without waiting for global consensus on every event. Speed is a property
+of the ECU layer; permanence is a property of ILC conversion. The conversion
+window is not a concession to slowness; it is the audit surface that makes
+trillion-agent coordination trustworthy.
+
+The Trillion-Agent Coordination Protocol is therefore both a scale architecture
+and a constitutional boundary. It does not authorize fast-path ECU activation,
+BLS signer activation, ECU minting, ILC settlement, wallet writes, CDL mutation,
+validator authority, jury authority, runtime deployment, public mainnet
+economics, or any other blocked economic surface. Those require separate
+governance, implementation, and activation authority.
+
+The detailed candidate schema is
+`docs/specs/ilc_ecu_sharded_receipt_rollup_spec_GAP_ECU_SHARDED_RECEIPT_ROLLUP_SPEC_00_v0.1.md`.
+Prior ILC work informing this architecture includes SIM-004 partition
+reconciliation, SIM-FETCH-01 fetch-distribution evidence, SIM-PROVENANCE-01 and
+CDL-108 backward-attribution canon, CDL-084 settlement purity, and CDL-104's
+compact epoch-commitment lineage. These establish design precedent only; they do
+not authorize the blocked surfaces named above.
+
+The claim is narrow and strong: ILC is designed so that intelligent agents can
+act locally, prove compactly, and become settlement-capable when separately
+authorized, without surrendering truth, identity, or economic coordination to a
+central platform.
 
 ---
 

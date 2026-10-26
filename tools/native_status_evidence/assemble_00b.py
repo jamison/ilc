@@ -268,7 +268,6 @@ def assemble_evidence(
     store_path.parent.mkdir(parents=True, exist_ok=True)
     if reset_store and store_path.exists():
         shutil.rmtree(store_path)
-    os.environ["ILC_TRUTH_GRAPH_STORE_PATH"] = str(store_path)
 
     secret_key_hex, test_agent_id = keypair_from_ikm_hex(secrets.token_hex(32))
     if test_agent_id in {

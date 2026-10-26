@@ -16,6 +16,21 @@ The schema separates two surfaces:
 
 The two surfaces are related but not interchangeable. The native record is the canonical authority commitment. The portable witness is the package truth a recipient can carry, inspect, and verify outside the originating LMDB.
 
+### 1a. Storage-independent authority clarification (2026-10-24)
+
+In this specification, "native record is the canonical authority commitment"
+names the signed canonical preimage and its deterministic record encoding. It
+does **not** mean that the originating LMDB, table membership, or local record
+location creates authority. A recipient may obtain byte-identical evidence from
+any source. Authority-bearing use requires verification of content identity,
+the actual signature, signer key/AgentID lineage, scope, and the observer's
+selected profile. A declared `signature_status` is not cryptographic proof.
+
+The LMDB record and portable witness are storage/transport representations of
+the same signed commitment. Their storage locations do not form a trust root.
+This clarification is controlled by
+`docs/specs/ilc_native_lineage_observer_selection_and_distribution_reconciliation_2026_10_24_v0.1.md`.
+
 ## 2. Compatibility With Fix3 / Fix3a
 
 The Genesis v0.5 Core Slice 0 and Public-RC Baseline Slice 1 packages signed in `1575c-Fix3` remain valid public-RC bridge artifacts. They are JSON extraction packages with detached operator signatures, not native `__signed_slices__` records.

@@ -185,14 +185,7 @@ def test_genesis_agent_cid_matches_known_value() -> None:
     assert _record()["genesis_agent_cid"] == GENESIS_AGENT1_AGENT_ID
 
 
-def test_no_runtime_constant_added() -> None:
-    result = subprocess.run(
-        ["grep", "-r", "GENESIS_INVITE_ISSUER_PK_HEX", "ilc_core/"],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        check=False,
-        timeout=10,
-    )
-    assert result.returncode == 1
-    assert result.stdout == ""
+def test_runtime_invite_issuer_constant_matches_delegation_record() -> None:
+    from ilc_core.genesis.invite_issuer_authority import GENESIS_INVITE_ISSUER_PK_HEX
+
+    assert GENESIS_INVITE_ISSUER_PK_HEX == _record()["invite_issuer_pk_hex"]

@@ -12,6 +12,7 @@ from ilc_core.network.d2d.http_fetch_transport_runtime import (
     FetchTransportConfig,
     HttpFetchTransportRuntime,
 )
+from ilc_core.network.d2d import http_fetch_transport_runtime as fetch_runtime_module
 from ilc_core.release import upgrade_check
 from ilc_core.release.constants import (
     MAX_UPGRADE_ASSERTION_BYTES,
@@ -121,9 +122,10 @@ def test_release_endpoint_store_error_returns_503_token() -> None:
     }
 
 
-def test_release_endpoint_oversize_response_returns_503_token() -> None:
+def test_release_endpoint_oversize_response_returns_503_token(monkeypatch) -> None:
     payload = _release_assertion()
     payload["oversize_padding"] = "x" * (MAX_UPGRADE_ASSERTION_BYTES + 1)
+    monkeypatch.setattr(fetch_runtime_module, "validate_release_assertion", lambda _: {})
     runtime = _with_runtime(_StubStore(payload))
     try:
         status, response = _request_json(runtime.state["bound_port"])
@@ -153,9 +155,10 @@ def test_release_endpoint_rejects_invalid_latest_assertion() -> None:
     }
 
 
-def test_release_endpoint_serialization_failure_returns_503_token() -> None:
+def test_release_endpoint_serialization_failure_returns_503_token(monkeypatch) -> None:
     payload = _release_assertion()
     payload["non_json_extra"] = b"not-json-serializable"
+    monkeypatch.setattr(fetch_runtime_module, "validate_release_assertion", lambda _: {})
     runtime = _with_runtime(_StubStore(payload))
     try:
         status, response = _request_json(runtime.state["bound_port"])
@@ -215,13 +218,16 @@ def test_release_endpoint_unknown_get_path_echo_is_bounded() -> None:
     assert payload == {"path": long_path[:256], "token": "fetch_unknown_path"}
 
 
-def test_truth_graph_store_orders_versions_by_numeric_tuple(tmp_path: Path) -> None:
+def test_truth_graph_store_skips_invalid_higher_version_candidate(tmp_path: Path) -> None:
     store = TruthPrimitiveGraphStore(tmp_path / "graph.lmdb")
     try:
-        older = _release_assertion_with(version="0.4.9", release_date="2026-10-07T00:00:00Z")
-        newer = _release_assertion_with(version="0.4.32", release_date="2026-10-07T00:00:00Z")
-        store.put_node_if_absent("release-old", older)
-        store.put_node_if_absent("release-new", newer)
+        valid = _release_assertion()
+        invalid_higher = _release_assertion_with(
+            version="9.9.9",
+            release_date="2026-10-07T00:00:00Z",
+        )
+        store.put_node_if_absent("release-valid", valid)
+        store.put_node_if_absent("release-invalid-higher", invalid_higher)
         payload = store.get_latest_release_assertion("public_rc")
     finally:
         store.close()
