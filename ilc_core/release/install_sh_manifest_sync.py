@@ -25,6 +25,7 @@ _SYNCED_ASSIGNMENT_NAMES = frozenset(
         "RC_RELEASE_SIGNER_PUBLIC_KEY_HEX",
         "RC_MIN_PYTHON_MINOR",
         "TMP_WHEEL",
+        "CONSENSUS_BIN_ARTIFACT_ID",
         "CONSENSUS_BIN_URL",
         "CONSENSUS_BIN_SHA256",
         "CONSENSUS_BIN_SIZE",
@@ -187,6 +188,11 @@ def verify_install_sh_manifest_sync(
     )
     wheel_basename = str(record["download_url"]).rsplit("/", maxsplit=1)[-1]
     _require_tmp_wheel_sync(assignments, wheel_basename)
+    _require_sync(
+        assignments,
+        shell_field="CONSENSUS_BIN_ARTIFACT_ID",
+        expected=str(cli_binary["artifact_id"]),
+    )
     _require_sync(
         assignments,
         shell_field="CONSENSUS_BIN_URL",

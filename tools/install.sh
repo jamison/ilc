@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-INSTALLER_VERSION="GAP-PACKAGE-V0433-00b"
-RC_WHEEL_URL="https://files.pythonhosted.org/packages/3f/63/b275945ba7c14bd0397a40b56398f508b2789d60167bc82e644b4b37de1d/ilc_core-0.4.33-py3-none-any.whl"
-RC_WHEEL_SHA256="45047599ab76cbb81f880d17bd48a1fdfa492e1120292a988aae3a656648b871"
-RC_WHEEL_SIZE="1596564"
+INSTALLER_VERSION="GAP-RC-NATIVE-DISTRIBUTION-VNEXT-SIGN-PUBLISH-00"
+RC_WHEEL_URL="https://files.pythonhosted.org/packages/96/ba/a97f1f0d923d50ebe71b6c40e488645c06e798fefb15596760f8a7e50de1/ilc_core-0.4.34-py3-none-any.whl"
+RC_WHEEL_SHA256="5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2"
+RC_WHEEL_SIZE="1630572"
 RC_MIN_PYTHON_MINOR="10"
-RC_RELEASE_ID="ilc-core-0.4.33"
-RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0433@phase-1628"
-RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0433@phase-1628"
-RC_SDIST_SHA256="4b083cb0f8f0cb433be625139db80a9436beb11166e27f93c382bc2aa96ecc89"
-RC_SDIST_SIZE="1307602"
-DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0433_release_envelopes_GAP_PACKAGE_V0433_00b_v0.1.json"
+RC_RELEASE_ID="ilc-core-0.4.34"
+RC_WHEEL_ARTIFACT_ID="ilc-artifact:ilc-core-python-wheel-0434@phase-1628"
+RC_SDIST_ARTIFACT_ID="ilc-artifact:ilc-core-python-sdist-0434@phase-1628"
+RC_SDIST_SHA256="5e0f621934b239d76900f9d546e3a26ff943f38cdc81a87c469592a8f2f71c8c"
+RC_SDIST_SIZE="1326598"
+DEFAULT_RC_RELEASE_ENVELOPE_REF="https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
 RC_RELEASE_ENVELOPE_REF="${ILC_INSTALL_RELEASE_ENVELOPE_REF:-${DEFAULT_RC_RELEASE_ENVELOPE_REF}}"
 RC_RELEASE_SIGNER_PUBLIC_KEY_HEX="5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
-CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.32/ilc-consensus-linux-x86_64-v0.4.32.tar.gz"
-CONSENSUS_BIN_SHA256="8d04e69eafb4c7c9a40ef96f335b7dddf2d01452eb383a4dbd8c08d481238259"
-CONSENSUS_BIN_SIZE="5046757"
+CONSENSUS_BIN_URL="https://github.com/jamison/ilc/releases/download/v0.4.34/ilc-consensus-linux-x86_64-v0.4.34.tar.gz"
+CONSENSUS_BIN_ARTIFACT_ID="ilc-artifact:ilc-consensus-linux-x86-64-0434@phase-1628"
+CONSENSUS_BIN_SHA256="9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f"
+CONSENSUS_BIN_SIZE="5053300"
 CONSENSUS_BIN_INSTALL_DIR="${ILC_CONSENSUS_BIN_INSTALL_DIR:-${HOME:-}/.ilc/bin}"
 
 CHANNEL="rc"
@@ -296,7 +297,7 @@ if [[ "${VERIFY_SIGNATURE}" == "1" ]]; then
   if ! python3 -c "import cryptography" >/dev/null 2>&1; then
     die 1 "install_sh_signature_verification_failed:cryptography_not_available"
   fi
-  python3 - "${TMP_WHEEL}" "${RC_RELEASE_ID}" "${RC_WHEEL_ARTIFACT_ID}" "${RC_WHEEL_SHA256}" "${RC_WHEEL_SIZE}" "${RC_RELEASE_ENVELOPE_REF}" "${RC_RELEASE_SIGNER_PUBLIC_KEY_HEX}" "${RC_SDIST_ARTIFACT_ID}" "${RC_SDIST_SHA256}" "${RC_SDIST_SIZE}" "${INSTALLER_ROOT}" <<'PY'
+  python3 - "${TMP_WHEEL}" "${RC_RELEASE_ID}" "${RC_WHEEL_ARTIFACT_ID}" "${RC_WHEEL_SHA256}" "${RC_WHEEL_SIZE}" "${RC_RELEASE_ENVELOPE_REF}" "${RC_RELEASE_SIGNER_PUBLIC_KEY_HEX}" "${RC_SDIST_ARTIFACT_ID}" "${RC_SDIST_SHA256}" "${RC_SDIST_SIZE}" "${CONSENSUS_BIN_ARTIFACT_ID}" "${CONSENSUS_BIN_SHA256}" "${CONSENSUS_BIN_SIZE}" "${INSTALLER_ROOT}" <<'PY'
 import hashlib
 import json
 import sys
@@ -316,8 +317,11 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
     sdist_artifact_id,
     sdist_sha256,
     sdist_size,
+    consensus_artifact_id,
+    consensus_sha256,
+    consensus_size,
     installer_root,
-) = sys.argv[1:12]
+) = sys.argv[1:15]
 MAX_ENVELOPE_SET_BYTES = 65536
 SCHEMA_VERSION = "GAP_RELEASE_SIGN_00b_v0.2"
 SIGNED_PREIMAGE_ALGORITHM = "sha256_of_canonical_json"
@@ -480,6 +484,20 @@ manifest = {
             "ratification_token": "cdl_086_ratified_phase_1220",
             "signing_status": "signed",
             "size_bytes": int(sdist_size),
+        },
+        {
+            "arch": "amd64",
+            "artifact_id": consensus_artifact_id,
+            "artifact_type": "cli_binary",
+            "canonical_hash": f"sha256:{consensus_sha256}",
+            "channel": "rc",
+            "download_url": "https://github.com/",
+            "lineage_reference": f"genesis:v{release_id.removeprefix('ilc-core-')}",
+            "platform": "linux",
+            "produced_phase": 1628,
+            "ratification_token": "cdl_122_release_current_policy_claim_ratified",
+            "signing_status": "signed",
+            "size_bytes": int(consensus_size),
         }
     ],
     "channel": "rc",
@@ -500,16 +518,22 @@ if set(envelope_set.get("envelopes", {})) != expected_artifact_ids:
     fail("release_envelope_set_artifact_coverage_mismatch")
 sdist_envelope = require_envelope(envelope_set, sdist_artifact_id, sdist_sha256)
 wheel_envelope = require_envelope(envelope_set, artifact_id, artifact_sha256)
+consensus_envelope = require_envelope(
+    envelope_set, consensus_artifact_id, consensus_sha256
+)
 try:
     public_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(signer_public_key_hex))
-    for envelope in (wheel_envelope, sdist_envelope):
+    for envelope in (wheel_envelope, sdist_envelope, consensus_envelope):
         public_key.verify(
             bytes.fromhex(envelope["signature_hex"]),
             bytes.fromhex(envelope["signed_preimage_sha256"]),
         )
 except (InvalidSignature, ValueError):
     fail("release_envelope_signature_invalid")
-print(f"install_sh_signature_verified:{artifact_id}")
+print(
+    "install_sh_signatures_verified:"
+    f"{artifact_id},{sdist_artifact_id},{consensus_artifact_id}"
+)
 PY
 fi
 

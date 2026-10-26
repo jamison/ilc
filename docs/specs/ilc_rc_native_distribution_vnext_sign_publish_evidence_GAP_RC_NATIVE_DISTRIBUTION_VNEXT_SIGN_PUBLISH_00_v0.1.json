@@ -1,0 +1,114 @@
+{
+  "artifacts": [
+    {
+      "artifact_type": "wheel",
+      "cid": "bafyreicmtne3imutiezvfs5v5mslzkfriti2g4n4czwznnceiliejvjul4",
+      "filename": "ilc_core-0.4.34-py3-none-any.whl",
+      "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc_core-0.4.34-py3-none-any.whl",
+      "pypi_url": "https://files.pythonhosted.org/packages/96/ba/a97f1f0d923d50ebe71b6c40e488645c06e798fefb15596760f8a7e50de1/ilc_core-0.4.34-py3-none-any.whl",
+      "remote_fetchback_verified": true,
+      "sha256": "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2",
+      "size_bytes": 1630572
+    },
+    {
+      "artifact_type": "sdist",
+      "cid": "bafyreihus47ys2afv3cixlsocx6caejfjwejttrssv6gxf57paz7mfkdfi",
+      "filename": "ilc_core-0.4.34.tar.gz",
+      "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc_core-0.4.34.tar.gz",
+      "pypi_url": "https://files.pythonhosted.org/packages/a2/0c/1f92d83efde9217266d4c18e75cc1a30beafa5fc442bf2e6a4cf1dfc5853/ilc_core-0.4.34.tar.gz",
+      "remote_fetchback_verified": true,
+      "sha256": "5e0f621934b239d76900f9d546e3a26ff943f38cdc81a87c469592a8f2f71c8c",
+      "size_bytes": 1326598
+    },
+    {
+      "artifact_type": "binary_tarball",
+      "cid": "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+      "filename": "ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+      "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+      "remote_fetchback_verified": true,
+      "sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+      "size_bytes": 5053300
+    }
+  ],
+  "authorization": {
+    "amendment_sha256": "25956f78996c5995bc7181a4175a393427142d82cdc470b2f5f0807a996888dd",
+    "baseline_manifest_sha256": "58ec4371586db19eb9cd044ed74f004dbde05f0fec5353fd112aa957fc0ffdd0",
+    "phase_go": "GO Phase GAP-RC-NATIVE-DISTRIBUTION-VNEXT-SIGN-PUBLISH-00 RC-NATIVE-DISTRIBUTION-VNEXT-SIGN-PUBLISH-AUTHORIZED",
+    "strike_force_clause": "GO Strike Force RC-NATIVE-DISTRIBUTION-CLOSURE-00 STAGE-2-AMENDMENT-01-AUTHORIZED"
+  },
+  "graph_publication": {
+    "network_id": "ilc-public-rc-01-testnet-harness",
+    "policy_claim": {
+      "cid": "bafyreih55qz222zprbsyveljr5ak27r5cd5guta27cyzs2oia4jsmobh6y",
+      "native_submit_node_id": "bafyreih55qz222zprbsyveljr5ak27r5cd5guta27cyzs2oia4jsmobh6y",
+      "remote_lmdb_raw_sha256": "4d76d3e0f0a154ea34ae44d8a8cb1431cfb463175c04609325afb2c1a4007d17",
+      "remote_lmdb_raw_size_bytes": 8938,
+      "remote_readback_verified": true
+    },
+    "release_assertion_observation": {
+      "assertion_cid": "bafyreihdrkharlpx2oejwpdbmjeaypsnnk7az5vaixqjzoftdk4o6ko4d4",
+      "native_submit_node_id": "bafyreifbhij5hjngkyriv5kgndnkbkaq4mncgwwns3lhg25r43y3n67fqu",
+      "portable_assertion_graph_binding_verified": true,
+      "remote_lmdb_raw_sha256": "f3850a6d45d47cb14db817fe8a9ea33dea96fb45c38a99e210a0a42feb8f5cbd",
+      "remote_lmdb_raw_size_bytes": 8014,
+      "remote_readback_verified": true
+    },
+    "remote_lmdb_path": "/var/lib/ilc/rc01/public_submit_ingress_bridge/truth_graph.lmdb",
+    "remote_observer": "ilc-node-2"
+  },
+  "policy": {
+    "bootstrap_binding_evidence_cid": "bafyreibpshfhpf4oefpltcqbogf4ia7dtcirc43rw452vccjh5lpxug4bq",
+    "channel": "public_rc",
+    "claim_cid": "bafyreih55qz222zprbsyveljr5ak27r5cd5guta27cyzs2oia4jsmobh6y",
+    "local_high_water_mark": 2,
+    "mldsa_signature_file_sha256": "79c378f860ab89258f05c82c222b0114f5adc31cb3037a3a0343492e0c01e662",
+    "mldsa_signature_verified": true,
+    "network_id": "ilc-public-rc-01-testnet-harness",
+    "policy_id": "ilc-public-rc-current-policy-v1",
+    "policy_sequence": 2,
+    "resolver_reason": "verified_current_policy",
+    "resolver_status": "verified_current_policy",
+    "selected_release_assertion_cid": "bafyreihdrkharlpx2oejwpdbmjeaypsnnk7az5vaixqjzoftdk4o6ko4d4",
+    "selected_software_release_cid": "bafyreia77sx3vbzbyki5xc6wz4vw47d5segxhuvebrfokaqe2mhixiitai"
+  },
+  "providers": {
+    "github_release": {
+      "asset_count": 3,
+      "published": true,
+      "tag_commit": "b20b1525fe1007b62c4f49563ff7f50d8fb161ee",
+      "url": "https://github.com/jamison/ilc/releases/tag/v0.4.34"
+    },
+    "public_mirror": {
+      "append_only_ancestry_verified": true,
+      "denylist_hit_count": 0,
+      "graph_proof_correction_commit": "53790183faaaf9628a1de6170c554cb5457f1b9c",
+      "initial_release_commit": "b20b1525fe1007b62c4f49563ff7f50d8fb161ee",
+      "public_rc_exclude_hit_count": 0
+    },
+    "pypi": {
+      "published": true,
+      "url": "https://pypi.org/project/ilc-core/0.4.34/",
+      "wheel_and_sdist_unyanked": true
+    }
+  },
+  "remote_upgrade_check": {
+    "authorized_upgrade_available": true,
+    "available_version": "0.4.34",
+    "candidate_upgrade_available": true,
+    "endpoint": "https://raw.githubusercontent.com/jamison/ilc/53790183faaaf9628a1de6170c554cb5457f1b9c/docs/specs/ilc_core_0434_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json",
+    "full_release_graph_binding_verified": true,
+    "graph_provenance_verified": true,
+    "installed_version": "0.4.33",
+    "status": "verified_current_policy",
+    "verified_attestation_count": 3
+  },
+  "release": {
+    "assertion_cid": "bafyreihdrkharlpx2oejwpdbmjeaypsnnk7az5vaixqjzoftdk4o6ko4d4",
+    "release_signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+    "signature_scheme": "ed25519_phase_1335",
+    "source_commit": "63b4d8db9313250d9ccd20bef91501732f32177f",
+    "verified_attestation_count": 3,
+    "version": "0.4.34"
+  },
+  "schema_version": "ilc.rc_native_distribution_vnext_sign_publish_evidence.v0.1"
+}

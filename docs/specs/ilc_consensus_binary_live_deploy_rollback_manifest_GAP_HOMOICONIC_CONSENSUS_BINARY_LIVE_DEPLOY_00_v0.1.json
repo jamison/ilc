@@ -1,0 +1,24 @@
+{
+  "artifact": "ilc_consensus_binary_live_deploy_rollback_manifest_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1",
+  "backup_paths": {
+    "ilc-node-2": "/opt/ilc-consensus-reprovision-00/backups/pre-v0.4.34-stage2-v0434-20261026T073516Z",
+    "ilc-node-3": "/opt/ilc-consensus-reprovision-00/backups/pre-v0.4.34-stage2-v0434-20261026T073516Z",
+    "ilc-node-6": "/opt/ilc-consensus-reprovision-00/backups/pre-v0.4.34-stage2-v0434-20261026T073516Z"
+  },
+  "old_member_sha256": {
+    "attribution_batch_ingest": "38a1f25df0f605f3882e2a3d4de65e2b865994f5ae1c30af014f352dc7425f23",
+    "bls_verify_digest": "63ada100e4cc1039ab906c2e80345e4b6efedb616e64f060002739d7eb5a1829",
+    "ilc_p2p_bridge": "b37a7a7b5836c097b9e0f8278bfb2d6c39e528ac6ff6040359fdb26f1fd73864",
+    "invite_pop_bls": "20c55c20ded4928fb928eaaaf0599a7501df9d0e3fee1f13cc277aa9f6d50336",
+    "keygen": "fe99bf9099ea7eac58839631ea95231e41c64c07a963c028689b93b1018e9c95",
+    "validator_endpoint_assertion_bls": "2fb9bb1f02bd6a5c6e756a0792eabefb292cab473c71bc64dd8fd53298708007",
+    "validator_harness": "734057435c4a43ccb5711431a22e6a71270625f89dc46831a3938f51eebc26de"
+  },
+  "phase": "GAP-HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-00",
+  "rollback_exercised": false,
+  "rollback_scope": "Stop only the named validator services on all mutated hosts, atomically restore the seven files from the host-local backup, restart sequentially, and repeat all health and state-invariance checks.",
+  "rollback_status": "ready_not_invoked",
+  "run_id": "stage2-v0434-20261026T073516Z",
+  "schema_version": "ilc.consensus_binary_live_deploy_rollback_manifest.v0.1",
+  "state_extractor_preserved_sha256": "4e6b260ac140317ce8ad510bd933348d9e6f84ae668d5f64da3a461ee11a1491"
+}

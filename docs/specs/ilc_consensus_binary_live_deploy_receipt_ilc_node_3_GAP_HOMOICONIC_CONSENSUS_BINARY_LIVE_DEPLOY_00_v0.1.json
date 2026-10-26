@@ -1,0 +1,20 @@
+{
+  "artifact": "ilc_consensus_binary_live_deploy_receipt_ilc_node_3_v0.1",
+  "backup_verified": true,
+  "config_sha256": "4834e1182e3117281c6bf161794b1ef934102c58c89bb0f5e0231e629f0f4930",
+  "current_epoch_after": 1,
+  "current_epoch_before": 1,
+  "genesis_sha256": "86a66373622d146d3178ce1b7769675351e71133bac5d6d467c103d1c17f7865",
+  "host": "ilc-node-3",
+  "lmdb_data_sha256_after": "e96dddc6a64c7c3a27d9fccc13ddf3dbaaf22731dc04cbb283af59b70b7b9ef5",
+  "lmdb_data_sha256_before": "e96dddc6a64c7c3a27d9fccc13ddf3dbaaf22731dc04cbb283af59b70b7b9ef5",
+  "phase": "GAP-HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-00",
+  "post_validator_harness_sha256": "3c3b8ea0c6d697c597f53fcd1572625422ea2f5823a3a64d67da0a3f64d71449",
+  "pre_validator_harness_sha256": "734057435c4a43ccb5711431a22e6a71270625f89dc46831a3938f51eebc26de",
+  "run_id": "stage2-v0434-20261026T073516Z",
+  "schema_version": "ilc.consensus_binary_live_deploy_host_receipt.v0.1",
+  "services": [
+    {"after_pid": 387953, "before_pid": 300505, "grpc_endpoint": "64.227.70.134:50153", "nrestarts_after": 0, "service": "ilc-public-rc-validator-3.service", "status": "active_running", "udp_port": 7103}
+  ],
+  "status": "pass"
+}

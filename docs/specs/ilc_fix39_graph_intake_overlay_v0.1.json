@@ -605,6 +605,76 @@
       "edge_role": "EVIDENCES",
       "repo_path": "docs/specs/ilc_core_0434_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json",
       "target": "phase:GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_vnext_sign_publish",
+      "annotation_method": "gap_rc_native_distribution_vnext_sign_publish_00_overlay_record",
+      "edge_role": "EVIDENCES",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_vnext_sign_publish_evidence_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json",
+      "target": "phase:GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_vnext_sign_publish",
+      "annotation_method": "gap_rc_native_distribution_vnext_sign_publish_00_overlay_record",
+      "edge_role": "DOCUMENTS",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_vnext_sign_publish_rollback_report_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.md",
+      "target": "phase:GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_vnext_sign_publish",
+      "annotation_method": "gap_rc_native_distribution_vnext_sign_publish_00_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_rc_native_distribution_vnext_sign_publish_00_walkthrough.md",
+      "target": "phase:GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_consensus_binary_live_deploy",
+      "annotation_method": "gap_homoiconic_consensus_binary_live_deploy_00_overlay_record",
+      "edge_role": "EVIDENCES",
+      "repo_path": "docs/specs/ilc_consensus_binary_live_deployment_manifest_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1.json",
+      "target": "phase:GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_consensus_binary_live_deploy",
+      "annotation_method": "gap_homoiconic_consensus_binary_live_deploy_00_overlay_record",
+      "edge_role": "ROLLBACK_PLAN",
+      "repo_path": "docs/specs/ilc_consensus_binary_live_deploy_rollback_manifest_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1.json",
+      "target": "phase:GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_consensus_binary_live_deploy",
+      "annotation_method": "gap_homoiconic_consensus_binary_live_deploy_00_overlay_record",
+      "edge_role": "EVIDENCES",
+      "repo_path": "docs/specs/ilc_consensus_binary_live_deploy_receipt_ilc_node_2_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1.json",
+      "target": "phase:GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_consensus_binary_live_deploy",
+      "annotation_method": "gap_homoiconic_consensus_binary_live_deploy_00_overlay_record",
+      "edge_role": "EVIDENCES",
+      "repo_path": "docs/specs/ilc_consensus_binary_live_deploy_receipt_ilc_node_3_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1.json",
+      "target": "phase:GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_consensus_binary_live_deploy",
+      "annotation_method": "gap_homoiconic_consensus_binary_live_deploy_00_overlay_record",
+      "edge_role": "EVIDENCES",
+      "repo_path": "docs/specs/ilc_consensus_binary_live_deploy_receipt_ilc_node_6_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1.json",
+      "target": "phase:GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_consensus_binary_live_deploy",
+      "annotation_method": "gap_homoiconic_consensus_binary_live_deploy_00_overlay_record",
+      "edge_role": "EVIDENCES",
+      "repo_path": "docs/specs/ilc_consensus_binary_live_deploy_health_report_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1.json",
+      "target": "phase:GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00"
+    },
+    {
+      "annotation_batch": "manual_batch_rc_native_distribution_stage2_consensus_binary_live_deploy",
+      "annotation_method": "gap_homoiconic_consensus_binary_live_deploy_00_overlay_record",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_homoiconic_consensus_binary_live_deploy_00_walkthrough.md",
+      "target": "phase:GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00"
     }
   ],
   "status": "review_queue_support_only"

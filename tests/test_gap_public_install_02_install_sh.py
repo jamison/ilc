@@ -20,33 +20,36 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0433_GAP_PACKAGE_V0433_00b_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0434_GAP_RC_NATIVE_DISTRIBUTION_FRESH_INVITE_SMOKE_00_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/3f/63/"
-    "b275945ba7c14bd0397a40b56398f508b2789d60167bc82e644b4b37de1d/"
-    "ilc_core-0.4.33-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/96/ba/"
+    "a97f1f0d923d50ebe71b6c40e488645c06e798fefb15596760f8a7e50de1/"
+    "ilc_core-0.4.34-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "45047599ab76cbb81f880d17bd48a1fdfa492e1120292a988aae3a656648b871"
-EXPECTED_SIZE = "1596564"
-EXPECTED_RELEASE_ID = "ilc-core-0.4.33"
-EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0433@phase-1628"
-EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0433@phase-1628"
-EXPECTED_SDIST_SHA256 = "4b083cb0f8f0cb433be625139db80a9436beb11166e27f93c382bc2aa96ecc89"
-EXPECTED_SDIST_SIZE = "1307602"
+EXPECTED_SHA256 = "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2"
+EXPECTED_SIZE = "1630572"
+EXPECTED_RELEASE_ID = "ilc-core-0.4.34"
+EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0434@phase-1628"
+EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0434@phase-1628"
+EXPECTED_SDIST_SHA256 = "5e0f621934b239d76900f9d546e3a26ff943f38cdc81a87c469592a8f2f71c8c"
+EXPECTED_SDIST_SIZE = "1326598"
 EXPECTED_RELEASE_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0433_release_envelopes_GAP_PACKAGE_V0433_00b_v0.1.json"
+    "ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
 )
 EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX = (
     "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
 )
 EXPECTED_CONSENSUS_URL = (
-    "https://github.com/jamison/ilc/releases/download/v0.4.32/"
-    "ilc-consensus-linux-x86_64-v0.4.32.tar.gz"
+    "https://github.com/jamison/ilc/releases/download/v0.4.34/"
+    "ilc-consensus-linux-x86_64-v0.4.34.tar.gz"
 )
-EXPECTED_CONSENSUS_SHA256 = "8d04e69eafb4c7c9a40ef96f335b7dddf2d01452eb383a4dbd8c08d481238259"
-EXPECTED_CONSENSUS_SIZE = "5046757"
+EXPECTED_CONSENSUS_ARTIFACT_ID = (
+    "ilc-artifact:ilc-consensus-linux-x86-64-0434@phase-1628"
+)
+EXPECTED_CONSENSUS_SHA256 = "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f"
+EXPECTED_CONSENSUS_SIZE = "5053300"
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -243,6 +246,7 @@ def test_install_sh_consensus_binary_download_is_bounded_and_verified() -> None:
     text = INSTALL_SH.read_text(encoding="utf-8")
 
     assert 'CONSENSUS_BIN_URL="' in text
+    assert 'CONSENSUS_BIN_ARTIFACT_ID="' in text
     assert 'CONSENSUS_BIN_SHA256="' in text
     assert 'CONSENSUS_BIN_SIZE="' in text
     assert "CONSENSUS_BIN_SIZE_CAP" in text
@@ -407,6 +411,19 @@ def test_install_sh_manifest_sync_fails_on_consensus_url_mismatch(
         replacements={EXPECTED_CONSENSUS_URL: "https://example.invalid/helpers.tar.gz"},
     )
     with pytest.raises(ValueError, match="CONSENSUS_BIN_URL"):
+        verify_install_sh_manifest_sync(bad_script, MANIFEST)
+
+
+def test_install_sh_manifest_sync_fails_on_consensus_artifact_id_mismatch(
+    tmp_path: Path,
+) -> None:
+    bad_script = _copy_script(
+        tmp_path,
+        replacements={
+            EXPECTED_CONSENSUS_ARTIFACT_ID: "ilc-artifact:wrong-binary@phase-1628"
+        },
+    )
+    with pytest.raises(ValueError, match="CONSENSUS_BIN_ARTIFACT_ID"):
         verify_install_sh_manifest_sync(bad_script, MANIFEST)
 
 

@@ -1,0 +1,27 @@
+{
+  "all_four_epoch_records_identical": true,
+  "all_four_process_hashes_match_release": true,
+  "all_four_services_active": true,
+  "artifact": "ilc_consensus_binary_live_deploy_health_report_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1",
+  "current_epoch": 1,
+  "epoch_record": {
+    "aggregate_signature_base64": "sIy5N5R6P4AlYbBG2Hq8lXdfxRO4GqkaL7ahUN+nF5vxIM0YbrdV8wNLHgDJPcicBr0+4y4nslzPDrKRvW794xJKxXGFQJCsORJ+hmAxrgnNC75Bs9jElPUFw6ToYYti",
+    "epoch": 1,
+    "found": true,
+    "not_before_unix_ms": 1791007007082,
+    "spectral_hash_base64": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "state_root_base64": "AXESIOoEg3MJ6jIcnFa73dqOrQnqgCxVwe+OMeom4QNAcj2A"
+  },
+  "lmdb_unchanged": true,
+  "no_epoch_advance": true,
+  "no_unintended_config_or_genesis_mutation": true,
+  "phase": "GAP-HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-00",
+  "public_mirror_after": "53790183faaaf9628a1de6170c554cb5457f1b9c",
+  "public_mirror_push_performed": false,
+  "public_release_tag": "b20b1525fe1007b62c4f49563ff7f50d8fb161ee",
+  "schema_version": "ilc.consensus_binary_live_deploy_health_report.v0.1",
+  "state_extractor_preserved": true,
+  "status": "pass",
+  "validator_lmdb_data_sha256": "e96dddc6a64c7c3a27d9fccc13ddf3dbaaf22731dc04cbb283af59b70b7b9ef5",
+  "validator_process_sha256": "3c3b8ea0c6d697c597f53fcd1572625422ea2f5823a3a64d67da0a3f64d71449"
+}

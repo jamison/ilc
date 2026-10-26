@@ -1,0 +1,41 @@
+{
+  "artifact": "ilc_consensus_binary_live_deployment_manifest_GAP_HOMOICONIC_CONSENSUS_BINARY_LIVE_DEPLOY_00_v0.1",
+  "artifact_cid": "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+  "artifact_filename": "ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+  "artifact_sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+  "artifact_size_bytes": 5053300,
+  "authorization": {
+    "amendment_sha256": "25956f78996c5995bc7181a4175a393427142d82cdc470b2f5f0807a996888dd",
+    "baseline_sha256": "58ec4371586db19eb9cd044ed74f004dbde05f0fec5353fd112aa957fc0ffdd0",
+    "phase_clause": "GO Phase GAP-HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-00 HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-AUTHORIZED",
+    "strike_force_clause": "GO Strike Force RC-NATIVE-DISTRIBUTION-CLOSURE-00 STAGE-2-AMENDMENT-01-AUTHORIZED"
+  },
+  "completed_at_utc": "2026-10-26T07:38:45Z",
+  "deployment_order": [
+    "ilc-node-2:ilc-public-rc-validator-1.service",
+    "ilc-node-2:ilc-public-rc-validator-2.service",
+    "ilc-node-3:ilc-public-rc-validator-3.service",
+    "ilc-node-6:ilc-public-rc-validator-4.service"
+  ],
+  "destination": "/opt/ilc-consensus-reprovision-00/bin",
+  "member_sha256": {
+    "attribution_batch_ingest": "91678e30f20417c4440117c4876af16e17c6d9c6e949994df0361f2aaff022ab",
+    "bls_verify_digest": "5c16eafaef616e3ccda0fa6cdae532616a5a7750757b6fb416ba6b4af71aa347",
+    "ilc_p2p_bridge": "1bdac447af3cca162d300b458242cca53ce6b9b25c4e9c8f74cbad754706b1e0",
+    "invite_pop_bls": "7861312b3ed3a3f447daaa4189cf1b5e50a8d50ca92c98dc0e523639447e3e9e",
+    "keygen": "c36d3da8329ff5f2730ea57f500a08ede3455d0d72e6c9f6eec397a906eb801c",
+    "validator_endpoint_assertion_bls": "2888b532758021b0d5f0a037a41ff0b0e36c86f2bb65febb0b771d3a0693af78",
+    "validator_harness": "3c3b8ea0c6d697c597f53fcd1572625422ea2f5823a3a64d67da0a3f64d71449"
+  },
+  "member_mode_octal": "0755",
+  "network_id": "ilc-public-rc-01-testnet-harness",
+  "phase": "GAP-HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-00",
+  "policy_claim_cid": "bafyreih55qz222zprbsyveljr5ak27r5cd5guta27cyzs2oia4jsmobh6y",
+  "policy_sequence": 2,
+  "release_assertion_cid": "bafyreihdrkharlpx2oejwpdbmjeaypsnnk7az5vaixqjzoftdk4o6ko4d4",
+  "run_id": "stage2-v0434-20261026T073516Z",
+  "schema_version": "ilc.consensus_binary_live_deployment_manifest.v0.1",
+  "software_release_cid": "bafyreia77sx3vbzbyki5xc6wz4vw47d5segxhuvebrfokaqe2mhixiitai",
+  "status": "deployed_and_verified",
+  "version": "0.4.34"
+}
