@@ -30,10 +30,7 @@ from ilc_core.bundle.atlas_slice_manifest import (
     MAX_ATLAS_SLICE_MERKLE_ROWS,
     _content_entries_merkle_root,
 )
-from ilc_core.consensus.attribution_batch_bridge import (
-    AttributionBatchBridgeError,
-    _require_werner_pressure,
-)
+from ilc_core.consensus.attribution_batch_bridge import _require_werner_pressure
 from ilc_core.consensus.circuit_breaker_interface import (
     summarize_circuit_breaker_quorum_state,
 )
@@ -277,14 +274,15 @@ def test_ecu_intent_and_signature_validation():
         validate_rust_transfer_payload(payload, _intent())
 
 
-def test_action_nonce_abandoned_issuance_can_be_reissued(tmp_path):
+def test_action_nonce_abandoned_issuance_is_not_reissued(tmp_path):
     env = lmdb.open(str(tmp_path / "nonce"), max_dbs=4)
     try:
         store = ActionNonceStore(env)
         first = store.next_nonce(AGENT_A)
-        assert store.next_nonce(AGENT_A) == first
-        store.consume_nonce(AGENT_A, first)
+        assert first.endswith("00000000000000000001")
         assert store.next_nonce(AGENT_A).endswith("00000000000000000002")
+        store.consume_nonce(AGENT_A, first)
+        assert store.next_nonce(AGENT_A).endswith("00000000000000000003")
     finally:
         env.close()
 
@@ -387,9 +385,9 @@ def test_consensus_and_privacy_exact_boundaries():
     assert summary["quorum_share_decimal"] == "0.666666666667"
     assert "quorum_share" not in summary
     assert "max_cluster_share" not in summary
-    with pytest.raises(AttributionBatchBridgeError) as pressure_error:
-        _require_werner_pressure("-0.1")
-    assert pressure_error.value.token == "werner_raw_pressure_must_be_non_negative"
+    # CDL-109 makes malformed exact encodings fail closed, while a valid exact
+    # value outside the usable pressure domain is treated as absent context.
+    assert _require_werner_pressure("-0.1") is None
 
     monitor = FillMonitor(max_wait_epochs=1)
     monitor.record_force_release(0)

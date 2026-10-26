@@ -7,13 +7,21 @@ import json
 from pathlib import Path
 
 from ilc_core.ledger.canon_export_bundle_sign import sign_manifest, load_key_from_file
+from ilc_core.ledger.canon_bundle_utils import derive_key_id
 
 COMMAND = [sys.executable, "-m", "ilc_core.cli.canon_bundle_pipeline"]
 
 
 @pytest.fixture(autouse=True)
-def _allow_empty_key_registry(monkeypatch):
-    monkeypatch.setenv("ILC_ALLOW_EMPTY_KEY_REGISTRY", "1")
+def _install_test_key_registry(monkeypatch, tmp_path):
+    registry_path = tmp_path / "key_registry.json"
+    registry_path.write_text(json.dumps({
+        "current_keys": [derive_key_id(b"secret")],
+        "previous_keys": [],
+        "deprecated_keys": [],
+    }))
+    monkeypatch.setenv("ILC_KEY_REGISTRY_PATH", str(registry_path))
+    monkeypatch.delenv("ILC_ALLOW_EMPTY_KEY_REGISTRY", raising=False)
 
 
 class TestCanonBundlePipeline:

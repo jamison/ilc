@@ -34,12 +34,12 @@ class TestKeyRegistry:
         assert registry.is_empty()
         assert registry.status("any_key") == "unknown"
 
-    def test_empty_registry_allows_when_env_set(self, monkeypatch):
-        """Empty registry allows all keys when ILC_ALLOW_EMPTY_KEY_REGISTRY=1."""
+    def test_empty_registry_env_does_not_broaden_key_authority(self, monkeypatch):
+        """Ambient compatibility flags cannot make unknown keys current."""
         monkeypatch.setenv("ILC_ALLOW_EMPTY_KEY_REGISTRY", "1")
         registry = KeyRegistry()
         assert registry.is_empty()
-        assert registry.status("any_key") == "current"
+        assert registry.status("any_key") == "unknown"
     
     def test_load_registry_from_file(self, tmp_path):
         registry_file = tmp_path / "registry.json"

@@ -1,0 +1,130 @@
+{
+  "artifact": "ilc_rc_native_distribution_fresh_invite_smoke_receipt_v0.1",
+  "authorization": {
+    "amendment_sha256": "25956f78996c5995bc7181a4175a393427142d82cdc470b2f5f0807a996888dd",
+    "baseline_sha256": "58ec4371586db19eb9cd044ed74f004dbde05f0fec5353fd112aa957fc0ffdd0",
+    "phase_clause": "GO Phase GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00 RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-AUTHORIZED",
+    "strike_force_clause": "GO Strike Force RC-NATIVE-DISTRIBUTION-CLOSURE-00 STAGE-2-AMENDMENT-01-AUTHORIZED"
+  },
+  "clean_namespace": {
+    "host": "ilc-node-6",
+    "identity_preexisted": false,
+    "isolated_home": true,
+    "live_service_paths_touched": false,
+    "namespace_removed_after_evidence_capture": true,
+    "target_agent_id_sha256": "42ceedad74acf76b317fb14cc410475338dfbe3908f577d1de2dc3b95549e7af"
+  },
+  "endpoint_result": {
+    "external_probe_observer_configured": false,
+    "fresh_target_connectivity_mode": "local_only",
+    "relay_invite_transport": "https_signed_der_pin",
+    "relay_node": "ilc-node-3",
+    "relay_tls_cert_der_sha256": "1572d8c01f433c1cded1b77f4187bd7cc2bd85b62de53e1114751a97d1d281b9",
+    "validator_admission_claimed": false
+  },
+  "genesis_packages": {
+    "core_slice_0": {
+      "node_count": 58,
+      "package_sha256": "38a9f7351d00a1b92b6476c894552d78936400cf707076ccb6967fb5af5541e1",
+      "pq_sign_stdout": "signature_verified"
+    },
+    "genesis_agent_id": "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9",
+    "slice_1": {
+      "node_count": 1035,
+      "package_sha256": "37e57cb137a849d77ab3f386235ec672edc091a22d0120b5bca226ebd87ef278",
+      "pq_sign_stdout": "signature_verified"
+    },
+    "verification_result": "pass"
+  },
+  "install": {
+    "consensus_binary_count": 7,
+    "identity_material_created": true,
+    "ilc_core_version": "0.4.34",
+    "install_receipt_created": true,
+    "installer_sha256": "02b74c421965f7b000c030beb0f13b2ada563e1750970d04cfd7666f9350eddd",
+    "result": "pass",
+    "signature_envelope_count": 3
+  },
+  "invite": {
+    "bundle_bls_verified": true,
+    "bundle_payload_sha256": "b9d4b212c37f677a705c73dd65008c78c23e14ba61229793c39aace4e8078923",
+    "bundle_size_bytes": 21924,
+    "fetch_http_status": 200,
+    "inviter_agent_id_sha256": "82e71c48586ad639d3d039d050b9ea78e22c340442598486bbbd13decaf225a0",
+    "private_shortcode_recorded": false,
+    "serving_result": "pass",
+    "upload_http_status": 200
+  },
+  "linkage": {
+    "entry_count": 1,
+    "outer_bls_verified": true,
+    "payload_manifest_verified": true,
+    "slice_id": "public-rc-default-starmap-v1",
+    "slice_version": "0.4.4",
+    "status": "verified",
+    "witness_verified": true
+  },
+  "non_claims": [
+    "no_generic_arbitrary_agent_signed_slice_selection",
+    "no_native_cas_dht_retrieval",
+    "no_universal_installation_permission",
+    "lmdb_is_not_an_authority_source",
+    "no_validator_admission",
+    "no_public_rc_activation",
+    "no_epoch_transition",
+    "no_ecu_or_ilc_issuance",
+    "no_production_minting_or_settlement",
+    "no_mainnet_activation"
+  ],
+  "policy_and_artifacts": {
+    "authorization_preceded_transport": true,
+    "binary_sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+    "binary_size_bytes": 5053300,
+    "policy_head_cid": "bafyreih55qz222zprbsyveljr5ak27r5cd5guta27cyzs2oia4jsmobh6y",
+    "policy_sequence": 2,
+    "provider_orders_tested": [
+      [
+        "pypi",
+        "github"
+      ],
+      [
+        "github",
+        "pypi"
+      ]
+    ],
+    "provider_results_byte_identical": true,
+    "release_assertion_cid": "bafyreihdrkharlpx2oejwpdbmjeaypsnnk7az5vaixqjzoftdk4o6ko4d4",
+    "software_release_cid": "bafyreia77sx3vbzbyki5xc6wz4vw47d5segxhuvebrfokaqe2mhixiitai",
+    "verdict": "verified_current_policy",
+    "wheel_sha256": "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2",
+    "wheel_size_bytes": 1630572
+  },
+  "public_mirror": {
+    "append_only": true,
+    "denylist_scan": "pass",
+    "final_head": "e103ade8583e1be24ebabcf5bbed381cdafd185e",
+    "public_rc_exclude_scan": "pass",
+    "repairs": [
+      "v0.4.34 installer artifact pins",
+      "exact signed-envelope coverage",
+      "signed DER-pin relay upload and fetch transport",
+      "bounded explicit artifact redirect validation",
+      "directly executable invite-materialization linkage verifier"
+    ]
+  },
+  "result": "pass",
+  "schema_version": "ilc.rc_native_distribution_fresh_invite_smoke_receipt.v0.1",
+  "wallet_economic_state": {
+    "control_host_data_mdb_sha256": "e45dec9bcc25b689ffe65a1bca9a86143317e68977d0863168caa439ebd65848",
+    "matches_pre_smoke_recorded_hash": true,
+    "wallet_write_performed": false
+  },
+  "validator_health": {
+    "all_active_running": true,
+    "all_lmdb_sha256": "e96dddc6a64c7c3a27d9fccc13ddf3dbaaf22731dc04cbb283af59b70b7b9ef5",
+    "all_nrestarts": 0,
+    "all_validator_harness_sha256": "3c3b8ea0c6d697c597f53fcd1572625422ea2f5823a3a64d67da0a3f64d71449",
+    "pre_post_identity": true,
+    "validator_count": 4
+  }
+}

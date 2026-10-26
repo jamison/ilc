@@ -33,6 +33,27 @@
       "edge_role": "GRAPH_INTAKE_OVERLAY",
       "repo_path": "docs/specs/ilc_fix_rc_native_distribution_fresh_invite_smoke_graph_intake_overlay_v0.1.json",
       "target": "policy:graph_intake_new_file_coverage"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_fresh_invite_smoke_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00",
+      "edge_role": "SANITIZED_EXECUTION_RECEIPT",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_fresh_invite_smoke_receipt_GAP_RC_NATIVE_DISTRIBUTION_FRESH_INVITE_SMOKE_00_v0.1.json",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_fresh_invite_smoke_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00",
+      "edge_role": "EXECUTION_REPORT",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_fresh_invite_smoke_report_GAP_RC_NATIVE_DISTRIBUTION_FRESH_INVITE_SMOKE_00_v0.1.md",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_fresh_invite_smoke_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_rc_native_distribution_fresh_invite_smoke_00_walkthrough.md",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00"
     }
   ],
   "schema_version": "ilc.graph_intake_overlay.v0.1"

@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from ilc_core.release.install_sh_manifest_sync import verify_install_sh_manifest_sync
 from ilc_core.release.installable_release_manifest import (
     validate_installable_release_manifest,
@@ -790,8 +792,10 @@ def test_manifest_041_remains_valid_after_042_supersession() -> None:
     validate_installable_release_manifest(_load_json(MANIFEST_041))
 
 
-def test_install_sh_is_synced_to_current_0432_manifest() -> None:
-    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_0432)
+def test_install_sh_no_longer_treats_historical_0432_manifest_as_current() -> None:
+    validate_installable_release_manifest(_load_json(MANIFEST_0432))
+    with pytest.raises(ValueError, match="install_sh_manifest_sync_failed"):
+        verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_0432)
 
 
 def test_old_manifest_still_valid_and_unmodified_by_supersession() -> None:
