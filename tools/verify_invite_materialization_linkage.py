@@ -8,8 +8,13 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
 from typing import Any, Mapping
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from ilc_core.bundle.atlas_slice_schema import merkle_root_from_rows
 from ilc_core.bundle.atlas_slice_verifier import (

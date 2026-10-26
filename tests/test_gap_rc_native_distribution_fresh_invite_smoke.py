@@ -2,6 +2,9 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from pathlib import Path
+import subprocess
+import sys
 
 import pytest
 
@@ -19,6 +22,7 @@ from tools.verify_invite_materialization_linkage import (
 
 
 _IKM_HEX = "91" * 32
+_ROOT = Path(__file__).resolve().parents[1]
 
 
 def _signed_bundle() -> tuple[str, str, dict[str, object]]:
@@ -132,3 +136,21 @@ def test_wrong_expected_genesis_key_rejected() -> None:
     with pytest.raises(InviteMaterializationLinkageError) as exc:
         _verify(bundle, other_public_key)
     assert exc.value.token == "invite_linkage_outer_bls_invalid"
+
+
+def test_linkage_verifier_direct_script_entrypoint_loads_repo_package() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(_ROOT / "tools/verify_invite_materialization_linkage.py"),
+            "--help",
+        ],
+        cwd=_ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert result.returncode == 0, result.stderr
+    assert "--bundle" in result.stdout
+    assert "--receipt" in result.stdout
