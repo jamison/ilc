@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import hmac
 import json
 import os
 import re
@@ -1036,9 +1037,6 @@ def _post_invite_store_request(
     tls_cert_der_sha256: str,
     store_request: dict[str, Any],
 ) -> dict[str, Any]:
-    import http.client
-    import ssl
-
     from ilc_core.network.relay.relay_server import RELAY_INVITE_STORE_PATH
 
     parsed = urlparse(relay_url)
@@ -1062,21 +1060,13 @@ def _post_invite_store_request(
     if len(body) > 16 * 1024 * 1024:
         raise ValueError("invite_generate_store_request_too_large")
 
-    context = ssl.create_default_context()
-    conn = http.client.HTTPSConnection(
-        parsed.hostname,
+    conn = _connect_pinned_invite_relay(
+        hostname=parsed.hostname,
         port=parsed.port or 443,
-        timeout=15,
-        context=context,
+        tls_cert_der_sha256=clean_tls_pin,
+        error_prefix="invite_generate_relay",
     )
     try:
-        conn.connect()
-        if conn.sock is None:
-            raise ValueError("invite_generate_relay_tls_connection_failed")
-        cert_der = conn.sock.getpeercert(binary_form=True)
-        actual_pin = hashlib.sha256(cert_der).hexdigest()
-        if actual_pin != clean_tls_pin:
-            raise ValueError("invite_generate_relay_tls_pin_mismatch")
         conn.request(
             "POST",
             RELAY_INVITE_STORE_PATH,
@@ -1142,9 +1132,6 @@ def _normalize_invite_code(raw: str) -> str:
 def _fetch_invite_bundle_by_shortcode(code: str) -> dict[str, Any]:
     """Fetch and decode an invite bundle from the bundled relay using a shortcode."""
     import base64
-    import http.client
-    import ssl
-
     from ilc_core.network.relay.relay_server import (
         RELAY_INVITE_PATH_PREFIX,
         decode_shortcode_invite_bundle,
@@ -1162,21 +1149,13 @@ def _fetch_invite_bundle_by_shortcode(code: str) -> dict[str, Any]:
         raise ValueError("install_invite_code_relay_url_invalid")
 
     fetch_path = f"{RELAY_INVITE_PATH_PREFIX}{code}/fetch"
-    context = ssl.create_default_context()
-    conn = http.client.HTTPSConnection(
-        parsed.hostname,
+    conn = _connect_pinned_invite_relay(
+        hostname=parsed.hostname,
         port=parsed.port or 443,
-        timeout=15,
-        context=context,
+        tls_cert_der_sha256=tls_pin,
+        error_prefix="install_invite_code_relay",
     )
     try:
-        conn.connect()
-        if conn.sock is None:
-            raise ValueError("install_invite_code_relay_tls_connection_failed")
-        cert_der = conn.sock.getpeercert(binary_form=True)
-        actual_pin = hashlib.sha256(cert_der).hexdigest()
-        if actual_pin != tls_pin:
-            raise ValueError("install_invite_code_relay_tls_pin_mismatch")
         conn.request(
             "GET",
             fetch_path,
@@ -1208,6 +1187,43 @@ def _fetch_invite_bundle_by_shortcode(code: str) -> dict[str, Any]:
         return dict(bundle)
     finally:
         conn.close()
+
+
+def _connect_pinned_invite_relay(
+    *,
+    hostname: str,
+    port: int,
+    tls_cert_der_sha256: str,
+    error_prefix: str,
+) -> Any:
+    """Connect to a signed-pin relay and verify its certificate before HTTP."""
+
+    import http.client
+    import ssl
+
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.check_hostname = False
+    context.verify_mode = ssl.CERT_NONE
+    conn = http.client.HTTPSConnection(
+        hostname,
+        port=port,
+        timeout=15,
+        context=context,
+    )
+    try:
+        conn.connect()
+        if conn.sock is None:
+            raise ValueError(f"{error_prefix}_tls_connection_failed")
+        cert_der = conn.sock.getpeercert(binary_form=True)
+        if not isinstance(cert_der, bytes) or not cert_der:
+            raise ValueError(f"{error_prefix}_tls_connection_failed")
+        actual_pin = hashlib.sha256(cert_der).hexdigest()
+        if not hmac.compare_digest(actual_pin, tls_cert_der_sha256):
+            raise ValueError(f"{error_prefix}_tls_pin_mismatch")
+        return conn
+    except BaseException:
+        conn.close()
+        raise
 
 
 def _default_public_rc_starmap_payload() -> dict[str, Any]:

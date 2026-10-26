@@ -4,6 +4,7 @@ import argparse
 import base64
 from collections import deque
 import json
+import ssl
 import threading
 import time
 from typing import Any
@@ -705,9 +706,74 @@ def test_install_sh_no_redirect() -> None:
     assert "--location-trusted" not in invite_block
 
 
-def test_invite_generate_cli_uses_public_tls_context() -> None:
-    text = (cli_main.Path(__file__).resolve().parents[1] / "ilc_core/cli/main.py").read_text(
-        encoding="utf-8"
+def test_invite_relay_connection_verifies_signed_pin_before_http(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    cert_der = b"self-signed-relay-cert"
+    events: list[str] = []
+
+    class Socket:
+        def getpeercert(self, *, binary_form: bool) -> bytes:
+            assert binary_form is True
+            events.append("certificate")
+            return cert_der
+
+    class Connection:
+        def __init__(self, host: str, *, port: int, timeout: int, context: Any) -> None:
+            assert host == "relay.example"
+            assert port == 51151
+            assert timeout == 15
+            assert context.check_hostname is False
+            assert context.verify_mode == ssl.CERT_NONE
+            self.sock = Socket()
+
+        def connect(self) -> None:
+            events.append("connect")
+
+        def request(self, *_args: Any, **_kwargs: Any) -> None:
+            events.append("request")
+
+        def close(self) -> None:
+            events.append("close")
+
+    monkeypatch.setattr("http.client.HTTPSConnection", Connection)
+    connection = cli_main._connect_pinned_invite_relay(
+        hostname="relay.example",
+        port=51151,
+        tls_cert_der_sha256=cli_main.hashlib.sha256(cert_der).hexdigest(),
+        error_prefix="invite_generate_relay",
     )
-    assert "ssl.create_default_context()" in text
-    assert "ssl._create_unverified_context" not in text
+    assert events == ["connect", "certificate"]
+    connection.request("POST", "/relay/invite/store")
+    assert events == ["connect", "certificate", "request"]
+
+
+def test_invite_relay_connection_closes_on_pin_mismatch(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    events: list[str] = []
+
+    class Socket:
+        def getpeercert(self, *, binary_form: bool) -> bytes:
+            assert binary_form is True
+            return b"wrong-cert"
+
+    class Connection:
+        def __init__(self, *_args: Any, **_kwargs: Any) -> None:
+            self.sock = Socket()
+
+        def connect(self) -> None:
+            events.append("connect")
+
+        def close(self) -> None:
+            events.append("close")
+
+    monkeypatch.setattr("http.client.HTTPSConnection", Connection)
+    with pytest.raises(ValueError, match="invite_generate_relay_tls_pin_mismatch"):
+        cli_main._connect_pinned_invite_relay(
+            hostname="relay.example",
+            port=51151,
+            tls_cert_der_sha256="0" * 64,
+            error_prefix="invite_generate_relay",
+        )
+    assert events == ["connect", "close"]
