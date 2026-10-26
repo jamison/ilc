@@ -11,6 +11,7 @@ from cryptography.hazmat.primitives.asymmetric.mldsa import MLDSA65PrivateKey
 
 from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.identity.bls_backend import keypair_from_ikm_hex
+from ilc_core.cli.d2e_submit_cli import _build_native_submit_sig_object
 from ilc_core.release.installable_release_signature import validate_envelope_set
 from ilc_core.release.upgrade_check import validate_release_assertion
 from tools import rc_native_distribution_vnext_sign_publish as ceremony
@@ -68,7 +69,11 @@ def test_v0434_release_assertion_has_exact_signed_artifact_coverage() -> None:
     assertion = _load(ASSERTION)
     validation = validate_release_assertion(assertion)
     assert assertion["assertion_cid"] == node_id_from_obj(
-        {key: value for key, value in assertion.items() if key != "assertion_cid"}
+        {
+            key: value
+            for key, value in assertion.items()
+            if key not in {"assertion_cid", "native_submit_envelope"}
+        }
     )
     assert assertion["assertion_cid"] == (
         "bafyreihdrkharlpx2oejwpdbmjeaypsnnk7az5vaixqjzoftdk4o6ko4d4"
@@ -86,6 +91,81 @@ def test_v0434_release_assertion_has_exact_signed_artifact_coverage() -> None:
     assert {
         node["artifact_type"] for node in assertion["artifact_nodes"]
     } == {"wheel", "sdist", "binary_tarball"}
+
+
+def _native_release_envelope(assertion: dict, secret: str, public: str) -> dict:
+    unsigned = {
+        "agent_id": public,
+        "epoch": 0,
+        "payload": {
+            "content": {
+                "phase": ceremony.PHASE,
+                "software_release_assertion": assertion,
+            },
+            "epistemic_type": "objective",
+            "parent_node_ids": [],
+            "primitive_type": "observation",
+        },
+        "primitive": "assert.truth",
+        "v": 1,
+    }
+    return {
+        **unsigned,
+        "sig": _build_native_submit_sig_object(
+            unsigned, secret, network_id=ceremony.NETWORK_ID
+        ),
+    }
+
+
+def test_release_native_envelope_attachment_makes_graph_binding_portable(
+    tmp_path: Path,
+) -> None:
+    assertion = _load(ASSERTION)
+    assertion.pop("native_submit_envelope", None)
+    assertion_path = tmp_path / "assertion.json"
+    assertion_path.write_text(json.dumps(assertion), encoding="utf-8")
+    secret, public = keypair_from_ikm_hex("63" * 32)
+    envelope_path = tmp_path / "envelope.json"
+    envelope_path.write_text(
+        json.dumps(_native_release_envelope(assertion, secret, public)),
+        encoding="utf-8",
+    )
+
+    portable, receipt = ceremony.attach_release_native_envelope(
+        assertion_path=assertion_path,
+        native_submit_envelope_path=envelope_path,
+    )
+
+    validation = validate_release_assertion(portable)
+    assert portable["assertion_cid"] == assertion["assertion_cid"]
+    assert validation["full_release_graph_binding_verified"] is True
+    assert receipt["network_id"] == ceremony.NETWORK_ID
+
+
+def test_release_native_envelope_attachment_rejects_wrong_assertion(
+    tmp_path: Path,
+) -> None:
+    assertion = _load(ASSERTION)
+    assertion.pop("native_submit_envelope", None)
+    assertion_path = tmp_path / "assertion.json"
+    assertion_path.write_text(json.dumps(assertion), encoding="utf-8")
+    nested = json.loads(json.dumps(assertion))
+    nested["software_release_node"]["version"] = "9.9.9"
+    secret, public = keypair_from_ikm_hex("64" * 32)
+    envelope_path = tmp_path / "envelope.json"
+    envelope_path.write_text(
+        json.dumps(_native_release_envelope(nested, secret, public)),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        ceremony.VNextCeremonyError,
+        match="release_graph_provenance_assertion_core_mismatch",
+    ):
+        ceremony.attach_release_native_envelope(
+            assertion_path=assertion_path,
+            native_submit_envelope_path=envelope_path,
+        )
 
 
 def test_policy_preparation_uses_detached_genesis_signature_boundary() -> None:
