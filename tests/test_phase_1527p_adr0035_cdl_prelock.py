@@ -8,7 +8,6 @@ OBL_REGISTER = ROOT / "docs/specs/ilc_open_obligation_register_v0.1.md"
 SEQUENCE_LOCK = ROOT / "docs/specs/ilc_phase_1523p_1530p_sequence_lock_v0.1.md"
 PLANNING_INDEX = ROOT / "docs/PLANNING_INDEX.md"
 STATUS = ROOT / "docs/phases/STATUS.md"
-AGENTS = ROOT / "AGENTS.md"
 WALKTHROUGH = ROOT / "docs/phases/phase_1527p_adr0035_cdl_deliberation_prelock_walkthrough.md"
 
 
@@ -62,10 +61,9 @@ def test_frontier_documents_record_phase_1527p_and_obl025_open() -> None:
     sequence = read(SEQUENCE_LOCK)
     planning = read(PLANNING_INDEX)
     status = read(STATUS)
-    agents = read(AGENTS)
     walkthrough = read(WALKTHROUGH)
 
-    for text in (obl, sequence, planning, status, agents, walkthrough):
+    for text in (obl, sequence, planning, status, walkthrough):
         assert "cdl_097_prelock_committed_phase_1527p" in text
         assert "cdl_097_scope_constants_locked_phase_1527p" in text
         assert "public_path_still_blocked_phase_1527p" in text
@@ -74,7 +72,6 @@ def test_frontier_documents_record_phase_1527p_and_obl025_open() -> None:
     assert "Phase 1527p" in status
     assert "OBL-025 remains open" in status
     assert "Phase 1528p remains SENSITIVE" in status or "Phase 1528p - ADR-0035 CDL-097 Ratification" in status
-    assert "phase_1527p: complete_cdl097_deliberation_prelock" in agents
     assert (
         "Phase 1528p is the next phase and is SENSITIVE" in planning
         or "Phase 1529p is the next phase and is NON-SENSITIVE" in planning

@@ -144,8 +144,11 @@ def test_1213_schema_lacks_installable_artifact_types() -> None:
 def test_phase_00_recorded_root_public_install_script_absent_then() -> None:
     content = RECONCILIATION_DOC.read_text(encoding="utf-8")
     assert "Root ILC `install.sh` software-delivery script | Not present" in content
+    assert (
+        "Sidecar-local install script | `ilc-graphics-sidecar/install.sh` exists, "
+        "but installs only the graph-viz sidecar"
+    ) in content
     assert not (ROOT / "ilc_core" / "cli" / "install.sh").exists()
-    assert (ROOT / "ilc-graphics-sidecar" / "install.sh").exists()
 
 
 def test_console_script_inventory_matches_phase_1575o_fix1_count() -> None:

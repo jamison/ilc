@@ -100,9 +100,9 @@ def _ejected_stake_inputs() -> dict[str, object]:
         "distribution_epoch": 7,
         "ejected_stake_ilc": Decimal("9.000000001"),
         "remaining_member_stakes": {
-            "agent_alpha": Decimal("10"),
-            "agent_beta": Decimal("20"),
-            "agent_gamma": Decimal("30"),
+            _agent_id(1): Decimal("10"),
+            _agent_id(2): Decimal("20"),
+            _agent_id(3): Decimal("30"),
         },
         "approve_votes": 2,
         "participating_voters": 2,

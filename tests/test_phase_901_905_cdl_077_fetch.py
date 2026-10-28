@@ -27,6 +27,7 @@ from unittest.mock import patch, MagicMock
 
 import pytest
 
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.network.d2d.truth_primitive_fetch_runtime import (
     CDL_042_DEPENDENCY,
     CDL_075_DEPENDENCY,
@@ -56,6 +57,14 @@ PHASE_903_COMMIT_SUBJECT = "feat(g8): phase 899-903 cdl-077 want-have want-block
 FETCH_RUNTIME_PATH = Path("ilc_core/network/d2d/truth_primitive_fetch_runtime.py")
 HTTP_TRANSPORT_PATH = Path("ilc_core/network/d2d/http_fetch_transport_runtime.py")
 CDL_LOG_PATH = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
+FETCH_RECORD = {
+    "agent_id": "agent-001",
+    "epoch": 1,
+    "primitive": "assert.truth",
+    "primitive_type": "observation",
+}
+FETCH_NODE_ID = node_id_from_obj(FETCH_RECORD)
+FETCH_RECORD_BYTES = json.dumps(FETCH_RECORD, sort_keys=True).encode()
 
 
 # ---------------------------------------------------------------------------
@@ -237,6 +246,32 @@ def test_want_have_rejects_non_string_node_id_field(monkeypatch):
         want_have("bafytest001", "https://peer1.example.com")
 
     assert exc_info.value.token == "fetch_want_have_invalid_response"
+
+
+def test_want_have_rejects_missing_node_id_field(monkeypatch):
+    monkeypatch.setattr(
+        urllib.request,
+        "build_opener",
+        lambda *_args: _FakeOpener(b'{"have":true}'),
+    )
+
+    with pytest.raises(FetchTransportError) as exc_info:
+        want_have(FETCH_NODE_ID, "https://peer1.example.com")
+
+    assert exc_info.value.token == "fetch_want_have_invalid_response"
+
+
+def test_want_have_rejects_different_node_id(monkeypatch):
+    monkeypatch.setattr(
+        urllib.request,
+        "build_opener",
+        lambda *_args: _FakeOpener(b'{"have":true,"node_id":"wrong"}'),
+    )
+
+    with pytest.raises(FetchTransportError) as exc_info:
+        want_have(FETCH_NODE_ID, "https://peer1.example.com")
+
+    assert exc_info.value.token == "fetch_want_have_node_id_mismatch"
 
 
 # ---------------------------------------------------------------------------
@@ -425,15 +460,15 @@ def test_fetch_truth_primitive_peer_has_node(monkeypatch):
         return {"have": True, "node_id": _node_id}
 
     def _mock_want_block(_node_id, _peer):
-        return b'{"primitive": "assert.truth"}'
+        return FETCH_RECORD_BYTES
 
     with patch(
         "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_have", _mock_want_have
     ), patch(
         "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_block", _mock_want_block
     ):
-        result = fetch_truth_primitive("bafytest001")
-    assert result == b'{"primitive": "assert.truth"}'
+        result = fetch_truth_primitive(FETCH_NODE_ID)
+    assert result == FETCH_RECORD_BYTES
 
 
 def test_fetch_truth_primitive_first_peer_no_second_yes(monkeypatch):
@@ -448,16 +483,68 @@ def test_fetch_truth_primitive_first_peer_no_second_yes(monkeypatch):
         return {"have": "peer2" in peer, "node_id": _node_id}
 
     def _mock_want_block(_node_id, _peer):
-        return b'{"primitive": "assert.truth"}'
+        return FETCH_RECORD_BYTES
 
     with patch(
         "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_have", _mock_want_have
     ), patch(
         "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_block", _mock_want_block
     ):
-        result = fetch_truth_primitive("bafytest001")
-    assert result == b'{"primitive": "assert.truth"}'
+        result = fetch_truth_primitive(FETCH_NODE_ID)
+    assert result == FETCH_RECORD_BYTES
     assert call_count["have"] == 2
+
+
+def test_fetch_truth_primitive_skips_wrong_content_then_accepts_valid_peer(monkeypatch):
+    monkeypatch.setenv(
+        "ILC_D2D_GOSSIP_PEERS", "https://peer1.example.com,https://peer2.example.com"
+    )
+    wrong_bytes = json.dumps({**FETCH_RECORD, "epoch": 2}, sort_keys=True).encode()
+
+    def _mock_want_have(node_id, _peer):
+        return {"have": True, "node_id": node_id}
+
+    def _mock_want_block(_node_id, peer):
+        return wrong_bytes if "peer1" in peer else FETCH_RECORD_BYTES
+
+    with patch(
+        "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_have", _mock_want_have
+    ), patch(
+        "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_block", _mock_want_block
+    ):
+        result = fetch_truth_primitive(FETCH_NODE_ID)
+
+    assert result == FETCH_RECORD_BYTES
+
+
+def test_fetch_truth_primitive_rejects_malformed_record(monkeypatch):
+    monkeypatch.setenv("ILC_D2D_GOSSIP_PEERS", "https://peer1.example.com")
+
+    with patch(
+        "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_have",
+        return_value={"have": True, "node_id": FETCH_NODE_ID},
+    ), patch(
+        "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_block",
+        return_value=b'{"primitive":',
+    ):
+        result = fetch_truth_primitive(FETCH_NODE_ID)
+
+    assert result is None
+
+
+def test_fetch_truth_primitive_rejects_invalid_utf8_record(monkeypatch):
+    monkeypatch.setenv("ILC_D2D_GOSSIP_PEERS", "https://peer1.example.com")
+
+    with patch(
+        "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_have",
+        return_value={"have": True, "node_id": FETCH_NODE_ID},
+    ), patch(
+        "ilc_core.network.d2d.truth_primitive_fetch_runtime.want_block",
+        return_value=b"\xff",
+    ):
+        result = fetch_truth_primitive(FETCH_NODE_ID)
+
+    assert result is None
 
 
 # ---------------------------------------------------------------------------

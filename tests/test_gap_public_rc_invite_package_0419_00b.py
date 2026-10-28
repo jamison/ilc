@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 
+import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
 from ilc_core.release.install_sh_manifest_sync import verify_install_sh_manifest_sync
@@ -16,6 +17,10 @@ ROOT = Path(__file__).resolve().parents[1]
 MANIFEST_PATH = (
     ROOT
     / "docs/specs/ilc_installable_release_manifest_ilc_core_0419_GAP_PUBLIC_RC_INVITE_PACKAGE_0419_00b_v0.1.json"
+)
+CURRENT_MANIFEST_PATH = (
+    ROOT
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0435_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
 )
 ENVELOPE_PATH = (
     ROOT
@@ -105,8 +110,16 @@ def test_0419_upload_receipt_matches_manifest_and_pypi_urls() -> None:
     assert receipt["pypi_yank_status"]["0.4.18"]["all_yanked"] is True  # type: ignore[index]
 
 
-def test_install_sh_is_synced_to_0419_manifest() -> None:
-    verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_PATH)
+def test_0419_manifest_is_historical_and_current_installer_uses_0435() -> None:
+    historical = _load_json(MANIFEST_PATH)
+    current = _load_json(CURRENT_MANIFEST_PATH)
+
+    assert historical["release_id"] == "ilc-core-0.4.19"
+    assert current["release_id"] == "ilc-core-0.4.35"
+    with pytest.raises(ValueError, match="install_sh_manifest_sync_failed:RC_WHEEL_URL"):
+        verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST_PATH)
+    verify_install_sh_manifest_sync(INSTALL_SH, CURRENT_MANIFEST_PATH)
+    assert "ilc_core-0.4.19" not in INSTALL_SH.read_text(encoding="utf-8")
 
 
 def test_0419_envelope_set_sha256_pinned() -> None:

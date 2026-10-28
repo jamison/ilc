@@ -49,7 +49,7 @@ class TestPhase778Layer2Implementation(unittest.TestCase):
         text = _read(NETWORK)
         self.assertIn("RelaySubmit", text)
         self.assertIn("testnet_only", text)
-        self.assertIn("remaining_route: Vec<ValidatorID>", text)
+        self.assertIn("remaining_route: Vec<AgentID>", text)
 
     def test_node_adds_relay_forwarding_with_loop_and_cap_guards(self) -> None:
         text = _read(NODE)

@@ -6,7 +6,11 @@ from pathlib import Path
 
 import pytest
 
-from ilc_core.cli.main import _build_parser, _run_identity_subcommand
+from ilc_core.cli.main import (
+    _apply_validator_candidate_enrollment_state,
+    _build_parser,
+    _run_identity_subcommand,
+)
 from ilc_core.identity.agent_id_runtime import derive_agent_id_v2
 from ilc_core.identity.genesis_record_schema import compute_identity_seed_commitment
 from ilc_core.validator import (
@@ -52,6 +56,16 @@ def _identity_args(**overrides: object) -> argparse.Namespace:
     }
     payload.update(overrides)
     return argparse.Namespace(**payload)
+
+
+def _candidate_state(
+    args: argparse.Namespace,
+    *,
+    enrollment_agent_id: str = "",
+) -> dict[str, object]:
+    state: dict[str, object] = {}
+    _apply_validator_candidate_enrollment_state(args, state, enrollment_agent_id)
+    return state
 
 
 def test_validator_key_ikm_is_deterministic_and_32_bytes() -> None:
@@ -179,38 +193,38 @@ def test_cli_help_exposes_no_validator_flag(capsys: pytest.CaptureFixture[str]) 
 
 
 def test_identity_init_no_validator_records_opt_out(tmp_path: Path) -> None:
-    result = _run_identity_subcommand(
-        _identity_args(no_validator=True, identity_seed_hex="not-hex"),
-        tmp_path / "graph.json",
-    )
+    with pytest.raises(ValueError, match="invite_required_for_enrollment"):
+        _run_identity_subcommand(
+            _identity_args(no_validator=True, identity_seed_hex="not-hex"),
+            tmp_path / "graph.json",
+        )
 
-    state = result["state"]
+    state = _candidate_state(
+        _identity_args(no_validator=True, identity_seed_hex="not-hex")
+    )
     assert state["validator_participation_enabled"] is False
     assert state["validator_role_record_status"] == "opted_out"
     assert "validator_role_record" not in state
 
 
 def test_identity_init_default_on_without_material_records_pending(tmp_path: Path) -> None:
-    result = _run_identity_subcommand(_identity_args(identity_seed_hex="not-hex"), tmp_path / "graph.json")
-
-    state = result["state"]
+    state = _candidate_state(_identity_args(identity_seed_hex="not-hex"))
     assert state["validator_participation_enabled"] is True
     assert state["validator_role_record_status"] == "candidate_pending_validator_key_material"
     assert "validator_role_record" not in state
 
 
 def test_identity_init_materializes_candidate_role_record(tmp_path: Path) -> None:
-    result = _run_identity_subcommand(
+    state = _candidate_state(
         _identity_args(
             identity_seed_hex=IDENTITY_SEED_HEX,
             validator_id=7,
             validator_key=VALIDATOR_KEY,
             validator_endpoint=VALIDATOR_ENDPOINT,
         ),
-        tmp_path / "graph.json",
+        enrollment_agent_id=AGENT_ID,
     )
 
-    state = result["state"]
     role = state["validator_role_record"]
     assert state["agent_id"] == AGENT_ID
     assert state["validator_role_record_status"] == "candidate_materialized"
@@ -224,23 +238,21 @@ def test_identity_init_materializes_candidate_role_record(tmp_path: Path) -> Non
 
 def test_identity_init_rejects_partial_validator_material(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="validator_candidate_material_incomplete"):
-        _run_identity_subcommand(
+        _candidate_state(
             _identity_args(
                 identity_seed_hex=IDENTITY_SEED_HEX,
                 validator_key=VALIDATOR_KEY,
             ),
-            tmp_path / "graph.json",
         )
 
 
 def test_identity_init_requires_seed_for_materialized_candidate(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="identity_seed_hex_required_for_validator_candidate"):
-        _run_identity_subcommand(
+        _candidate_state(
             _identity_args(
                 validator_key=VALIDATOR_KEY,
                 validator_endpoint=VALIDATOR_ENDPOINT,
             ),
-            tmp_path / "graph.json",
         )
 
 
@@ -248,26 +260,24 @@ def test_identity_init_rejects_uppercase_seed_for_materialized_candidate(
     tmp_path: Path,
 ) -> None:
     with pytest.raises(ValueError, match="identity_seed_hex_must_be_64_lower_hex_chars"):
-        _run_identity_subcommand(
+        _candidate_state(
             _identity_args(
                 identity_seed_hex=IDENTITY_SEED_HEX.upper(),
                 validator_key=VALIDATOR_KEY,
                 validator_endpoint=VALIDATOR_ENDPOINT,
             ),
-            tmp_path / "graph.json",
         )
 
 
 def test_identity_init_rejects_non_int_validator_id(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="validator_id_must_be_int"):
-        _run_identity_subcommand(
+        _candidate_state(
             _identity_args(
                 identity_seed_hex=IDENTITY_SEED_HEX,
                 validator_id="7",
                 validator_key=VALIDATOR_KEY,
                 validator_endpoint=VALIDATOR_ENDPOINT,
             ),
-            tmp_path / "graph.json",
         )
 
 

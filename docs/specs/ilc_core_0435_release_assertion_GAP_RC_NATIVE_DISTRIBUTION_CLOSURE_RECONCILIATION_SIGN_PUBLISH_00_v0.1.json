@@ -1,0 +1,226 @@
+{
+  "artifact_nodes": [
+    {
+      "artifact_id": "ilc-artifact:sdist-0435@phase-1628",
+      "artifact_type": "sdist",
+      "cid": "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu",
+      "filename": "ilc_core-0.4.35.tar.gz",
+      "node_kind": "ArtifactNode",
+      "package_name": "ilc-core",
+      "package_version": "0.4.35",
+      "pypi_url": "https://files.pythonhosted.org/packages/d0/1d/85d2d97937ae80e321704cfd8b64015d4421174953d2c2f0745d322dc75f/ilc_core-0.4.35.tar.gz",
+      "schema_version": "artifact_node.v0.1",
+      "sha256": "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d",
+      "size_bytes": 1343190
+    },
+    {
+      "artifact_id": "ilc-artifact:wheel-0435@phase-1628",
+      "artifact_type": "wheel",
+      "cid": "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm",
+      "filename": "ilc_core-0.4.35-py3-none-any.whl",
+      "node_kind": "ArtifactNode",
+      "package_name": "ilc-core",
+      "package_version": "0.4.35",
+      "pypi_url": "https://files.pythonhosted.org/packages/9b/01/34f83c7c85e0821d2cd48f7d2c639564e3d0e13810751d405eceaa8f5c4b/ilc_core-0.4.35-py3-none-any.whl",
+      "schema_version": "artifact_node.v0.1",
+      "sha256": "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf",
+      "size_bytes": 1645463
+    }
+  ],
+  "assertion_cid": "bafyreihu2nwi37azxr6escbebnsqhiae36h4z7awzpgo2bi32abrcwinwi",
+  "build_recipe_nodes": [
+    {
+      "build_command": "python -m build --no-isolation --wheel --sdist",
+      "build_date": "2026-10-28T00:24:15Z",
+      "build_env_hash": "d8406a216a8f610075fd674d55deb397c482ba0cf69dabac390c34ebb0d83008",
+      "build_toolchain": "python-3.14.3/build-1.5.0/setuptools-84.2.1/wheel-0.48.0",
+      "builder_agent_id": "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9",
+      "cid": "bafyreidbjplvq33ilvobn24vqmx2uwjzsmxk6iwfbzwjswypqzaofhfrxu",
+      "node_kind": "BuildRecipeNode",
+      "reproducibility_hash": "68a28f1d15a8bfa756fd3ffd92323e7a3c0f4846f8b606064330ebf8fc947c50",
+      "schema_version": "build_recipe_node.v0.1",
+      "source_commit": "c91bae2d0c03aeaebe7c902b848634bf4abfd297"
+    }
+  ],
+  "native_submit_envelope": {
+    "agent_id": "84e0eb6f7ec5ddbc5e33edff781e9bc0a2a38eb017d1bbbad1979878757c230e6434d88eb2d774b2f4df174e5b6decd4",
+    "epoch": 0,
+    "payload": {
+      "content": {
+        "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+        "software_release_assertion": {
+          "artifact_nodes": [
+            {
+              "artifact_id": "ilc-artifact:sdist-0435@phase-1628",
+              "artifact_type": "sdist",
+              "cid": "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu",
+              "filename": "ilc_core-0.4.35.tar.gz",
+              "node_kind": "ArtifactNode",
+              "package_name": "ilc-core",
+              "package_version": "0.4.35",
+              "pypi_url": "https://files.pythonhosted.org/packages/d0/1d/85d2d97937ae80e321704cfd8b64015d4421174953d2c2f0745d322dc75f/ilc_core-0.4.35.tar.gz",
+              "schema_version": "artifact_node.v0.1",
+              "sha256": "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d",
+              "size_bytes": 1343190
+            },
+            {
+              "artifact_id": "ilc-artifact:wheel-0435@phase-1628",
+              "artifact_type": "wheel",
+              "cid": "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm",
+              "filename": "ilc_core-0.4.35-py3-none-any.whl",
+              "node_kind": "ArtifactNode",
+              "package_name": "ilc-core",
+              "package_version": "0.4.35",
+              "pypi_url": "https://files.pythonhosted.org/packages/9b/01/34f83c7c85e0821d2cd48f7d2c639564e3d0e13810751d405eceaa8f5c4b/ilc_core-0.4.35-py3-none-any.whl",
+              "schema_version": "artifact_node.v0.1",
+              "sha256": "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf",
+              "size_bytes": 1645463
+            }
+          ],
+          "assertion_cid": "bafyreihu2nwi37azxr6escbebnsqhiae36h4z7awzpgo2bi32abrcwinwi",
+          "build_recipe_nodes": [
+            {
+              "build_command": "python -m build --no-isolation --wheel --sdist",
+              "build_date": "2026-10-28T00:24:15Z",
+              "build_env_hash": "d8406a216a8f610075fd674d55deb397c482ba0cf69dabac390c34ebb0d83008",
+              "build_toolchain": "python-3.14.3/build-1.5.0/setuptools-84.2.1/wheel-0.48.0",
+              "builder_agent_id": "c43f69fcc4dfd021f5e468824c9560c03c45c601f8d004be4d244356ce6043849b9cf2af38bc51a40c1c4bc3e71b04d9",
+              "cid": "bafyreidbjplvq33ilvobn24vqmx2uwjzsmxk6iwfbzwjswypqzaofhfrxu",
+              "node_kind": "BuildRecipeNode",
+              "reproducibility_hash": "68a28f1d15a8bfa756fd3ffd92323e7a3c0f4846f8b606064330ebf8fc947c50",
+              "schema_version": "build_recipe_node.v0.1",
+              "source_commit": "c91bae2d0c03aeaebe7c902b848634bf4abfd297"
+            }
+          ],
+          "release_attestation_edges": [
+            {
+              "artifact_id": "ilc-artifact:sdist-0435@phase-1628",
+              "artifact_sha256": "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d",
+              "attestation_date": "2026-10-28T00:24:15Z",
+              "edge_type": "RELEASE_ATTESTS_ARTIFACT",
+              "genesis_lineage_ref": "adr-0037:genesis-canonical-lineage-contract",
+              "prior_release_envelope_ref": "docs/specs/ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json",
+              "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
+              "schema_version": "release_attestation_edge.v0.1",
+              "signature_hex": "05ee113d7a72ef3d6830440811a90213211d6b9039abda1534b01a79c607d1d58fbbfddfd1308a157f7a44e3aef2aa4e58bf8ea89a098367cdab41ff74f42106",
+              "signature_scheme": "ed25519_phase_1335",
+              "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
+              "signed_preimage_sha256": "7542b2374fbe7f41581d65678c044274711a6d4aed6e1d1201aa0918176a4ae0",
+              "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+              "signing_algorithm": "Ed25519",
+              "source": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+              "target": "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu"
+            },
+            {
+              "artifact_id": "ilc-artifact:wheel-0435@phase-1628",
+              "artifact_sha256": "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf",
+              "attestation_date": "2026-10-28T00:24:15Z",
+              "edge_type": "RELEASE_ATTESTS_ARTIFACT",
+              "genesis_lineage_ref": "adr-0037:genesis-canonical-lineage-contract",
+              "prior_release_envelope_ref": "docs/specs/ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json",
+              "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
+              "schema_version": "release_attestation_edge.v0.1",
+              "signature_hex": "e10b7fc2747391dfa99c9dde266397acb1e98bd7a9add276e7c6f888f1994deab1bdf44d56f48b55352b60a1b6e979b03e81969f79fed16e4266ad523105500f",
+              "signature_scheme": "ed25519_phase_1335",
+              "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
+              "signed_preimage_sha256": "9826e683c9f1e52e0edb89c93382961eb93b9bc9db9c90291a4be59c9c59af33",
+              "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+              "signing_algorithm": "Ed25519",
+              "source": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+              "target": "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm"
+            }
+          ],
+          "schema_version": "software_release_assertion.v0.1",
+          "software_release_node": {
+            "artifact_cids": [
+              "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu",
+              "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm"
+            ],
+            "build_recipe_cid": "bafyreidbjplvq33ilvobn24vqmx2uwjzsmxk6iwfbzwjswypqzaofhfrxu",
+            "changelog_hash": "ffb655094e9909c618191f6715cd3884d4eae1879065465057a62968019297cd",
+            "cid": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+            "node_kind": "SoftwareReleaseNode",
+            "package_name": "ilc-core",
+            "release_channel": "public_rc",
+            "release_date": "2026-10-28T00:24:15Z",
+            "release_key_pubkey": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+            "release_signature_ref": "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+            "schema_version": "software_release_node.v0.1",
+            "source_commit": "c91bae2d0c03aeaebe7c902b848634bf4abfd297",
+            "version": "0.4.35"
+          }
+        }
+      },
+      "epistemic_type": "objective",
+      "parent_node_ids": [],
+      "primitive_type": "observation"
+    },
+    "primitive": "assert.truth",
+    "sig": {
+      "dst": "ILC_NATIVE_TRUTH_SUBMIT_V1:ilc-public-rc-01-testnet-harness",
+      "key_ref": "84e0eb6f7ec5ddbc5e33edff781e9bc0a2a38eb017d1bbbad1979878757c230e6434d88eb2d774b2f4df174e5b6decd4",
+      "payload_sha256": "f15dd8cce7a3efe362a4c2087704a7319254fc7768f6ef0c5c68defbb13d61d2",
+      "schema_version": "native_submit_sig.v0.1",
+      "signature_hex": "abe1a433877e771873b2169a0b95f8ac5007e5e48aa7fd8a9d8a5b04945662e92f23cba4780e5a860ddf609d4d567fdd00eb7906392015ca9239266f3b9c4727b66c5294dbde92d6703a5b6e1fbab4926a85e3e424816019b49004f1180f65a3",
+      "verifier_profile": "native_submit_sig_profile.v0.1"
+    },
+    "v": 1
+  },
+  "release_attestation_edges": [
+    {
+      "artifact_id": "ilc-artifact:sdist-0435@phase-1628",
+      "artifact_sha256": "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d",
+      "attestation_date": "2026-10-28T00:24:15Z",
+      "edge_type": "RELEASE_ATTESTS_ARTIFACT",
+      "genesis_lineage_ref": "adr-0037:genesis-canonical-lineage-contract",
+      "prior_release_envelope_ref": "docs/specs/ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json",
+      "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
+      "schema_version": "release_attestation_edge.v0.1",
+      "signature_hex": "05ee113d7a72ef3d6830440811a90213211d6b9039abda1534b01a79c607d1d58fbbfddfd1308a157f7a44e3aef2aa4e58bf8ea89a098367cdab41ff74f42106",
+      "signature_scheme": "ed25519_phase_1335",
+      "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
+      "signed_preimage_sha256": "7542b2374fbe7f41581d65678c044274711a6d4aed6e1d1201aa0918176a4ae0",
+      "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+      "signing_algorithm": "Ed25519",
+      "source": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+      "target": "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu"
+    },
+    {
+      "artifact_id": "ilc-artifact:wheel-0435@phase-1628",
+      "artifact_sha256": "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf",
+      "attestation_date": "2026-10-28T00:24:15Z",
+      "edge_type": "RELEASE_ATTESTS_ARTIFACT",
+      "genesis_lineage_ref": "adr-0037:genesis-canonical-lineage-contract",
+      "prior_release_envelope_ref": "docs/specs/ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json",
+      "release_key_registration_ref": "adr-0036:public-rc-operational-release-key-registration",
+      "schema_version": "release_attestation_edge.v0.1",
+      "signature_hex": "e10b7fc2747391dfa99c9dde266397acb1e98bd7a9add276e7c6f888f1994deab1bdf44d56f48b55352b60a1b6e979b03e81969f79fed16e4266ad523105500f",
+      "signature_scheme": "ed25519_phase_1335",
+      "signed_preimage_domain": "ILC_RELEASE_ARTIFACT_SIGNATURE_V1",
+      "signed_preimage_sha256": "9826e683c9f1e52e0edb89c93382961eb93b9bc9db9c90291a4be59c9c59af33",
+      "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+      "signing_algorithm": "Ed25519",
+      "source": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+      "target": "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm"
+    }
+  ],
+  "schema_version": "software_release_assertion.v0.1",
+  "software_release_node": {
+    "artifact_cids": [
+      "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu",
+      "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm"
+    ],
+    "build_recipe_cid": "bafyreidbjplvq33ilvobn24vqmx2uwjzsmxk6iwfbzwjswypqzaofhfrxu",
+    "changelog_hash": "ffb655094e9909c618191f6715cd3884d4eae1879065465057a62968019297cd",
+    "cid": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+    "node_kind": "SoftwareReleaseNode",
+    "package_name": "ilc-core",
+    "release_channel": "public_rc",
+    "release_date": "2026-10-28T00:24:15Z",
+    "release_key_pubkey": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a",
+    "release_signature_ref": "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+    "schema_version": "software_release_node.v0.1",
+    "source_commit": "c91bae2d0c03aeaebe7c902b848634bf4abfd297",
+    "version": "0.4.35"
+  }
+}

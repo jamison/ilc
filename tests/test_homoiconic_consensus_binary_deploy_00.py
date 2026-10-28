@@ -11,7 +11,7 @@ from pathlib import Path
 import pytest
 
 from ilc_core.encoding.cidv1 import node_id_from_obj
-from ilc_core.release import artifact_fetch
+from ilc_core.release import artifact_fetch, consensus_binary_deploy as deploy
 from ilc_core.release.consensus_binary_deploy import (
     CONSENSUS_BINARY_DEPLOY_LOCK,
     CONSENSUS_BINARY_MEMBERS,
@@ -129,8 +129,6 @@ def _assertion(tar_bytes: bytes) -> dict[str, object]:
 
 
 def _authorize(monkeypatch: pytest.MonkeyPatch, body: bytes) -> None:
-    from ilc_core.release import consensus_binary_deploy as deploy
-
     validation = {
         "full_release_graph_binding_verified": True,
         "current_release_eligibility_status": "verified_current_policy",
@@ -247,8 +245,6 @@ def test_rejected_policy_precedes_network(monkeypatch):
 
 
 def test_policy_is_rechecked_before_local_target_mutation(monkeypatch, tmp_path):
-    from ilc_core.release import consensus_binary_deploy as deploy
-
     body = _regular_tar_bytes()
     bundle = _bundle(monkeypatch, body)
     install_dir = tmp_path / "bin"
@@ -407,8 +403,6 @@ def test_archive_shape_rejections(monkeypatch, tmp_path, body, token):
 
 
 def test_member_and_total_expansion_bounds(monkeypatch, tmp_path):
-    from ilc_core.release import consensus_binary_deploy as deploy
-
     body = _regular_tar_bytes(
         overrides={name: b"1234" for name in CONSENSUS_BINARY_MEMBERS}
     )
@@ -497,8 +491,6 @@ def test_lock_contention_rejects(monkeypatch, tmp_path):
 
 
 def test_replace_failure_rolls_back_exact_prior_state(monkeypatch, tmp_path):
-    from ilc_core.release import consensus_binary_deploy as deploy
-
     body = _regular_tar_bytes()
     bundle = _bundle(monkeypatch, body)
     install_dir = tmp_path / "bin"
@@ -536,8 +528,6 @@ def test_replace_failure_rolls_back_exact_prior_state(monkeypatch, tmp_path):
 
 
 def test_destination_fsync_failure_rolls_back(monkeypatch, tmp_path):
-    from ilc_core.release import consensus_binary_deploy as deploy
-
     body = _regular_tar_bytes()
     bundle = _bundle(monkeypatch, body)
     install_dir = tmp_path / "bin"
@@ -567,8 +557,6 @@ def test_destination_fsync_failure_rolls_back(monkeypatch, tmp_path):
 
 
 def test_stage_permission_failure_leaves_targets_untouched(monkeypatch, tmp_path):
-    from ilc_core.release import consensus_binary_deploy as deploy
-
     body = _regular_tar_bytes()
     bundle = _bundle(monkeypatch, body)
     install_dir = tmp_path / "bin"
@@ -590,8 +578,6 @@ def test_stage_permission_failure_leaves_targets_untouched(monkeypatch, tmp_path
 
 
 def test_post_install_hash_failure_rolls_back(monkeypatch, tmp_path):
-    from ilc_core.release import consensus_binary_deploy as deploy
-
     body = _regular_tar_bytes()
     bundle = _bundle(monkeypatch, body)
     install_dir = tmp_path / "bin"
@@ -632,8 +618,6 @@ def test_unrelated_files_are_preserved(monkeypatch, tmp_path):
 
 
 def test_post_commit_backup_cleanup_failure_is_reported(monkeypatch, tmp_path):
-    from ilc_core.release import consensus_binary_deploy as deploy
-
     body = _regular_tar_bytes()
     bundle = _bundle(monkeypatch, body)
     install_dir = tmp_path / "bin"

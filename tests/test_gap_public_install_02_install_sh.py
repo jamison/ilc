@@ -20,23 +20,23 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0434_GAP_RC_NATIVE_DISTRIBUTION_FRESH_INVITE_SMOKE_00_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0435_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/96/ba/"
-    "a97f1f0d923d50ebe71b6c40e488645c06e798fefb15596760f8a7e50de1/"
-    "ilc_core-0.4.34-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/9b/01/"
+    "34f83c7c85e0821d2cd48f7d2c639564e3d0e13810751d405eceaa8f5c4b/"
+    "ilc_core-0.4.35-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2"
-EXPECTED_SIZE = "1630572"
-EXPECTED_RELEASE_ID = "ilc-core-0.4.34"
-EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:ilc-core-python-wheel-0434@phase-1628"
-EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:ilc-core-python-sdist-0434@phase-1628"
-EXPECTED_SDIST_SHA256 = "5e0f621934b239d76900f9d546e3a26ff943f38cdc81a87c469592a8f2f71c8c"
-EXPECTED_SDIST_SIZE = "1326598"
+EXPECTED_SHA256 = "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf"
+EXPECTED_SIZE = "1645463"
+EXPECTED_RELEASE_ID = "ilc-core-0.4.35"
+EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:wheel-0435@phase-1628"
+EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:sdist-0435@phase-1628"
+EXPECTED_SDIST_SHA256 = "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d"
+EXPECTED_SDIST_SIZE = "1343190"
 EXPECTED_RELEASE_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
+    "ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
 )
 EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX = (
     "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
@@ -50,6 +50,19 @@ EXPECTED_CONSENSUS_ARTIFACT_ID = (
 )
 EXPECTED_CONSENSUS_SHA256 = "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f"
 EXPECTED_CONSENSUS_SIZE = "5053300"
+EXPECTED_CONSENSUS_RELEASE_ID = "ilc-core-0.4.34"
+EXPECTED_CONSENSUS_ENVELOPE_REF = (
+    "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
+    "ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
+)
+PYTHON_ENVELOPE_SET = (
+    ROOT
+    / "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
+)
+CONSENSUS_ENVELOPE_SET = (
+    ROOT
+    / "docs/specs/ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
+)
 
 
 def _run_install_sh(*args: str, path: Path = INSTALL_SH) -> subprocess.CompletedProcess[str]:
@@ -73,6 +86,53 @@ def _copy_script(tmp_path: Path, *, replacements: dict[str, str]) -> Path:
     return path
 
 
+def _signature_verifier_source() -> str:
+    text = INSTALL_SH.read_text(encoding="utf-8")
+    marker = (
+        'python3 - "${TMP_WHEEL}" "${RC_RELEASE_ID}" "${RC_WHEEL_ARTIFACT_ID}"'
+    )
+    start = text.index("\n", text.index(marker)) + 1
+    end = text.index("\nPY\n", start)
+    return text[start:end]
+
+
+def _run_signature_verifier(
+    tmp_path: Path,
+    *,
+    python_envelope_set: Path = PYTHON_ENVELOPE_SET,
+    consensus_envelope_set: Path = CONSENSUS_ENVELOPE_SET,
+) -> subprocess.CompletedProcess[str]:
+    verifier = tmp_path / "verify_release_envelopes.py"
+    verifier.write_text(_signature_verifier_source(), encoding="utf-8")
+    return subprocess.run(
+        [
+            sys.executable,
+            str(verifier),
+            str(tmp_path / "unused-wheel-path.whl"),
+            EXPECTED_RELEASE_ID,
+            EXPECTED_WHEEL_ARTIFACT_ID,
+            EXPECTED_SHA256,
+            EXPECTED_SIZE,
+            str(python_envelope_set),
+            EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX,
+            EXPECTED_SDIST_ARTIFACT_ID,
+            EXPECTED_SDIST_SHA256,
+            EXPECTED_SDIST_SIZE,
+            EXPECTED_CONSENSUS_ARTIFACT_ID,
+            EXPECTED_CONSENSUS_SHA256,
+            EXPECTED_CONSENSUS_SIZE,
+            EXPECTED_CONSENSUS_RELEASE_ID,
+            str(consensus_envelope_set),
+            str(ROOT),
+        ],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+
+
 def test_install_sh_exists_and_is_executable() -> None:
     assert INSTALL_SH.exists()
     assert os.access(INSTALL_SH, os.X_OK)
@@ -90,7 +150,14 @@ def test_install_sh_dry_run_exits_zero() -> None:
     assert result.stderr == ""
     assert f"RC_WHEEL_URL={EXPECTED_URL}" in result.stdout
     assert f"RC_WHEEL_SHA256={EXPECTED_SHA256}" in result.stdout
+    assert f"RC_RELEASE_ID={EXPECTED_RELEASE_ID}" in result.stdout
+    assert f"RC_RELEASE_ENVELOPE_REF={EXPECTED_RELEASE_ENVELOPE_REF}" in result.stdout
     assert "invite_bundle=/tmp/example-invite.json" in result.stdout
+    assert f"CONSENSUS_RELEASE_ID={EXPECTED_CONSENSUS_RELEASE_ID}" in result.stdout
+    assert (
+        f"CONSENSUS_RELEASE_ENVELOPE_REF={EXPECTED_CONSENSUS_ENVELOPE_REF}"
+        in result.stdout
+    )
     assert f"CONSENSUS_BIN_URL={EXPECTED_CONSENSUS_URL}" in result.stdout
     assert f"CONSENSUS_BIN_SHA256={EXPECTED_CONSENSUS_SHA256}" in result.stdout
     assert f"CONSENSUS_BIN_SIZE={EXPECTED_CONSENSUS_SIZE}" in result.stdout
@@ -240,6 +307,46 @@ def test_install_sh_hash_mismatch_exits_error(tmp_path: Path) -> None:
 
 def test_install_sh_manifest_sync_passes() -> None:
     verify_install_sh_manifest_sync(INSTALL_SH, MANIFEST)
+
+
+def test_install_sh_verifies_separate_python_and_consensus_envelope_sets(
+    tmp_path: Path,
+) -> None:
+    result = _run_signature_verifier(tmp_path)
+
+    assert result.returncode == 0, result.stderr
+    assert (
+        "install_sh_signatures_verified:python_release=ilc-core-0.4.35:"
+        "ilc-artifact:wheel-0435@phase-1628,"
+        "ilc-artifact:sdist-0435@phase-1628:"
+        "consensus_release=ilc-core-0.4.34:"
+        "ilc-artifact:ilc-consensus-linux-x86-64-0434@phase-1628"
+        in result.stdout
+    )
+
+
+def test_install_sh_rejects_historical_envelopes_as_python_release(
+    tmp_path: Path,
+) -> None:
+    result = _run_signature_verifier(
+        tmp_path,
+        python_envelope_set=CONSENSUS_ENVELOPE_SET,
+    )
+
+    assert result.returncode != 0
+    assert "release_envelope_set_schema_version_invalid" in result.stderr
+
+
+def test_install_sh_rejects_python_envelopes_as_consensus_release(
+    tmp_path: Path,
+) -> None:
+    result = _run_signature_verifier(
+        tmp_path,
+        consensus_envelope_set=PYTHON_ENVELOPE_SET,
+    )
+
+    assert result.returncode != 0
+    assert "consensus_release_envelope_set_schema_version_invalid" in result.stderr
 
 
 def test_install_sh_consensus_binary_download_is_bounded_and_verified() -> None:

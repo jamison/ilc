@@ -10,7 +10,6 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
-from ilc_core.consensus.attribution_batch_bridge import read_rust_balance_store_ecu
 from ilc_core.economic_constants import C_MAX_ILC, ILC_QUANTUM
 from ilc_core.ledger.ecu_active_layer_runtime import EcuActiveLayerRuntime
 from ilc_core.ledger.exact_numeric import (
@@ -76,6 +75,12 @@ class EcuIlcLifecycleRuntime:
         balance_ecu_source = "python_in_memory_ecu_python_rust_balance_bridge_missing_phase_1597"
         snapshot_extra: dict[str, Any] = {}
         if self.consensus_lmdb is not None:
+            # Import on the readback path so importing the lifecycle model does
+            # not initialize consensus -> epoch -> lifecycle recursively.
+            from ilc_core.consensus.attribution_batch_bridge import (
+                read_rust_balance_store_ecu,
+            )
+
             balance_ecu = decimal_to_canonical_string(
                 read_rust_balance_store_ecu(
                     self.consensus_lmdb,

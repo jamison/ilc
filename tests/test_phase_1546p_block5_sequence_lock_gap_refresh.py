@@ -70,7 +70,8 @@ def test_obligation_register_records_block5_routes_without_phase_1546p_closure()
 def test_frontier_docs_point_to_window_1546p() -> None:
     planning = read("docs/PLANNING_INDEX.md")
     status = read("docs/phases/STATUS.md")
-    agents = read("AGENTS.md")
+    sequence = read("docs/specs/ilc_phase_1546p_1555p_sequence_lock_v0.1.md")
+    handoff = read("docs/specs/ilc_window_1546p_1555p_handoff_1555p_v0.1.md")
 
     assert "Phase 1546p Block 5 sequence lock and gap refresh" in planning
     assert "Phase 1553p CDL-096 ratification under Option A" in planning
@@ -82,8 +83,6 @@ def test_frontier_docs_point_to_window_1546p() -> None:
     assert "## Phase 1552p - CDL-096 Deliberation and Prelock" in status
     assert "## Phase 1551p - CDL-096 Opening With Option A" in status
     assert "## Phase 1546p - Block 5 Sequence Lock and Gap Refresh" in status
-    assert "window: 1546p-1555p" in agents
-    assert "phase_1554p: complete_block5_coherence_capsule" in agents
-    # HISTORICAL_SNAPSHOT: AGENTS.md now points past Block 5; preserve the
-    # closure token rather than the old next-phase pointer.
-    assert "go_window_1556p_block6_required_next" in agents
+    assert "window_1546p_1555p_opened" in sequence
+    assert "block5_coherence_complete_phase_1554p" in sequence
+    assert "go_window_1556p_block6_required_next" in handoff

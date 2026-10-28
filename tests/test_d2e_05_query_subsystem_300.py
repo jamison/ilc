@@ -51,6 +51,24 @@ def _write_graph_state(path: Path) -> None:
     path.write_text(json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
+def _write_identity_state(path: Path) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "key_ref": "key-local-0",
+                "lineage_id": "lineage-local",
+                "rotation_count": 0,
+                "status": "active",
+                "updated_at": "1970-01-01T00:00:00Z",
+            },
+            sort_keys=True,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def _normalize_query_payload(payload: dict[str, Any]) -> dict[str, Any]:
     normalized = json.loads(json.dumps(payload))
     meta = normalized.get("meta", {})
@@ -120,14 +138,15 @@ def test_identity_envelope_remains_legacy_shape(tmp_path: Path) -> None:
     env = os.environ.copy()
     env["ILC_CLI_GRAPH_STATE_PATH"] = str(tmp_path / "graph.json")
     env["ILC_IDENTITY_STATE_PATH"] = str(tmp_path / "identity.json")
+    _write_identity_state(tmp_path / "identity.json")
 
-    init_result = _run_cli(["identity", "init"], env)
-    assert init_result.returncode == 0
-    init_payload = _payload(init_result)
-    assert init_payload["ok"] is True
-    assert init_payload["command"] == "identity"
-    assert init_payload["schema_version"] == "254.v0.1"
-    assert "meta" not in init_payload
+    show_initialized = _run_cli(["identity", "show"], env)
+    assert show_initialized.returncode == 0
+    initialized_payload = _payload(show_initialized)
+    assert initialized_payload["ok"] is True
+    assert initialized_payload["command"] == "identity"
+    assert initialized_payload["schema_version"] == "254.v0.1"
+    assert "meta" not in initialized_payload
 
     uninitialized_env = os.environ.copy()
     uninitialized_env["ILC_CLI_GRAPH_STATE_PATH"] = str(tmp_path / "graph2.json")

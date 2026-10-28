@@ -1520,8 +1520,8 @@ def _run_identity_subcommand(args: argparse.Namespace, graph_state_path: Path) -
         else:
             enrollment_agent_id = ""
 
-        # Phase 1578a found no general enrollment runtime yet; identity init is
-        # the current concrete enrollment hook until that runtime exists.
+        # Legacy identity init remains invite-gated. Public-RC onboarding and
+        # proof-of-possession are implemented by `ilc install`.
         from ilc_core.genesis.invite_enforcement import (
             is_enrollment_invite_enforced,
             require_invite_for_enrollment,
@@ -1615,7 +1615,7 @@ def _run_doctor_subcommand(args: argparse.Namespace, graph_state_path: Path) -> 
     }
     if not checks["identity_initialized"]:
         verdict = "not_setup"
-        next_action = "ilc identity init"
+        next_action = "ilc install"
         exit_code = 1
     elif all(checks.values()):
         verdict = "ready"
@@ -5280,12 +5280,13 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                 "subcommand": "from-invite",
                 "target_dir": str(target_dir),
             }
-        except Exception:
+        except Exception as install_exc:
+            nullifier_rollback_error: Exception | None = None
             if locals().get("enrollment_nullifier_recorded"):
                 try:
                     nullifier_registry.discard_nullifier(str(decision.redemption_nullifier))
-                except Exception:
-                    pass
+                except Exception as exc:
+                    nullifier_rollback_error = exc
             if created_fresh_identity:
                 shutil.rmtree(identity_root(Path.home()), ignore_errors=True)
             _rollback_install_side_effects(
@@ -5294,6 +5295,12 @@ def _run_install_subcommand_locked(args: argparse.Namespace) -> dict[str, Any]:
                 receipt_written=receipt_written,
                 receipt_preexisted=receipt_preexisted,
             )
+            if nullifier_rollback_error is not None:
+                install_exc.add_note(
+                    "invite enrollment nullifier rollback failed: "
+                    f"{type(nullifier_rollback_error).__name__}: "
+                    f"{nullifier_rollback_error}"
+                )
             raise
 
 
@@ -6187,7 +6194,7 @@ def main() -> int:
                 "hint": "ILC — Intelligent Labor Coin CLI",
                 "ok": True,
                 "quick_start": [
-                    "ilc identity init   # initialize local agent identity",
+                    "ilc install         # enroll from an invite code or bundle",
                     "ilc doctor          # check configuration health",
                     "ilc sidecar list    # list installed sidecars",
                     "ilc ccss status     # check CCSS inbox",

@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import fcntl
+import hashlib
+import json
 import os
 import subprocess
 import sys
+import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -228,6 +231,82 @@ PROBES = (
 )
 
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+
+
+def _state_dir_for_repo(repo_root: Path) -> Path:
+    repo_id = hashlib.sha256(str(repo_root.resolve()).encode("utf-8")).hexdigest()[:20]
+    return Path(tempfile.gettempdir()) / "ilc_mutation_canary" / repo_id
+
+
+_CANARY_STATE_DIR = _state_dir_for_repo(REPO_ROOT)
+_CANARY_LOCK_PATH = _CANARY_STATE_DIR / "canary.lock"
+
+
+def _target_path(relative_path: Path) -> Path:
+    return REPO_ROOT / relative_path
+
+
+def _sha256_bytes(value: bytes) -> str:
+    return hashlib.sha256(value).hexdigest()
+
+
+def _atomic_write_bytes(path: Path, value: bytes, *, mode: int | None = None) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.canary-", dir=path.parent)
+    temporary_path = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(value)
+            handle.flush()
+            os.fsync(handle.fileno())
+        if mode is not None:
+            os.chmod(temporary_path, mode)
+        os.replace(temporary_path, path)
+    finally:
+        try:
+            temporary_path.unlink()
+        except FileNotFoundError:
+            pass
+
+
+def _head_bytes(relative_path: Path) -> bytes:
+    result = subprocess.run(
+        ["git", "show", f"HEAD:{relative_path.as_posix()}"],
+        cwd=REPO_ROOT,
+        check=False,
+        capture_output=True,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"mutation_canary_head_read_failed:{relative_path}:{result.stderr.decode('utf-8', errors='replace').strip()}"
+        )
+    return result.stdout
+
+
+def _capture_clean_target_states() -> dict[Path, tuple[bytes, int, tuple[int, int]]] | None:
+    states: dict[Path, tuple[bytes, int, tuple[int, int]]] = {}
+    for probe in PROBES:
+        if probe.path in states:
+            continue
+        target = _target_path(probe.path)
+        current = target.read_bytes()
+        committed = _head_bytes(probe.path)
+        if current != committed:
+            print(
+                f"[{probe.name}] setup_error: dirty_target:{probe.path}",
+                file=sys.stderr,
+            )
+            return None
+        target_stat = target.stat()
+        states[probe.path] = (
+            current,
+            target_stat.st_mode & 0o7777,
+            (target_stat.st_atime_ns, target_stat.st_mtime_ns),
+        )
+    return states
+
+
 def _invalidate_pyc(path: Path) -> None:
     """Remove all .pyc variants for path so Python recompiles from the current source.
 
@@ -247,8 +326,11 @@ def _invalidate_pyc(path: Path) -> None:
 
 
 def _run_probe(probe: Probe) -> bool:
-    original = probe.path.read_text(encoding="utf-8")
-    original_stat = probe.path.stat()
+    target = _target_path(probe.path)
+    original_bytes = target.read_bytes()
+    original = original_bytes.decode("utf-8")
+    original_stat = target.stat()
+    original_mode = original_stat.st_mode & 0o7777
     original_times_ns = (original_stat.st_atime_ns, original_stat.st_mtime_ns)
     if probe.old_token not in original:
         print(f"[{probe.name}] setup_error: token_not_found", file=sys.stderr)
@@ -260,10 +342,17 @@ def _run_probe(probe: Probe) -> bool:
         return False
 
     restored = False
-    _write_dirty_sentinel(probe)
+    mutated_bytes = mutated.encode("utf-8")
+    _write_dirty_sentinel(
+        probe,
+        original_bytes,
+        mutated_bytes,
+        original_mode,
+        original_times_ns,
+    )
     try:
-        probe.path.write_text(mutated, encoding="utf-8")
-        _invalidate_pyc(probe.path)
+        _atomic_write_bytes(target, mutated_bytes, mode=original_mode)
+        _invalidate_pyc(target)
         env = os.environ.copy()
         env["ILC_MUTATION_CANARY_ACTIVE"] = "1"
         result = subprocess.run(
@@ -272,6 +361,7 @@ def _run_probe(probe: Probe) -> bool:
             capture_output=True,
             text=True,
             env=env,
+            cwd=REPO_ROOT,
         )
         killed = result.returncode != 0
         status = "MUTATION_KILLED" if killed else "MUTATION_SURVIVED"
@@ -279,23 +369,13 @@ def _run_probe(probe: Probe) -> bool:
         return killed
     finally:
         try:
-            probe.path.write_text(original, encoding="utf-8")
-            gc_result = subprocess.run(
-                ["git", "checkout", "HEAD", "--", str(probe.path)],
-                check=False,
-                capture_output=True,
-                text=True,
-            )
-            if gc_result.returncode != 0:
-                print(
-                    f"[{probe.name}] restore_warning: git_checkout_nonzero"
-                    f" rc={gc_result.returncode} stderr={gc_result.stderr.strip()!r}",
-                    file=sys.stderr,
-                )
-            _invalidate_pyc(probe.path)
+            _atomic_write_bytes(target, original_bytes, mode=original_mode)
+            if target.read_bytes() != original_bytes:
+                raise RuntimeError(f"mutation_canary_restore_hash_mismatch:{probe.path}")
+            _invalidate_pyc(target)
             # Keep build/lib in sync so it never serves a stale mutated copy.
             _sync_build_lib(probe.path)
-            os.utime(probe.path, ns=original_times_ns)
+            os.utime(target, ns=original_times_ns)
             restored = True
         finally:
             if not restored:
@@ -314,50 +394,68 @@ def _run_dry() -> int:
     return 0
 
 
-def _reset_all_probe_targets(original_times: dict[Path, tuple[int, int]]) -> None:
-    """Hard-reset all probe target files to HEAD and restore original mtimes."""
-    seen: set[Path] = set()
-    for probe in PROBES:
-        if probe.path not in seen:
-            seen.add(probe.path)
-            subprocess.run(
-                ["git", "checkout", "HEAD", "--", str(probe.path)],
-                check=False,
-                capture_output=True,
-                text=True,
-            )
-            _invalidate_pyc(probe.path)
-            _sync_build_lib(probe.path)
-            if probe.path in original_times:
-                try:
-                    os.utime(probe.path, ns=original_times[probe.path])
-                except OSError as exc:
-                    print(
-                        f"[reset_all] utime_error: {probe.path}: {exc}",
-                        file=sys.stderr,
-                    )
-
-
-_CANARY_LOCK_PATH = Path("/tmp/ilc_mutation_canary.lock")
-_CANARY_SENTINEL_DIR = Path("/tmp")
+def _reset_all_probe_targets(
+    original_states: dict[Path, tuple[bytes, int, tuple[int, int]]],
+) -> None:
+    """Restore the exact clean bytes captured before the canary started."""
+    for relative_path, (original_bytes, original_mode, original_times) in original_states.items():
+        target = _target_path(relative_path)
+        try:
+            _atomic_write_bytes(target, original_bytes, mode=original_mode)
+            if target.read_bytes() != original_bytes:
+                raise RuntimeError("restored_bytes_do_not_match_capture")
+            _invalidate_pyc(target)
+            _sync_build_lib(relative_path)
+            os.utime(target, ns=original_times)
+        except (OSError, RuntimeError) as exc:
+            print(f"[reset_all] restore_error: {relative_path}: {exc}", file=sys.stderr)
 
 
 def _sentinel_path(probe_name: str) -> Path:
-    return _CANARY_SENTINEL_DIR / f"ilc_mutation_canary_dirty_{probe_name}.lock"
+    return _CANARY_STATE_DIR / f"dirty_{probe_name}.json"
 
 
-def _write_dirty_sentinel(probe: Probe) -> None:
-    """Write a sentinel file before mutating so conftest can detect un-reverted state."""
+def _backup_path(probe_name: str) -> Path:
+    return _CANARY_STATE_DIR / f"dirty_{probe_name}.original"
+
+
+def _write_dirty_sentinel(
+    probe: Probe,
+    original_bytes: bytes,
+    mutated_bytes: bytes,
+    original_mode: int,
+    original_times_ns: tuple[int, int],
+) -> None:
+    """Persist repo-qualified recovery bytes before mutating a target."""
+    _CANARY_STATE_DIR.mkdir(parents=True, exist_ok=True)
     sentinel = _sentinel_path(probe.name)
-    sentinel.write_text(str(probe.path), encoding="utf-8")
+    backup = _backup_path(probe.name)
+    _atomic_write_bytes(backup, original_bytes, mode=0o600)
+    record = {
+        "schema_version": "ilc.mutation_canary_recovery.v1",
+        "repo_root": str(REPO_ROOT),
+        "relative_target": probe.path.as_posix(),
+        "backup_path": str(backup),
+        "original_sha256": _sha256_bytes(original_bytes),
+        "mutated_sha256": _sha256_bytes(mutated_bytes),
+        "original_mode": original_mode,
+        "original_atime_ns": original_times_ns[0],
+        "original_mtime_ns": original_times_ns[1],
+    }
+    _atomic_write_bytes(
+        sentinel,
+        (json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8"),
+        mode=0o600,
+    )
 
 
 def _clear_dirty_sentinel(probe: Probe) -> None:
     """Remove the sentinel after a successful revert."""
-    try:
-        _sentinel_path(probe.name).unlink()
-    except FileNotFoundError:
-        pass
+    for path in (_sentinel_path(probe.name), _backup_path(probe.name)):
+        try:
+            path.unlink()
+        except FileNotFoundError:
+            pass
 
 
 def probe_sentinel_paths() -> list[Path]:
@@ -373,7 +471,7 @@ def _sync_build_lib(source_path: Path) -> None:
     after a non-editable rebuild.  Keeping it in sync with the canonical
     source costs nothing and prevents hard-to-diagnose dirty-state leaks.
     """
-    build_copy = Path("build/lib") / source_path
+    build_copy = REPO_ROOT / "build/lib" / source_path
     if build_copy.exists():
         try:
             import shutil as _shutil
@@ -383,6 +481,7 @@ def _sync_build_lib(source_path: Path) -> None:
 
 
 def _run_full() -> int:
+    _CANARY_STATE_DIR.mkdir(parents=True, exist_ok=True)
     lock_fh = _CANARY_LOCK_PATH.open("a")
     try:
         fcntl.flock(lock_fh, fcntl.LOCK_EX)
@@ -394,23 +493,17 @@ def _run_full() -> int:
 
 def _run_full_locked() -> int:
     print("Running mutation canary probes")
-    original_times: dict[Path, tuple[int, int]] = {}
-    seen: set[Path] = set()
-    for probe in PROBES:
-        if probe.path not in seen:
-            seen.add(probe.path)
-            try:
-                st = probe.path.stat()
-                original_times[probe.path] = (st.st_atime_ns, st.st_mtime_ns)
-            except OSError:
-                pass
+    original_states = _capture_clean_target_states()
+    if original_states is None:
+        print("FAIL: mutation canary requires clean committed probe targets", file=sys.stderr)
+        return 1
     results: list[bool] = []
     try:
         for idx, probe in enumerate(PROBES, start=1):
             print(f"[{idx}/{len(PROBES)}] {probe.name}")
             results.append(_run_probe(probe))
     finally:
-        _reset_all_probe_targets(original_times)
+        _reset_all_probe_targets(original_states)
 
     if all(results):
         print("PASS: all mutation canary probes were killed by target tests")

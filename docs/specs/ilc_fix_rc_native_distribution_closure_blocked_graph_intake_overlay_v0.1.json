@@ -1,0 +1,53 @@
+{
+  "artifact": "ilc_fix_rc_native_distribution_closure_blocked_graph_intake_overlay_v0.1",
+  "boundary": {
+    "campaign_closed": false,
+    "canonical_graph_mutation": false,
+    "purpose": "Graph-intake coverage for the blocked RC-native distribution closure audit."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_rc_native_distribution_closure_blocked_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00",
+      "edge_role": "BLOCKED_CLOSURE_AUDIT",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_closure_blocked_audit_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_00_v0.1.md",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_closure_blocked_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00",
+      "edge_role": "BLOCKED_EVIDENCE_MANIFEST",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_closure_blocked_evidence_manifest_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_00_v0.1.json",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_closure_blocked_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00",
+      "edge_role": "BLOCKED_HANDOFF",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_closure_blocked_handoff_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_00_v0.1.md",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_closure_blocked_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00",
+      "edge_role": "PHASE_PROMPT",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_00_g10.md",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_closure_blocked_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00",
+      "edge_role": "BLOCKED_PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_rc_native_distribution_closure_00_blocked_walkthrough.md",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_closure_blocked_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_rc_native_distribution_closure_blocked_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "ilc.graph_intake_overlay.v0.1"
+}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import subprocess
 import sys
 from pathlib import Path
 
@@ -134,8 +135,6 @@ def test_run_ssh_quotes_remote_bash_payload(monkeypatch, tmp_path: Path) -> None
     captured: list[str] = []
 
     def fake_run_local(args, *, timeout=120):
-        import subprocess
-
         captured.extend(args)
         return subprocess.CompletedProcess(args, 0, "", "")
 
@@ -240,8 +239,6 @@ def test_destroy_runs_in_finally(monkeypatch, tmp_path: Path) -> None:
 
 
 def test_install_failure_preserves_live_failure_evidence(monkeypatch, tmp_path: Path) -> None:
-    import subprocess
-
     tool = _load_tool()
     invite = tmp_path / "invite.json"
     installer = tmp_path / "install.sh"
@@ -341,9 +338,7 @@ def test_destroy_failure_forces_phase_failure(monkeypatch, tmp_path: Path) -> No
     assert json.loads(receipt_path.read_text(encoding="utf-8"))["droplet_destroyed"] is False
 
 
-def test_install_sh_release_envelope_override_dry_run() -> None:
-    import subprocess
-
+def test_install_sh_release_envelope_overrides_dry_run() -> None:
     proc = subprocess.run(
         [
             "bash",
@@ -356,7 +351,15 @@ def test_install_sh_release_envelope_override_dry_run() -> None:
         check=True,
         text=True,
         capture_output=True,
-        env={"ILC_INSTALL_RELEASE_ENVELOPE_REF": "/tmp/envelope.json", "PATH": "/bin:/usr/bin:/usr/local/bin"},
+        env={
+            "ILC_INSTALL_RELEASE_ENVELOPE_REF": "/tmp/python-envelope.json",
+            "ILC_INSTALL_CONSENSUS_RELEASE_ENVELOPE_REF": "/tmp/consensus-envelope.json",
+            "PATH": "/bin:/usr/bin:/usr/local/bin",
+        },
     )
     assert "verify_signature=true" in proc.stdout
-    assert "RC_RELEASE_ENVELOPE_REF=/tmp/envelope.json" in proc.stdout
+    assert "RC_RELEASE_ENVELOPE_REF=/tmp/python-envelope.json" in proc.stdout
+    assert (
+        "CONSENSUS_RELEASE_ENVELOPE_REF=/tmp/consensus-envelope.json"
+        in proc.stdout
+    )

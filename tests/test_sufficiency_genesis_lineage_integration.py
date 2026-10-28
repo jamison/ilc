@@ -18,6 +18,7 @@ from tools.sufficiency_lineage.verify_genesis_slices import (
     VerifyResult,
     canonical_root_hash,
     default_paths,
+    sha256_file,
     verify_artifacts,
     verify_node_zero,
 )
@@ -152,8 +153,6 @@ def test_modified_slice_package_cannot_reuse_original_signed_payload(tmp_path: P
         paths.slice_package,
         lambda value: value.__setitem__("unsigned_mutation", True),
     )
-    from tools.sufficiency_lineage.verify_genesis_slices import sha256_file
-
     rewrite_json(
         paths.slice_request,
         lambda value: value.__setitem__("package_sha256", sha256_file(paths.slice_package)),
@@ -200,8 +199,6 @@ def test_slice_anchor_mismatch_fails(tmp_path: Path) -> None:
         lambda value: value.__setitem__("core_slice_0_authority_package_sha256", "0" * 64),
     )
     # Retarget the signing-request hash so this case reaches the authenticated anchor check.
-    from tools.sufficiency_lineage.verify_genesis_slices import sha256_file
-
     rewrite_json(
         paths.slice_request,
         lambda value: value.__setitem__("package_sha256", sha256_file(paths.slice_package)),

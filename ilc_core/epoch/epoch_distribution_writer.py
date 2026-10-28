@@ -1119,6 +1119,41 @@ def _balance_history_by_epoch(balance_history: list[Any]) -> dict[str, dict[str,
     }
 
 
+def _require_matching_replay_marker(
+    batch: Any,
+    *,
+    epoch_id: str,
+    expected_marker: Mapping[str, Any],
+) -> None:
+    existing_marker = batch.get_epoch_commit_marker(epoch_id)
+    if existing_marker is None:
+        raise EcuIlcLifecycleRuntimeError(
+            "lifecycle_epoch_replay_manifest_missing",
+            "same-epoch replay requires an existing epoch commit marker",
+        )
+    if existing_marker == expected_marker:
+        return
+
+    existing_rows = existing_marker.get("settlements")
+    expected_rows = expected_marker.get("settlements")
+    if isinstance(existing_rows, list) and isinstance(expected_rows, list):
+        existing_agent_ids = {
+            row.get("agent_id") for row in existing_rows if isinstance(row, dict)
+        }
+        expected_agent_ids = {
+            row.get("agent_id") for row in expected_rows if isinstance(row, dict)
+        }
+        if not expected_agent_ids <= existing_agent_ids:
+            raise EcuIlcLifecycleRuntimeError(
+                "lifecycle_epoch_replay_recipient_extension",
+                "same-epoch replay cannot add new settlement recipients",
+            )
+    raise EcuIlcLifecycleRuntimeError(
+        "lifecycle_epoch_replay_set_mismatch",
+        "same-epoch replay must match the committed recipient set and deltas",
+    )
+
+
 def _commit_lmdb_lifecycle_batch(
     *,
     lifecycle_runtime: EcuIlcLifecycleRuntime,
@@ -1142,35 +1177,11 @@ def _commit_lmdb_lifecycle_batch(
     with wallet_store.wallet_batch_transaction() as batch:
         replay_epoch = _validate_epoch_sequence(batch, epoch_number)
         if replay_epoch:
-            existing_marker = batch.get_epoch_commit_marker(epoch_id)
-            if existing_marker is None:
-                raise EcuIlcLifecycleRuntimeError(
-                    "lifecycle_epoch_replay_manifest_missing",
-                    "same-epoch replay requires an existing epoch commit marker",
-                )
-            if existing_marker != expected_marker:
-                existing_rows = existing_marker.get("settlements")
-                expected_rows = expected_marker.get("settlements")
-                if isinstance(existing_rows, list) and isinstance(expected_rows, list):
-                    existing_agent_ids = {
-                        row.get("agent_id")
-                        for row in existing_rows
-                        if isinstance(row, dict)
-                    }
-                    expected_agent_ids = {
-                        row.get("agent_id")
-                        for row in expected_rows
-                        if isinstance(row, dict)
-                    }
-                    if not expected_agent_ids <= existing_agent_ids:
-                        raise EcuIlcLifecycleRuntimeError(
-                            "lifecycle_epoch_replay_recipient_extension",
-                            "same-epoch replay cannot add new settlement recipients",
-                        )
-                raise EcuIlcLifecycleRuntimeError(
-                    "lifecycle_epoch_replay_set_mismatch",
-                    "same-epoch replay must match the committed recipient set and deltas",
-                )
+            _require_matching_replay_marker(
+                batch,
+                epoch_id=epoch_id,
+                expected_marker=expected_marker,
+            )
         for agent_id, settlement_delta in sorted(normalized_settlements.items()):
             results.append(
                 _process_agent_settlement(
@@ -1187,8 +1198,6 @@ def _commit_lmdb_lifecycle_batch(
 
 
 def _require_epoch_id_format(epoch_id: str) -> int:
-    from ilc_core.ledger.ecu_ilc_lifecycle_runtime import EcuIlcLifecycleRuntimeError
-
     if not isinstance(epoch_id, str) or len(epoch_id) != 10 or not epoch_id.isdecimal():
         raise EcuIlcLifecycleRuntimeError(
             "lifecycle_epoch_id_invalid",
@@ -1212,11 +1221,6 @@ def _current_lmdb_epoch_number(batch: Any) -> int | None:
 
 
 def _require_lifecycle_settlement_delta(agent_id: str, amount: Decimal) -> Decimal:
-    from ilc_core.ledger.ecu_ilc_lifecycle_runtime import (
-        EcuIlcLifecycleRuntimeError,
-        LIFECYCLE_BALANCE_EXCEEDS_C_MAX_TOKEN,
-    )
-
     if agent_id.startswith(_PROTOCOL_ACCOUNT_PREFIXES) and agent_id not in RESERVED_PROTOCOL_ACCOUNT_IDS:
         raise EcuIlcLifecycleRuntimeError(
             "unknown_protocol_account_id",

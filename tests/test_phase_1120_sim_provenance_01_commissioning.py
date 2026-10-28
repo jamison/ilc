@@ -10,6 +10,7 @@ from ilc_core.economics.epoch_attribution_settle_runtime import (
     EPOCH_ATTRIBUTION_SETTLE_RUNTIME_VERSION,
     settle_attribution_batch,
 )
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.types import (
     EdgeType,
     EpochAttributionBatch,
@@ -24,6 +25,14 @@ RESULTS = ROOT / "docs/sims/sim_provenance_01/results_phase_1120_run_01.md"
 HARNESS = ROOT / "tools/sim_provenance_01.py"
 SUMMARY = ROOT / "out/sim_provenance_01_summary.json"
 TIME_SERIES = ROOT / "out/sim_provenance_01_time_series.json"
+
+
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+def _node_id(index: int) -> str:
+    return node_id_from_obj({"phase": 1120, "node": index})
 
 
 def _load_harness():
@@ -135,41 +144,43 @@ def test_g5_settle_runtime_version_is_phase_1126_v0_4() -> None:
 
 
 def test_g5_single_hop_provenance_payout_uses_production_alpha() -> None:
+    creator_parent = _agent_id(1)
     batch = EpochAttributionBatch(epoch=1120)
     batch.add_event(
         AttributionEvent(
             edge_type=EdgeType.PROVENANCE,
-            target_creator_id="target",
+            target_creator_id=_agent_id(90),
             star_node_id=None,
             epoch=1120,
-            provenance_chain=(("node_parent", "creator_parent"),),
+            provenance_chain=((_node_id(1), creator_parent),),
         )
     )
     batch.seal()
     payouts = settle_attribution_batch(batch, stake_map={})
-    assert payouts == [("creator_parent", REUSE_ATTRIBUTION_RATE * PROVENANCE_DECAY_ALPHA)]
+    assert payouts == [(creator_parent, REUSE_ATTRIBUTION_RATE * PROVENANCE_DECAY_ALPHA)]
 
 
 def test_g5_three_hop_provenance_decay_mapping_unchanged() -> None:
+    creators = (_agent_id(1), _agent_id(2), _agent_id(3))
     batch = EpochAttributionBatch(epoch=1120)
     batch.add_event(
         AttributionEvent(
             edge_type=EdgeType.PROVENANCE,
-            target_creator_id="target",
+            target_creator_id=_agent_id(90),
             star_node_id=None,
             epoch=1120,
             provenance_chain=(
-                ("node_1", "creator_1"),
-                ("node_2", "creator_2"),
-                ("node_3", "creator_3"),
+                (_node_id(1), creators[0]),
+                (_node_id(2), creators[1]),
+                (_node_id(3), creators[2]),
             ),
         )
     )
     batch.seal()
     assert settle_attribution_batch(batch, stake_map={}) == [
-        ("creator_1", Decimal("0.0900")),
-        ("creator_2", Decimal("0.040500")),
-        ("creator_3", Decimal("0.01822500")),
+        (creators[0], Decimal("0.0900")),
+        (creators[1], Decimal("0.040500")),
+        (creators[2], Decimal("0.01822500")),
     ]
 
 

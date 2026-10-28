@@ -101,11 +101,7 @@ def test_phi_bound_strips_ecu_at_threshold() -> None:
         epoch_node_mint_count=5,
     )
 
-    assert [amount for _, amount in payouts] == [
-        Decimal("0.090000000"),
-        Decimal("0.090000000"),
-        Decimal("0.090000000"),
-    ]
+    assert [amount for _, amount in payouts] == [Decimal("0.090000000")] * 3
     assert emitted_tokens == ["edge_mint_phi_bound_exceeded"]
 
 

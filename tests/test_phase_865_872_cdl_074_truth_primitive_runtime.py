@@ -20,6 +20,9 @@ from pathlib import Path
 
 import pytest
 
+from ilc_core.cli.d2e_submit_cli import _build_native_submit_sig_object
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
+
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     AGENT_ISSUABLE_PRIMITIVES,
     CDL_052_DEPENDENCY,
@@ -50,6 +53,8 @@ _SCHEMA_PATH = (
 # Fixtures and helpers
 # ---------------------------------------------------------------------------
 
+TEST_BLS_SECRET_HEX, TEST_AGENT_ID = keypair_from_ikm_hex("92" * 32)
+
 @pytest.fixture(scope="module")
 def schema() -> dict:
     with _SCHEMA_PATH.open("r", encoding="utf-8") as f:
@@ -58,14 +63,19 @@ def schema() -> dict:
 
 def _outer(primitive: str, payload: dict, *, epoch: int = 1) -> dict:
     """Build a minimal valid CDL-073 outer envelope."""
-    return {
+    envelope = {
         "v": 1,
         "primitive": primitive,
-        "agent_id": "a" * 96,
+        "agent_id": TEST_AGENT_ID,
         "epoch": epoch,
         "payload": payload,
-        "sig": "fakesig",
+        "sig": "UNSIGNED",
     }
+    envelope["sig"] = _build_native_submit_sig_object(
+        envelope,
+        TEST_BLS_SECRET_HEX,
+    )
+    return envelope
 
 
 def _assert_truth_payload(**overrides) -> dict:
@@ -405,7 +415,7 @@ def test_validate_claim_confidence_not_string_rejected():
     payload = _validate_claim_payload(confidence=0.9)
     with pytest.raises(EpistemicSubmissionError) as exc_info:
         validate_truth_primitive_submission(_outer("validate.claim", payload))
-    assert "confidence" in exc_info.value.token
+    assert exc_info.value.token == "payload_non_integer_number_rejected"
 
 
 def test_validate_claim_confidence_rejects_noncanonical_decimal_spelling():

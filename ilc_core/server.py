@@ -751,7 +751,7 @@ async def submit_truth_public_api(request: Request):
 
     edges_out = [
         {"edge_type": edge.edge_type, "source": edge.source, "target": edge.target}
-        for edge in result.edges
+        for edge in result.edge_specs()
     ]
     data = {
         "subcommand": "submit",

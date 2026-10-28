@@ -7,7 +7,14 @@ import pytest
 
 from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d import http_gossip_transport_runtime as runtime
-from tests.test_phase_568_real_http_transport_wrapper_runtime import _write_tls_material
+from tests.test_phase_568_real_http_transport_wrapper_runtime import (
+    _LOOPBACK_KEY_ID,
+    _LOOPBACK_PEER_ID,
+    _install_loopback_signature_verifier,
+    _loopback_registry,
+    _loopback_signature,
+    _write_tls_material,
+)
 
 
 RUNTIME_PATH = Path('ilc_core/network/d2d/http_gossip_transport_runtime.py')
@@ -77,8 +84,15 @@ def _resolve_phase_569_commit_ref() -> str:
     raise AssertionError('phase_569_commit_not_present_in_local_history')
 
 
-def test_explicit_http_fallback_path_succeeds_in_loopback_mode(tmp_path: Path) -> None:
-    server_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'server'))
+def test_explicit_http_fallback_path_succeeds_in_loopback_mode(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _install_loopback_signature_verifier(monkeypatch)
+    server_transport = runtime.HttpGossipTransportRuntime(
+        _config(tmp_path / 'server'),
+        peer_registry=_loopback_registry(),
+    )
     client_transport = runtime.HttpGossipTransportRuntime(_config(tmp_path / 'client'))
     server_transport.start()
     try:
@@ -88,7 +102,9 @@ def test_explicit_http_fallback_path_succeeds_in_loopback_mode(tmp_path: Path) -
             gossip_type='centrality_delta',
             channel='cid:1234567890abcdef',
             epoch=9,
-            signature='sig-9',
+            signature=_loopback_signature(epoch=9),
+            sender_peer_id=_LOOPBACK_PEER_ID,
+            key_id=_LOOPBACK_KEY_ID,
         )
         assert status == gossip_transport.HTTP_STATUS_BUFFERED
         assert server_transport.state['explicit_fallback_proof'] is True

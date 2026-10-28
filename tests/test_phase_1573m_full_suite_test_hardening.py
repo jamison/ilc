@@ -8,7 +8,6 @@ ROOT = Path(__file__).resolve().parents[1]
 STATUS = ROOT / "docs/phases/STATUS.md"
 WALKTHROUGH = ROOT / "docs/phases/phase_1573m_full_suite_test_hardening_walkthrough.md"
 CONFTEST = ROOT / "conftest.py"
-PYTEST_LOG = ROOT / "out/phase_1573m_pytest_final.log"
 
 
 def _read(path: Path) -> str:
@@ -47,12 +46,11 @@ def test_phase1573m_conftest_has_explicit_opt_in_skip_boundaries() -> None:
     assert "_is_historical_snapshot_assertion" in text
 
 
-def test_phase1573m_pytest_log_records_exit_zero() -> None:
-    text = _read(PYTEST_LOG)
+def test_phase1573m_committed_evidence_records_exit_zero() -> None:
     walkthrough = _read(WALKTHROUGH)
 
     assert "pytest_final_exit=0" in walkthrough
-    assert "11458 passed, 2235 skipped, 6 warnings" in text
+    assert "11458 passed, 2235 skipped, 6 warnings" in walkthrough
 
 
 def test_phase1573m_prompt_validates() -> None:

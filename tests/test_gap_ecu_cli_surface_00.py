@@ -27,6 +27,7 @@ from ilc_core.cli.ecu_status_cli import (
     normalize_ecu_status_payload,
 )
 from ilc_core.encoding.cidv1 import node_id_from_obj
+from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
 from ilc_core.identity.bls_backend import keypair_from_ikm_hex
 
 
@@ -211,7 +212,9 @@ def test_submit_handler_applies_source_refs_before_validation(monkeypatch: pytes
         primitive = "assert.truth"
         creates_node = True
         node_primitive_type = "observation"
-        edges: list[object] = []
+
+        def edge_specs(self) -> tuple[object, ...]:
+            return ()
 
     def fake_validate(envelope: dict[str, object]) -> Result:
         captured.update(envelope)
@@ -433,8 +436,6 @@ def test_submit_signing_surfaces_signature_without_graph_store(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
-
     monkeypatch.setattr(truth_runtime, "NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED", True)
     private_key = ed25519.Ed25519PrivateKey.generate()
     key_path = tmp_path / "hotkey.pem"
@@ -475,8 +476,6 @@ def test_submit_signing_missing_key_uses_stable_error_token(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
-
     monkeypatch.setattr(truth_runtime, "NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED", True)
     with pytest.raises(SubmitCommandError) as exc_info:
         d2e_submit_cli.handle_submit(

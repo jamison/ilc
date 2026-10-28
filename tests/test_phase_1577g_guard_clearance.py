@@ -21,6 +21,7 @@ from ilc_core.consensus.validator_endpoint_assertion import (
 
 
 MANIFEST_PATH = Path("docs/specs/ilc_validator_endpoint_assertions_manifest_1577f_v0.1.json")
+FIXTURE_CERT_PATH = Path("tools/testbed/phase779_assets/certs/validator_1_cert.der")
 VERIFY_INSTANT = datetime(2026, 8, 3, tzinfo=timezone.utc)
 
 
@@ -71,26 +72,31 @@ def _assertions() -> list[dict[str, Any]]:
 
 
 def _first_assertion() -> dict[str, Any]:
-    return _assertions()[0]
+    assertion = dict(_assertions()[0])
+    assertion["tls_cert_sha256_fingerprint"] = hashlib.sha256(
+        FIXTURE_CERT_PATH.read_bytes()
+    ).hexdigest()
+    return assertion
 
 
 def _cert_der_for(assertion: dict[str, Any]) -> bytes:
-    endpoint = str(assertion["grpc_endpoint"])
-    host, _, _port = endpoint.partition(":")
-    validator_id = host.rsplit("-", maxsplit=1)[-1]
-    cert_path = (
-        Path(str(_manifest()["config_root"]))
-        / "certs"
-        / f"validator_{validator_id}_cert.der"
-    )
-    der = cert_path.read_bytes()
+    der = FIXTURE_CERT_PATH.read_bytes()
     assert hashlib.sha256(der).hexdigest() == assertion["tls_cert_sha256_fingerprint"]
     return der
 
 
 def _atlas() -> ManifestAtlas:
     manifest = _manifest()
-    return ManifestAtlas(manifest["assertions"], manifest["revision_edges"])
+    return ManifestAtlas([_first_assertion()], manifest["revision_edges"])
+
+
+def test_graph_binding_fixture_is_committed_and_independent_of_private_m009_certs() -> None:
+    assert FIXTURE_CERT_PATH.is_file()
+    assert str(FIXTURE_CERT_PATH).startswith("tools/testbed/phase779_assets/")
+    assertion = _first_assertion()
+    assert assertion["tls_cert_sha256_fingerprint"] == hashlib.sha256(
+        FIXTURE_CERT_PATH.read_bytes()
+    ).hexdigest()
 
 
 def _passes_bls(*_args: object) -> bool:

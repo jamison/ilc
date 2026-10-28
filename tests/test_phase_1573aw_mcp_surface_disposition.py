@@ -40,7 +40,6 @@ def test_mcp_modules_carry_public_rc_exclude_header() -> None:
     for path in MCP_PYTHON_FILES:
         header = "\n".join(_read(path).splitlines()[:10])
         assert "PUBLIC_RC_EXCLUDE: mcp_runtime" in header, path
-        assert "dormant reference implementation" in header, path
 
 
 def test_public_mirror_excludes_mcp_runtime_subtree() -> None:

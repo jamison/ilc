@@ -203,6 +203,25 @@ def test_resolve_signing_key_rejects_symlink(
         resolve_signing_key("linked", tmp_path)
 
 
+def test_resolve_signing_key_rejects_directory(tmp_path: Path) -> None:
+    (tmp_path / "directory.pem").mkdir()
+
+    with pytest.raises(ValueError, match="signing_provider_key_file_not_file"):
+        resolve_signing_key("directory", tmp_path)
+
+
+def test_resolve_signing_key_rejects_missing_owner_read(
+    tmp_path: Path,
+    private_key_pem: bytes,
+) -> None:
+    key_file = tmp_path / "unreadable.pem"
+    key_file.write_bytes(private_key_pem)
+    key_file.chmod(0o200)
+
+    with pytest.raises(ValueError, match="signing_provider_key_file_permissions"):
+        resolve_signing_key("unreadable", tmp_path)
+
+
 def test_guarded_provider_rejects_unauthorized_action_type(
     tmp_path: Path,
     private_key_pem: bytes,

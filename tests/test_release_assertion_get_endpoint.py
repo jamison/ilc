@@ -22,7 +22,10 @@ from ilc_core.release.constants import (
 from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
 
 
-FIXTURE_PATH = Path("out/gap_release_assertion_publish_ceremony_00/release_assertion_core.json")
+FIXTURE_PATH = Path(
+    "docs/specs/"
+    "ilc_core_0434_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
+)
 LATEST_PATH = "/.well-known/ilc/software-release/latest.json"
 
 
@@ -79,7 +82,7 @@ def test_release_endpoint_serves_valid_full_signed_assertion() -> None:
     assert status == 200
     result = upgrade_check.validate_release_assertion(payload)
     assert result["release_signature_verified"] is True
-    assert result["verified_attestation_count"] == 2
+    assert result["verified_attestation_count"] == 3
     assert store.channels == ["public_rc"]
 
 
@@ -93,7 +96,7 @@ def test_release_endpoint_payload_includes_full_attestation_edges() -> None:
     assert status == 200
     assert payload["schema_version"] == "software_release_assertion.v0.1"
     assert isinstance(payload["software_release_node"], dict)
-    assert len(payload["release_attestation_edges"]) == 2
+    assert len(payload["release_attestation_edges"]) == 3
     assert all(edge["signature_hex"] for edge in payload["release_attestation_edges"])
 
 
@@ -233,24 +236,22 @@ def test_truth_graph_store_skips_invalid_higher_version_candidate(tmp_path: Path
         store.close()
 
     assert payload is not None
-    assert payload["software_release_node"]["version"] == "0.4.32"
+    assert payload["software_release_node"]["version"] == "0.4.34"
 
 
 def test_truth_graph_store_extracts_release_assertion_from_native_node(tmp_path: Path) -> None:
-    envelope = json.loads(
-        Path("out/gap_release_assertion_publish_ceremony_00/native_submit_envelope.json").read_text(
-            encoding="utf-8"
-        )
-    )
+    envelope = _release_assertion()["native_submit_envelope"]
     store = TruthPrimitiveGraphStore(tmp_path / "graph.lmdb")
     try:
         store.put_node_if_absent(
             "bafy-release-assertion-test",
             {
+                "v": envelope["v"],
                 "agent_id": envelope["agent_id"],
                 "epoch": envelope["epoch"],
                 "payload": envelope["payload"],
                 "primitive": envelope["primitive"],
+                "native_submit_sig": envelope["sig"],
             },
         )
         payload = store.get_latest_release_assertion("public_rc")
@@ -289,8 +290,10 @@ def test_upgrade_check_peer_path_consumes_release_endpoint_payload(tmp_path: Pat
         bootstrap_peer_hints_paths=[hints],
         peer_fetcher=peer_fetcher,
         fetcher=fallback_fetcher,
-        installed_version_resolver=lambda: "0.4.31",
-        now_fn=lambda: datetime(2026, 10, 7, 12, 0, 0, tzinfo=timezone.utc),
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.31",
+            now_fn=lambda: datetime(2026, 10, 7, 12, 0, 0, tzinfo=timezone.utc),
+        ),
     )
 
     assert observed["endpoint"] == "https://peer.example:8765/.well-known/ilc/software-release/latest.json"

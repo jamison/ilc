@@ -25,6 +25,7 @@ from ilc_core.identity.bls_backend import (
 )
 from ilc_core.network.relay.relay_server import (
     RelayServerConfig,
+    attach_shortcode_invite_bundle_auth,
     build_relay_bootstrap_record,
     relay_bootstrap_capsule_payload_ref,
     sign_relay_bootstrap_record,
@@ -42,6 +43,7 @@ from ilc_core.sidecars.openclaw_invite_bootstrap import build_synthetic_invite_b
 AGENT_ID_HEX = "8e5a712e4cb2c51893c27ae19afb3455f3efcc66030dc25e13eb1afc2edf397317a0bb2d28a55513a32d7dcc404be3ba"
 SIGNING_KEY_HEX = "344dc8b38c3d76ded943ea518dfcd0184c8730f1d1a9a444e0bdd6ecc9742825"
 FIXTURE_MANIFEST = Path("tests/fixtures/starmap/core_public_rc_slice_fixture.json")
+TEST_INVITE_ISSUER_IKM_HEX = "42" * 32
 
 
 @pytest.fixture()
@@ -70,13 +72,33 @@ def install_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return home
 
 
-def _bundle() -> dict[str, object]:
+@pytest.fixture(autouse=True)
+def trusted_test_invite_issuer(monkeypatch: pytest.MonkeyPatch) -> None:
+    from ilc_core.genesis import invite_issuer_authority
+
+    _secret_key, public_key = keypair_from_ikm_hex(TEST_INVITE_ISSUER_IKM_HEX)
+    monkeypatch.setattr(
+        invite_issuer_authority,
+        "GENESIS_INVITE_ISSUER_PK_HEX",
+        public_key,
+    )
+
+
+def _bundle(*, extra_fields: dict[str, object] | None = None) -> dict[str, object]:
     bundle = build_synthetic_invite_bundle()
     bundle["atlas_slice_manifest_witness"] = {"slice_id": "test-slice"}
     bundle["starmap_manifest_payload"] = json.loads(
         FIXTURE_MANIFEST.read_text(encoding="utf-8")
     )
-    return bundle
+    if extra_fields is not None:
+        bundle.update(extra_fields)
+    secret_key, public_key = keypair_from_ikm_hex(TEST_INVITE_ISSUER_IKM_HEX)
+    return attach_shortcode_invite_bundle_auth(
+        bundle,
+        inviting_agent_id=public_key,
+        inviting_bls_public_key_hex=public_key,
+        inviting_bls_secret_key_hex=secret_key,
+    )
 
 
 def _write_bundle(path: Path) -> Path:
@@ -731,8 +753,7 @@ def test_install_from_invite_uses_signed_relay_bootstrap_capsule_without_manual_
         return {"connectivity_receipt": connectivity, "onboarding_receipt": onboarding}
 
     monkeypatch.setattr(provisioning, "record_install_connectivity_receipt", fake_record)
-    bundle = _bundle()
-    bundle["relay_bootstrap_capsule"] = capsule
+    bundle = _bundle(extra_fields={"relay_bootstrap_capsule": capsule})
     invite_path = _write_bundle_payload(tmp_path / "invite.json", bundle)
 
     result = cli_main._run_install_subcommand(

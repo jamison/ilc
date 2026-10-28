@@ -38,6 +38,7 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.network.d2d import gossip_transport
 from ilc_core.network.d2d.gossip_peer_registry import validate_peer_endpoint
 
@@ -55,6 +56,8 @@ FETCH_RATE_LIMITER_MAX_BUCKETS = 10_000
 _FETCH_TIMEOUT_SECONDS = 5.0
 _MAX_RESPONSE_BYTES = 1_048_576  # 1 MiB — OOM guard on inbound
 _FETCH_RESPONSE_TOO_LARGE_TOKEN = "fetch_response_too_large"
+_MAX_FETCH_JSON_DEPTH = 64
+_MAX_FETCH_JSON_NODES = 50_000
 
 # Dep-chain guard
 if gossip_transport.GOSSIP_TRANSPORT_RUNTIME_VERSION != "gossip_transport_runtime_1572.v0.1":
@@ -121,6 +124,66 @@ class FetchRateLimitError(FetchTransportError):
             "fetch_rate_limit_exceeded",
             f"WANT-BLOCK rate limit exceeded by peer {peer_endpoint}",
         )
+
+
+def _reject_non_finite_json_constant(value: str) -> None:
+    raise ValueError(f"non-finite JSON constant is not allowed: {value}")
+
+
+def _reject_duplicate_json_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def _validate_fetch_json_bounds(
+    value: Any,
+    *,
+    depth: int = 0,
+    counter: list[int] | None = None,
+) -> None:
+    if counter is None:
+        counter = [0]
+    counter[0] += 1
+    if counter[0] > _MAX_FETCH_JSON_NODES or depth > _MAX_FETCH_JSON_DEPTH:
+        raise ValueError("fetch JSON structural limit exceeded")
+    if isinstance(value, dict):
+        for key, child in value.items():
+            if not isinstance(key, str):
+                raise ValueError("fetch JSON object key is not text")
+            _validate_fetch_json_bounds(child, depth=depth + 1, counter=counter)
+    elif isinstance(value, list):
+        for child in value:
+            _validate_fetch_json_bounds(child, depth=depth + 1, counter=counter)
+
+
+def _validate_requested_truth_record(node_id: str, raw: bytes) -> dict[str, Any]:
+    """Parse a fetched graph record and bind its canonical NodeID to the request."""
+
+    try:
+        parsed = json.loads(
+            raw,
+            parse_constant=_reject_non_finite_json_constant,
+            object_pairs_hook=_reject_duplicate_json_keys,
+        )
+        if not isinstance(parsed, dict):
+            raise ValueError("truth record must be a JSON object")
+        _validate_fetch_json_bounds(parsed)
+        observed_node_id = node_id_from_obj(parsed)
+    except (RecursionError, TypeError, UnicodeDecodeError, ValueError) as exc:
+        raise FetchTransportError(
+            "fetch_want_block_invalid_record",
+            "peer returned a malformed or non-canonical truth record",
+        ) from exc
+    if observed_node_id != node_id:
+        raise FetchTransportError(
+            "fetch_want_block_node_id_mismatch",
+            "peer returned truth record bytes for a different NodeID",
+        )
+    return parsed
 
 
 # ---------------------------------------------------------------------------
@@ -214,7 +277,17 @@ def want_have(node_id: str, peer_endpoint: str) -> dict[str, Any]:
     try:
         with _opener.open(req, timeout=_FETCH_TIMEOUT_SECONDS) as resp:
             raw = _read_bounded_response(resp)
-            parsed = json.loads(raw)
+            try:
+                parsed = json.loads(
+                    raw,
+                    parse_constant=_reject_non_finite_json_constant,
+                    object_pairs_hook=_reject_duplicate_json_keys,
+                )
+            except (RecursionError, UnicodeDecodeError, ValueError) as exc:
+                raise FetchTransportError(
+                    "fetch_want_have_invalid_response",
+                    f"peer {peer_endpoint} returned malformed JSON",
+                ) from exc
             if not isinstance(parsed, dict) or "have" not in parsed:
                 raise FetchTransportError(
                     "fetch_want_have_invalid_response",
@@ -226,11 +299,16 @@ def want_have(node_id: str, peer_endpoint: str) -> dict[str, Any]:
                     "fetch_want_have_invalid_response",
                     f"peer {peer_endpoint} returned non-boolean have field",
                 )
-            response_node_id = parsed.get("node_id", node_id)
+            response_node_id = parsed.get("node_id")
             if not isinstance(response_node_id, str):
                 raise FetchTransportError(
                     "fetch_want_have_invalid_response",
                     f"peer {peer_endpoint} returned non-string node_id field",
+                )
+            if response_node_id != node_id:
+                raise FetchTransportError(
+                    "fetch_want_have_node_id_mismatch",
+                    f"peer {peer_endpoint} answered for a different node_id",
                 )
             return {"have": have, "node_id": response_node_id}
     except FetchTransportError:
@@ -323,9 +401,12 @@ def fetch_truth_primitive(node_id: str) -> bytes | None:
             continue
         if not have_resp.get("have"):
             continue
+        if have_resp.get("node_id") != node_id:
+            continue
         try:
             record_bytes = want_block(node_id, peer_endpoint)
             if record_bytes is not None:
+                _validate_requested_truth_record(node_id, record_bytes)
                 return record_bytes
         except FetchRateLimitError:
             continue

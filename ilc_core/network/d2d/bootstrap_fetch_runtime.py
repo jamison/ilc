@@ -66,6 +66,18 @@ class BootstrapBundleError(Exception):
         self.token = token
 
 
+def _reject_duplicate_json_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        if key in result:
+            raise BootstrapBundleError(
+                "bootstrap_bundle_duplicate_key",
+                f"duplicate bootstrap bundle key: {key}",
+            )
+        result[key] = value
+    return result
+
+
 # ---------------------------------------------------------------------------
 # Core functions
 # ---------------------------------------------------------------------------
@@ -106,6 +118,11 @@ def fetch_bootstrap_bundle(
 
     if not have_resp.get("have"):
         return None
+    if have_resp.get("node_id") != bundle_cid:
+        raise BootstrapBundleError(
+            "bootstrap_bundle_want_have_cid_mismatch",
+            "seed peer answered WANT-HAVE for a different bundle identifier",
+        )
 
     # WANT-BLOCK fetch
     raw = want_block(bundle_cid, seed_peer_endpoint)
@@ -113,8 +130,14 @@ def fetch_bootstrap_bundle(
         return None
 
     try:
-        parsed = json.loads(raw, parse_constant=_reject_json_constant)
-    except (json.JSONDecodeError, ValueError) as exc:
+        parsed = json.loads(
+            raw,
+            parse_constant=_reject_json_constant,
+            object_pairs_hook=_reject_duplicate_json_keys,
+        )
+    except BootstrapBundleError:
+        raise
+    except (RecursionError, UnicodeDecodeError, ValueError) as exc:
         raise BootstrapBundleError(
             "bootstrap_bundle_invalid_json",
             f"bundle_cid={bundle_cid}: {exc}",
@@ -124,6 +147,17 @@ def fetch_bootstrap_bundle(
         raise BootstrapBundleError(
             "bootstrap_bundle_not_object",
             f"bundle_cid={bundle_cid}: expected dict, got {type(parsed).__name__}",
+        )
+
+    if not validate_bootstrap_bundle_schema(parsed):
+        raise BootstrapBundleError(
+            "bootstrap_bundle_schema_invalid",
+            f"bundle_cid={bundle_cid}: bundle does not satisfy bootstrap_bundle_v1",
+        )
+    if parsed["bundle_cid"] != bundle_cid:
+        raise BootstrapBundleError(
+            "bootstrap_bundle_cid_mismatch",
+            "returned bundle identifier does not equal the requested bundle identifier",
         )
 
     return parsed

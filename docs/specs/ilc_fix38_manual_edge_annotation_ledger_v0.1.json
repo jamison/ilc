@@ -7700,6 +7700,259 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_pre_rc_system_status_hypergraph_ecu_ilc_execution_map_2026_10_25_v0.1.md"
+    },
+    {
+      "annotation_batch": "manual_batch_214_reconciliation_r5a_unsigned_build",
+      "chronology_note": "2026-10-28 Reconciliation-00 R5a unsigned v0.4.35 source freeze and build attestation",
+      "manual_read_summary": "Bounded support tool constructs and verifies the unsigned v0.4.35 build attestation, archive limits, deterministic candidate CIDs, full-suite receipt, exact sidecar/source commits, and unchanged v0.4.34 consensus reuse without signing or publication.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/reconciliation_v0435_build_attestation.py"
+    },
+    {
+      "annotation_batch": "manual_batch_214_reconciliation_r5a_unsigned_build",
+      "chronology_note": "2026-10-28 Reconciliation-00 R5a unsigned v0.4.35 source freeze and build attestation",
+      "manual_read_summary": "Machine-readable receipt binds source freeze, dual-build comparison, installed-artifact smokes, clean full-suite result, candidate release graph objects, and unchanged consensus reuse; it is explicitly unsigned and non-authoritative.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_core_0435_unsigned_build_attestation_reconciliation_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_214_reconciliation_r5a_unsigned_build",
+      "chronology_note": "2026-10-28 Reconciliation-00 R5a unsigned v0.4.35 source freeze and build attestation",
+      "manual_read_summary": "Walkthrough records source and sidecar commits, build toolchains, artifact hashes, bounded sdist classification, installed smokes, full-suite counts and hashes, consensus reuse, mirror readback, non-claims, and the SENSITIVE R5b boundary.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_source_freeze_build_00_walkthrough.md"
+    },
+    {
+      "annotation_batch": "manual_batch_215_reconciliation_r5b_r5d_r5e_prompts",
+      "chronology_note": "2026-10-28 Reconciliation-00 remaining execution contracts",
+      "manual_read_summary": "Sensitive R5b contract binds exact v0.4.35 Python artifacts, separate release/policy/native-submit cryptographic roles, sequence-3 succession, dual-envelope installer provenance, append-only providers and mirror, and explicit unchanged v0.4.34 consensus reuse.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_sign_publish_00_g10.md"
+    },
+    {
+      "annotation_batch": "manual_batch_215_reconciliation_r5b_r5d_r5e_prompts",
+      "chronology_note": "2026-10-28 Reconciliation-00 remaining execution contracts",
+      "manual_read_summary": "Sensitive R5d contract proves exact remotely published wheel installation in a fresh external environment, complete ilc_core module-origin containment, independent sequence-3 policy verification, and no workspace-import substitution.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_installed_artifact_smoke_00_g10.md"
+    },
+    {
+      "annotation_batch": "manual_batch_215_reconciliation_r5b_r5d_r5e_prompts",
+      "chronology_note": "2026-10-28 Reconciliation-00 remaining execution contracts",
+      "manual_read_summary": "Non-sensitive R5e contract requires a fresh uncensored full suite plus independent provider, graph, policy, installer, mirror, consensus-reuse, and protected-state verification before the original Strike Force closure token may be emitted.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-INSTALLED-ARTIFACT-SMOKE-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_closure_audit_00_g10.md"
+    },
+    {
+      "annotation_batch": "manual_batch_216_reconciliation_r5b_ceremony_support",
+      "chronology_note": "2026-10-28 Reconciliation-00 R5b pre-key-access ceremony support freeze",
+      "manual_read_summary": "Bounded ceremony tool verifies the closed R5a artifacts and authorization hashes, signs only the v0.4.35 wheel and sdist, independently fetches provider bytes, constructs strict release and sequence-3 policy evidence, and enforces separation of Ed25519, ML-DSA-65, public-submit BLS, and invite BLS roles.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "docs/specs/ilc_cdl_122_release_current_policy_claim_ratification_v0.1.md"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tools/reconciliation_v0435_sign_publish.py"
+    },
+    {
+      "annotation_batch": "manual_batch_216_reconciliation_r5b_ceremony_support",
+      "chronology_note": "2026-10-28 Reconciliation-00 R5b pre-key-access ceremony support freeze",
+      "manual_read_summary": "Focused tests cover exact artifact and manifest binding, malformed JSON, wrong keys and permissions, provider redirects and byte mismatches, two-artifact release construction, native graph binding, exact sequence-3 succession, signature tampering, role substitution, and complete three-claim policy resolution.",
+      "proposed_authority_trace_edges": [],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        },
+        {
+          "edge_type": "TESTS",
+          "target": "tools/reconciliation_v0435_sign_publish.py"
+        },
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "SOURCE_TREE_MEMBER",
+        "TESTS"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "tests/test_reconciliation_v0435_sign_publish.py"
+    },
+    {
+      "annotation_batch": "manual_batch_217_reconciliation_r5b_release_signing",
+      "chronology_note": "2026-10-28 Reconciliation-00 R5b Phase-1335 Ed25519 ceremony",
+      "manual_read_summary": "Public two-artifact v0.4.35 release envelope set binds the exact frozen wheel and sdist hashes to the Phase-1335 Ed25519 release authority while leaving the v0.4.34 consensus artifact and envelope unchanged.",
+      "node_kind": "evidence_receipt",
+      "phase_ref": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/specs/ilc_release_keys_envelopes_generation_gate_1335_v0.1.json"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
+    },
+    {
+      "annotation_batch": "manual_batch_218_reconciliation_r5b_release_assertion",
+      "chronology_note": "2026-10-28 Reconciliation-00 R5b provider fetchback and native graph binding",
+      "manual_read_summary": "Strict v0.4.35 SoftwareReleaseNode assertion contains only the independently fetched-back wheel and sdist, verifies their Phase-1335 envelopes, and carries a scoped BLS native-submit envelope without changing the v0.4.34 consensus identity.",
+      "node_kind": "evidence_receipt",
+      "phase_ref": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "proposed_authority_trace_edges": [
+        {
+          "edge_type": "REFERENCES_AUTHORITY",
+          "review_status": "candidate",
+          "target": "docs/cdl/cdl_121_homoiconic_release_object_node_taxonomy_opening.md"
+        }
+      ],
+      "proposed_semantic_edges": [
+        {
+          "edge_type": "EVIDENCES",
+          "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00"
+        },
+        {
+          "edge_type": "REFERENCES",
+          "target": "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
+        },
+        {
+          "edge_type": "SOURCE_TREE_MEMBER",
+          "target": "genesis:genesis_root_v0.4"
+        }
+      ],
+      "proposed_trace_roles": [
+        "EVIDENCES",
+        "REFERENCES",
+        "REFERENCES_AUTHORITY",
+        "SOURCE_TREE_MEMBER"
+      ],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/specs/ilc_core_0435_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
     }
   ],
   "annotations": [
@@ -120849,7 +121102,120 @@
       ],
       "recommended_graph_action": "support_only",
       "repo_path": "docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_amendment_01.md"
+    },
+    {
+      "annotation_batch": "manual_batch_reconciliation_00_phase_gap_rc_native_distribution_closure_reconciliation_2026_10_26",
+      "chronology_note": "2026-10-26 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-00 planning package: reconciliation manifest, R1 divergence audit prompt, R2 suite census prompt",
+      "manual_read_summary": "Reconciliation campaign manifest for RC-NATIVE-DISTRIBUTION-CLOSURE-STRIKE-FORCE-00, recording two independent closure blockers, signed artifact hashes, deployed helper hashes, and ordered work packages R1-R5e",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md",
+      "proposed_authority_trace_edges": [
+        {"edge_type": "REFERENCES_AUTHORITY", "target": "docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2.json", "review_status": "candidate"},
+        {"edge_type": "REFERENCES_AUTHORITY", "target": "docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_amendment_01.md", "review_status": "candidate"}
+      ],
+      "proposed_semantic_edges": [
+        {"edge_type": "SOURCE_TREE_MEMBER", "target": "genesis:genesis_root_v0.4"}
+      ],
+      "proposed_trace_roles": ["REFERENCES_AUTHORITY", "SOURCE_TREE_MEMBER"],
+      "recommended_graph_action": "load_bearing_artifact_added"
+    },
+    {
+      "annotation_batch": "manual_batch_reconciliation_00_phase_gap_rc_native_distribution_closure_reconciliation_2026_10_26",
+      "chronology_note": "2026-10-26 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-DIVERGENCE-AUDIT-00 phase prompt: R1 divergence audit, NON-SENSITIVE",
+      "manual_read_summary": "Phase prompt for R1 divergence audit: machine-readable per-file comparison of signed v0.4.34 source vs current HEAD across wheel, sdist, consensus tarball, installer, mirror, and deployed helpers",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_divergence_audit_00_g10.md",
+      "proposed_authority_trace_edges": [
+        {"edge_type": "REFERENCES_AUTHORITY", "target": "docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md", "review_status": "candidate"}
+      ],
+      "proposed_semantic_edges": [
+        {"edge_type": "SOURCE_TREE_MEMBER", "target": "genesis:genesis_root_v0.4"}
+      ],
+      "proposed_trace_roles": ["REFERENCES_AUTHORITY", "SOURCE_TREE_MEMBER"],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_reconciliation_00_phase_gap_rc_native_distribution_closure_reconciliation_2026_10_26",
+      "chronology_note": "2026-10-26 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00 phase prompt: R2 full-sequential suite census, NON-SENSITIVE",
+      "manual_read_summary": "Phase prompt for R2 suite census: uncensored default full-sequential test run from clean checkout at audited source commit, per-failure adjudication with eight dispositions",
+      "repo_path": "docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_suite_census_00_g10.md",
+      "proposed_authority_trace_edges": [
+        {"edge_type": "REFERENCES_AUTHORITY", "target": "docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md", "review_status": "candidate"}
+      ],
+      "proposed_semantic_edges": [
+        {"edge_type": "SOURCE_TREE_MEMBER", "target": "genesis:genesis_root_v0.4"}
+      ],
+      "proposed_trace_roles": ["REFERENCES_AUTHORITY", "SOURCE_TREE_MEMBER"],
+      "recommended_graph_action": "support_only"
+    },
+    {
+      "annotation_batch": "manual_batch_reconciliation_00_r1_execution_2026_10_27",
+      "chronology_note": "2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-DIVERGENCE-AUDIT-00 execution evidence",
+      "manual_read_summary": "Machine-readable exact-cover comparison of signed v0.4.34 source and artifacts against audited source commit c4425659bb04ce8ba12eab74e82a41c715691bea, including package-surface impact, public-mirror binding, publication inventory, and 21 live helper hash comparisons.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-DIVERGENCE-AUDIT-00",
+      "proposed_authority_trace_edges": [
+        {"edge_type": "REFERENCES_AUTHORITY", "target": "docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md", "review_status": "candidate"}
+      ],
+      "proposed_semantic_edges": [
+        {"edge_type": "SUPPORTS", "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-DIVERGENCE-AUDIT-00"},
+        {"edge_type": "SOURCE_TREE_MEMBER", "target": "genesis:genesis_root_v0.4"}
+      ],
+      "proposed_trace_roles": ["REFERENCES_AUTHORITY", "SUPPORTS", "SOURCE_TREE_MEMBER"],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/gap_rc_native_distribution_closure_reconciliation_divergence_audit_00_evidence.json"
+    },
+    {
+      "annotation_batch": "manual_batch_reconciliation_00_r1_execution_2026_10_27",
+      "chronology_note": "2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-DIVERGENCE-AUDIT-00 walkthrough",
+      "manual_read_summary": "Verbatim R1 verification record covering signed-artifact integrity, exact Git divergence, typed evidence validation, mirror head, mutation boundary, and deployed helper hash equality.",
+      "node_kind": "phase_walkthrough",
+      "phase_ref": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-DIVERGENCE-AUDIT-00",
+      "proposed_authority_trace_edges": [
+        {"edge_type": "REFERENCES_AUTHORITY", "target": "docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md", "review_status": "candidate"}
+      ],
+      "proposed_semantic_edges": [
+        {"edge_type": "SUPPORTS", "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-DIVERGENCE-AUDIT-00"},
+        {"edge_type": "SOURCE_TREE_MEMBER", "target": "genesis:genesis_root_v0.4"}
+      ],
+      "proposed_trace_roles": ["REFERENCES_AUTHORITY", "SUPPORTS", "SOURCE_TREE_MEMBER"],
+      "recommended_graph_action": "support_only",
+      "repo_path": "docs/phases/gap_rc_native_distribution_closure_reconciliation_divergence_audit_00_walkthrough.md"
     }
+  ,
+    {"annotation_batch":"manual_batch_reconciliation_00_r2_execution_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00 execution evidence","manual_read_summary":"Machine-readable R2 full-suite census with 18,745 outcomes and 408 typed adjudications.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_suite_census_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r2_execution_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00 execution environment","manual_read_summary":"Exact dependency freeze for the isolated R2 census environment.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_suite_census_00_pip_freeze.txt"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r2_execution_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00 walkthrough","manual_read_summary":"R2 execution walkthrough with checkout, environment, hashes, counts, priority findings, and verification output.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_suite_census_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3a_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00 phase prompt","manual_read_summary":"NON-SENSITIVE remediation contract for R2 circular-import and static-source-guardrail defects, with frozen thresholds and sensitive-boundary hard stops.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SUITE-CENSUS-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3a_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3a_execution_2026_10_27","chronology_note":"2026-10-27 R3a strict upgrade validation primitive extraction","manual_read_summary":"Internal release validator module centralizes strict string, field-set, CID, timestamp, hexadecimal, and bounded-list checks without changing release authorization semantics.","node_kind":"runtime_module","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00","proposed_authority_trace_edges":[],"proposed_semantic_edges":[{"edge_type":"EVIDENCES","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["EVIDENCES","SOURCE_TREE_MEMBER"],"recommended_graph_action":"load_bearing_artifact_added","repo_path":"ilc_core/release/upgrade_validation_primitives.py"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3a_execution_2026_10_27","chronology_note":"2026-10-27 R3a machine-readable remediation evidence","manual_read_summary":"Typed R3a repair record for circular-import, code-health, static guardrail, and dependent-gate recovery evidence.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_remediation_r3a_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3a_execution_2026_10_27","chronology_note":"2026-10-27 R3a execution walkthrough","manual_read_summary":"Verbatim R3a verification record for primary, dependent, behavioral, guardrail, graph, JSON, and mutation-boundary checks.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3a_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3b_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3B-00 phase prompt","manual_read_summary":"NON-SENSITIVE remediation contract for 14 reproducible installer, invite, package-version, and historical-fixture failures while preserving active authorization boundaries.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3B-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3A-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3b_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3b_execution_2026_10_27","chronology_note":"2026-10-27 R3b machine-readable remediation evidence","manual_read_summary":"Typed R3b record for candidate-state, invite-auth fixture, historical release assertion, negative authorization, and no-sensitive-mutation evidence.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3B-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3B-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_remediation_r3b_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3b_execution_2026_10_27","chronology_note":"2026-10-27 R3b execution walkthrough","manual_read_summary":"Verbatim R3b verification record for fixture coherence, active authorization boundaries, historical evidence preservation, graph coverage, and mutation non-claims.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3B-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3B-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3b_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3c_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3C-00 phase prompt","manual_read_summary":"NON-SENSITIVE remediation contract for native BLS truth submission, isolated Atlas/release fixtures, and exact content-address request binding while preserving generic-slice non-claims.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3C-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_native_lineage_observer_selection_and_distribution_reconciliation_2026_10_24_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3B-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3c_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3c_execution_2026_10_27","chronology_note":"2026-10-27 R3c machine-readable remediation evidence","manual_read_summary":"Typed R3c evidence for native BLS fixture migration, committed Atlas and release fixtures, exact requested-identifier binding, clean-checkout reproducibility, and sensitive-boundary preservation.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3C-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_native_lineage_observer_selection_and_distribution_reconciliation_2026_10_24_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3C-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_remediation_r3c_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3c_execution_2026_10_27","chronology_note":"2026-10-27 R3c execution walkthrough","manual_read_summary":"R3c verification record for native ingress, requested-CID substitution rejection, committed-fixture isolation, primary and adjacent tests, and non-sensitive execution boundaries.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3C-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_native_lineage_observer_selection_and_distribution_reconciliation_2026_10_24_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3C-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3c_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3d_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3D-00 phase prompt","manual_read_summary":"NON-SENSITIVE remediation contract for invite-aware identity fixtures, delegated-signer transactionality, deterministic key-file safety, and authenticated gossip loopback fixtures.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3D-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_101_d2d_signed_gossip_envelope_ratification_evidence_1572a_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3C-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3d_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3d_execution_2026_10_27","chronology_note":"2026-10-27 R3d machine-readable remediation evidence","manual_read_summary":"Typed R3d evidence for invite-safe historical fixtures, private-key descriptor validation, delegated-signer revoke persistence, authenticated loopback gossip, isolated execution, and sensitive-boundary preservation.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3D-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_101_d2d_signed_gossip_envelope_ratification_evidence_1572a_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3D-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_remediation_r3d_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3d_execution_2026_10_27","chronology_note":"2026-10-27 R3d execution walkthrough","manual_read_summary":"R3d verification record for identity and nullifier isolation, key-file TOCTOU defense, post-revoke recovery rollback, signed-context HTTP fixtures, primary and adjacent tests, isolated execution, and non-sensitive boundaries.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3D-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_002_key_compromise_response_contract_v0.1.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_101_d2d_signed_gossip_envelope_ratification_evidence_1572a_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3D-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3d_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3e_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3E-00 phase prompt","manual_read_summary":"NON-SENSITIVE reconciliation contract for canonical economic test fixtures and exact numeric assertions while freezing hardened runtime semantics and all live economic surfaces.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3E-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_064_exact_numeric_representation_ratification_evidence_634_v0.1.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_083_h_con_02_ratification_evidence_1104_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3D-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3e_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3e_execution_2026_10_27","chronology_note":"2026-10-27 R3e machine-readable remediation evidence","manual_read_summary":"Typed R3e evidence for canonical provenance and ejected-stake fixtures, exact Decimal assertions, isolated execution, and preservation of production economic semantics.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3E-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_064_exact_numeric_representation_ratification_evidence_634_v0.1.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_083_h_con_02_ratification_evidence_1104_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3E-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_remediation_r3e_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3e_execution_2026_10_27","chronology_note":"2026-10-27 R3e execution walkthrough","manual_read_summary":"R3e verification record for identity and Decimal fixture migration, exact economic assertions, primary and adjacent tests, isolated execution, and non-sensitive boundaries.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3E-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_064_exact_numeric_representation_ratification_evidence_634_v0.1.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_cdl_083_h_con_02_ratification_evidence_1104_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3E-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3e_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3f_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3F-00 phase prompt","manual_read_summary":"NON-SENSITIVE reconciliation contract for historical evidence locality and the current typed Rust validator-hook signature without backfilling live guidance or changing consensus code.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3F-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_phase_1546p_1555p_sequence_lock_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3E-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3f_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3f_execution_2026_10_27","chronology_note":"2026-10-27 R3f machine-readable remediation evidence","manual_read_summary":"Typed R3f evidence for phase-specific historical proof locality, active default-suite coverage, current validator-hook signature recognition, isolated execution, and frozen governance/Rust surfaces.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3F-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_phase_1546p_1555p_sequence_lock_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3F-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_remediation_r3f_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3f_execution_2026_10_27","chronology_note":"2026-10-27 R3f execution walkthrough","manual_read_summary":"R3f verification record for historical evidence locality, active governance coverage, current typed Rust hook assertion, isolated execution, and non-sensitive boundaries.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3F-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_phase_1546p_1555p_sequence_lock_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3F-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3f_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3g_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3G-00 phase prompt","manual_read_summary":"NON-SENSITIVE final remediation contract for source-export post-scan correctness, AGPL SPDX coverage, historical evidence locality, and walkthrough hygiene while preserving static and ingress guardrails.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3G-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_source_allowlist_export_execution_gate_1333_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3F-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3g_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3g_execution_2026_10_27","chronology_note":"2026-10-27 R3g machine-readable remediation evidence","manual_read_summary":"Typed R3g evidence for clean source-export materialization, AGPL header coverage, historical evidence locality, walkthrough hygiene, and isolated execution.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3G-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_source_allowlist_export_execution_gate_1333_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3G-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_remediation_r3g_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r3g_execution_2026_10_27","chronology_note":"2026-10-27 R3g execution walkthrough","manual_read_summary":"R3g verification record for source-export post-scan correctness, SPDX repairs, historical assertion migration, no-ellipsis enforcement, clean materialization, and non-sensitive boundaries.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3G-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"},{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_source_allowlist_export_execution_gate_1333_v0.1.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3G-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_remediation_r3g_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r4_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RELEASE-DISPOSITION-00 phase prompt","manual_read_summary":"NON-SENSITIVE release-disposition contract requiring actual unsigned wheel/sdist archive comparison, exhaustive source and member-delta coverage, separate installer and consensus-tarball impact, and a typed new-release determination without signing or publication authority.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RELEASE-DISPOSITION-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-REMEDIATION-R3G-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_release_disposition_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r4_execution_2026_10_27","chronology_note":"2026-10-27 R4 exhaustive release-disposition comparison tool","manual_read_summary":"Bounded support tool parses NUL-delimited Git changes, compares actual wheel/sdist/consensus archive membership and bytes, and verifies typed disposition invariants without signing or publication authority.","node_kind":"tool_script","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RELEASE-DISPOSITION-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"EVIDENCES","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RELEASE-DISPOSITION-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","EVIDENCES","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"tools/reconciliation_release_disposition.py"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r4_execution_2026_10_27","chronology_note":"2026-10-27 R4 machine-readable release disposition","manual_read_summary":"Typed R4 evidence binds signed and candidate artifact hashes, exhaustive Git and archive deltas, separate Python/installer/consensus impacts, the v0.4.35 requirement, and the R2 transient-artifact limitation.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RELEASE-DISPOSITION-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"EVIDENCES","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RELEASE-DISPOSITION-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","EVIDENCES","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_release_disposition_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r4_execution_2026_10_27","chronology_note":"2026-10-27 R4 release-disposition walkthrough","manual_read_summary":"R4 verification record for signed-input integrity, isolated candidate build, actual archive comparison, negative verifier probes, public-mirror read-only verification, and non-sensitive boundaries.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RELEASE-DISPOSITION-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"token:rc_native_distribution_closure_reconciliation_release_disposition_complete_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_RELEASE_DISPOSITION_00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_release_disposition_00_walkthrough.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r5a_planning_2026_10_27","chronology_note":"2026-10-27 GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00 phase prompt","manual_read_summary":"NON-SENSITIVE R5a contract for the 0.4.35 source freeze, guarded sufficiency-package inclusion, independent dual builds, installed-artifact isolation, full-suite closure, consensus-tarball reuse, and unsigned attestation.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RELEASE-DISPOSITION-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_source_freeze_build_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r5a_source_freeze_2026_10_27","chronology_note":"2026-10-27 v0.4.35 source-freeze package inclusion and guard regression test","manual_read_summary":"Regression test binds the v0.4.35 version pair, explicit ilc_core.sufficiency package inclusion, absence of public-RC exclusion markers, default-off guards, and denial of nonfixture interpreter and model backends.","node_kind":"test_file","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00","proposed_authority_trace_edges":[],"proposed_semantic_edges":[{"edge_type":"TESTS","target":"ilc_core/sufficiency/local_interp.py"},{"edge_type":"TESTS","target":"ilc_core/sufficiency/model_selector.py"},{"edge_type":"REGRESSES","target":"claim:sufficiency_runtime_modules_included_in_v0.4.35_distribution"},{"edge_type":"NEGATIVE_ASSERTS","target":"claim:sufficiency_production_backends_remain_default_off"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["TESTS","REGRESSES","NEGATIVE_ASSERTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"tests/test_reconciliation_v0435_source_freeze.py"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r5a_residual_planning_2026_10_27","chronology_note":"2026-10-27 Reconciliation-00 Amendment 01 after failed R5a full-suite gate","manual_read_summary":"Append-only correction preserves the failed candidate evidence, inserts bounded residual remediation, and requires a fresh source freeze and builds after a zero-exit suite.","node_kind":"planning_doc","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RESIDUAL-REMEDIATION-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_strike_force_execution_manifest_v0.2_reconciliation_00.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"AMENDS","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","AMENDS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/specs/ilc_rc_native_distribution_closure_reconciliation_00_amendment_01.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r5a_residual_planning_2026_10_27","chronology_note":"2026-10-27 residual-remediation phase contract","manual_read_summary":"NON-SENSITIVE contract for complete residual adjudication, environment-complete isolated testing, real defect repair, historical fixture discipline, canary hardening, and a zero-exit full suite before R5a retry.","node_kind":"phase_prompt","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RESIDUAL-REMEDIATION-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_reconciliation_00_amendment_01.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"DEPENDS_ON","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SOURCE-FREEZE-BUILD-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","DEPENDS_ON","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/antigravity_tasks/antigravity_prompt__phase_gap_rc_native_distribution_closure_reconciliation_residual_remediation_00_g10.md"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r5a_residual_execution_2026_10_28","chronology_note":"2026-10-28 residual-remediation machine-readable completion evidence","manual_read_summary":"Complete 237-row residual matrix, two green default-suite proofs, authoritative zero pipeline exit, evidence hashes, clean detached-checkout proof, and sensitive-boundary non-claims.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RESIDUAL-REMEDIATION-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_reconciliation_00_amendment_01.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"EVIDENCES","target":"phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RESIDUAL-REMEDIATION-00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","EVIDENCES","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/gap_rc_native_distribution_closure_reconciliation_residual_remediation_00_results.json"},
+    {"annotation_batch":"manual_batch_reconciliation_00_r5a_residual_execution_2026_10_28","chronology_note":"2026-10-28 residual-remediation execution walkthrough","manual_read_summary":"Verbatim gate, repair, environment, full-suite, hash, clean-tree, graph, and non-sensitive boundary record for the residual-remediation closure.","node_kind":"phase_walkthrough","phase_ref":"GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-RESIDUAL-REMEDIATION-00","proposed_authority_trace_edges":[{"edge_type":"REFERENCES_AUTHORITY","target":"docs/specs/ilc_rc_native_distribution_closure_reconciliation_00_amendment_01.md","review_status":"candidate"}],"proposed_semantic_edges":[{"edge_type":"SUPPORTS","target":"token:rc_native_distribution_closure_reconciliation_residual_remediation_complete_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_RESIDUAL_REMEDIATION_00"},{"edge_type":"SOURCE_TREE_MEMBER","target":"genesis:genesis_root_v0.4"}],"proposed_trace_roles":["REFERENCES_AUTHORITY","SUPPORTS","SOURCE_TREE_MEMBER"],"recommended_graph_action":"support_only","repo_path":"docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_residual_remediation_00_walkthrough.md"}
   ],
   "phase": "1545p-Fix38",
   "schema_version": "ilc.fix38.manual_edge_annotation_ledger.v0.1"

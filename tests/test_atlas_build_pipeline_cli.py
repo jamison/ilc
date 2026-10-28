@@ -3,13 +3,38 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from ilc_core.cli.main import _build_parser, _run_top_level_command
+from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import GenesisAtlasCandidateStore
 
 
-LMDB = Path("out/genesis_base_graph_v0.4_unified.lmdb")
+def _seed_lmdb(root: Path) -> None:
+    nodes = [
+        {
+            "candidate_id": "cdl:075_truth_primitive_graph_persistence",
+            "graph_delta": "support_only",
+            "graph_projection": "genesis_core_star_map",
+            "node_kind": "cdl_node",
+            "source_path": "docs/specs/ilc_constitutional_decision_log_v0.1.md",
+            "tier": "genesis_core",
+        }
+    ]
+    store = GenesisAtlasCandidateStore(root, allow_synthetic_edge_keys=True)
+    try:
+        store.put_nodes(nodes)
+        store.put_graph_payload({"nodes": nodes, "edges": []})
+    finally:
+        store.close()
+
+
+@pytest.fixture
+def lmdb_path(tmp_path: Path) -> Path:
+    root = tmp_path / "atlas.lmdb"
+    _seed_lmdb(root)
+    return root
 
 
 def _key_hex_pair() -> tuple[str, str]:
@@ -32,14 +57,14 @@ def _run(argv: list[str]) -> dict:
     return _run_top_level_command(str(args.command), args, Path(args.graph_state))
 
 
-def test_build_slice_produces_manifest_file(tmp_path: Path) -> None:
+def test_build_slice_produces_manifest_file(tmp_path: Path, lmdb_path: Path) -> None:
     output = tmp_path / "manifest.json"
     payload = _run(
         [
             "atlas",
             "build-slice",
             "--lmdb",
-            str(LMDB),
+            str(lmdb_path),
             "--slice-variant",
             "core",
             "--projection",
@@ -57,7 +82,7 @@ def test_build_slice_produces_manifest_file(tmp_path: Path) -> None:
     assert data["cose_sign1_b64"] == ""
 
 
-def test_build_slice_rejects_private_projection(tmp_path: Path) -> None:
+def test_build_slice_rejects_private_projection(tmp_path: Path, lmdb_path: Path) -> None:
     output = tmp_path / "manifest.json"
 
     try:
@@ -66,7 +91,7 @@ def test_build_slice_rejects_private_projection(tmp_path: Path) -> None:
                 "atlas",
                 "build-slice",
                 "--lmdb",
-                str(LMDB),
+                str(lmdb_path),
                 "--slice-variant",
                 "core",
                 "--projection",
@@ -81,7 +106,7 @@ def test_build_slice_rejects_private_projection(tmp_path: Path) -> None:
         raise AssertionError("private projection was accepted")
 
 
-def test_sign_manifest_adds_cose_sign1(tmp_path: Path) -> None:
+def test_sign_manifest_adds_cose_sign1(tmp_path: Path, lmdb_path: Path) -> None:
     private_hex, _public_hex = _key_hex_pair()
     manifest = tmp_path / "manifest.json"
     signed = tmp_path / "signed.json"
@@ -90,7 +115,7 @@ def test_sign_manifest_adds_cose_sign1(tmp_path: Path) -> None:
             "atlas",
             "build-slice",
             "--lmdb",
-            str(LMDB),
+            str(lmdb_path),
             "--slice-variant",
             "core",
             "--projection",
@@ -119,10 +144,10 @@ def test_sign_manifest_adds_cose_sign1(tmp_path: Path) -> None:
     assert data["dev_signed"] is True
 
 
-def test_verify_slice_passes_on_signed_manifest(tmp_path: Path) -> None:
+def test_verify_slice_passes_on_signed_manifest(tmp_path: Path, lmdb_path: Path) -> None:
     private_hex, public_hex = _key_hex_pair()
     signed = tmp_path / "signed.json"
-    _build_and_sign(tmp_path, private_hex, signed)
+    _build_and_sign(tmp_path, lmdb_path, private_hex, signed)
 
     payload = _run(
         [
@@ -139,14 +164,14 @@ def test_verify_slice_passes_on_signed_manifest(tmp_path: Path) -> None:
     assert payload["data"]["verdict"] == "pass"
 
 
-def test_verify_slice_fails_on_unsigned_manifest(tmp_path: Path) -> None:
+def test_verify_slice_fails_on_unsigned_manifest(tmp_path: Path, lmdb_path: Path) -> None:
     manifest = tmp_path / "manifest.json"
     _run(
         [
             "atlas",
             "build-slice",
             "--lmdb",
-            str(LMDB),
+            str(lmdb_path),
             "--slice-variant",
             "core",
             "--projection",
@@ -164,11 +189,11 @@ def test_verify_slice_fails_on_unsigned_manifest(tmp_path: Path) -> None:
         raise AssertionError("unsigned manifest was accepted")
 
 
-def test_verify_slice_fails_on_wrong_public_key(tmp_path: Path) -> None:
+def test_verify_slice_fails_on_wrong_public_key(tmp_path: Path, lmdb_path: Path) -> None:
     private_hex, _public_hex = _key_hex_pair()
     _wrong_private_hex, wrong_public_hex = _key_hex_pair()
     signed = tmp_path / "signed.json"
-    _build_and_sign(tmp_path, private_hex, signed)
+    _build_and_sign(tmp_path, lmdb_path, private_hex, signed)
 
     try:
         _run(
@@ -187,14 +212,19 @@ def test_verify_slice_fails_on_wrong_public_key(tmp_path: Path) -> None:
         raise AssertionError("wrong public key was accepted")
 
 
-def _build_and_sign(tmp_path: Path, private_hex: str, signed: Path) -> None:
+def _build_and_sign(
+    tmp_path: Path,
+    lmdb_path: Path,
+    private_hex: str,
+    signed: Path,
+) -> None:
     manifest = tmp_path / "manifest.json"
     _run(
         [
             "atlas",
             "build-slice",
             "--lmdb",
-            str(LMDB),
+            str(lmdb_path),
             "--slice-variant",
             "core",
             "--projection",

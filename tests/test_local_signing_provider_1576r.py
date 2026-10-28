@@ -16,6 +16,7 @@ from cryptography.hazmat.primitives.serialization import (
 from ilc_core.crypto.cose_sign1 import cose_sign1_verify
 from ilc_core.encoding.dag_cbor import validate_canonical_ilc_dag_cbor
 from ilc_core.value_action.ilc_transfer_intent import ILCTransferIntent
+from ilc_core.value_action import local_signing_provider as signing_provider_module
 from ilc_core.value_action.local_signing_provider import (
     LOCAL_SIGNING_PROVIDER_VERSION,
     LocalEd25519SigningProvider,
@@ -144,7 +145,7 @@ def test_amount_uses_canonical_decimal_string() -> None:
 
     payload = LocalEd25519SigningProvider().canonical_payload_dict(env)
     assert payload["amount_ilc"] == "1.23"
-    assert payload["signed_at_epoch"] is None
+    assert "signed_at_epoch" not in payload
 
 
 def test_invalid_public_key_type_propagates_type_error(key_uri: str) -> None:
@@ -187,6 +188,46 @@ def test_key_file_size_cap_has_stable_token(tmp_path: Path) -> None:
 def test_key_uri_directory_rejected_with_stable_token(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="invalid_file_key_uri_not_file"):
         LocalEd25519SigningProvider().sign_envelope(_intent(), tmp_path.as_uri())
+
+
+def test_key_uri_symlink_rejected_before_open(
+    tmp_path: Path,
+    private_key: ed25519.Ed25519PrivateKey,
+) -> None:
+    target = tmp_path / "target.pem"
+    target.write_bytes(
+        private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+    )
+    target.chmod(0o600)
+    link = tmp_path / "link.pem"
+    link.symlink_to(target)
+
+    with pytest.raises(ValueError, match="invalid_file_key_uri_symlink_rejected"):
+        LocalEd25519SigningProvider().sign_envelope(_intent(), link.as_uri())
+
+
+def test_key_file_path_swap_fails_closed(
+    tmp_path: Path,
+    private_key: ed25519.Ed25519PrivateKey,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    key_path = tmp_path / "agent.pem"
+    replacement = tmp_path / "replacement.pem"
+    pem = private_key.private_bytes(Encoding.PEM, PrivateFormat.PKCS8, NoEncryption())
+    key_path.write_bytes(pem)
+    key_path.chmod(0o600)
+    replacement.write_bytes(pem)
+    replacement.chmod(0o600)
+    original_open = signing_provider_module.os.open
+
+    def swap_then_open(path: Path, flags: int) -> int:
+        replacement.replace(key_path)
+        return original_open(path, flags)
+
+    monkeypatch.setattr(signing_provider_module.os, "open", swap_then_open)
+
+    with pytest.raises(ValueError, match="invalid_file_key_uri_path_changed"):
+        LocalEd25519SigningProvider().sign_envelope(_intent(), key_path.as_uri())
 
 
 def test_malformed_key_file_rejected_with_stable_token(tmp_path: Path) -> None:

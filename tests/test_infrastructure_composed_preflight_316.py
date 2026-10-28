@@ -62,14 +62,22 @@ def test_gate_cli_contract_dry_run_help_unknown_arg() -> None:
     assert unknown.returncode == 2
 
 
-def test_gate_full_run_emits_snapshot_metadata_and_kpis() -> None:
+def test_gate_full_run_emits_snapshot_metadata_and_kpis(tmp_path: Path) -> None:
     if SELFTEST_MODE:
         pytest.skip("selftest guard: avoid recursive Phase 316 gate execution")
-    result = _run_gate([])
+    snapshot_path = Path(
+        os.environ.get(
+            "ILC_PHASE_316_SNAPSHOT_PATH",
+            str(tmp_path / "infrastructure_risk_snapshot_phase_316.json"),
+        )
+    )
+    env = os.environ.copy()
+    env["ILC_PHASE_316_SNAPSHOT_PATH"] = str(snapshot_path)
+    result = _run_gate([], env=env)
     assert result.returncode == 0
-    assert SNAPSHOT_PATH.exists()
+    assert snapshot_path.exists()
 
-    snapshot = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
+    snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     assert snapshot["phase"] == "316"
     assert snapshot["preflight_scope"] is True
     assert snapshot["generated_at"].endswith("Z")

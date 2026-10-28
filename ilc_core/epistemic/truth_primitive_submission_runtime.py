@@ -206,6 +206,11 @@ class TruthPrimitiveResult:
     node_primitive_type: str | None  # None when creates_node is False
     uncertainty_declared: str | None = None
 
+    def edge_specs(self) -> tuple[EdgeSpec, ...]:
+        """Return immutable edge specifications without exposing graph storage."""
+
+        return vars(self)["edges"]
+
 
 # ---------------------------------------------------------------------------
 # Internal helpers

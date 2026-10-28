@@ -35,6 +35,13 @@ def _now_utc() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+def _snapshot_path() -> Path:
+    override = os.environ.get("ILC_PHASE_306_SNAPSHOT_PATH", "").strip()
+    if override:
+        return Path(override)
+    return SNAPSHOT_PATH
+
+
 def _run_cli(args: list[str], env: dict[str, str]) -> tuple[subprocess.CompletedProcess[str], float]:
     start = time.perf_counter()
     result = subprocess.run(CLI_CMD + args, capture_output=True, text=True, env=env, check=False)
@@ -495,11 +502,15 @@ def main() -> int:
         _run_cross_lane_envelope_regression(env)
 
         snapshot = _build_snapshot(query_metrics, verify_metrics, bundle_metrics)
-        SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        SNAPSHOT_PATH.write_text(json.dumps(snapshot, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        snapshot_path = _snapshot_path()
+        snapshot_path.parent.mkdir(parents=True, exist_ok=True)
+        snapshot_path.write_text(
+            json.dumps(snapshot, sort_keys=True, indent=2) + "\n",
+            encoding="utf-8",
+        )
 
         print(f"phase_306_preflight_verdict={snapshot['severity_summary']['verdict']}")
-        print(f"phase_306_snapshot={SNAPSHOT_PATH}")
+        print(f"phase_306_snapshot={snapshot_path}")
         return 0
 
 

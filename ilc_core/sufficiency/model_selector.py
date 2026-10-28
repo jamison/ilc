@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Bounded advisory candidate selection for local Sufficiency fixtures.
 
 Model output is never authorization or proof. The deterministic evaluator owns

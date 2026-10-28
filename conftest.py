@@ -7,8 +7,11 @@ Required because test files use subprocess.run(["python3", ...]) directly.
 """
 
 import os
+import hashlib
+import json
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -105,60 +108,89 @@ def pytest_collection_modifyitems(config, items):  # noqa: ARG001
             item.add_marker(skip_snapshot)
 
 
-def _reset_canary_dirty_files() -> None:
-    """If the mutation canary left sentinel files, hard-reset affected probe targets.
+def _atomic_restore_canary_bytes(path: Path, value: bytes, mode: int) -> None:
+    fd, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.canary-recovery-", dir=path.parent)
+    temporary_path = Path(temporary_name)
+    try:
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(value)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.chmod(temporary_path, mode)
+        os.replace(temporary_path, path)
+    finally:
+        try:
+            temporary_path.unlink()
+        except FileNotFoundError:
+            pass
 
-    The canary writes /tmp/ilc_mutation_canary_dirty_<probe>.lock before mutating a
-    file and removes it only after a successful revert.  If the process was killed
-    mid-mutation the sentinel survives and we must restore the file before tests run.
-    This prevents stale mutation tokens (e.g. v9.9, REMOVED_FOR_MUTATION) from
-    poisoning the test session.
+
+def _recover_canary_record(sentinel: Path, repo_root: Path, state_dir: Path) -> None:
+    record = json.loads(sentinel.read_text(encoding="utf-8"))
+    if record.get("schema_version") != "ilc.mutation_canary_recovery.v1":
+        raise ValueError("unsupported recovery schema")
+    if record.get("repo_root") != str(repo_root):
+        raise ValueError("recovery record belongs to a different checkout")
+
+    relative_target = Path(record["relative_target"])
+    if relative_target.is_absolute() or ".." in relative_target.parts:
+        raise ValueError("invalid recovery target")
+    target = (repo_root / relative_target).resolve()
+    target.relative_to(repo_root)
+
+    backup = Path(record["backup_path"]).resolve()
+    backup.relative_to(state_dir.resolve())
+    original = backup.read_bytes()
+    original_sha256 = record["original_sha256"]
+    if hashlib.sha256(original).hexdigest() != original_sha256:
+        raise ValueError("recovery backup hash mismatch")
+
+    current_sha256 = hashlib.sha256(target.read_bytes()).hexdigest()
+    mutated_sha256 = record["mutated_sha256"]
+    if current_sha256 == mutated_sha256:
+        _atomic_restore_canary_bytes(target, original, int(record["original_mode"]))
+        if hashlib.sha256(target.read_bytes()).hexdigest() != original_sha256:
+            raise ValueError("restored target hash mismatch")
+        os.utime(
+            target,
+            ns=(int(record["original_atime_ns"]), int(record["original_mtime_ns"])),
+        )
+    elif current_sha256 != original_sha256:
+        raise ValueError("recovery target changed after canary interruption; refusing overwrite")
+
+    cache_dir = target.parent / "__pycache__"
+    for pyc in cache_dir.glob(f"{target.stem}.*.pyc"):
+        try:
+            pyc.unlink()
+        except OSError:
+            pass
+    sentinel.unlink()
+    backup.unlink()
+
+
+def _reset_canary_dirty_files() -> None:
+    """Restore repository-qualified mutation targets from captured original bytes.
+
+    Recovery metadata is namespaced by repository root and contains an exact-byte
+    backup. A checkout never consumes another checkout's recovery record and no
+    VCS operation may overwrite pre-existing work.
     """
     if os.environ.get("ILC_MUTATION_CANARY_ACTIVE") == "1":
         return
 
-    sentinel_dir = Path("/tmp")
-    dirty_sentinels = list(sentinel_dir.glob("ilc_mutation_canary_dirty_*.lock"))
+    repo_root = Path(__file__).resolve().parent
+    repo_id = hashlib.sha256(str(repo_root).encode("utf-8")).hexdigest()[:20]
+    sentinel_dir = Path(tempfile.gettempdir()) / "ilc_mutation_canary" / repo_id
+    dirty_sentinels = list(sentinel_dir.glob("dirty_*.json"))
     if not dirty_sentinels:
         return
 
-    # Collect probe target paths from sentinel contents.
-    paths_to_reset: set[Path] = set()
     for sentinel in dirty_sentinels:
         try:
-            target = Path(sentinel.read_text(encoding="utf-8").strip())
-            if target.exists():
-                paths_to_reset.add(target)
-        except OSError:
-            pass
-
-    for target in paths_to_reset:
-        result = subprocess.run(
-            ["git", "checkout", "HEAD", "--", str(target)],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
-        # Clear all pyc variants for this module.
-        cache_dir = target.parent / "__pycache__"
-        for pyc in cache_dir.glob(f"{target.stem}.*.pyc"):
-            try:
-                pyc.unlink()
-            except OSError:
-                pass
-        if result.returncode == 0:
-            # Remove the sentinel only after the file is confirmed clean.
-            for sentinel in dirty_sentinels:
-                try:
-                    recorded = Path(sentinel.read_text(encoding="utf-8").strip())
-                    if recorded == target:
-                        sentinel.unlink()
-                except OSError:
-                    pass
-        else:
+            _recover_canary_record(sentinel, repo_root, sentinel_dir)
+        except (KeyError, OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
             print(
-                f"conftest: canary_recovery_warning: git checkout failed for {target}"
-                f" rc={result.returncode}",
+                f"conftest: canary_recovery_warning: {sentinel}: {exc}",
                 file=sys.stderr,
             )
 

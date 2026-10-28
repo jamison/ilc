@@ -28,6 +28,10 @@ from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGr
 
 
 NETWORK_ID = "ilc-public-rc-01-testnet-harness"
+COMMITTED_RELEASE_ASSERTION_PATH = Path(
+    "docs/specs/"
+    "ilc_core_0434_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
+)
 WHEEL_BYTES = b"fixture wheel for Fix1"
 BLS_SECRET_KEY_HEX, BLS_PUBLIC_KEY_HEX = keypair_from_ikm_hex("42" * 32)
 OTHER_BLS_SECRET_KEY_HEX, OTHER_BLS_PUBLIC_KEY_HEX = keypair_from_ikm_hex("43" * 32)
@@ -374,13 +378,10 @@ def test_core_only_cannot_claim_verified_current_policy(
     assert result["current_release_eligibility_status"] == "unresolved"
 
 
-def test_ceremony_envelope_full_binding_without_role_policy() -> None:
-    live_core = json.loads(
-        Path("out/gap_release_assertion_publish_ceremony_00/release_assertion_core.json").read_text()
-    )
-    live_envelope = json.loads(
-        Path("out/gap_release_assertion_publish_ceremony_00/native_submit_envelope.json").read_text()
-    )
+def test_committed_release_envelope_full_binding_without_role_policy() -> None:
+    committed = json.loads(COMMITTED_RELEASE_ASSERTION_PATH.read_text(encoding="utf-8"))
+    live_envelope = committed.pop("native_submit_envelope")
+    live_core = committed
     core_result = upgrade_check.validate_release_assertion(live_core)
     assert core_result["artifact_release_authority_verified"] is True
     assert core_result["graph_submission_provenance_verified"] is False

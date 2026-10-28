@@ -143,7 +143,9 @@ def test_python_plaintext_agentid_log_sites_use_redaction_helper() -> None:
 
     assert "[Vault] Issued starter credit %s to %s" in _read(ONBOARDING_PY)
     assert "agent_claim_minted agent=%s node=%s" in _read(AGENT_PY)
-    assert "[Benchmark] Initializing CapProof for %s" in _read(BENCHMARK_PY)
+    benchmark_text = _read(BENCHMARK_PY)
+    assert "[Benchmark] Initializing legacy hardware benchmark for %s " in benchmark_text
+    assert "(not CDL-115 CapProof v1)" in benchmark_text
 
 
 def test_rust_validator_log_redaction_surface_remains_locked() -> None:

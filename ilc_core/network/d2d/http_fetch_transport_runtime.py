@@ -132,6 +132,243 @@ class _PersistentFetchRateLimiterAdapter:
         return allowed
 
 
+class _TimedFetchServer(ThreadingHTTPServer):
+    """HTTP server that applies the configured per-request socket timeout."""
+
+    runtime: Any
+
+    def get_request(self) -> tuple[socket.socket, tuple[str, int]]:
+        request, client_address = super().get_request()
+        request.settimeout(self.runtime.config.request_timeout_seconds)
+        return request, client_address
+
+
+class _FetchHandler(BaseHTTPRequestHandler):
+    """Bounded request handler backed by its server's transport runtime."""
+
+    @property
+    def _runtime(self) -> Any:
+        return self.server.runtime  # type: ignore[attr-defined]
+
+    def _write_json(self, status: int, payload: Mapping[str, Any]) -> None:
+        body = json.dumps(
+            dict(payload),
+            sort_keys=True,
+            separators=(",", ":"),
+            allow_nan=False,
+        ).encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def _write_release_assertion_error(
+        self,
+        *,
+        channel: str | None,
+        path: str,
+        status: int,
+        token: str,
+    ) -> None:
+        runtime = self._runtime
+        runtime.state["last_status_code"] = status
+        runtime.state["requests_served"] += 1
+        runtime._record(
+            "release_assertion_get_rejected",
+            channel=channel,
+            path=path,
+            status=status,
+            token=token,
+        )
+        payload: dict[str, Any] = {"token": token}
+        if channel is not None:
+            payload["channel"] = channel
+        self._write_json(status, payload)
+
+    def _encode_release_assertion_body(
+        self,
+        assertion: Mapping[str, Any],
+    ) -> tuple[bytes | None, str | None]:
+        try:
+            encoder = json.JSONEncoder(
+                sort_keys=True,
+                separators=(",", ":"),
+                allow_nan=False,
+            )
+            chunks: list[bytes] = []
+            total = 0
+            for chunk in encoder.iterencode(dict(assertion)):
+                encoded = chunk.encode("utf-8")
+                total += len(encoded)
+                if total > MAX_UPGRADE_ASSERTION_BYTES:
+                    return None, _RELEASE_ASSERTION_TOO_LARGE_TOKEN
+                chunks.append(encoded)
+        except (TypeError, ValueError):
+            return None, _RELEASE_ASSERTION_SERIALIZE_FAILED_TOKEN
+        return b"".join(chunks), None
+
+    def do_GET(self) -> None:  # noqa: N802
+        runtime = self._runtime
+        parsed = urlparse(self.path)
+        path = parsed.path
+        if path != _RELEASE_ASSERTION_LATEST_PATH:
+            diagnostic_path = path[:_ERROR_PATH_MAX_CHARS]
+            runtime.state["last_status_code"] = 404
+            runtime.state["requests_served"] += 1
+            runtime._record("fetch_request_served", path=diagnostic_path, status=404)
+            self._write_json(
+                404,
+                {"path": diagnostic_path, "token": "fetch_unknown_path"},
+            )
+            return
+
+        query = parse_qs(parsed.query, keep_blank_values=True)
+        channel_values = query.get("channel", [_DEFAULT_RELEASE_ASSERTION_CHANNEL])
+        channel = channel_values[0].strip() if len(channel_values) == 1 else ""
+        if not channel or len(channel) > _RELEASE_ASSERTION_CHANNEL_MAX_CHARS:
+            self._write_release_assertion_error(
+                channel=None,
+                path=path,
+                status=400,
+                token=_RELEASE_ASSERTION_CHANNEL_INVALID_TOKEN,
+            )
+            return
+
+        store = runtime._store
+        getter = getattr(store, "get_latest_release_assertion", None)
+        if store is None or not callable(getter):
+            self._write_release_assertion_error(
+                channel=channel,
+                path=path,
+                status=503,
+                token=_RELEASE_ASSERTION_STORE_UNAVAILABLE_TOKEN,
+            )
+            return
+
+        try:
+            assertion = getter(channel)
+        except Exception:  # noqa: BLE001 - read endpoint fails closed.
+            self._write_release_assertion_error(
+                channel=channel,
+                path=path,
+                status=503,
+                token=_RELEASE_ASSERTION_STORE_UNAVAILABLE_TOKEN,
+            )
+            return
+        if assertion is None:
+            self._write_release_assertion_error(
+                channel=channel,
+                path=path,
+                status=404,
+                token=_RELEASE_ASSERTION_NOT_FOUND_TOKEN,
+            )
+            return
+
+        try:
+            validate_release_assertion(assertion)
+        except UpgradeCheckError:
+            self._write_release_assertion_error(
+                channel=channel,
+                path=path,
+                status=503,
+                token=_RELEASE_ASSERTION_INVALID_TOKEN,
+            )
+            return
+
+        body, encode_error = self._encode_release_assertion_body(assertion)
+        if encode_error is not None or body is None:
+            self._write_release_assertion_error(
+                channel=channel,
+                path=path,
+                status=503,
+                token=encode_error or _RELEASE_ASSERTION_SERIALIZE_FAILED_TOKEN,
+            )
+            return
+
+        runtime.state["last_status_code"] = 200
+        runtime.state["requests_served"] += 1
+        runtime._record(
+            "release_assertion_get_served",
+            channel=channel,
+            path=path,
+            status=200,
+            response_bytes=len(body),
+        )
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_POST(self) -> None:  # noqa: N802
+        runtime = self._runtime
+        content_length_raw = self.headers.get("Content-Length")
+        if content_length_raw is None:
+            runtime._record("fetch_request_rejected", token=_CONTENT_LENGTH_MISSING_TOKEN)
+            self.send_response(400)
+            self.end_headers()
+            return
+        try:
+            content_length = int(content_length_raw)
+            if content_length < 0:
+                raise ValueError("negative")
+        except (ValueError, TypeError):
+            runtime._record("fetch_request_rejected", token=_CONTENT_LENGTH_INVALID_TOKEN)
+            self.send_response(400)
+            self.end_headers()
+            return
+        if content_length > _MAX_INBOUND_BYTES:
+            runtime._record("fetch_request_rejected", token=_CONTENT_TOO_LARGE_TOKEN)
+            self.send_response(413)
+            self.end_headers()
+            return
+
+        deadline = time.monotonic() + runtime.config.request_timeout_seconds
+        try:
+            body = self.rfile.read(content_length)
+        except Exception:
+            self.send_response(400)
+            self.end_headers()
+            return
+        if time.monotonic() > deadline:
+            runtime._record("fetch_request_rejected", token="fetch_request_deadline_exceeded")
+            self.send_response(408)
+            self.end_headers()
+            return
+
+        client_ip = self.client_address[0]
+        effective_transport_rate_key = runtime._public_fetch_rate_limit_key or client_ip
+        path = self.path
+        if path == _fetch_rt.WANT_HAVE_PATH:
+            status, resp_body = _fetch_rt.handle_want_have_request(body, runtime._store)
+        elif path == _fetch_rt.WANT_BLOCK_PATH:
+            status, resp_body = _fetch_rt.handle_want_block_request(
+                body,
+                runtime._store,
+                runtime._rate_limiter,
+                rate_limit_key=effective_transport_rate_key,
+                serve_epoch=runtime.config.rate_limit_window_id,
+            )
+        else:
+            resp_body = json.dumps(
+                {"token": "fetch_unknown_path", "path": path}, sort_keys=True
+            ).encode()
+            status = 404
+
+        runtime.state["last_status_code"] = status
+        runtime.state["requests_served"] += 1
+        runtime._record("fetch_request_served", path=path, status=status)
+        self.send_response(status)
+        self.send_header("Content-Type", "application/json")
+        self.send_header("Content-Length", str(len(resp_body)))
+        self.end_headers()
+        self.wfile.write(resp_body)
+
+    def log_message(self, format: str, *args: object) -> None:  # noqa: A002
+        return
+
+
 # ---------------------------------------------------------------------------
 # Runtime
 # ---------------------------------------------------------------------------
@@ -241,232 +478,11 @@ class HttpFetchTransportRuntime:
         """Start the fetch HTTP server on a background thread."""
         self._configure_public_fetch_activation()
         self._store = self._open_store()
-        runtime = self
-
-        class _TimedServer(ThreadingHTTPServer):
-            def get_request(self) -> tuple[socket.socket, tuple[str, int]]:
-                request, client_address = super().get_request()
-                request.settimeout(runtime.config.request_timeout_seconds)
-                return request, client_address
-
-        class _Handler(BaseHTTPRequestHandler):
-            def _write_json(self, status: int, payload: Mapping[str, Any]) -> None:
-                body = json.dumps(
-                    dict(payload),
-                    sort_keys=True,
-                    separators=(",", ":"),
-                    allow_nan=False,
-                ).encode("utf-8")
-                self.send_response(status)
-                self.send_header("Content-Type", "application/json")
-                self.send_header("Content-Length", str(len(body)))
-                self.end_headers()
-                self.wfile.write(body)
-
-            def _write_release_assertion_error(
-                self,
-                *,
-                channel: str | None,
-                path: str,
-                status: int,
-                token: str,
-            ) -> None:
-                runtime.state["last_status_code"] = status
-                runtime.state["requests_served"] += 1
-                runtime._record(
-                    "release_assertion_get_rejected",
-                    channel=channel,
-                    path=path,
-                    status=status,
-                    token=token,
-                )
-                payload: dict[str, Any] = {"token": token}
-                if channel is not None:
-                    payload["channel"] = channel
-                self._write_json(status, payload)
-
-            def _encode_release_assertion_body(
-                self,
-                assertion: Mapping[str, Any],
-            ) -> tuple[bytes | None, str | None]:
-                try:
-                    encoder = json.JSONEncoder(
-                        sort_keys=True,
-                        separators=(",", ":"),
-                        allow_nan=False,
-                    )
-                    chunks: list[bytes] = []
-                    total = 0
-                    for chunk in encoder.iterencode(dict(assertion)):
-                        encoded = chunk.encode("utf-8")
-                        total += len(encoded)
-                        if total > MAX_UPGRADE_ASSERTION_BYTES:
-                            return None, _RELEASE_ASSERTION_TOO_LARGE_TOKEN
-                        chunks.append(encoded)
-                except (TypeError, ValueError):
-                    return None, _RELEASE_ASSERTION_SERIALIZE_FAILED_TOKEN
-                return b"".join(chunks), None
-
-            def do_GET(self) -> None:  # noqa: N802
-                parsed = urlparse(self.path)
-                path = parsed.path
-                if path != _RELEASE_ASSERTION_LATEST_PATH:
-                    diagnostic_path = path[:_ERROR_PATH_MAX_CHARS]
-                    runtime.state["last_status_code"] = 404
-                    runtime.state["requests_served"] += 1
-                    runtime._record("fetch_request_served", path=diagnostic_path, status=404)
-                    self._write_json(
-                        404,
-                        {"path": diagnostic_path, "token": "fetch_unknown_path"},
-                    )
-                    return
-
-                query = parse_qs(parsed.query, keep_blank_values=True)
-                channel_values = query.get("channel", [_DEFAULT_RELEASE_ASSERTION_CHANNEL])
-                channel = channel_values[0].strip() if len(channel_values) == 1 else ""
-                if not channel or len(channel) > _RELEASE_ASSERTION_CHANNEL_MAX_CHARS:
-                    self._write_release_assertion_error(
-                        channel=None,
-                        path=path,
-                        status=400,
-                        token=_RELEASE_ASSERTION_CHANNEL_INVALID_TOKEN,
-                    )
-                    return
-
-                store = runtime._store
-                getter = getattr(store, "get_latest_release_assertion", None)
-                if store is None or not callable(getter):
-                    self._write_release_assertion_error(
-                        channel=channel,
-                        path=path,
-                        status=503,
-                        token=_RELEASE_ASSERTION_STORE_UNAVAILABLE_TOKEN,
-                    )
-                    return
-
-                try:
-                    assertion = getter(channel)
-                except Exception:  # noqa: BLE001 - read endpoint fails closed.
-                    self._write_release_assertion_error(
-                        channel=channel,
-                        path=path,
-                        status=503,
-                        token=_RELEASE_ASSERTION_STORE_UNAVAILABLE_TOKEN,
-                    )
-                    return
-                if assertion is None:
-                    self._write_release_assertion_error(
-                        channel=channel,
-                        path=path,
-                        status=404,
-                        token=_RELEASE_ASSERTION_NOT_FOUND_TOKEN,
-                    )
-                    return
-
-                try:
-                    validate_release_assertion(assertion)
-                except UpgradeCheckError:
-                    self._write_release_assertion_error(
-                        channel=channel,
-                        path=path,
-                        status=503,
-                        token=_RELEASE_ASSERTION_INVALID_TOKEN,
-                    )
-                    return
-
-                body, encode_error = self._encode_release_assertion_body(assertion)
-                if encode_error is not None or body is None:
-                    self._write_release_assertion_error(
-                        channel=channel,
-                        path=path,
-                        status=503,
-                        token=encode_error or _RELEASE_ASSERTION_SERIALIZE_FAILED_TOKEN,
-                    )
-                    return
-
-                runtime.state["last_status_code"] = 200
-                runtime.state["requests_served"] += 1
-                runtime._record(
-                    "release_assertion_get_served",
-                    channel=channel,
-                    path=path,
-                    status=200,
-                    response_bytes=len(body),
-                )
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json")
-                self.send_header("Content-Length", str(len(body)))
-                self.end_headers()
-                self.wfile.write(body)
-
-            def do_POST(self) -> None:  # noqa: N802
-                content_length_raw = self.headers.get("Content-Length")
-                if content_length_raw is None:
-                    runtime._record("fetch_request_rejected", token=_CONTENT_LENGTH_MISSING_TOKEN)
-                    self.send_response(400)
-                    self.end_headers()
-                    return
-                try:
-                    content_length = int(content_length_raw)
-                    if content_length < 0:
-                        raise ValueError("negative")
-                except (ValueError, TypeError):
-                    runtime._record("fetch_request_rejected", token=_CONTENT_LENGTH_INVALID_TOKEN)
-                    self.send_response(400)
-                    self.end_headers()
-                    return
-                if content_length > _MAX_INBOUND_BYTES:
-                    runtime._record("fetch_request_rejected", token=_CONTENT_TOO_LARGE_TOKEN)
-                    self.send_response(413)
-                    self.end_headers()
-                    return
-
-                _deadline = time.monotonic() + runtime.config.request_timeout_seconds
-                try:
-                    body = self.rfile.read(content_length)
-                except Exception:
-                    self.send_response(400)
-                    self.end_headers()
-                    return
-                if time.monotonic() > _deadline:
-                    runtime._record("fetch_request_rejected", token="fetch_request_deadline_exceeded")
-                    self.send_response(408)
-                    self.end_headers()
-                    return
-
-                client_ip = self.client_address[0]
-                effective_transport_rate_key = runtime._public_fetch_rate_limit_key or client_ip
-                path = self.path
-                if path == _fetch_rt.WANT_HAVE_PATH:
-                    status, resp_body = _fetch_rt.handle_want_have_request(
-                        body, runtime._store
-                    )
-                elif path == _fetch_rt.WANT_BLOCK_PATH:
-                    status, resp_body = _fetch_rt.handle_want_block_request(
-                        body, runtime._store, runtime._rate_limiter,
-                        rate_limit_key=effective_transport_rate_key,
-                        serve_epoch=runtime.config.rate_limit_window_id,
-                    )
-                else:
-                    resp_body = json.dumps(
-                        {"token": "fetch_unknown_path", "path": path}, sort_keys=True
-                    ).encode()
-                    status = 404
-
-                runtime.state["last_status_code"] = status
-                runtime.state["requests_served"] += 1
-                runtime._record("fetch_request_served", path=path, status=status)
-
-                self.send_response(status)
-                self.send_header("Content-Type", "application/json")
-                self.send_header("Content-Length", str(len(resp_body)))
-                self.end_headers()
-                self.wfile.write(resp_body)
-
-            def log_message(self, format: str, *args: object) -> None:  # noqa: A002
-                return  # suppress default stderr logging
-
-        server = _TimedServer((self.config.bind_host, self.config.bind_port), _Handler)
+        server = _TimedFetchServer(
+            (self.config.bind_host, self.config.bind_port),
+            _FetchHandler,
+        )
+        server.runtime = self
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         self._server = server
@@ -496,8 +512,11 @@ class HttpFetchTransportRuntime:
         if self._store is not None:
             try:
                 self._store.close()
-            except Exception:
-                pass
+            except Exception as exc:  # noqa: BLE001 - stop remains best-effort.
+                self._record(
+                    "fetch_store_close_failed",
+                    error_type=type(exc).__name__,
+                )
             self._store = None
         self.state["running"] = False
 

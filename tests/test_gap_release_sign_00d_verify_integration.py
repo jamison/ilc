@@ -32,24 +32,28 @@ ENVELOPE_PATH = (
 )
 CURRENT_MANIFEST_PATH = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0434_GAP_RC_NATIVE_DISTRIBUTION_FRESH_INVITE_SMOKE_00_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0435_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
 )
 CURRENT_ENVELOPE_PATH = (
+    ROOT
+    / "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
+)
+CURRENT_CONSENSUS_ENVELOPE_PATH = (
     ROOT
     / "docs/specs/ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
 )
 INSTALL_SH = ROOT / "tools/install.sh"
 VERIFIER_PATH = ROOT / "ilc_core/release/update_signature_verifier.py"
 CURRENT_RC_WHEEL_URL = (
-    "https://files.pythonhosted.org/packages/96/ba/"
-    "a97f1f0d923d50ebe71b6c40e488645c06e798fefb15596760f8a7e50de1/"
-    "ilc_core-0.4.34-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/9b/01/"
+    "34f83c7c85e0821d2cd48f7d2c639564e3d0e13810751d405eceaa8f5c4b/"
+    "ilc_core-0.4.35-py3-none-any.whl"
 )
-CURRENT_RC_WHEEL_SHA256 = "5d6cc7f6877ce3b7efa41e869ef94daadc3881a26377db9973f075329ef599f2"
-CURRENT_RC_WHEEL_SIZE = "1630572"
+CURRENT_RC_WHEEL_SHA256 = "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf"
+CURRENT_RC_WHEEL_SIZE = "1645463"
 CURRENT_DEFAULT_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0434_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_VNEXT_SIGN_PUBLISH_00_v0.1.json"
+    "ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
 )
 
 
@@ -96,7 +100,7 @@ def _current_artifact_by_type(artifact_type: str) -> dict[str, Any]:
 
 def _install_sh_signature_verifier_source() -> str:
     text = INSTALL_SH.read_text(encoding="utf-8")
-    marker = '${CONSENSUS_BIN_SIZE}" "${INSTALLER_ROOT}" <<\'PY\''
+    marker = '${CONSENSUS_RELEASE_ENVELOPE_REF}" "${INSTALLER_ROOT}" <<\'PY\''
     marker_index = text.index(marker)
     start = text.index("\n", marker_index) + 1
     end = text.index("\nPY\n", start)
@@ -139,6 +143,8 @@ def _run_install_sh_signature_verifier(
         _current_artifact_by_type("cli_binary")["artifact_id"],
         _current_artifact_by_type("cli_binary")["canonical_hash"].removeprefix("sha256:"),
         str(_current_artifact_by_type("cli_binary")["size_bytes"]),
+        "ilc-core-0.4.34",
+        str(CURRENT_CONSENSUS_ENVELOPE_PATH),
         str(ROOT),
     ]
     return subprocess.run(
@@ -391,7 +397,7 @@ def test_install_sh_inline_manifest_uses_current_artifact_metadata() -> None:
 
 
 def test_install_sh_verify_signature_fails_closed_without_cryptography(tmp_path: Path) -> None:
-    payload = tmp_path / "ilc_core-0.4.34-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.35-py3-none-any.whl"
     payload.write_bytes(b"not-a-real-wheel")
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     invite = tmp_path / "invite.json"
@@ -472,7 +478,7 @@ def test_install_sh_inline_verifier_rejects_bad_preimage_algorithm(tmp_path: Pat
 def test_install_sh_verify_signature_fails_closed_for_stale_envelope_set(
     tmp_path: Path,
 ) -> None:
-    payload = tmp_path / "ilc_core-0.4.34-py3-none-any.whl"
+    payload = tmp_path / "ilc_core-0.4.35-py3-none-any.whl"
     payload.write_bytes(b"not-a-real-wheel")
     digest = hashlib.sha256(payload.read_bytes()).hexdigest()
     invite = tmp_path / "invite.json"

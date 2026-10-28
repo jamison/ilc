@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import subprocess
+from decimal import Decimal
 from pathlib import Path
 
 from ilc_core.epistemic.node_submission_runtime import (
@@ -39,7 +40,7 @@ def _valid_refutation_criterion() -> dict:
         'claim_form': 'singular',
         'has_falsifiable_test': True,
         'is_inadmissible_counterexample': False,
-        'agreement_score': 0.95,
+        'agreement_score': Decimal('0.95'),
     }
 
 

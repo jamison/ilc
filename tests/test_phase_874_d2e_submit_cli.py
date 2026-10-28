@@ -432,7 +432,7 @@ def test_handle_submit_rejects_non_finite_confidence_string() -> None:
     with pytest.raises(SubmitCommandError) as exc_info:
         handle_submit(ns)
 
-    assert exc_info.value.token == "field_out_of_range_confidence"
+    assert exc_info.value.token == "field_invalid_confidence"
 
 
 def test_handle_submit_rejects_parent_node_fanout_above_bound() -> None:

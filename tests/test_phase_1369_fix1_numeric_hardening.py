@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import json
 from concurrent.futures import ThreadPoolExecutor
 from decimal import Decimal, InvalidOperation
@@ -226,4 +227,7 @@ def test_phase_1369_fix1_decimal_to_string_dead_branch_removed() -> None:
     for path in DEAD_BRANCH_RUNTIME_PATHS:
         source = path.read_text(encoding="utf-8")
         assert "normalized == normalized.to_integral()" not in source
-        assert 'return format(value.normalize(), "f")' in source
+        module_name = ".".join(path.relative_to(ROOT).with_suffix("").parts)
+        formatter = getattr(importlib.import_module(module_name), "_decimal_to_string")
+        assert formatter(Decimal("10.00")) == "10"
+        assert formatter(Decimal("0.0100")) == "0.01"

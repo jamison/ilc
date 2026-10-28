@@ -210,8 +210,10 @@ def _check_for_upgrade(
     return upgrade_check.check_for_upgrade(
         bootstrap_peer_hints_paths=[hints_path],
         fetcher=fetcher,
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=tmp_path / "upgrade_state.json",
         **kwargs,
     )
@@ -275,8 +277,10 @@ def test_explicit_endpoint_still_requires_https(tmp_path: Path) -> None:
         upgrade_check.check_for_upgrade(
             endpoint="http://127.0.0.1:9999",
             fetcher=_fail_fallback,
-            installed_version_resolver=lambda: "0.4.32",
-            now_fn=_fixed_now,
+            evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+                installed_version_resolver=lambda: "0.4.32",
+                now_fn=_fixed_now,
+            ),
             state_path=tmp_path / "upgrade_state.json",
         )
 

@@ -9,7 +9,6 @@ OBL_REGISTER = ROOT / "docs/specs/ilc_open_obligation_register_v0.1.md"
 CDL_REGISTER = ROOT / "docs/specs/ilc_constitutional_decision_log_v0.1.md"
 PLANNING_INDEX = ROOT / "docs/PLANNING_INDEX.md"
 STATUS = ROOT / "docs/phases/STATUS.md"
-AGENTS = ROOT / "AGENTS.md"
 WALKTHROUGH = ROOT / "docs/phases/phase_1554p_block5_coherence_capsule_walkthrough.md"
 
 
@@ -95,7 +94,7 @@ def test_capsule_supersedes_v568_and_routes_to_phase_1555p() -> None:
 def test_frontier_docs_advance_to_phase_1555_without_public_activation() -> None:
     combined = "\n".join(
         read(path)
-        for path in (SEQUENCE_LOCK, PLANNING_INDEX, STATUS, AGENTS, WALKTHROUGH, COHERENCE, CAPSULE)
+        for path in (SEQUENCE_LOCK, PLANNING_INDEX, STATUS, WALKTHROUGH, COHERENCE, CAPSULE)
     )
 
     for token in (
@@ -108,7 +107,6 @@ def test_frontier_docs_advance_to_phase_1555_without_public_activation() -> None
 
     assert "Phase 1555p is next" in combined or "## Phase 1555p" in combined or "phase_1555p" in combined
     assert "GO Phase 1555p" in combined or "Phase 1555p" in combined
-    assert "phase_1555p_sensitive_window_closure_gate" in read(AGENTS) or "phase_1555p" in read(AGENTS)
-    assert "no_public_rc" in read(AGENTS)
+    assert "| 1555p | PENDING | SENSITIVE window closure gate" in read(COHERENCE)
     assert "No window closure" in read(WALKTHROUGH)
     assert "No public RC" in read(WALKTHROUGH)

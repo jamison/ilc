@@ -26,6 +26,15 @@ from ilc_core.epoch.ejected_stake_distribution_production_path import (
 )
 
 
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+AGENT_ALPHA = _agent_id(1)
+AGENT_BETA = _agent_id(2)
+AGENT_GAMMA = _agent_id(3)
+
+
 def _inputs(
     *,
     ejected_stake_ilc: Decimal = Decimal("9.000000001"),
@@ -36,9 +45,9 @@ def _inputs(
         "distribution_epoch": 7,
         "ejected_stake_ilc": ejected_stake_ilc,
         "remaining_member_stakes": {
-            "agent_alpha": Decimal("10"),
-            "agent_beta": Decimal("20"),
-            "agent_gamma": Decimal("30"),
+            AGENT_ALPHA: Decimal("10"),
+            AGENT_BETA: Decimal("20"),
+            AGENT_GAMMA: Decimal("30"),
         },
         "approve_votes": approve_votes,
         "participating_voters": participating_voters,
@@ -124,9 +133,9 @@ def test_phase_1541p_emits_canonical_events_with_decimal_amounts() -> None:
     events = emit_canonical_ejected_stake_distribution_events(result, root)
 
     assert [event.recipient_agent_id for event in events] == [
-        "agent_alpha",
-        "agent_beta",
-        "agent_gamma",
+        AGENT_ALPHA,
+        AGENT_BETA,
+        AGENT_GAMMA,
     ]
     assert {event.settlement_root_hex for event in events} == {root.root_hex}
     assert all(event.hcon02_quorum_validated is True for event in events)

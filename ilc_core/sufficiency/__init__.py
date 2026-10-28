@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Local operation-relative sufficiency helpers."""
 
 from .local_interp import (

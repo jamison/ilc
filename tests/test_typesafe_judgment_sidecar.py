@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import unittest
+from io import StringIO
 from unittest.mock import MagicMock, patch
 
 # Import under test
@@ -531,7 +532,6 @@ class TestManifest(unittest.TestCase):
 class TestMain(unittest.TestCase):
     def test_manifest_subcommand_no_network(self):
         """manifest subcommand must work without an API key or network."""
-        from io import StringIO
         buf = StringIO()
         with patch("sys.stdout", buf):
             exit_code = main(["manifest"])
@@ -582,7 +582,6 @@ class TestMain(unittest.TestCase):
 
     @patch("ilc_core.sidecars.typesafe_judgment.score_node")
     def test_score_output_is_valid_json(self, mock_score):
-        from io import StringIO
         mock_score.return_value = {
             "mode": "score",
             "advisory_only": True,

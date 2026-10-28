@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Bounded local interpreter for provisional Sufficiency recipe fixtures.
 
 The records accepted here are local application records, not canonical ILC

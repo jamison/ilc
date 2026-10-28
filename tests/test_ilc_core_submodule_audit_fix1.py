@@ -111,13 +111,16 @@ class _Consensus:
 class _Graph:
     def __init__(self) -> None:
         self.nodes: dict[str, object] = {}
-        self.edges: list[tuple[str, str, str]] = []
+        self._edge_rows: list[tuple[str, str, str]] = []
 
     def add_node(self, node: object) -> None:
         self.nodes[getattr(node, "id")] = node
 
     def add_edge_by_ids(self, source: str, target: str, edge_type: str) -> None:
-        self.edges.append((source, target, edge_type))
+        self._edge_rows.append((source, target, edge_type))
+
+    def edge_rows(self) -> tuple[tuple[str, str, str], ...]:
+        return tuple(self._edge_rows)
 
 
 def _intent(*, amount: Decimal = Decimal("1")) -> ECUFastPathIntent:
@@ -173,7 +176,7 @@ def test_agent_consensus_rejection_does_not_mutate_graph_or_wallet():
 
     assert agent.mine_thought("claim", "parent", Decimal("1")) is None
     assert graph.nodes == {}
-    assert graph.edges == []
+    assert graph.edge_rows() == ()
     assert agent.wallet_balance == Decimal("10")
 
 

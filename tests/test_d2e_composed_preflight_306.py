@@ -110,12 +110,13 @@ def test_gate_cli_contract_dry_run_help_unknown_arg() -> None:
     assert unknown.returncode == 2
 
 
-def test_gate_full_run_emits_snapshot_and_allowed_verdict() -> None:
-    result = _run_gate([])
+def test_gate_full_run_emits_snapshot_and_allowed_verdict(tmp_path: Path) -> None:
+    snapshot_path = tmp_path / "d2e_risk_snapshot_phase_306.json"
+    result = _run_gate([], env={"ILC_PHASE_306_SNAPSHOT_PATH": str(snapshot_path)})
     assert result.returncode == 0
-    assert SNAPSHOT_PATH.exists()
+    assert snapshot_path.exists()
 
-    snapshot = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
+    snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     assert snapshot["phase"] == "306"
     assert snapshot["preflight_scope"] is True
     assert snapshot["generated_at"].endswith("Z")

@@ -46,6 +46,8 @@ def test_ilc_bare_command_quick_start_list_is_non_empty() -> None:
     payload = json.loads(result.stdout)
     assert isinstance(payload["quick_start"], list)
     assert payload["quick_start"]
+    assert payload["quick_start"][0].startswith("ilc install")
+    assert not any("identity init" in item for item in payload["quick_start"])
 
 
 def test_ilc_doctor_all_checks_ready_when_all_state_files_present(tmp_path: Path) -> None:
@@ -86,6 +88,7 @@ def test_ilc_doctor_not_setup_when_identity_absent(tmp_path: Path) -> None:
     assert result.returncode == 1
     assert payload["data"]["verdict"] == "not_setup"
     assert payload["data"]["checks"]["identity_initialized"] is False
+    assert payload["data"]["next_action"] == "ilc install"
 
 
 def test_ilc_doctor_partial_setup_when_only_identity_present(tmp_path: Path) -> None:

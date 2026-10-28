@@ -181,7 +181,7 @@ def test_adversarial_duplicate_block_hash_vote_injection() -> None:
 
     assert result["finality_status"] == "finalized"
     assert result["canonical_block_hash"] == "block-dup"
-    assert result["aggregate_weights"]["block-dup"] == pytest.approx(0.70)
+    assert result["aggregate_weights"]["block-dup"] == Decimal("0.70")
 
     vector = canonical_epoch_state_vectors()[0]
     record_a = generate_quorum_record(vector["quorum_records"][0])

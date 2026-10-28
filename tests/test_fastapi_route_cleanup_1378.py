@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
 from pathlib import Path
+from typing import Any
 
 from fastapi.routing import APIRoute
 from fastapi.testclient import TestClient
@@ -55,10 +57,21 @@ def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def _iter_routes(routes: Iterable[Any]) -> Iterator[Any]:
+    for route in routes:
+        yield route
+        nested_routes = getattr(route, "routes", None)
+        if nested_routes is None:
+            original_router = getattr(route, "original_router", None)
+            nested_routes = getattr(original_router, "routes", None)
+        if nested_routes is not None:
+            yield from _iter_routes(nested_routes)
+
+
 def route_paths() -> set[str]:
     return {
         route.path
-        for route in create_app().routes
+        for route in _iter_routes(create_app().routes)
         if isinstance(route, APIRoute)
     }
 

@@ -1,0 +1,165 @@
+{
+  "schema_version": "ilc.reconciliation.v0435.publication_receipt.v0.1",
+  "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+  "version": "0.4.35",
+  "source_freeze_commit": "c91bae2d0c03aeaebe7c902b848634bf4abfd297",
+  "ceremony_native_identity_fix_commit": "4fd82354b86325da8e4a95180c32dbb8f6840b3c",
+  "release_assertion": {
+    "path": "docs/specs/ilc_core_0435_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+    "cid": "bafyreihu2nwi37azxr6escbebnsqhiae36h4z7awzpgo2bi32abrcwinwi",
+    "software_release_cid": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku"
+  },
+  "provider_fetchback": {
+    "artifacts": [
+      {
+        "artifact_type": "sdist",
+        "filename": "ilc_core-0.4.35.tar.gz",
+        "github_fetchback_verified": true,
+        "github_redirect_count": 1,
+        "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.35/ilc_core-0.4.35.tar.gz",
+        "pypi_fetchback_verified": true,
+        "pypi_redirect_count": 0,
+        "pypi_url": "https://files.pythonhosted.org/packages/d0/1d/85d2d97937ae80e321704cfd8b64015d4421174953d2c2f0745d322dc75f/ilc_core-0.4.35.tar.gz",
+        "pypi_yanked": false,
+        "sha256": "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d",
+        "size_bytes": 1343190
+      },
+      {
+        "artifact_type": "wheel",
+        "filename": "ilc_core-0.4.35-py3-none-any.whl",
+        "github_fetchback_verified": true,
+        "github_redirect_count": 1,
+        "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.35/ilc_core-0.4.35-py3-none-any.whl",
+        "pypi_fetchback_verified": true,
+        "pypi_redirect_count": 0,
+        "pypi_url": "https://files.pythonhosted.org/packages/9b/01/34f83c7c85e0821d2cd48f7d2c639564e3d0e13810751d405eceaa8f5c4b/ilc_core-0.4.35-py3-none-any.whl",
+        "pypi_yanked": false,
+        "sha256": "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf",
+        "size_bytes": 1645463
+      }
+    ],
+    "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+    "schema_version": "ilc.reconciliation.v0435.provider_fetchback.v0.1"
+  },
+  "current_policy": {
+    "claim_path": "docs/specs/ilc_core_0435_current_policy_claim_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+    "view_path": "docs/specs/ilc_core_0435_current_policy_view_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+    "bootstrap_binding_path": "docs/specs/ilc_core_0435_bootstrap_policy_binding_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+    "finalization": {
+      "bootstrap_binding_evidence_cid": "bafyreif4pl73yibkxc7u7g4qqob2ipkl3oz6acctjrq7klwld2ayx54d5y",
+      "claim_cid": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+      "mldsa_signature_verified": true,
+      "native_submit_signature_attached": true,
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "policy_sequence": 3,
+      "previous_policy_claim_cid": "bafyreih55qz222zprbsyveljr5ak27r5cd5guta27cyzs2oia4jsmobh6y",
+      "schema_version": "ilc.reconciliation.v0435.policy_finalization.v0.1"
+    },
+    "resolution": {
+      "evidence_receipt": {
+        "artifact_cids": [
+          "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu",
+          "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm"
+        ],
+        "authoritative_epoch_or_snapshot": "validation_epoch:0",
+        "channel": "public_rc",
+        "eligibility_evidence_refs": [
+          "bafyreiblyg3bvbb26c37cixhxurlkadsxcqgelk7u5rakamdui4fjwbk7y",
+          "bafyreih55qz222zprbsyveljr5ak27r5cd5guta27cyzs2oia4jsmobh6y",
+          "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+          "bafyreif4pl73yibkxc7u7g4qqob2ipkl3oz6acctjrq7klwld2ayx54d5y"
+        ],
+        "evaluated_at": "validation_epoch:0",
+        "freshness_rule": "authenticated_validation_epoch_max_lag",
+        "native_submit_provenance_verified_claims": 3,
+        "network_id": "ilc-public-rc-01-testnet-harness",
+        "observer_validation_epoch": 0,
+        "policy_id": "ilc-public-rc-current-policy-v1",
+        "policy_ref": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+        "policy_sequence": 3,
+        "policy_version": "release_current_policy_claim.v0.1",
+        "reason": "verified_current_policy",
+        "release_assertion_cid": "bafyreihu2nwi37azxr6escbebnsqhiae36h4z7awzpgo2bi32abrcwinwi",
+        "software_release_cid": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+        "withdrawal_resolver_available": true
+      },
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "policy_claim_cid": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+      "policy_sequence": 3,
+      "reason": "verified_current_policy",
+      "schema_version": "ilc.reconciliation.v0435.policy_view_verification.v0.1",
+      "status": "verified_current_policy"
+    }
+  },
+  "native_graph": {
+    "release_submit": {
+      "edges_written": 1,
+      "gossip_delivery": "deferred",
+      "graph_persistence": "persisted",
+      "native_submit_replay_written": 1,
+      "node_id": "bafyreibcmtdqzqjquncsqfysh66zvz42hkibzeut3csj2azzwmocctpm3m",
+      "nodes_written": 1,
+      "ok": true,
+      "primitive": "assert.truth",
+      "receiver_profile": "native_quic_full_rust",
+      "version": "truth_primitive_graph_store_880.v0.1"
+    },
+    "policy_submit": {
+      "edges_written": 2,
+      "gossip_delivery": "deferred",
+      "graph_persistence": "persisted",
+      "native_submit_replay_written": 1,
+      "node_id": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+      "nodes_written": 1,
+      "ok": true,
+      "primitive": "assert.truth",
+      "receiver_profile": "native_quic_full_rust",
+      "version": "truth_primitive_graph_store_880.v0.1"
+    },
+    "remote_readback": {
+      "create": false,
+      "host": "ilc-node-2",
+      "lmdb_path": "/var/lib/ilc/rc01/public_submit_ingress_bridge/truth_graph.lmdb",
+      "lock": false,
+      "readonly": true,
+      "rows": [
+        {
+          "node_id": "bafyreibcmtdqzqjquncsqfysh66zvz42hkibzeut3csj2azzwmocctpm3m",
+          "primitive": "assert.truth",
+          "primitive_type": "observation",
+          "sha256": "4f4fbc8abbfc3d24d98e0b7136306a8cb741a31ba56758fc6bf04795c74522e5",
+          "size_bytes": 6192
+        },
+        {
+          "node_id": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+          "primitive": "assert.truth",
+          "primitive_type": "knowledge_claim",
+          "sha256": "5ec15aaf84b6baa3dfe99f6ad8c1978272e02b0b43a41f7e7e32a62dbdc3b8c8",
+          "size_bytes": 8876
+        }
+      ],
+      "schema_version": "ilc.reconciliation.v0435.native_lmdb_readback.v0.1"
+    }
+  },
+  "local_policy_high_water": {
+    "prior_sequence": 2,
+    "accepted_sequence": 3,
+    "prior_state_sha256": "0a433a4d1d938e2d36a02239c362748c608c61ca62b7e4daaa6800dc2fe1b19b",
+    "updated_state_sha256": "25a2341354187e97cec67c7b36c595c8cae65b4dfe91daf9857d051640e12e7d",
+    "non_high_water_fields_preserved": true,
+    "private_mode_0600_rollback_preserved": true
+  },
+  "consensus_artifact": {
+    "version": "0.4.34",
+    "reused_unchanged": true,
+    "sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f"
+  },
+  "non_claims": [
+    "no_consensus_binary_rebuild",
+    "no_live_host_deployment",
+    "no_validator_or_wallet_lmdb_reset",
+    "no_epoch_transition",
+    "no_ecu_or_ilc_issuance",
+    "no_minting_or_settlement_activation"
+  ]
+}

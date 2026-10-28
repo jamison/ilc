@@ -124,13 +124,13 @@ class IterNodeAtlas:
         edges: list[dict[str, object]] | None = None,
     ) -> None:
         self.nodes = nodes
-        self.edges = edges or []
+        self._edge_rows = edges or []
 
     def iter_nodes(self) -> list[dict[str, object]]:
         return self.nodes
 
     def iter_edges(self) -> list[dict[str, object]]:
-        return self.edges
+        return self._edge_rows
 
 
 def _set_native_sig_guard(monkeypatch: pytest.MonkeyPatch, value: bool) -> None:

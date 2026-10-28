@@ -526,11 +526,14 @@ def _check_sybil_diversity_guard(
 
 def _require_non_empty_bridge_string(value: Any, token: str) -> str:
     if not isinstance(value, str) or not value:
-        raise AttributionBatchBridgeError(token, token)
+        message = token
+        raise AttributionBatchBridgeError(token, message)
     if value != value.strip():
-        raise AttributionBatchBridgeError(token, token)
+        message = token
+        raise AttributionBatchBridgeError(token, message)
     if len(value) > MAX_BRIDGE_IDENTIFIER_CHARS:
-        raise AttributionBatchBridgeError(token, token)
+        message = token
+        raise AttributionBatchBridgeError(token, message)
     return value
 
 
@@ -540,10 +543,8 @@ def _require_stance_bridge_string(value: Any) -> str:
         "iec_k_stance_must_be_non_empty_bridge_string",
     )
     if any(char.isspace() for char in normalized):
-        raise AttributionBatchBridgeError(
-            "iec_k_stance_must_be_single_token_bridge_string",
-            "iec_k_stance_must_be_single_token_bridge_string",
-        )
+        token = "iec_k_stance_must_be_single_token_bridge_string"
+        raise AttributionBatchBridgeError(token, token)
     return normalized
 
 
@@ -576,10 +577,8 @@ def _optional_iec_k_survival_flag(event: dict[str, Any]) -> bool | None:
     if value is None:
         return None
     if not isinstance(value, bool):
-        raise AttributionBatchBridgeError(
-            "iec_k_has_surviving_descendant_must_be_bool",
-            "iec_k_has_surviving_descendant_must_be_bool",
-        )
+        token = "iec_k_has_surviving_descendant_must_be_bool"
+        raise AttributionBatchBridgeError(token, token)
     return value
 
 
@@ -1242,6 +1241,7 @@ def apply_attribution_batch_with_rust(
         )
     if attribution_receipt_store is not None and not dry_run:
         from ilc_core.epoch.ecu_attribution_receipt_store import (
+            record_attribution_ingest_report,
             validate_attribution_receipt_batch_payload,
         )
 
@@ -1297,10 +1297,6 @@ def apply_attribution_batch_with_rust(
             "Rust attribution binary emitted invalid JSON",
         ) from exc
     if attribution_receipt_store is not None and not dry_run:
-        from ilc_core.epoch.ecu_attribution_receipt_store import (
-            record_attribution_ingest_report,
-        )
-
         try:
             record_attribution_ingest_report(
                 attribution_receipt_store,

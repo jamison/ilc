@@ -25,6 +25,14 @@ _MAX_PRIVATE_KEY_PEM_BYTES = 16 * 1024
 _MAX_PRIVATE_KEY_PEM_B64_BYTES = ((_MAX_PRIVATE_KEY_PEM_BYTES + 2) // 3) * 4 + 4
 _MAX_SIGNING_PROVIDER_KID_BYTES = 256
 
+_KEY_FILE_ERROR_MAP = {
+    "invalid_file_key_uri_not_file": "signing_provider_key_file_not_file",
+    "invalid_file_key_uri_path_changed": "signing_provider_key_file_path_changed",
+    "invalid_file_key_uri_permissions": "signing_provider_key_file_permissions",
+    "invalid_file_key_uri_symlink_rejected": "signing_provider_key_file_symlink_rejected",
+    "invalid_file_key_uri_too_large": "signing_provider_key_file_too_large",
+}
+
 
 class UnsupportedKeyProviderError(ValueError):
     """Raised when a key URI scheme is outside this provider's RC scope."""
@@ -96,10 +104,13 @@ def resolve_signing_key(kid: str, key_store_path: Path | None = None) -> bytes:
             candidate = root / f"{kid}{suffix}"
             try:
                 return _read_private_key_file(candidate)
-            except ValueError:
-                raise
             except FileNotFoundError:
                 continue
+            except ValueError as exc:
+                mapped = _KEY_FILE_ERROR_MAP.get(str(exc))
+                if mapped is None:
+                    raise
+                raise ValueError(mapped) from exc
             except OSError as exc:
                 raise ValueError("signing_provider_key_file_unreadable") from exc
     raise ValueError(f"signing_provider_kid_not_found:{kid}")
@@ -238,24 +249,38 @@ class LocalEd25519SigningProvider(ILCSigningProvider):
 
 
 def _read_private_key_file(path: Path) -> bytes:
-    flags = os.O_RDONLY
+    path_stat = os.lstat(path)
+    _validate_private_key_file_stat(path_stat, pre_open=True)
+
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
     if hasattr(os, "O_NOFOLLOW"):
         flags |= os.O_NOFOLLOW
     fd = os.open(path, flags)
     try:
         file_stat = os.fstat(fd)
-        if not stat.S_ISREG(file_stat.st_mode):
-            raise ValueError("invalid_file_key_uri_not_file")
-        if file_stat.st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
-            raise ValueError("invalid_file_key_uri_too_large")
-        if file_stat.st_mode & 0o077:
-            raise ValueError("invalid_file_key_uri_permissions")
+        if (path_stat.st_dev, path_stat.st_ino) != (file_stat.st_dev, file_stat.st_ino):
+            raise ValueError("invalid_file_key_uri_path_changed")
+        _validate_private_key_file_stat(file_stat, pre_open=False)
         with os.fdopen(fd, "rb") as handle:
             fd = -1
-            return handle.read(_MAX_PRIVATE_KEY_PEM_BYTES + 1)
+            key_bytes = handle.read(_MAX_PRIVATE_KEY_PEM_BYTES + 1)
+        if len(key_bytes) > _MAX_PRIVATE_KEY_PEM_BYTES:
+            raise ValueError("invalid_file_key_uri_too_large")
+        return key_bytes
     finally:
         if fd >= 0:
             os.close(fd)
+
+
+def _validate_private_key_file_stat(file_stat: os.stat_result, *, pre_open: bool) -> None:
+    if pre_open and stat.S_ISLNK(file_stat.st_mode):
+        raise ValueError("invalid_file_key_uri_symlink_rejected")
+    if not stat.S_ISREG(file_stat.st_mode):
+        raise ValueError("invalid_file_key_uri_not_file")
+    if file_stat.st_size > _MAX_PRIVATE_KEY_PEM_BYTES:
+        raise ValueError("invalid_file_key_uri_too_large")
+    if file_stat.st_mode & 0o077 or (file_stat.st_mode & stat.S_IRUSR) == 0:
+        raise ValueError("invalid_file_key_uri_permissions")
 
 
 class GuardedLocalEd25519SigningProvider(LocalEd25519SigningProvider):

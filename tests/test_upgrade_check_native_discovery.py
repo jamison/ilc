@@ -162,8 +162,10 @@ def test_local_graph_cache_hit_uses_cached_raw_assertion_without_network(
         fetcher=_network_forbidden,
         peer_fetcher=_network_forbidden,
         bootstrap_peer_hints_paths=[],
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=state_path,
     )
 
@@ -193,8 +195,10 @@ def test_result_only_state_is_cache_miss_and_peer_hint_can_succeed(
         peer_fetcher=_peer_fetch,
         bootstrap_peer_hints_paths=[hints_path],
         fetcher=lambda endpoint, timeout: (_ for _ in ()).throw(AssertionError("fallback unused")),
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=state_path,
     )
 
@@ -214,8 +218,10 @@ def test_peer_hint_fail_falls_back_to_https(monkeypatch, tmp_path: Path) -> None
         peer_fetcher=lambda endpoint, timeout, headers: {"bad": "payload"},
         bootstrap_peer_hints_paths=[hints_path],
         fetcher=lambda endpoint, timeout: payload,
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=tmp_path / "upgrade_state.json",
     )
 
@@ -243,8 +249,10 @@ def test_single_hop_d2d_registry_used_after_bootstrap_hints(monkeypatch, tmp_pat
         peer_fetcher=_peer_fetch,
         bootstrap_peer_hints_paths=[],
         fetcher=lambda endpoint, timeout: (_ for _ in ()).throw(AssertionError("fallback unused")),
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=tmp_path / "upgrade_state.json",
     )
 
@@ -276,8 +284,10 @@ def test_explicit_endpoint_override_bypasses_cache_and_peer_hints(monkeypatch, t
             AssertionError("peer discovery bypassed")
         ),
         bootstrap_peer_hints_paths=[tmp_path / "missing.json"],
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=state_path,
     )
 
@@ -296,8 +306,10 @@ def test_invalid_peer_assertion_is_not_returned(monkeypatch, tmp_path: Path) -> 
         peer_fetcher=lambda endpoint, timeout, headers: {"software_release_node": {"bad": True}},
         bootstrap_peer_hints_paths=[hints_path],
         fetcher=lambda endpoint, timeout: payload,
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=tmp_path / "upgrade_state.json",
     )
 
@@ -330,8 +342,10 @@ def test_stale_local_cache_is_ignored(monkeypatch, tmp_path: Path) -> None:
     result = upgrade_check.check_for_upgrade(
         bootstrap_peer_hints_paths=[],
         fetcher=lambda endpoint, timeout: fresh,
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=state_path,
     )
 

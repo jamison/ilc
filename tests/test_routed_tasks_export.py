@@ -4,6 +4,7 @@ import json
 import tempfile
 from pathlib import Path
 from ilc_core.analysis.routed_tasks_export import (
+    ROUTED_TASKS_CSV_HEADER,
     export_routed_tasks_to_csv,
     export_routed_tasks_to_json
 )
@@ -51,8 +52,10 @@ def test_export_routed_tasks_empty():
         csv_path = p / "empty.csv"
         export_routed_tasks_to_csv([], csv_path)
         assert csv_path.exists()
-        # Should be empty file or maybe empty?
-        assert csv_path.stat().st_size == 0
+        with csv_path.open("r", newline="", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            assert next(reader) == list(ROUTED_TASKS_CSV_HEADER)
+            assert list(reader) == []
         
         # JSON
         json_path = p / "empty.json"

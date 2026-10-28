@@ -131,8 +131,10 @@ def test_upgrade_check_outdated_writes_atomic_state(monkeypatch: pytest.MonkeyPa
     result = upgrade_check.check_for_upgrade(
         endpoint="https://example.test/latest.json",
         fetcher=lambda endpoint, timeout: payload,
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=tmp_path / "upgrade_state.json",
     )
 
@@ -354,8 +356,10 @@ def test_upgrade_check_current_version_not_available(monkeypatch: pytest.MonkeyP
     result = upgrade_check.check_for_upgrade(
         endpoint="https://example.test/latest.json",
         fetcher=lambda endpoint, timeout: payload,
-        installed_version_resolver=lambda: "0.4.32",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.32",
+            now_fn=_fixed_now,
+        ),
         state_path=tmp_path / "upgrade_state.json",
     )
 
@@ -380,8 +384,10 @@ def test_upgrade_check_bad_release_signature_is_hard_error(
         upgrade_check.check_for_upgrade(
             endpoint="https://example.test/latest.json",
             fetcher=lambda endpoint, timeout: payload,
-            installed_version_resolver=lambda: "0.4.32",
-            now_fn=_fixed_now,
+            evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+                installed_version_resolver=lambda: "0.4.32",
+                now_fn=_fixed_now,
+            ),
             state_path=tmp_path / "upgrade_state.json",
         )
 
@@ -396,8 +402,10 @@ def test_upgrade_check_endpoint_unreachable_is_tokenized(tmp_path: Path) -> None
         upgrade_check.check_for_upgrade(
             endpoint="https://example.test/latest.json",
             fetcher=_unreachable,
-            installed_version_resolver=lambda: "0.4.32",
-            now_fn=_fixed_now,
+            evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+                installed_version_resolver=lambda: "0.4.32",
+                now_fn=_fixed_now,
+            ),
             state_path=tmp_path / "upgrade_state.json",
         )
 
@@ -409,8 +417,10 @@ def test_upgrade_check_rejects_insecure_endpoint(tmp_path: Path) -> None:
         upgrade_check.check_for_upgrade(
             endpoint="http://example.test/latest.json",
             fetcher=lambda endpoint, timeout: {},
-            installed_version_resolver=lambda: "0.4.32",
-            now_fn=_fixed_now,
+            evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+                installed_version_resolver=lambda: "0.4.32",
+                now_fn=_fixed_now,
+            ),
             state_path=tmp_path / "upgrade_state.json",
         )
 
@@ -422,8 +432,10 @@ def test_upgrade_check_rejects_userinfo_in_explicit_endpoint(tmp_path: Path) -> 
         upgrade_check.check_for_upgrade(
             endpoint="https://user:pass@example.test/latest.json",
             fetcher=lambda endpoint, timeout: {},
-            installed_version_resolver=lambda: "0.4.32",
-            now_fn=_fixed_now,
+            evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+                installed_version_resolver=lambda: "0.4.32",
+                now_fn=_fixed_now,
+            ),
             state_path=tmp_path / "upgrade_state.json",
         )
 
@@ -445,8 +457,10 @@ def test_upgrade_check_pads_mixed_component_versions(
     result = upgrade_check.check_for_upgrade(
         endpoint="https://example.test/latest.json",
         fetcher=lambda endpoint, timeout: payload,
-        installed_version_resolver=lambda: "0.4",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4",
+            now_fn=_fixed_now,
+        ),
         state_path=tmp_path / "upgrade_state.json",
     )
 
@@ -466,8 +480,10 @@ def test_upgrade_check_treats_unrecognized_installed_version_as_unknown(
     result = upgrade_check.check_for_upgrade(
         endpoint="https://example.test/latest.json",
         fetcher=lambda endpoint, timeout: payload,
-        installed_version_resolver=lambda: "0.4.33.dev3",
-        now_fn=_fixed_now,
+        evaluation_runtime=upgrade_check.UpgradeEvaluationRuntime(
+            installed_version_resolver=lambda: "0.4.33.dev3",
+            now_fn=_fixed_now,
+        ),
         state_path=tmp_path / "upgrade_state.json",
     )
 

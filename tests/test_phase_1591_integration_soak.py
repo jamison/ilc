@@ -9,6 +9,7 @@ from ilc_core.consensus.production_bridge import (
 )
 from tools.phase1591_integration_soak import (
     EXPECTED_FINAL_CREDIT_MICRO_ECU,
+    FIXTURE_CERT_PATH,
     NETWORK_ID,
     SPECTRAL_HASH,
     DeterministicRustHarnessState,
@@ -17,6 +18,11 @@ from tools.phase1591_integration_soak import (
     build_read_adapter,
     run_phase1591_soak,
 )
+
+
+def test_soak_graph_binding_uses_committed_nonsecret_fixture() -> None:
+    assert FIXTURE_CERT_PATH.is_file()
+    assert "tools/testbed/phase779_assets/certs" in FIXTURE_CERT_PATH.as_posix()
 
 
 def test_e2e_python_to_rust_epoch_checkpoint_submission() -> None:

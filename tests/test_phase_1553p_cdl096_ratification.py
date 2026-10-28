@@ -9,7 +9,6 @@ CDL_REGISTER = ROOT / "docs/specs/ilc_constitutional_decision_log_v0.1.md"
 SEQUENCE_LOCK = ROOT / "docs/specs/ilc_phase_1546p_1555p_sequence_lock_v0.1.md"
 PLANNING_INDEX = ROOT / "docs/PLANNING_INDEX.md"
 STATUS = ROOT / "docs/phases/STATUS.md"
-AGENTS = ROOT / "AGENTS.md"
 WALKTHROUGH = ROOT / "docs/phases/phase_1553p_cdl096_ratification_walkthrough.md"
 
 
@@ -100,7 +99,7 @@ def test_ratification_evidence_preserves_werner_and_global_tier_constants() -> N
 def test_frontier_docs_advance_to_phase_1554_without_public_activation() -> None:
     combined = "\n".join(
         read(path)
-        for path in (SEQUENCE_LOCK, PLANNING_INDEX, STATUS, AGENTS, WALKTHROUGH, OPENING, PRELOCK)
+        for path in (SEQUENCE_LOCK, PLANNING_INDEX, STATUS, WALKTHROUGH, OPENING, PRELOCK)
     )
 
     assert "cdl_096_ratified_phase_1553p" in combined
@@ -110,5 +109,5 @@ def test_frontier_docs_advance_to_phase_1554_without_public_activation() -> None
     assert "block5_coherence_complete_phase_1554p" in combined
     assert "next_phase: phase_1555p_sensitive_window_closure_gate" in combined or "phase_1555p: complete" in combined or "phase_1555p" in combined
     assert "Phase 1555p is next" in combined or "## Phase 1555p" in combined or "phase_1555p" in combined
-    assert "no_cdl_096_runtime_activation" in read(AGENTS)
-    assert "no_cdl_096_open" not in read(AGENTS)
+    assert "no_cdl_096_runtime_activation_phase_1551p" in read(OPENING)
+    assert "cdl_096_runtime_activation_not_authorized_phase_1553p" in read(WALKTHROUGH)

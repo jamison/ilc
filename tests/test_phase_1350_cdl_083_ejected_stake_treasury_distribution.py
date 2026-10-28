@@ -48,6 +48,17 @@ CDL_083_SPEC = (
 SCOPING = ROOT / "docs/specs/ilc_issuance_stack_scoping_window_1343_1368_v0.1.md"
 
 
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+AGENT_A = _agent_id(1)
+AGENT_B = _agent_id(2)
+AGENT_C = _agent_id(3)
+AGENT_D = _agent_id(4)
+AGENT_E = _agent_id(5)
+
+
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
@@ -80,7 +91,7 @@ def test_ejected_stake_distribution_quote_routes_after_h_con_02_guard() -> None:
     quote = build_ejected_stake_treasury_distribution_quote(
         distribution_epoch=1350,
         ejected_stake_ilc="100",
-        remaining_member_stakes={"agent-a": "1", "agent-b": "3"},
+        remaining_member_stakes={AGENT_A: Decimal("1"), AGENT_B: Decimal("3")},
         approve_votes=2,
         participating_voters=2,
     )
@@ -96,8 +107,8 @@ def test_ejected_stake_distribution_quote_routes_after_h_con_02_guard() -> None:
     assert quote.vote_threshold_numerator == 2
     assert quote.vote_threshold_denominator == 3
     assert quote.payouts == (
-        ("agent-a", Decimal("25.000000000")),
-        ("agent-b", Decimal("75.000000000")),
+        (AGENT_A, Decimal("25.000000000")),
+        (AGENT_B, Decimal("75.000000000")),
     )
     assert quote.production_ejected_stake_distribution_activated is False
     assert quote.decision_token == EJECTED_STAKE_DISTRIBUTION_NOT_ACTIVATED_TOKEN
@@ -107,16 +118,20 @@ def test_ejected_stake_distribution_quote_quantizes_down_and_preserves_total() -
     quote = build_ejected_stake_treasury_distribution_quote(
         distribution_epoch=0,
         ejected_stake_ilc="1.0000000009",
-        remaining_member_stakes={"agent-a": "1", "agent-b": "1", "agent-c": "1"},
+        remaining_member_stakes={
+            AGENT_A: Decimal("1"),
+            AGENT_B: Decimal("1"),
+            AGENT_C: Decimal("1"),
+        },
         approve_votes=3,
         participating_voters=3,
     )
 
     assert quote.ejected_stake_ilc == Decimal("1.000000000")
     assert quote.payouts == (
-        ("agent-a", Decimal("0.333333333")),
-        ("agent-b", Decimal("0.333333333")),
-        ("agent-c", Decimal("0.333333334")),
+        (AGENT_A, Decimal("0.333333333")),
+        (AGENT_B, Decimal("0.333333333")),
+        (AGENT_C, Decimal("0.333333334")),
     )
     assert sum((amount for _, amount in quote.payouts), Decimal("0")) == Decimal(
         "1.000000000"
@@ -129,13 +144,16 @@ def test_h_con_02_guard_fails_closed_before_distribution() -> None:
         match="h_con_02_quorum_guard_minimum_voters_not_met_phase_1350",
     ):
         require_h_con_02_quorum_guard(
-            {"a": Decimal("1"), "b": Decimal("1")},
+            {AGENT_A: Decimal("1"), AGENT_B: Decimal("1")},
             approve_votes=1,
             participating_voters=1,
         )
     with pytest.raises(ValueError, match="h_con_02_quorum_guard_floor_not_met_phase_1350"):
         require_h_con_02_quorum_guard(
-            {letter: Decimal("1") for letter in "abcde"},
+            {
+                agent_id: Decimal("1")
+                for agent_id in (AGENT_A, AGENT_B, AGENT_C, AGENT_D, AGENT_E)
+            },
             approve_votes=2,
             participating_voters=2,
         )
@@ -144,7 +162,7 @@ def test_h_con_02_guard_fails_closed_before_distribution() -> None:
         match="h_con_02_quorum_guard_threshold_not_met_phase_1350",
     ):
         require_h_con_02_quorum_guard(
-            {"a": Decimal("1"), "b": Decimal("1"), "c": Decimal("1")},
+            {AGENT_A: Decimal("1"), AGENT_B: Decimal("1"), AGENT_C: Decimal("1")},
             approve_votes=1,
             participating_voters=3,
         )
@@ -167,24 +185,30 @@ def test_exact_numeric_and_vote_guards_reject_invalid_inputs() -> None:
         ValueError,
         match="ejected_stake_distribution_epoch_must_be_non_negative_integer",
     ):
-        build_ejected_stake_treasury_distribution_quote(True, "1", {"a": "1"}, 1, 1)
+        build_ejected_stake_treasury_distribution_quote(
+            True, "1", {AGENT_A: Decimal("1")}, 1, 1
+        )
     with pytest.raises(ValueError, match="ejected_stake_ilc_must_be_exact_decimal"):
-        build_ejected_stake_treasury_distribution_quote(0, 0.1, {"a": "1"}, 1, 1)
+        build_ejected_stake_treasury_distribution_quote(
+            0, 0.1, {AGENT_A: Decimal("1")}, 1, 1
+        )
     with pytest.raises(ValueError, match="invalid_amount_non_finite"):
         build_ejected_stake_treasury_distribution_quote(
             0,
             Decimal("NaN"),
-            {"a": "1", "b": "1"},
+            {AGENT_A: Decimal("1"), AGENT_B: Decimal("1")},
             2,
             2,
         )
     with pytest.raises(ValueError, match="ejected_stake_ilc_must_be_positive"):
-        build_ejected_stake_treasury_distribution_quote(0, "-1", {"a": "1"}, 1, 1)
-    with pytest.raises(ValueError, match="ejected_stake_member_stake_must_be_exact_decimal"):
+        build_ejected_stake_treasury_distribution_quote(
+            0, "-1", {AGENT_A: Decimal("1")}, 1, 1
+        )
+    with pytest.raises(ValueError, match="ejected_stake_member_stake_must_be_decimal"):
         build_ejected_stake_treasury_distribution_quote(
             0,
             "1",
-            {"a": 0.1, "b": "1"},
+            {AGENT_A: 0.1, AGENT_B: Decimal("1")},
             2,
             2,
         )
@@ -195,7 +219,7 @@ def test_exact_numeric_and_vote_guards_reject_invalid_inputs() -> None:
         build_ejected_stake_treasury_distribution_quote(
             0,
             "1",
-            {"a": "0", "b": "0"},
+            {AGENT_A: Decimal("0"), AGENT_B: Decimal("0")},
             2,
             2,
         )
@@ -204,15 +228,15 @@ def test_exact_numeric_and_vote_guards_reject_invalid_inputs() -> None:
 def test_phase_1350_wrapper_does_not_break_existing_phase_1107_evaluator() -> None:
     ok, payouts = evaluate_ejected_stake_vote(
         Decimal("100"),
-        {"agent-a": Decimal("1"), "agent-b": Decimal("3")},
+        {AGENT_A: Decimal("1"), AGENT_B: Decimal("3")},
         approve_votes=2,
         participating_voters=2,
     )
 
     assert ok is True
     assert payouts == [
-        ("agent-a", Decimal("25.000000000")),
-        ("agent-b", Decimal("75.000000000")),
+        (AGENT_A, Decimal("25.000000000")),
+        (AGENT_B, Decimal("75.000000000")),
     ]
 
 
@@ -220,7 +244,7 @@ def test_canonical_record_uses_strings_for_decimal_amounts() -> None:
     record = build_ejected_stake_treasury_distribution_quote(
         distribution_epoch=7,
         ejected_stake_ilc="100",
-        remaining_member_stakes={"agent-a": "1", "agent-b": "3"},
+        remaining_member_stakes={AGENT_A: Decimal("1"), AGENT_B: Decimal("3")},
         approve_votes=2,
         participating_voters=2,
     ).to_canonical_record()
@@ -232,8 +256,8 @@ def test_canonical_record_uses_strings_for_decimal_amounts() -> None:
     assert record["remaining_member_stake_total_ilc"] == "4"
     assert record["quorum_floor"] == "0.5"
     assert record["payouts"] == (
-        {"agent_id": "agent-a", "amount_ilc": "25"},
-        {"agent_id": "agent-b", "amount_ilc": "75"},
+        {"agent_id": AGENT_A, "amount_ilc": "25"},
+        {"agent_id": AGENT_B, "amount_ilc": "75"},
     )
     assert record["production_ejected_stake_distribution_activated"] is False
     assert record["decision_token"] == EJECTED_STAKE_DISTRIBUTION_NOT_ACTIVATED_TOKEN

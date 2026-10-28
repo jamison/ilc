@@ -198,7 +198,7 @@ class KeyCompromiseResponseRuntime:
         if entry.operational_signer_key != decision.compromised_signer_id:
             raise ValueError("compromised_signer_mismatch")
 
-        checkpoint = self._registry.create_checkpoint()
+        pre_revoke_checkpoint = self._registry.create_checkpoint()
         try:
             self._registry.revoke(
                 lineage_id=decision.lineage_id,
@@ -206,7 +206,14 @@ class KeyCompromiseResponseRuntime:
                 reason_code=decision.reason_code,
                 event_ts=decision.event_ts,
             )
+        except Exception:
+            self._registry.restore_checkpoint(pre_revoke_checkpoint)
+            raise
 
+        # phase_1573am_activation_prerequisite_transactional_revoke_recover:
+        # If recover() raises after revoke(), revoked authority must stay revoked.
+        post_revoke_checkpoint = self._registry.create_checkpoint()
+        try:
             # ROTATED is non-authoritative. Recover is required to restore canonical authority.
             self._registry.recover(
                 lineage_id=decision.lineage_id,
@@ -217,7 +224,7 @@ class KeyCompromiseResponseRuntime:
                 event_ts=decision.event_ts,
             )
         except Exception:
-            self._registry.restore_checkpoint(checkpoint)
+            self._registry.restore_checkpoint(post_revoke_checkpoint)
             raise
 
         post = self._registry.entries[decision.lineage_id]

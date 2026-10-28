@@ -25,6 +25,17 @@ SUMMARY_PATH = Path(os.environ.get('ILC_PHASE_471_SUMMARY_PATH', 'out/consensus_
 ITERATIONS = 200
 
 
+def _report_json_value(value: object) -> object:
+    """Convert exact evaluator values at the historical JSON report boundary."""
+    if isinstance(value, Decimal):
+        return float(value)
+    if isinstance(value, dict):
+        return {str(key): _report_json_value(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_report_json_value(item) for item in value]
+    return value
+
+
 def _scenario_payloads() -> list[dict[str, object]]:
     vector0 = canonical_epoch_state_vectors()[0]
     base_records = [dict(item) for item in vector0['quorum_records']]
@@ -185,7 +196,9 @@ def build_report() -> dict[str, object]:
 
 
 def write_outputs() -> None:
-    report = build_report()
+    report = _report_json_value(build_report())
+    if not isinstance(report, dict):
+        raise TypeError('phase_471_report_root_must_be_object')
     REPORT_PATH.parent.mkdir(parents=True, exist_ok=True)
     REPORT_PATH.write_text(json.dumps(report, indent=2, sort_keys=True) + '\n', encoding='utf-8')
 

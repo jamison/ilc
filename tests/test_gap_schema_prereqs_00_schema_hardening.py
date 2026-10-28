@@ -4,6 +4,7 @@ from dataclasses import fields
 
 import pytest
 
+from ilc_core.cli.d2e_submit_cli import _build_native_submit_sig_object
 from ilc_core.epistemic.jury_assignment_runtime import JuryAssignmentQuote
 from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
 from ilc_core.epistemic.truth_primitive_graph_store import (
@@ -14,13 +15,25 @@ from ilc_core.epistemic.truth_primitive_submission_runtime import (
     validate_truth_primitive_submission,
 )
 from ilc_core.storage.truth_primitive_graph_lmdb_adapter import TruthPrimitiveGraphStore
+from ilc_core.identity.bls_backend import keypair_from_ikm_hex
+
+
+TEST_BLS_SECRET_HEX, TEST_AGENT_ID = keypair_from_ikm_hex("93" * 32)
+
+
+def _native_sign(submission: dict[str, object]) -> dict[str, object]:
+    submission["sig"] = _build_native_submit_sig_object(
+        submission,
+        TEST_BLS_SECRET_HEX,
+    )
+    return submission
 
 
 def _assert_truth_submission(**overrides: object) -> dict[str, object]:
     submission: dict[str, object] = {
         "v": 1,
         "primitive": "assert.truth",
-        "agent_id": "a" * 96,
+        "agent_id": TEST_AGENT_ID,
         "epoch": 1,
         "payload": {
             "content": {"text": "bounded uncertainty claim"},
@@ -31,14 +44,14 @@ def _assert_truth_submission(**overrides: object) -> dict[str, object]:
         "sig": "UNSIGNED",
     }
     submission.update(overrides)
-    return submission
+    return _native_sign(submission)
 
 
 def _validate_claim_submission(**overrides: object) -> dict[str, object]:
     submission: dict[str, object] = {
         "v": 1,
         "primitive": "validate.claim",
-        "agent_id": "b" * 96,
+        "agent_id": TEST_AGENT_ID,
         "epoch": 2,
         "payload": {
             "target_node_id": "bafy-target",
@@ -48,7 +61,7 @@ def _validate_claim_submission(**overrides: object) -> dict[str, object]:
         "sig": "UNSIGNED",
     }
     submission.update(overrides)
-    return submission
+    return _native_sign(submission)
 
 
 def test_uncertainty_declared_passes_through_validation_result() -> None:

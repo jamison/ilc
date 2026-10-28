@@ -3,6 +3,9 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
+import importlib.util
+from decimal import Decimal
 from pathlib import Path
 
 CONTRACT_PATH = Path('docs/specs/ilc_consensus_diversity_measurement_contract_471_v0.1.md')
@@ -87,6 +90,21 @@ def test_measurement_tool_exists_and_is_runnable(tmp_path: Path) -> None:
     assert (tmp_path / 'phase_471_summary.md').exists()
     assert REPORT_PATH.read_bytes() == original_report
     assert SUMMARY_PATH.read_bytes() == original_summary
+
+
+def test_measurement_json_boundary_converts_decimal_recursively() -> None:
+    spec = importlib.util.spec_from_file_location('phase_471_measurement', TOOL_PATH)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+
+    converted = module._report_json_value(
+        {'weights': {'alpha': Decimal('0.67')}, 'items': [Decimal('1.0')]}
+    )
+
+    assert converted == {'weights': {'alpha': 0.67}, 'items': [1.0]}
+    json.dumps(converted, allow_nan=False)
 
 
 def test_report_json_exists_with_all_required_scenarios() -> None:

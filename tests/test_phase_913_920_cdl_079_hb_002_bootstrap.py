@@ -154,6 +154,49 @@ def test_fetch_bootstrap_bundle_want_block_none_returns_none():
     assert result is None
 
 
+def test_fetch_bootstrap_bundle_rejects_want_have_identifier_mismatch():
+    with patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_have") as mock_wh, \
+         patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_block") as mock_wb:
+        mock_wh.return_value = {"have": True, "node_id": "bafyreiwrong"}
+        with pytest.raises(BootstrapBundleError) as exc_info:
+            fetch_bootstrap_bundle("https://seed.ilc.example", "bafyreiabc001")
+    assert exc_info.value.token == "bootstrap_bundle_want_have_cid_mismatch"
+    mock_wb.assert_not_called()
+
+
+def test_fetch_bootstrap_bundle_rejects_embedded_identifier_mismatch():
+    wrong_bundle = {**VALID_BUNDLE, "bundle_cid": "bafyreiwrong"}
+    with patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_have") as mock_wh, \
+         patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_block") as mock_wb:
+        mock_wh.return_value = {"have": True, "node_id": "bafyreiabc001"}
+        mock_wb.return_value = json.dumps(wrong_bundle, sort_keys=True).encode()
+        with pytest.raises(BootstrapBundleError) as exc_info:
+            fetch_bootstrap_bundle("https://seed.ilc.example", "bafyreiabc001")
+    assert exc_info.value.token == "bootstrap_bundle_cid_mismatch"
+
+
+def test_fetch_bootstrap_bundle_rejects_invalid_schema():
+    invalid_bundle = {**VALID_BUNDLE, "peers": "not-a-list"}
+    with patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_have") as mock_wh, \
+         patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_block") as mock_wb:
+        mock_wh.return_value = {"have": True, "node_id": "bafyreiabc001"}
+        mock_wb.return_value = json.dumps(invalid_bundle, sort_keys=True).encode()
+        with pytest.raises(BootstrapBundleError) as exc_info:
+            fetch_bootstrap_bundle("https://seed.ilc.example", "bafyreiabc001")
+    assert exc_info.value.token == "bootstrap_bundle_schema_invalid"
+
+
+def test_fetch_bootstrap_bundle_rejects_duplicate_keys():
+    duplicate = json.dumps(VALID_BUNDLE, sort_keys=True)[:-1] + ',"bundle_cid":"other"}'
+    with patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_have") as mock_wh, \
+         patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_block") as mock_wb:
+        mock_wh.return_value = {"have": True, "node_id": "bafyreiabc001"}
+        mock_wb.return_value = duplicate.encode()
+        with pytest.raises(BootstrapBundleError) as exc_info:
+            fetch_bootstrap_bundle("https://seed.ilc.example", "bafyreiabc001")
+    assert exc_info.value.token == "bootstrap_bundle_duplicate_key"
+
+
 def test_fetch_bootstrap_bundle_invalid_json_raises():
     """WANT-BLOCK returns non-JSON → raises BootstrapBundleError."""
     with patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_have") as mock_wh, \
@@ -163,6 +206,16 @@ def test_fetch_bootstrap_bundle_invalid_json_raises():
         with pytest.raises(BootstrapBundleError) as exc_info:
             fetch_bootstrap_bundle("https://seed.ilc.example", "bafyreiabc001")
     assert "bootstrap_bundle_invalid_json" in exc_info.value.token
+
+
+def test_fetch_bootstrap_bundle_invalid_utf8_raises():
+    with patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_have") as mock_wh, \
+         patch("ilc_core.network.d2d.bootstrap_fetch_runtime.want_block") as mock_wb:
+        mock_wh.return_value = {"have": True, "node_id": "bafyreiabc001"}
+        mock_wb.return_value = b"\xff"
+        with pytest.raises(BootstrapBundleError) as exc_info:
+            fetch_bootstrap_bundle("https://seed.ilc.example", "bafyreiabc001")
+    assert exc_info.value.token == "bootstrap_bundle_invalid_json"
 
 
 def test_fetch_bootstrap_bundle_rejects_non_finite_json_constant():

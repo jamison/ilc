@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: AGPL-3.0-only
 """Diagnostic IEC + K metrics for CDL-120 implementation evidence.
 
 This module is deliberately not wired into settlement, ECU minting, jury

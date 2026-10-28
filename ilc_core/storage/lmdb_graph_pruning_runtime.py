@@ -26,6 +26,10 @@ MAX_LMDB_PRUNING_RECORD_BYTES = 64 * 1024
 CDL_071_TIER_2 = "tier_2"
 
 
+class _LmdbPruningRecordTooLarge(ValueError):
+    """Internal control-flow type for fail-closed record-size violations."""
+
+
 class LmdbGraphPruningResult(TypedDict):
     version: str
     adaptive_pruning_version: str
@@ -80,7 +84,9 @@ def _require_finite_decimal(value: Any, *, token: str) -> Decimal:
 
 def _decode_record(value: bytes) -> dict[str, Any]:
     if len(value) > MAX_LMDB_PRUNING_RECORD_BYTES:
-        raise ValueError("lmdb_pruning_record_too_large_phase_1361")
+        raise _LmdbPruningRecordTooLarge(
+            "lmdb_pruning_record_too_large_phase_1361"
+        )
     try:
         payload = json.loads(value.decode("utf-8"))
     except (json.JSONDecodeError, UnicodeDecodeError) as exc:
@@ -164,6 +170,8 @@ def prune_lmdb_graph_tier_2_records(
             scanned += 1
             try:
                 payload = _decode_record(value)
+            except _LmdbPruningRecordTooLarge:
+                raise
             except ValueError:
                 skipped_invalid_records += 1
                 retained += 1

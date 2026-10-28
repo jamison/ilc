@@ -35,9 +35,11 @@ from urllib.request import Request
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
 from ilc_core.encoding.cidv1 import parse_nodeid_strict
+from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
 from ilc_core.epistemic.truth_primitive_submission_runtime import (
     CDL_074_DEPENDENCY as RUNTIME_CDL_074_DEPENDENCY,
     AGENT_ISSUABLE_PRIMITIVES,
+    TruthPrimitiveResult,
     validate_truth_primitive_submission,
 )
 from ilc_core.epistemic.node_submission_runtime import EpistemicSubmissionError
@@ -802,16 +804,29 @@ def _normalize_submit_quic_response(
     }
 
 
-def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
-    """Execute the submit command.
+def _attach_submit_signature(
+    response: dict[str, Any],
+    envelope: dict[str, Any],
+) -> dict[str, Any]:
+    sig_value = envelope.get("sig")
+    if sig_value is None or sig_value == "" or sig_value == "UNSIGNED":
+        return response
+    if isinstance(sig_value, dict):
+        response["native_submit_sig"] = dict(sig_value)
+    else:
+        response["signature"] = {
+            "sig": str(envelope.get("sig", "")),
+            "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
+            "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
+            "sig_scheme": str(envelope.get("sig_scheme", "")),
+        }
+    return response
 
-    Builds a CDL-073 submission envelope from CLI arguments, validates it via
-    validate_truth_primitive_submission, and returns the graph-output contract.
-    """
+
+def _validate_submit_args(args: argparse.Namespace) -> tuple[str, str, int]:
     primitive = getattr(args, "primitive", None)
     if not primitive:
         raise SubmitCommandError("submit_primitive_missing", "--primitive is required")
-
     agent_id = getattr(args, "agent_id", None)
     if not agent_id:
         raise SubmitCommandError("submit_agent_id_missing", "--agent-id is required")
@@ -822,19 +837,23 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
             "submit_agent_id_invalid",
             "--agent-id must be a 96-character lowercase hex AgentID",
         ) from exc
-
     epoch = getattr(args, "epoch", None)
     if epoch is None or isinstance(epoch, bool) or not isinstance(epoch, int) or epoch < 0:
         raise SubmitCommandError(
             "submit_epoch_invalid",
             "--epoch must be a non-negative integer",
         )
+    return primitive, agent_id, epoch
 
+
+def _prepare_validated_submission(
+    args: argparse.Namespace,
+) -> tuple[dict[str, Any], TruthPrimitiveResult]:
+    primitive, agent_id, epoch = _validate_submit_args(args)
     payload = _apply_source_refs(
         _load_payload(args),
         list(getattr(args, "source_refs", None) or []),
     )
-
     envelope: dict[str, Any] = {
         "v": 1,
         "primitive": primitive,
@@ -843,10 +862,8 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         "payload": payload,
         "sig": args.sig if hasattr(args, "sig") and args.sig else "UNSIGNED",
     }
-
     loaded_bls_key = _load_bls_signing_key_with_source()
     bls_secret_hex = loaded_bls_key[0] if loaded_bls_key is not None else None
-    bls_key_source = loaded_bls_key[1] if loaded_bls_key is not None else None
     if getattr(args, "signing_key", None) and bls_secret_hex:
         raise SubmitCommandError(
             "submit_signature_ambiguous",
@@ -857,91 +874,86 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         (sig_value is None or sig_value == "" or sig_value == "UNSIGNED")
         and bls_secret_hex is not None
     )
-
-    from ilc_core.epistemic import truth_primitive_submission_runtime as truth_runtime
-
-    if (
-        should_native_sign
-        and not truth_runtime.NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED
-    ):
-        native_sig = _build_native_submit_sig_object(envelope, bls_secret_hex)
-        if native_sig["key_ref"] != agent_id:
-            raise SubmitCommandError(
-                "submit_bls_key_agent_id_mismatch",
-                "native BLS signing key public key must equal --agent-id",
-            )
-        envelope["sig"] = native_sig
-
+    guard_active = truth_runtime.NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED
+    if should_native_sign and not guard_active:
+        envelope["sig"] = _require_matching_native_signature(
+            envelope,
+            agent_id=agent_id,
+            bls_secret_hex=bls_secret_hex,
+        )
     try:
         result = validate_truth_primitive_submission(envelope)
     except EpistemicSubmissionError as exc:
         raise SubmitCommandError(exc.token, str(exc)) from exc
+    if should_native_sign and guard_active:
+        envelope["sig"] = _require_matching_native_signature(
+            envelope,
+            agent_id=agent_id,
+            bls_secret_hex=bls_secret_hex,
+        )
+    return _sign_submission_envelope(
+        envelope,
+        getattr(args, "signing_key", None),
+    ), result
 
-    if (
-        should_native_sign
-        and truth_runtime.NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED
-    ):
-        native_sig = _build_native_submit_sig_object(envelope, bls_secret_hex)
-        if native_sig["key_ref"] != agent_id:
-            raise SubmitCommandError(
-                "submit_bls_key_agent_id_mismatch",
-                "native BLS signing key public key must equal --agent-id",
-            )
-        envelope["sig"] = native_sig
 
-    envelope = _sign_submission_envelope(envelope, getattr(args, "signing_key", None))
+def _require_matching_native_signature(
+    envelope: dict[str, Any],
+    *,
+    agent_id: str,
+    bls_secret_hex: str,
+) -> dict[str, Any]:
+    native_sig = _build_native_submit_sig_object(envelope, bls_secret_hex)
+    if native_sig["key_ref"] != agent_id:
+        raise SubmitCommandError(
+            "submit_bls_key_agent_id_mismatch",
+            "native BLS signing key public key must equal --agent-id",
+        )
+    return native_sig
 
-    edges_out = [
-        {"edge_type": e.edge_type, "source": e.source, "target": e.target}
-        for e in result.edges
-    ]
 
+def _remote_submit_response(
+    args: argparse.Namespace,
+    envelope: dict[str, Any],
+    result: TruthPrimitiveResult,
+    edges_out: list[dict[str, str]],
+) -> dict[str, Any] | None:
     quic_endpoint = _quic_endpoint_from_args(args)
     _check_submit_transport_unambiguous(args, quic_endpoint=quic_endpoint)
     if quic_endpoint:
-        quic_payload = _submit_quic_dispatch(
-            envelope,
-            quic_endpoint=quic_endpoint,
-            tls_fingerprint=_tls_fingerprint_from_args(args),
-        )
         quic_data = _normalize_submit_quic_response(
-            quic_payload,
+            _submit_quic_dispatch(
+                envelope,
+                quic_endpoint=quic_endpoint,
+                tls_fingerprint=_tls_fingerprint_from_args(args),
+            ),
             result_creates_node=result.creates_node,
             fallback_edges=edges_out,
         )
-        response = {
-            "subcommand": "submit",
-            "primitive": result.primitive,
-            "creates_node": result.creates_node,
-            "node_primitive_type": result.node_primitive_type,
-            "node_id": quic_data["node_id"],
-            "edges": quic_data["edges"],
-            "graph_persistence": quic_data["graph_persistence"],
-            "gossip_delivery": quic_data["gossip_delivery"],
-            "native_quic_endpoint": quic_endpoint,
-            "version": D2E_SUBMIT_CLI_VERSION,
-        }
-        sig_value = envelope.get("sig")
-        if sig_value is not None and sig_value != "" and sig_value != "UNSIGNED":
-            if isinstance(sig_value, dict):
-                response["native_submit_sig"] = dict(sig_value)
-            else:
-                response["signature"] = {
-                    "sig": str(envelope.get("sig", "")),
-                    "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
-                    "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
-                    "sig_scheme": str(envelope.get("sig_scheme", "")),
-                }
-        return response
-
-    submit_endpoint = _submit_endpoint_from_args(args)
-    if submit_endpoint:
-        endpoint_payload = _post_submit_envelope(submit_endpoint, envelope)
-        endpoint_data = _normalize_submit_endpoint_response(
-            endpoint_payload,
-            fallback_edges=edges_out,
+        return _attach_submit_signature(
+            {
+                "subcommand": "submit",
+                "primitive": result.primitive,
+                "creates_node": result.creates_node,
+                "node_primitive_type": result.node_primitive_type,
+                "node_id": quic_data["node_id"],
+                "edges": quic_data["edges"],
+                "graph_persistence": quic_data["graph_persistence"],
+                "gossip_delivery": quic_data["gossip_delivery"],
+                "native_quic_endpoint": quic_endpoint,
+                "version": D2E_SUBMIT_CLI_VERSION,
+            },
+            envelope,
         )
-        response = {
+    submit_endpoint = _submit_endpoint_from_args(args)
+    if not submit_endpoint:
+        return None
+    endpoint_data = _normalize_submit_endpoint_response(
+        _post_submit_envelope(submit_endpoint, envelope),
+        fallback_edges=edges_out,
+    )
+    return _attach_submit_signature(
+        {
             "subcommand": "submit",
             "primitive": result.primitive,
             "creates_node": result.creates_node,
@@ -952,28 +964,22 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
             "gossip_delivery": endpoint_data.get("gossip_delivery", "deferred"),
             "public_submit_endpoint": submit_endpoint,
             "version": D2E_SUBMIT_CLI_VERSION,
-        }
-        sig_value = envelope.get("sig")
-        if sig_value is not None and sig_value != "" and sig_value != "UNSIGNED":
-            if isinstance(sig_value, dict):
-                response["native_submit_sig"] = dict(sig_value)
-            else:
-                response["signature"] = {
-                    "sig": str(envelope.get("sig", "")),
-                    "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
-                    "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
-                    "sig_scheme": str(envelope.get("sig_scheme", "")),
-                }
-        return response
+        },
+        envelope,
+    )
 
-    # CDL-075: persist to LMDB graph store when ILC_TRUTH_GRAPH_STORE_PATH is set.
+
+def _local_submit_response(
+    args: argparse.Namespace,
+    envelope: dict[str, Any],
+    result: TruthPrimitiveResult,
+    edges_out: list[dict[str, str]],
+) -> dict[str, Any]:
     node_id: str | None = None
-    graph_persistence: str = "deferred — CDL-075 graph store path not configured"
+    graph_persistence = "deferred — CDL-075 graph store path not configured"
     write_receipt: dict[str, Any] = {}
     store_path = os.environ.get("ILC_TRUTH_GRAPH_STORE_PATH", "").strip()
     if store_path:
-        # Missing guard attribute means this caller is using the public-RC-cleared
-        # local write path. An explicit True still blocks before any LMDB write.
         check_graph_mutation_allowed(getattr(args, "public_path_guard_value", False))
         from ilc_core.epistemic.truth_primitive_graph_store import (
             write_truth_primitive_result,
@@ -981,6 +987,7 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
         from ilc_core.storage.truth_primitive_graph_lmdb_adapter import (
             TruthPrimitiveGraphStore,
         )
+
         store = TruthPrimitiveGraphStore(store_path)
         try:
             write_receipt = write_truth_primitive_result(store, envelope, result)
@@ -991,35 +998,41 @@ def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
     elif not truth_runtime.NATIVE_SUBMISSION_SIG_VERIFICATION_NOT_ACTIVATED:
         truth_runtime.consume_native_submit_replay_fallback(envelope)
 
-    # CDL-076: announce to gossip peers after confirmed CDL-075 persist.
-    gossip_delivery: str = "deferred — gossip peers not configured"
+    gossip_delivery = "deferred — gossip peers not configured"
     if node_id:
         from ilc_core.network.d2d.truth_primitive_gossip_runtime import (
             announce_truth_primitive,
         )
-        gossip_receipt = announce_truth_primitive(write_receipt, envelope)
-        gossip_delivery = gossip_receipt["gossip_delivery"]
 
-    response: dict[str, Any] = {
-        "subcommand": "submit",
-        "primitive": result.primitive,
-        "creates_node": result.creates_node,
-        "node_primitive_type": result.node_primitive_type,
-        "node_id": node_id,
-        "edges": edges_out,
-        "graph_persistence": graph_persistence,
-        "gossip_delivery": gossip_delivery,
-        "version": D2E_SUBMIT_CLI_VERSION,
-    }
-    sig_value = envelope.get("sig")
-    if sig_value is not None and sig_value != "" and sig_value != "UNSIGNED":
-        if isinstance(sig_value, dict):
-            response["native_submit_sig"] = dict(sig_value)
-        else:
-            response["signature"] = {
-                "sig": str(envelope.get("sig", "")),
-                "sig_pubkey_hex": str(envelope.get("sig_pubkey_hex", "")),
-                "sig_pubkey_fingerprint": str(envelope.get("sig_pubkey_fingerprint", "")),
-                "sig_scheme": str(envelope.get("sig_scheme", "")),
-            }
-    return response
+        gossip_delivery = announce_truth_primitive(
+            write_receipt,
+            envelope,
+        )["gossip_delivery"]
+    return _attach_submit_signature(
+        {
+            "subcommand": "submit",
+            "primitive": result.primitive,
+            "creates_node": result.creates_node,
+            "node_primitive_type": result.node_primitive_type,
+            "node_id": node_id,
+            "edges": edges_out,
+            "graph_persistence": graph_persistence,
+            "gossip_delivery": gossip_delivery,
+            "version": D2E_SUBMIT_CLI_VERSION,
+        },
+        envelope,
+    )
+
+
+def handle_submit(args: argparse.Namespace) -> dict[str, Any]:
+    """Validate, sign, dispatch, and optionally persist a truth submission."""
+
+    envelope, result = _prepare_validated_submission(args)
+    edges_out = [
+        {"edge_type": edge.edge_type, "source": edge.source, "target": edge.target}
+        for edge in result.edge_specs()
+    ]
+    remote_response = _remote_submit_response(args, envelope, result, edges_out)
+    if remote_response is not None:
+        return remote_response
+    return _local_submit_response(args, envelope, result, edges_out)

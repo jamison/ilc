@@ -227,10 +227,13 @@ def test_runtime_integration_does_not_regress_query_verify_bundle_or_identity_en
     assert bundle_payload["meta"]["schema_version"] == "303.v0.1"
 
     identity = _run_cli(["identity", "init"], env)
-    assert identity.returncode == 0
+    assert identity.returncode == 1
     identity_payload = _payload(identity)
     assert identity_payload["schema_version"] == "254.v0.1"
     assert "meta" not in identity_payload
+    assert identity_payload["ok"] is False
+    assert identity_payload["message"] == "invite_required_for_enrollment"
+    assert not identity_path.exists()
 
 
 def test_no_decision_log_mutation_in_phase_commit() -> None:

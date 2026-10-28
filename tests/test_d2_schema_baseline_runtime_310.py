@@ -65,6 +65,24 @@ def _write_bundle_state(path: Path) -> None:
     path.write_text(json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
+def _write_identity_state(path: Path) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "key_ref": "key-local-0",
+                "lineage_id": "lineage-local",
+                "rotation_count": 0,
+                "status": "active",
+                "updated_at": "1970-01-01T00:00:00Z",
+            },
+            sort_keys=True,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def _resolve_phase_310_commit_ref() -> str:
     result = subprocess.run(
         ["git", "log", "--format=%H%x09%s"],
@@ -197,6 +215,7 @@ def test_runtime_integration_does_not_regress_query_verify_bundle_or_identity_en
     identity_path = tmp_path / "identity.json"
     _write_graph_state(graph_path)
     _write_bundle_state(bundle_path)
+    _write_identity_state(identity_path)
 
     env = os.environ.copy()
     env["ILC_CLI_GRAPH_STATE_PATH"] = str(graph_path)
@@ -218,7 +237,7 @@ def test_runtime_integration_does_not_regress_query_verify_bundle_or_identity_en
     bundle_payload = _payload(bundle)
     assert bundle_payload["meta"]["schema_version"] == "303.v0.1"
 
-    identity = _run_cli(["identity", "init"], env)
+    identity = _run_cli(["identity", "show"], env)
     assert identity.returncode == 0
     identity_payload = _payload(identity)
     assert identity_payload["schema_version"] == "254.v0.1"

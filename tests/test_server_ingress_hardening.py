@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Iterable, Iterator
+from typing import Any
+
 from fastapi.testclient import TestClient
 
 from ilc_core import server
@@ -9,6 +12,17 @@ from ilc_core.types import Node
 
 def _client() -> TestClient:
     return TestClient(create_app())
+
+
+def _iter_routes(routes: Iterable[Any]) -> Iterator[Any]:
+    for route in routes:
+        yield route
+        nested_routes = getattr(route, "routes", None)
+        if nested_routes is None:
+            original_router = getattr(route, "original_router", None)
+            nested_routes = getattr(original_router, "routes", None)
+        if nested_routes is not None:
+            yield from _iter_routes(nested_routes)
 
 
 def _gossip_payload(content: str = "phase_1573ak_gossip") -> dict[str, object]:
@@ -27,7 +41,7 @@ def test_route_classification_covers_all_user_routes() -> None:
     app = create_app()
     actual = {
         (method, route.path)
-        for route in app.routes
+        for route in _iter_routes(app.routes)
         for method in getattr(route, "methods", set())
         if route.path not in {"/openapi.json", "/docs", "/docs/oauth2-redirect", "/redoc"}
         and method not in {"HEAD", "OPTIONS"}

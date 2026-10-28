@@ -13,6 +13,7 @@ from ilc_core.economics.epoch_attribution_settle_runtime import (
     evaluate_ejected_stake_vote,
     settle_attribution_batch,
 )
+from ilc_core.encoding.cidv1 import node_id_from_obj
 from ilc_core.identity.agent_id_runtime import (
     AGENT_ID_V2_DISTINCT_DOMAIN_MIGRATION_DEFERRED_TOKEN,
     derive_agent_id_v2,
@@ -33,13 +34,20 @@ from ilc_core.storage.lmdb_public_runtime import LmdbWalletStore
 from ilc_core.types import EdgeType, EpochAttributionBatch
 
 
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+COAUTHOR_STAR_NODE_ID = node_id_from_obj({"phase": "1575h-fix2", "node": "coauthor"})
+
+
 def _coauth_batch() -> EpochAttributionBatch:
     batch = EpochAttributionBatch(epoch=1)
     batch.add_event(
         AttributionEvent(
             edge_type=EdgeType.CO_AUTHORSHIP,
-            target_creator_id="unused",
-            star_node_id="star:one",
+            target_creator_id=_agent_id(90),
+            star_node_id=COAUTHOR_STAR_NODE_ID,
             epoch=1,
         )
     )
@@ -80,7 +88,7 @@ def test_member_id_validation_rejects_empty_coauthor_and_distribution_members() 
     with pytest.raises(ValueError, match="stake_map_member_id_must_be_non_empty_string"):
         settle_attribution_batch(
             _coauth_batch(),
-            stake_map={"star:one": {"": Decimal("1")}},
+            stake_map={COAUTHOR_STAR_NODE_ID: {"": Decimal("1")}},
         )
 
     with pytest.raises(ValueError, match="stake_map_member_id_must_be_non_empty_string"):
@@ -95,7 +103,7 @@ def test_member_id_validation_rejects_empty_coauthor_and_distribution_members() 
 def test_subquantum_ejected_stake_distribution_filters_zero_payouts() -> None:
     approved, payouts = evaluate_ejected_stake_vote(
         Decimal("0.0000000001"),
-        {"agent-a": Decimal("1"), "agent-b": Decimal("1")},
+        {_agent_id(1): Decimal("1"), _agent_id(2): Decimal("1")},
         approve_votes=2,
         participating_voters=2,
     )

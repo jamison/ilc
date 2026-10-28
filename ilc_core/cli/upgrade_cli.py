@@ -12,6 +12,7 @@ import subprocess
 import stat
 import sys
 import time
+from contextlib import suppress
 from pathlib import Path
 from typing import Any, Callable
 
@@ -208,10 +209,8 @@ def _read_pid(path: Path) -> int | None:
 
 
 def _remove_pid_file(path: Path) -> None:
-    try:
+    with suppress(FileNotFoundError):
         path.unlink()
-    except FileNotFoundError:
-        pass
 
 
 def _write_watcher_state(
@@ -374,10 +373,8 @@ def _start_daemon(
             message = os.read(ready_read_fd, 128) if ready else b""
             os.close(ready_read_fd)
             if message != b"READY\n":
-                try:
+                with suppress(ProcessLookupError):
                     os.kill(child_pid, signal.SIGTERM)
-                except ProcessLookupError:
-                    pass
                 raise UpgradeCliError("upgrade_watcher_startup_failed")
             return {
                 "action": "upgrade-watch",
@@ -388,10 +385,8 @@ def _start_daemon(
             }
     except Exception:
         for fd in (ready_read_fd, ready_write_fd, lock_fd):
-            try:
+            with suppress(OSError):
                 os.close(fd)
-            except OSError:
-                pass
         _remove_pid_file(pid_path)
         raise
 
@@ -418,24 +413,17 @@ def _start_daemon(
         )
     except BaseException as exc:  # noqa: BLE001 - daemon must preserve crash exit status.
         exit_code = 1
-        try:
-            print(
-                f"upgrade_watcher_crashed:{type(exc).__name__}:{exc}",
-                file=sys.stderr,
-                flush=True,
-            )
-        except Exception:
-            pass
+        print(
+            f"upgrade_watcher_crashed:{type(exc).__name__}:{exc}",
+            file=sys.stderr,
+            flush=True,
+        )
     finally:
-        try:
+        with suppress(OSError):
             os.close(ready_write_fd)
-        except OSError:
-            pass
-        try:
+        with suppress(OSError):
             fcntl.flock(lock_fd, fcntl.LOCK_UN)
             os.close(lock_fd)
-        except OSError:
-            pass
         _remove_pid_file(pid_path)
         os._exit(exit_code)
 
@@ -444,8 +432,8 @@ def _verify_installed_release(version: str) -> None:
     script = """
 import importlib
 import importlib.metadata
-import sys
-expected = sys.argv[1]
+import sys as _sys
+expected = _sys.argv[1]
 observed = importlib.metadata.version('ilc-core')
 if observed != expected:
     raise SystemExit(21)

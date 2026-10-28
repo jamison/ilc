@@ -1,0 +1,57 @@
+{
+  "artifact": "ilc_rc_native_distribution_closure_blocked_evidence_manifest_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_00_v0.1",
+  "campaign_id": "RC-NATIVE-DISTRIBUTION-CLOSURE-STRIKE-FORCE-00",
+  "closure_completion_token_emitted": false,
+  "date": "2026-10-26",
+  "disposition": "blocked_full_repository_suite",
+  "evidence_hashes": {
+    "baseline_manifest_sha256": "58ec4371586db19eb9cd044ed74f004dbde05f0fec5353fd112aa957fc0ffdd0",
+    "fresh_invite_report_sha256": "bd37669ef72853192dc75513de16b5150060e96b8691f91b12dd08d47159efe7",
+    "fresh_invite_receipt_sha256": "9c61ef252b1d191036e11b4c0f6354f3147a4a149a9571f21b1f799893f845a6",
+    "live_deploy_health_report_sha256": "08166592fde2273461768f8fe2bf95ebcb4a02ac0f0c0e06286de371ef7918fe",
+    "live_deployment_manifest_sha256": "9fbcca7ab57c0246a3da735cbd3f384f2a88d15679f7bb771c6cf6229f041485",
+    "manifest_amendment_01_sha256": "25956f78996c5995bc7181a4175a393427142d82cdc470b2f5f0807a996888dd",
+    "vnext_build_evidence_sha256": "122e8b7a1868c4b80ece5b65311f817419cf0c6a1aa30821eb13c1ff25dc7110",
+    "vnext_sign_publish_evidence_sha256": "d8947e1bf59f892d9321d83aa29236c37513136d976c366bfb69972264bd2601"
+  },
+  "live_state": {
+    "control_wallet_lmdb_sha256": "e45dec9bcc25b689ffe65a1bca9a86143317e68977d0863168caa439ebd65848",
+    "validator_executable_sha256": "3c3b8ea0c6d697c597f53fcd1572625422ea2f5823a3a64d67da0a3f64d71449",
+    "validator_lmdb_sha256": "e96dddc6a64c7c3a27d9fccc13ddf3dbaaf22731dc04cbb283af59b70b7b9ef5",
+    "validators_active": 4,
+    "validators_restart_count": 0
+  },
+  "phase_completion_commits": [
+    {"order": 1, "phase": "GAP-RELEASE-CURRENT-POLICY-CDL-RATIFY-00", "commit": "339c99b609f3104233f4e91c7d8346bed98b1a4b"},
+    {"order": 2, "phase": "GAP-RELEASE-CURRENT-POLICY-RESOLVER-IMPL-00", "commit": "81c5c8a226772f17c11920d50ab578a9818a050d"},
+    {"order": 3, "phase": "GAP-RELEASE-CURRENT-POLICY-PUBLISH-ACTIVATE-00", "commit": "58097a62fe38bc590eb5e0d4ac2abf055f5afae6"},
+    {"order": 4, "phase": "GAP-DISTRIBUTED-ARTIFACT-FETCH-00", "commit": "b4958fc039d2f1169bb1cff64720532fa08f899c"},
+    {"order": 5, "phase": "GAP-DISTRIBUTION-WERNER-CREDIT-00", "commit": "d2a76e522c2e080cb0870748d227350a0f618c3b"},
+    {"order": 6, "phase": "GAP-HOMOICONIC-CONSENSUS-BINARY-DEPLOY-00", "commit": "3273c5943eb52d9c664c0963abe498b2c6b14d76"},
+    {"order": 8, "phase": "GAP-RC-NATIVE-DISTRIBUTION-VNEXT-BUILD-00", "commit": "5bc4b0078b6c61799e387bf9280b455923ace736"},
+    {"order": 9, "phase": "GAP-RC-NATIVE-DISTRIBUTION-VNEXT-SIGN-PUBLISH-00", "commit": "1c12a2ec571ea62e0d70f907f8c552fb56f57430"},
+    {"order": 7, "phase": "GAP-HOMOICONIC-CONSENSUS-BINARY-LIVE-DEPLOY-00", "commit": "f33aa2b9b3b274c32255a26b1e7797f0d19d9dec"},
+    {"order": 10, "phase": "GAP-RC-NATIVE-DISTRIBUTION-FRESH-INVITE-SMOKE-00", "commit": "5492c1aaf0413a5636ec89c51ed9ca61db0f7844"}
+  ],
+  "public_mirror": {
+    "append_only": true,
+    "current_head": "a2944821a9ad2b51e70b84f2a0fc2af56dba3fef",
+    "denylist_scan": "pass",
+    "manifest_canonical_sha256": "ca31bb14b94e10cc0a75770e46686596bfffabb080ddd76aa8a336940da546cf",
+    "previous_head": "e103ade8583e1be24ebabcf5bbed381cdafd185e",
+    "public_rc_exclude_scan": "pass",
+    "source_private_commit": "c624cb1e6ac15776295a27a58cf34c44f320f13a"
+  },
+  "schema_version": "ilc.rc_native_distribution.closure_blocked_evidence.v0.1",
+  "test_results": {
+    "bounded_reconciliation": "134 passed in 29.03s",
+    "campaign_focused": "351 passed in 311.06s",
+    "full_repository_initial": "203 failed, 16293 passed, 2249 skipped, 7 warnings in 5753.84s",
+    "remaining_last_failed_clean_tree": "194 failed, 409 deselected in 698.91s"
+  },
+  "test_reconciliation_commit": "c624cb1e6ac15776295a27a58cf34c44f320f13a",
+  "unexercised_p0_paths": [
+    "generic_atlas_slice_cryptographic_signature_verification",
+    "native_transport_requested_cid_response_binding"
+  ]
+}

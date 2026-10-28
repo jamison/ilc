@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import pytest
@@ -96,8 +97,10 @@ def test_endpoint_assertion_artifact_bls_verifies() -> None:
     )
 
 
-def test_endpoint_assertion_loads_from_phase_local_lmdb() -> None:
-    store = LmdbGraphStore(ATLAS_PATH)
+def test_endpoint_assertion_loads_from_phase_local_lmdb(tmp_path: Path) -> None:
+    atlas_path = tmp_path / "atlas.lmdb"
+    shutil.copytree(ATLAS_PATH, atlas_path)
+    store = LmdbGraphStore(atlas_path)
     try:
         loaded = load_from_atlas(
             store,

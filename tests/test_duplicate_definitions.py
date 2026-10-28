@@ -103,6 +103,12 @@ DUPLICATE_FINDING_EXCLUDE_PATHS = {
     "tests/test_spectral_routing_runtime.py",
 }
 
+TOP_LEVEL_DEFINITION_EXCLUDE_PATHS = {
+    # Byte-preserved, independently audited exploratory evidence. Its repeated
+    # entry points compare successive experiment revisions and are not runtime.
+    "docs/research/ilc_sufficiency_strike_force_v4_2/run.py",
+}
+
 
 def _iter_py_files(root: Path) -> list[Path]:
     files: list[Path] = []
@@ -129,6 +135,9 @@ def test_no_duplicate_top_level_definitions() -> None:
     """Check that no file has duplicate top-level function/class names."""
     duplicates: dict[str, list[str]] = {}
     for path in _iter_py_files(ROOT):
+        relative_path = path.relative_to(ROOT).as_posix()
+        if relative_path in TOP_LEVEL_DEFINITION_EXCLUDE_PATHS:
+            continue
         try:
             source = path.read_text(encoding="utf-8")
         except OSError:

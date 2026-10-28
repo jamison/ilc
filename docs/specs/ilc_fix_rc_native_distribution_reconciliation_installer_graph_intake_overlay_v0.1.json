@@ -1,0 +1,25 @@
+{
+  "artifact": "ilc_fix_rc_native_distribution_reconciliation_installer_graph_intake_overlay_v0.1",
+  "boundary": {
+    "canonical_graph_mutation": false,
+    "public_rc_activation": false,
+    "purpose": "Graph-intake coverage for the v0.4.35 Python and preserved v0.4.34 consensus dual-envelope installer projection."
+  },
+  "records": [
+    {
+      "annotation_method": "gap_rc_native_distribution_reconciliation_installer_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "edge_role": "INSTALLABLE_RELEASE_MANIFEST",
+      "repo_path": "docs/specs/ilc_installable_release_manifest_ilc_core_0435_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_reconciliation_installer_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "edge_role": "GRAPH_INTAKE_OVERLAY",
+      "repo_path": "docs/specs/ilc_fix_rc_native_distribution_reconciliation_installer_graph_intake_overlay_v0.1.json",
+      "target": "policy:graph_intake_new_file_coverage"
+    }
+  ],
+  "schema_version": "fix38_graph_intake_overlay.v0.1"
+}

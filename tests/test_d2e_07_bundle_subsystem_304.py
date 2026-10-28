@@ -63,6 +63,24 @@ def _write_bundle_state(path: Path, *, blocked: bool = False) -> None:
     path.write_text(json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8")
 
 
+def _write_identity_state(path: Path) -> None:
+    path.write_text(
+        json.dumps(
+            {
+                "key_ref": "key-local-0",
+                "lineage_id": "lineage-local",
+                "rotation_count": 0,
+                "status": "active",
+                "updated_at": "1970-01-01T00:00:00Z",
+            },
+            sort_keys=True,
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
 def _normalize(payload: dict[str, Any]) -> dict[str, Any]:
     normalized = json.loads(json.dumps(payload))
     meta = normalized.get("meta", {})
@@ -256,6 +274,7 @@ def test_bundle_integration_does_not_regress_query_verify_or_identity_envelopes(
     identity_path = tmp_path / "identity.json"
     _write_graph_state(graph_path)
     _write_bundle_state(bundle_path)
+    _write_identity_state(identity_path)
 
     env = os.environ.copy()
     env["ILC_CLI_GRAPH_STATE_PATH"] = str(graph_path)
@@ -274,7 +293,7 @@ def test_bundle_integration_does_not_regress_query_verify_or_identity_envelopes(
     assert set(verify_payload.keys()) == {"ok", "data", "meta"}
     assert verify_payload["meta"]["schema_version"] == "301.v0.1"
 
-    identity = _run_cli(["identity", "init"], env)
+    identity = _run_cli(["identity", "show"], env)
     assert identity.returncode == 0
     identity_payload = _payload(identity)
     assert identity_payload["schema_version"] == "254.v0.1"

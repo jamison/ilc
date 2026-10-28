@@ -6,6 +6,7 @@ from decimal import Decimal
 import pytest
 
 from ilc_model_router import cli as model_router_cli
+from ilc_model_router import werner_model_router_bridge as bridge
 from ilc_model_router.receipt_schema import RouterCompanionRecord
 from ilc_model_router.werner_model_router_bridge import (
     NON_CLAIMS,
@@ -59,8 +60,6 @@ def test_guard_is_false_after_clearance() -> None:
 
 
 def test_guard_true_branch_returns_absent_context(monkeypatch: pytest.MonkeyPatch) -> None:
-    import ilc_model_router.werner_model_router_bridge as bridge
-
     monkeypatch.setattr(bridge, "WERNER_MODEL_ROUTER_NOT_ACTIVATED", True)
 
     context = bridge.compute_werner_model_router_context(AGENT_ID, 0, [_receipt()])
@@ -74,8 +73,6 @@ def test_guard_true_branch_returns_absent_context(monkeypatch: pytest.MonkeyPatc
 def test_guard_true_branch_returns_context_not_exception(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import ilc_model_router.werner_model_router_bridge as bridge
-
     monkeypatch.setattr(bridge, "WERNER_MODEL_ROUTER_NOT_ACTIVATED", True)
 
     context = bridge.compute_werner_model_router_context(AGENT_ID, 0, [_receipt()])
@@ -116,8 +113,6 @@ def test_normal_absent_path_uses_generic_absent_token() -> None:
 def test_guarded_path_uses_guard_active_absent_token(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import ilc_model_router.werner_model_router_bridge as bridge
-
     monkeypatch.setattr(bridge, "WERNER_MODEL_ROUTER_NOT_ACTIVATED", True)
 
     context = bridge.compute_werner_model_router_context(AGENT_ID, 0, [_receipt()])

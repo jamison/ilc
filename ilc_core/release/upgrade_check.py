@@ -12,6 +12,7 @@ import re
 import time
 import urllib.request
 from copy import deepcopy
+from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Mapping, Protocol, Sequence
@@ -69,6 +70,18 @@ from ilc_core.release.upgrade_state import (
     read_upgrade_state,
     write_upgrade_state,
 )
+from ilc_core.release.upgrade_validation_primitives import (
+    UpgradeCheckError,
+    reject_json_constant as _reject_json_constant,
+    require_bounded_list as _require_bounded_list,
+    require_exact_fields as _require_exact_fields,
+    require_hex as _require_hex,
+    require_literal as _require_literal,
+    require_string as _require_string,
+    require_strict_node_cid as _require_strict_node_cid,
+    require_cid_like,
+    require_timestamp,
+)
 
 
 _CID_LIKE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]{2,255}$")
@@ -92,20 +105,20 @@ NowFn = Callable[[], datetime]
 DelegationPolicyResolver = Callable[[Mapping[str, Any]], Mapping[str, Any]]
 
 
+@dataclass(frozen=True)
+class UpgradeEvaluationRuntime:
+    """Injectable local evaluation dependencies for deterministic tests."""
+
+    installed_version_resolver: InstalledVersion | None = None
+    now_fn: NowFn | None = None
+
+
 class PeerRegistryLike(Protocol):
     """Minimal read-only peer registry surface used by upgrade discovery."""
 
     def get_peers(self) -> Sequence[str]:
         """Return currently promoted peer endpoints."""
 
-
-class UpgradeCheckError(ValueError):
-    """Typed upgrade-check error carrying a stable token."""
-
-    def __init__(self, token: str, message: str | None = None) -> None:
-        super().__init__(message or token)
-        self.token = token
-        self.message = message or token
 
 
 class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
@@ -119,10 +132,6 @@ class _NoRedirectHandler(urllib.request.HTTPRedirectHandler):
         newurl: str,
     ) -> None:
         raise UpgradeCheckError("upgrade_check_endpoint_redirect_forbidden")
-
-
-def _reject_json_constant(value: str) -> None:
-    raise ValueError(f"upgrade_assertion_non_finite_json:{value}")
 
 
 def _now_utc() -> datetime:
@@ -148,95 +157,12 @@ def _parse_rfc3339_utc(value: Any) -> datetime:
     return parsed.astimezone(timezone.utc)
 
 
-def _require_string(value: Any, field: str, *, max_chars: int = 512) -> str:
-    if not isinstance(value, str) or not value:
-        raise UpgradeCheckError(f"upgrade_assertion_invalid_string:{field}")
-    if len(value) > max_chars:
-        raise UpgradeCheckError(f"upgrade_assertion_string_too_long:{field}")
-    if any(ord(character) < 32 or ord(character) == 127 for character in value):
-        raise UpgradeCheckError(f"upgrade_assertion_control_character:{field}")
-    return value
-
-
-def _require_literal(value: Any, field: str, expected: str) -> str:
-    text = _require_string(value, field)
-    if text != expected:
-        raise UpgradeCheckError(f"upgrade_assertion_literal_mismatch:{field}")
-    return text
-
-
-def _require_hex(value: Any, field: str, pattern: re.Pattern[str]) -> str:
-    text = _require_string(value, field)
-    if pattern.fullmatch(text) is None:
-        raise UpgradeCheckError(f"upgrade_assertion_invalid_hex:{field}")
-    return text
-
-
 def _require_cid_like(value: Any, field: str) -> str:
-    text = _require_string(value, field)
-    if _CID_LIKE_RE.fullmatch(text) is None:
-        raise UpgradeCheckError(f"upgrade_assertion_invalid_cid:{field}")
-    return text
+    return require_cid_like(value, field, _CID_LIKE_RE)
 
 
 def _require_timestamp(value: Any, field: str) -> str:
-    text = _require_string(value, field)
-    if _UTC_Z_RE.fullmatch(text) is None:
-        raise UpgradeCheckError(f"upgrade_assertion_invalid_timestamp:{field}")
-    try:
-        datetime.fromisoformat(text[:-1] + "+00:00")
-    except ValueError as exc:
-        raise UpgradeCheckError(f"upgrade_assertion_invalid_timestamp:{field}") from exc
-    return text
-
-
-def _require_exact_fields(
-    value: Mapping[str, Any],
-    *,
-    required: frozenset[str],
-    optional: frozenset[str] = frozenset(),
-    object_name: str,
-) -> None:
-    keys = set(value)
-    missing = required - keys
-    if missing:
-        raise UpgradeCheckError(
-            f"upgrade_assertion_required_field_missing:{object_name}:{sorted(missing)[0]}"
-        )
-    unknown = keys - required - optional
-    if unknown:
-        raise UpgradeCheckError(
-            f"upgrade_assertion_unknown_field:{object_name}:{sorted(unknown)[0]}"
-        )
-
-
-def _require_strict_node_cid(
-    value: Mapping[str, Any],
-    *,
-    object_name: str,
-) -> str:
-    cid = _require_string(value.get("cid"), f"{object_name}.cid", max_chars=255)
-    try:
-        parse_nodeid_strict(cid)
-        observed = node_id_from_obj({key: child for key, child in value.items() if key != "cid"})
-    except (TypeError, ValueError) as exc:
-        raise UpgradeCheckError(f"upgrade_assertion_cid_invalid:{object_name}") from exc
-    if observed != cid:
-        raise UpgradeCheckError(f"upgrade_assertion_cid_mismatch:{object_name}")
-    return cid
-
-
-def _require_bounded_list(
-    value: Any,
-    *,
-    field: str,
-    maximum: int,
-) -> list[Any]:
-    if not isinstance(value, list) or not value:
-        raise UpgradeCheckError(f"upgrade_assertion_invalid_list:{field}")
-    if len(value) > maximum:
-        raise UpgradeCheckError(f"upgrade_assertion_list_too_large:{field}")
-    return value
+    return require_timestamp(value, field, _UTC_Z_RE)
 
 
 def _assert_no_floats(value: Any, field: str = "$", depth: int = 0) -> None:
@@ -268,8 +194,6 @@ def installed_ilc_core_version() -> str | None:
 
 
 def _endpoint_from_env() -> str:
-    import os
-
     return os.environ.get(ILC_UPGRADE_CHECK_ENDPOINT_ENV, "").strip()
 
 
@@ -1460,8 +1384,7 @@ def check_for_upgrade(
     peer_fetcher: PeerFetchJson | None = None,
     bootstrap_peer_hints_paths: Sequence[Path] | None = None,
     peer_registry: PeerRegistryLike | None = None,
-    installed_version_resolver: InstalledVersion | None = None,
-    now_fn: NowFn | None = None,
+    evaluation_runtime: UpgradeEvaluationRuntime | None = None,
     timeout_seconds: float = UPGRADE_CHECK_TIMEOUT_SECONDS,
     current_policy_evaluation_input: CurrentPolicyEvaluationInput | None = None,
     include_release_assertion_payload: bool = False,
@@ -1472,7 +1395,8 @@ def check_for_upgrade(
     fetch = fetcher or fetch_upgrade_assertion_json
     peer_fetch = peer_fetcher or _fetch_peer_upgrade_assertion_json
     timeout = _validate_timeout(timeout_seconds)
-    now = (now_fn or _now_utc)()
+    runtime = evaluation_runtime or UpgradeEvaluationRuntime()
+    now = (runtime.now_fn or _now_utc)()
     if explicit_endpoint:
         selected_endpoint = _validate_endpoint(explicit_endpoint)
         payload = dict(fetch(selected_endpoint, timeout))
@@ -1480,7 +1404,7 @@ def check_for_upgrade(
             payload,
             discovery_source="explicit_endpoint",
             endpoint=selected_endpoint,
-            installed_version_resolver=installed_version_resolver,
+            installed_version_resolver=runtime.installed_version_resolver,
             now=now,
             current_policy_evaluation_input=current_policy_evaluation_input,
             include_release_assertion_payload=include_release_assertion_payload,
@@ -1494,7 +1418,7 @@ def check_for_upgrade(
             cached_payload,
             discovery_source="local_graph_cache",
             endpoint="local_graph_cache",
-            installed_version_resolver=installed_version_resolver,
+            installed_version_resolver=runtime.installed_version_resolver,
             now=now,
             current_policy_evaluation_input=current_policy_evaluation_input,
             include_release_assertion_payload=include_release_assertion_payload,
@@ -1512,7 +1436,7 @@ def check_for_upgrade(
             peer_payload,
             discovery_source="bootstrap_peer_hint",
             endpoint="bootstrap_peer_hint",
-            installed_version_resolver=installed_version_resolver,
+            installed_version_resolver=runtime.installed_version_resolver,
             now=now,
             current_policy_evaluation_input=current_policy_evaluation_input,
             include_release_assertion_payload=include_release_assertion_payload,
@@ -1530,7 +1454,7 @@ def check_for_upgrade(
             single_hop_payload,
             discovery_source="single_hop_d2d",
             endpoint="single_hop_d2d",
-            installed_version_resolver=installed_version_resolver,
+            installed_version_resolver=runtime.installed_version_resolver,
             now=now,
             current_policy_evaluation_input=current_policy_evaluation_input,
             include_release_assertion_payload=include_release_assertion_payload,
@@ -1544,7 +1468,7 @@ def check_for_upgrade(
         payload,
         discovery_source="https_fallback",
         endpoint=selected_endpoint,
-        installed_version_resolver=installed_version_resolver,
+        installed_version_resolver=runtime.installed_version_resolver,
         now=now,
         current_policy_evaluation_input=current_policy_evaluation_input,
         include_release_assertion_payload=include_release_assertion_payload,
@@ -1555,6 +1479,7 @@ def check_for_upgrade(
 
 __all__ = [
     "UpgradeCheckError",
+    "UpgradeEvaluationRuntime",
     "check_for_upgrade",
     "fetch_upgrade_assertion_json",
     "installed_ilc_core_version",

@@ -2,11 +2,21 @@ import subprocess
 from decimal import Decimal
 from pathlib import Path
 
+from ilc_core.encoding.cidv1 import node_id_from_obj
+
 
 CDL_REGISTER = Path("docs/specs/ilc_constitutional_decision_log_v0.1.md")
 RATIFICATION_EVIDENCE = Path(
     "docs/specs/ilc_cdl_085_ratification_evidence_1185_v0.1.md"
 )
+
+
+def _agent_id(index: int) -> str:
+    return f"{index:096x}"
+
+
+def _node_id(index: int) -> str:
+    return node_id_from_obj({"phase": 1185, "node": index})
 
 
 def test_cdl_085_ratified_in_register() -> None:
@@ -64,10 +74,10 @@ def test_phi_bound_runtime_suppresses_excess_provenance_ecu() -> None:
         batch.add_event(
             AttributionEvent(
                 edge_type=EdgeType.PROVENANCE,
-                target_creator_id="unused_target_creator",
+                target_creator_id=_agent_id(90),
                 star_node_id=None,
                 epoch=1,
-                provenance_chain=((f"node_{index}", f"creator_{index}"),),
+                provenance_chain=((_node_id(index), _agent_id(index)),),
             )
         )
     batch.seal()
@@ -80,8 +90,8 @@ def test_phi_bound_runtime_suppresses_excess_provenance_ecu() -> None:
         epoch_node_mint_count=5,
     )
 
-    assert ("creator_4", Decimal("0")) not in payouts
-    assert payouts[-1] == ("creator_3", Decimal("0.090000000"))
+    assert (_agent_id(4), Decimal("0")) not in payouts
+    assert payouts[-1] == (_agent_id(3), Decimal("0.090000000"))
     assert "edge_mint_phi_bound_exceeded" in emitted_tokens
 
 

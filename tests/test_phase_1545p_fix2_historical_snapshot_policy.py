@@ -87,6 +87,32 @@ def test_historical_snapshot_policy_is_filename_exact() -> None:
     assert not conftest.is_historical_phase_snapshot_path("tests/test_network.py")
 
 
+def test_historical_snapshot_policy_supports_exact_mixed_file_nodeids() -> None:
+    conftest = _load_conftest_module()
+    historical_nodeid = (
+        "tests/test_phase_1575g_economic_guard_clearance.py::"
+        "test_phase_1575g_economic_modules_are_marker_free"
+    )
+    current_nodeid = (
+        "tests/test_phase_1575g_economic_guard_clearance.py::"
+        "test_phase_1575g_two_single_lock_guards_cleared_four_double_locks_retained"
+    )
+    assert conftest.is_historical_phase_snapshot_nodeid(historical_nodeid)
+    assert not conftest.is_historical_phase_snapshot_nodeid(current_nodeid)
+
+
+def test_historical_graph_snapshot_policy_is_exact() -> None:
+    conftest = _load_conftest_module()
+    assert conftest.is_historical_phase_snapshot_nodeid(
+        "tests/test_phase_1545p_fix61_projection_export_package.py::"
+        "test_fix61_core_star_map_json_exists_and_valid"
+    )
+    assert not conftest.is_historical_phase_snapshot_nodeid(
+        "tests/test_phase_1545p_fix61_projection_export_package.py::"
+        "test_fix61_complete_token_in_status"
+    )
+
+
 def test_expensive_release_artifact_policy_is_filename_exact() -> None:
     conftest = _load_conftest_module()
     assert conftest.is_expensive_release_artifact_path(
@@ -124,3 +150,5 @@ def test_pyproject_declares_historical_snapshot_marker() -> None:
     assert "ILC_RUN_HISTORICAL_PHASE_SNAPSHOT_TESTS=1" in text
     assert "expensive_release_artifact" in text
     assert "ILC_RUN_EXPENSIVE_RELEASE_ARTIFACT_TESTS=1" in text
+    assert "graph_hydrated_workspace" not in text
+    assert "private_local_only" not in text

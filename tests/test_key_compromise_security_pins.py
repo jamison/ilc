@@ -68,6 +68,38 @@ def test_recover_failure_after_revoke_leaves_lineage_revoked_until_activation_fi
     assert runtime.incidents == ()
 
 
+def test_partial_recovery_mutation_then_failure_restores_revoked_checkpoint(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    registry = _registry()
+    runtime = KeyCompromiseResponseRuntime(registry)
+    original_recover = registry.recover
+
+    def recover_then_fail(**kwargs: object) -> None:
+        original_recover(**kwargs)  # type: ignore[arg-type]
+        raise ValueError("forced_post_mutation_recovery_failure")
+
+    monkeypatch.setattr(registry, "recover", recover_then_fail)
+
+    with pytest.raises(ValueError, match="forced_post_mutation_recovery_failure"):
+        runtime.respond_to_compromise(
+            lineage_id="lineage-alpha",
+            compromised_signer_id="ops-001",
+            trigger_class=TRIGGER_CUSTODY_LOSS,
+            event_ts="2026-02-20T00:12:00Z",
+            containment_authorizer_signer_id="root-001",
+            replacement_signer_id="ops-002",
+            recovery_ticket_id="ticket-002",
+            recovery_authorizer_signer_id="recovery-001",
+        )
+
+    entry = registry.entries["lineage-alpha"]
+    assert entry.state == REVOKED
+    assert entry.operational_signer_key == "ops-001"
+    assert registry.transition_log[-1].next_state == REVOKED
+    assert runtime.incidents == ()
+
+
 def test_key_compromise_runtime_records_transactionality_activation_prerequisite() -> None:
     source = (REPO_ROOT / "ilc_core/security/key_compromise_runtime.py").read_text(
         encoding="utf-8"
