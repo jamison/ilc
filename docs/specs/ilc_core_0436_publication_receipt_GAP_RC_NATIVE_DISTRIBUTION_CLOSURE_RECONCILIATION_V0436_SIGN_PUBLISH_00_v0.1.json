@@ -1,0 +1,88 @@
+{
+  "consensus_artifact": {
+    "cid": "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+    "reused_unchanged": true,
+    "sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+    "version": "0.4.34"
+  },
+  "current_policy": {
+    "bootstrap_binding_cid": "bafyreigego7mv5v7radvcyiwrfx3qstiwskmmyvguaukqsvcejgry5n3dq",
+    "claim_cid": "bafyreihx7u7sqs75dhj3ippnarmig7zhdtc4xayrunzyxmefqi66ufprgi",
+    "mldsa_signature_verified": true,
+    "policy_sequence": 4,
+    "predecessor_claim_cid": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+    "resolution_status": "verified_current_policy"
+  },
+  "installer": {
+    "install_manifest_sha256": "228a70d4da7a1b664fd5a3a517a009254ea64026f18fa64f889a2a3868f6abb1",
+    "install_sh_sha256": "9e97be678d7d656cb97f4c9ecf25407700f23f0c5c67c9855c3024e2feec1ea1",
+    "python_release_version": "0.4.36",
+    "separate_consensus_version": "0.4.34"
+  },
+  "local_policy_high_water": {
+    "accepted_sequence": 4,
+    "prior_sequence": 3,
+    "prior_state_sha256": "9dacd0587de91c913255049be6bfdb0d69d977ac030e6cc7e690c9eb8d0a8843",
+    "private_mode_0600_rollback_preserved": true,
+    "rollback_probe_reason": "policy_rollback_detected",
+    "updated_state_sha256": "f3840edbe8b6ea1466376f4eb8132739016eee44d7ad356092a513a99913559d"
+  },
+  "native_graph": {
+    "policy_node_id": "bafyreihx7u7sqs75dhj3ippnarmig7zhdtc4xayrunzyxmefqi66ufprgi",
+    "policy_record_sha256": "46c260d8c194422620ad7d1450925675e475b5c0197abe9c8b834c4278031930",
+    "readonly_remote_lmdb_readback_verified": true,
+    "release_node_id": "bafyreiezqpxu4p5wu25irlygnpmfwov26uwkwmzovpahuhjemqbsz2n2t4",
+    "release_record_sha256": "4290f54482a30f80e504715e0124f7d94424500a6cf6cc15957970ade6f561e1"
+  },
+  "non_claims": [
+    "no_consensus_binary_rebuild",
+    "no_live_host_deployment",
+    "no_validator_or_wallet_lmdb_reset",
+    "no_epoch_transition",
+    "no_ecu_or_ilc_issuance",
+    "no_minting_or_settlement_activation",
+    "no_public_rc_activation"
+  ],
+  "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-V0436-SIGN-PUBLISH-00",
+  "provider_fetchback": {
+    "artifacts": [
+      {
+        "artifact_type": "sdist",
+        "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.36/ilc_core-0.4.36.tar.gz",
+        "pypi_url": "https://files.pythonhosted.org/packages/77/36/a109c838c6a6a2fa0c7cdad2f24b715cf8f550c6b7a3a1bf380fbcce6436/ilc_core-0.4.36.tar.gz",
+        "sha256": "248e66539f97380884fe3bd917e7c0f82e2ff6a5cfd7d233dd59b7ec45ac8241",
+        "size_bytes": 1128579
+      },
+      {
+        "artifact_type": "wheel",
+        "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.36/ilc_core-0.4.36-py3-none-any.whl",
+        "pypi_url": "https://files.pythonhosted.org/packages/05/13/8c61d90ac1af8268791eef77fe3f8609741bb6faf7d27e8900ad2c7e4af8/ilc_core-0.4.36-py3-none-any.whl",
+        "sha256": "091ee1435674f5d6632480bb51c74ac5f28ad50461b8caa239bfbe6e392b7e92",
+        "size_bytes": 1389701
+      }
+    ],
+    "closed_file_byte_identity_verified": true
+  },
+  "public_mirror": {
+    "append_only_ancestor_verified": true,
+    "byte_identical_files_verified": 7,
+    "denylist_scan_result": "pass",
+    "evidence_head": "8e273128ac3483270c11ca8147c9304c71172689",
+    "previous_head": "05f4ae53c59412b8f3133253d77d0287c7b36499",
+    "public_rc_exclude_scan_result": "pass",
+    "remote_head_verified": true
+  },
+  "release_assertion": {
+    "artifact_cids": [
+      "bafyreig7xhk2dtjb46mh37wl63nfr4k2r36grre6xl53c7swvu3jwxkh7y",
+      "bafyreigvfvdsci3mdw6hvdg7tfy4rv7okj7fmy3qfma6gnpol6f2ycflcu"
+    ],
+    "assertion_cid": "bafyreifwulh3xddc5euewll4lfymr6ru3lnb37ghfhixd4fu3iey2yusdy",
+    "software_release_cid": "bafyreiaspdv4uyna3uylslrw3rmwsdqssm4xoc63fg5pkhfte2od22yvhe",
+    "strict_artifact_count": 2,
+    "verified_attestation_count": 2
+  },
+  "schema_version": "ilc.reconciliation.v0436.publication_receipt.v0.1",
+  "source_freeze_commit": "0a7d587b1778df798bd08ba7386e6155a8d5724e",
+  "version": "0.4.36"
+}

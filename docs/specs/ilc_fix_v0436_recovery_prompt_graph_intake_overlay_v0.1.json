@@ -78,6 +78,20 @@
     },
     {
       "annotation_method": "v0436_recovery_prompt_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-V0436-SIGN-PUBLISH-00",
+      "edge_role": "PUBLICATION_RECEIPT",
+      "repo_path": "docs/specs/ilc_core_0436_publication_receipt_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_V0436_SIGN_PUBLISH_00_v0.1.json",
+      "target": "release:ilc-core-0.4.36"
+    },
+    {
+      "annotation_method": "v0436_recovery_prompt_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-V0436-SIGN-PUBLISH-00",
+      "edge_role": "ROLLBACK_REPORT",
+      "repo_path": "docs/specs/ilc_core_0436_release_policy_rollback_report_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_V0436_SIGN_PUBLISH_00_v0.1.md",
+      "target": "policy:ilc-public-rc-current-policy-v1:sequence-4"
+    },
+    {
+      "annotation_method": "v0436_recovery_prompt_overlay_record",
       "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-V0436-RECOVERY-PLANNING",
       "edge_role": "GRAPH_INTAKE_OVERLAY",
       "repo_path": "docs/specs/ilc_fix_v0436_recovery_prompt_graph_intake_overlay_v0.1.json",
