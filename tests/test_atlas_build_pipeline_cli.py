@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
+from argparse import Namespace
 from pathlib import Path
 
 import pytest
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
 
-from ilc_core.cli.main import _build_parser, _run_top_level_command
+from ilc_core.cli.atlas_lmdb_cli import run_atlas_command
 from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import GenesisAtlasCandidateStore
 
 
@@ -52,9 +53,27 @@ def _key_hex_pair() -> tuple[str, str]:
 
 
 def _run(argv: list[str]) -> dict:
-    parser = _build_parser()
-    args = parser.parse_args(argv)
-    return _run_top_level_command(str(args.command), args, Path(args.graph_state))
+    assert argv[0] == "atlas"
+    subcommand = argv[1]
+
+    def option(name: str, default: str = "") -> str:
+        return argv[argv.index(name) + 1] if name in argv else default
+
+    data = run_atlas_command(
+        Namespace(
+            atlas_subcommand=subcommand,
+            lmdb=option("--lmdb"),
+            manifest=option("--manifest"),
+            output=option("--output"),
+            private_key_hex=option("--private-key-hex"),
+            projection=option("--projection"),
+            public_key_hex=option("--public-key-hex"),
+            require_signature="--allow-unsigned" not in argv,
+            slice_variant=option("--slice-variant"),
+            slice_version=option("--slice-version", "0.1"),
+        )
+    )
+    return {"data": data, "ok": True}
 
 
 def test_build_slice_produces_manifest_file(tmp_path: Path, lmdb_path: Path) -> None:

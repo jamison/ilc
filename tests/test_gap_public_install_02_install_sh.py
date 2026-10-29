@@ -20,23 +20,23 @@ ROOT = Path(__file__).resolve().parents[1]
 INSTALL_SH = ROOT / "tools" / "install.sh"
 MANIFEST = (
     ROOT
-    / "docs/specs/ilc_installable_release_manifest_ilc_core_0435_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
+    / "docs/specs/ilc_installable_release_manifest_ilc_core_0436_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_V0436_SIGN_PUBLISH_00_v0.1.json"
 )
 EXPECTED_URL = (
-    "https://files.pythonhosted.org/packages/9b/01/"
-    "34f83c7c85e0821d2cd48f7d2c639564e3d0e13810751d405eceaa8f5c4b/"
-    "ilc_core-0.4.35-py3-none-any.whl"
+    "https://files.pythonhosted.org/packages/05/13/"
+    "8c61d90ac1af8268791eef77fe3f8609741bb6faf7d27e8900ad2c7e4af8/"
+    "ilc_core-0.4.36-py3-none-any.whl"
 )
-EXPECTED_SHA256 = "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf"
-EXPECTED_SIZE = "1645463"
-EXPECTED_RELEASE_ID = "ilc-core-0.4.35"
-EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:wheel-0435@phase-1628"
-EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:sdist-0435@phase-1628"
-EXPECTED_SDIST_SHA256 = "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d"
-EXPECTED_SDIST_SIZE = "1343190"
+EXPECTED_SHA256 = "091ee1435674f5d6632480bb51c74ac5f28ad50461b8caa239bfbe6e392b7e92"
+EXPECTED_SIZE = "1389701"
+EXPECTED_RELEASE_ID = "ilc-core-0.4.36"
+EXPECTED_WHEEL_ARTIFACT_ID = "ilc-artifact:wheel-0436@phase-1628"
+EXPECTED_SDIST_ARTIFACT_ID = "ilc-artifact:sdist-0436@phase-1628"
+EXPECTED_SDIST_SHA256 = "248e66539f97380884fe3bd917e7c0f82e2ff6a5cfd7d233dd59b7ec45ac8241"
+EXPECTED_SDIST_SIZE = "1128579"
 EXPECTED_RELEASE_ENVELOPE_REF = (
     "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/"
-    "ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
+    "ilc_core_0436_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_V0436_SIGN_PUBLISH_00_v0.1.json"
 )
 EXPECTED_RELEASE_SIGNER_PUBLIC_KEY_HEX = (
     "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
@@ -57,7 +57,7 @@ EXPECTED_CONSENSUS_ENVELOPE_REF = (
 )
 PYTHON_ENVELOPE_SET = (
     ROOT
-    / "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json"
+    / "docs/specs/ilc_core_0436_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_V0436_SIGN_PUBLISH_00_v0.1.json"
 )
 CONSENSUS_ENVELOPE_SET = (
     ROOT
@@ -316,9 +316,9 @@ def test_install_sh_verifies_separate_python_and_consensus_envelope_sets(
 
     assert result.returncode == 0, result.stderr
     assert (
-        "install_sh_signatures_verified:python_release=ilc-core-0.4.35:"
-        "ilc-artifact:wheel-0435@phase-1628,"
-        "ilc-artifact:sdist-0435@phase-1628:"
+        "install_sh_signatures_verified:python_release=ilc-core-0.4.36:"
+        "ilc-artifact:wheel-0436@phase-1628,"
+        "ilc-artifact:sdist-0436@phase-1628:"
         "consensus_release=ilc-core-0.4.34:"
         "ilc-artifact:ilc-consensus-linux-x86-64-0434@phase-1628"
         in result.stdout

@@ -1,0 +1,358 @@
+{
+  "artifacts": {
+    "all_pypi_unyanked": true,
+    "consensus_artifact_included": false,
+    "count": 2,
+    "provider_fetchback": [
+      {
+        "artifact_type": "sdist",
+        "filename": "ilc_core-0.4.35.tar.gz",
+        "github_fetchback_verified": true,
+        "github_redirect_count": 1,
+        "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.35/ilc_core-0.4.35.tar.gz",
+        "pypi_fetchback_verified": true,
+        "pypi_redirect_count": 0,
+        "pypi_url": "https://files.pythonhosted.org/packages/d0/1d/85d2d97937ae80e321704cfd8b64015d4421174953d2c2f0745d322dc75f/ilc_core-0.4.35.tar.gz",
+        "pypi_yanked": false,
+        "sha256": "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d",
+        "size_bytes": 1343190
+      },
+      {
+        "artifact_type": "wheel",
+        "filename": "ilc_core-0.4.35-py3-none-any.whl",
+        "github_fetchback_verified": true,
+        "github_redirect_count": 1,
+        "github_release_url": "https://github.com/jamison/ilc/releases/download/v0.4.35/ilc_core-0.4.35-py3-none-any.whl",
+        "pypi_fetchback_verified": true,
+        "pypi_redirect_count": 0,
+        "pypi_url": "https://files.pythonhosted.org/packages/9b/01/34f83c7c85e0821d2cd48f7d2c639564e3d0e13810751d405eceaa8f5c4b/ilc_core-0.4.35-py3-none-any.whl",
+        "pypi_yanked": false,
+        "sha256": "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf",
+        "size_bytes": 1645463
+      }
+    ],
+    "release_id": "ilc-core-0.4.35",
+    "signed_artifacts": [
+      {
+        "artifact_id": "ilc-artifact:sdist-0435@phase-1628",
+        "artifact_sha256": "4ea09db6cf1b5dc18ab959b97e8528bd384643e9783a3800e0af74c41029310d",
+        "signature_hex": "05ee113d7a72ef3d6830440811a90213211d6b9039abda1534b01a79c607d1d58fbbfddfd1308a157f7a44e3aef2aa4e58bf8ea89a098367cdab41ff74f42106",
+        "signed_preimage_sha256": "7542b2374fbe7f41581d65678c044274711a6d4aed6e1d1201aa0918176a4ae0"
+      },
+      {
+        "artifact_id": "ilc-artifact:wheel-0435@phase-1628",
+        "artifact_sha256": "2e1807580a19c7494cd014cf8ffe474ac5cc224da5dd7bb3bafa8b6121823caf",
+        "signature_hex": "e10b7fc2747391dfa99c9dde266397acb1e98bd7a9add276e7c6f888f1994deab1bdf44d56f48b55352b60a1b6e979b03e81969f79fed16e4266ad523105500f",
+        "signed_preimage_sha256": "9826e683c9f1e52e0edb89c93382961eb93b9bc9db9c90291a4be59c9c59af33"
+      }
+    ]
+  },
+  "authorization": {
+    "amendment_01_sha256": "25956f78996c5995bc7181a4175a393427142d82cdc470b2f5f0807a996888dd",
+    "baseline_manifest_sha256": "58ec4371586db19eb9cd044ed74f004dbde05f0fec5353fd112aa957fc0ffdd0",
+    "compound_go_received": true,
+    "phase_go_received": true,
+    "reconciliation_manifest_sha256": "b35db1f0d76a763d51be605822ed40a87c63a684425c342015f6e91ccf174497"
+  },
+  "cryptographic_roles": {
+    "artifact_envelopes": "Phase-1335 Ed25519 release key",
+    "bootstrap_binding": "invite/bootstrap BLS key",
+    "native_graph_submission": "public-submit BLS key",
+    "policy_claim": "Genesis Agent 1 ML-DSA-65 key",
+    "role_substitution_allowed": false
+  },
+  "installer": {
+    "consensus_release_id": "ilc-core-0.4.34",
+    "dual_envelope_sets": true,
+    "focused_test_status": "144 passed",
+    "manifest": {
+      "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0435_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+      "sha256": "159d910291ab2acf30ee02201586143c0093c94ab596f14954ae4e54e4f2d0d6",
+      "size_bytes": 2956
+    },
+    "python_release_id": "ilc-core-0.4.35",
+    "script": {
+      "path": "tools/install.sh",
+      "sha256": "8f5c6ca16c69407baa486a0f6c4f67c426f39465793299b5656c3d9ec8e70a65",
+      "size_bytes": 32478
+    }
+  },
+  "local_policy_high_water": {
+    "accepted_sequence": 3,
+    "non_high_water_fields_preserved": true,
+    "post_transition_state_sha256": "9dacd0587de91c913255049be6bfdb0d69d977ac030e6cc7e690c9eb8d0a8843",
+    "prior_sequence": 2,
+    "prior_state_sha256": "0a433a4d1d938e2d36a02239c362748c608c61ca62b7e4daaa6800dc2fe1b19b",
+    "rollback_copy_location": "$HOME/.ilc/rollback/upgrade_state_sequence_2_pre_v0435_reconciliation.json",
+    "rollback_copy_mode": "0600"
+  },
+  "native_graph": {
+    "create": false,
+    "host": "ilc-node-2",
+    "lmdb_path": "/var/lib/ilc/rc01/public_submit_ingress_bridge/truth_graph.lmdb",
+    "lock": false,
+    "readonly": true,
+    "rows": [
+      {
+        "node_id": "bafyreibcmtdqzqjquncsqfysh66zvz42hkibzeut3csj2azzwmocctpm3m",
+        "primitive": "assert.truth",
+        "primitive_type": "observation",
+        "sha256": "4f4fbc8abbfc3d24d98e0b7136306a8cb741a31ba56758fc6bf04795c74522e5",
+        "size_bytes": 6192
+      },
+      {
+        "node_id": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+        "primitive": "assert.truth",
+        "primitive_type": "knowledge_claim",
+        "sha256": "5ec15aaf84b6baa3dfe99f6ad8c1978272e02b0b43a41f7e7e32a62dbdc3b8c8",
+        "size_bytes": 8876
+      }
+    ],
+    "schema_version": "ilc.reconciliation.v0435.native_lmdb_readback.v0.1"
+  },
+  "non_claims": [
+    "no_consensus_binary_rebuild_or_redeploy",
+    "no_validator_or_wallet_lmdb_reset",
+    "no_epoch_transition",
+    "no_ecu_or_ilc_issuance",
+    "no_settlement_or_minting_activation",
+    "no_public_rc_activation",
+    "no_generic_arbitrary_slice_selection_proof",
+    "no_native_cas_or_dht_transport_proof"
+  ],
+  "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+  "policy": {
+    "bootstrap_binding_evidence_cid": "bafyreif4pl73yibkxc7u7g4qqob2ipkl3oz6acctjrq7klwld2ayx54d5y",
+    "channel": "public_rc",
+    "claim_cid": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+    "detached_policy_signature_sha256": "7dfd016a37617f61a58c4a2fcb2fa706560819e313e23a5b37d82feb9cfcdc6a",
+    "mldsa_signature_verified": true,
+    "network_id": "ilc-public-rc-01-testnet-harness",
+    "policy_id": "ilc-public-rc-current-policy-v1",
+    "policy_signature_payload_sha256": "08a12881a5222e8940a281f9be8d55f6e58f2543ca238572704cafa2d67eaeba",
+    "policy_signing_request_sha256": "62f387e30db3a8a6025f8185120b314b5b0666554d42af92ca23a313a7a4227a",
+    "predecessor_claim_cid": "bafyreih55qz222zprbsyveljr5ak27r5cd5guta27cyzs2oia4jsmobh6y",
+    "sequence": 3,
+    "tracked_bootstrap_binding": {
+      "path": "docs/specs/ilc_core_0435_bootstrap_policy_binding_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+      "sha256": "98fcb43c90eec86e8acdc688e545e1d092da121aabc90fa95aa2d2c9a2af9180",
+      "size_bytes": 1122
+    },
+    "tracked_claim": {
+      "path": "docs/specs/ilc_core_0435_current_policy_claim_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+      "sha256": "fb46a3f3483d5b2a2afc669cef4c43be6a280df4934f1827e8c6535f616d0369",
+      "size_bytes": 9282
+    },
+    "tracked_view": {
+      "path": "docs/specs/ilc_core_0435_current_policy_view_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+      "sha256": "e5326f5ac99d749b831d25d6681bcc049c8589f2f52394c4efc08b169baa7301",
+      "size_bytes": 35141
+    }
+  },
+  "production_upgrade_verification": {
+    "artifact_cids": [
+      "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu",
+      "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm"
+    ],
+    "artifact_count": 2,
+    "authorized_upgrade_available": true,
+    "available_version": "0.4.35",
+    "candidate_upgrade_available": true,
+    "candidate_version_relation": "newer",
+    "channel": "public_rc",
+    "eligibility_status": "verified_current_policy",
+    "endpoint": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/docs/specs/ilc_core_0435_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+    "full_release_graph_binding_verified": true,
+    "graph_provenance_verified": true,
+    "high_water_sequence_after": 3,
+    "installed_version": "0.4.34",
+    "network_id": "ilc-public-rc-01-testnet-harness",
+    "policy_claim_cid": "bafyreiho2ltfxv7v6fe7hi7mtj3pjq2wlenimht27rcel6d6v6dsfy5puy",
+    "policy_id": "ilc-public-rc-current-policy-v1",
+    "policy_sequence": 3,
+    "policy_view_path": "docs/specs/ilc_core_0435_current_policy_view_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+    "policy_view_sha256": "e5326f5ac99d749b831d25d6681bcc049c8589f2f52394c4efc08b169baa7301",
+    "release_assertion_cid": "bafyreihu2nwi37azxr6escbebnsqhiae36h4z7awzpgo2bi32abrcwinwi",
+    "release_signature_verified": true,
+    "schema_version": "rc_native_distribution_production_upgrade_verification_receipt.v0.1",
+    "software_release_cid": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+    "state_path": "/Users/jamison/.ilc/upgrade_state.json",
+    "state_sha256_after": "9dacd0587de91c913255049be6bfdb0d69d977ac030e6cc7e690c9eb8d0a8843"
+  },
+  "provenance": {
+    "ceremony_support_commits": [
+      "21ef64691",
+      "df72c58a2",
+      "7295a4d4c",
+      "4fd82354b86325da8e4a95180c32dbb8f6840b3c"
+    ],
+    "public_evidence_commit": "6f23784d17d778f500e85432eb35c6f9fa00187d",
+    "sidecar_source_commit": "3a2ada33a78378f422619160775668ba68791ede",
+    "source_freeze_commit": "c91bae2d0c03aeaebe7c902b848634bf4abfd297",
+    "unsigned_attestation": {
+      "path": "docs/specs/ilc_core_0435_unsigned_build_attestation_reconciliation_00_v0.1.json",
+      "sha256": "c2f07dfa3d626618727be4bad5dac05944584cdcac4b16b2c70ae69c73bcf1ab",
+      "size_bytes": 765009
+    }
+  },
+  "public_mirror": {
+    "provenance": {
+      "append_only": true,
+      "commit_count_after": 3620,
+      "commit_count_before_private": 5710,
+      "commit_count_min_required": 3619,
+      "denylist_scan_result": "pass",
+      "excluded_path_count": 10483,
+      "filter_files_hash": "c17c602494f4a5f0b99c6f307e945cf44903bd1a9067b094fd9ef404fa1a1c2f",
+      "force_push": false,
+      "incremental_used": true,
+      "last_mirror_source_commit": "c624cb1e6ac15776295a27a58cf34c44f320f13a",
+      "pipeline_version": "generate_public_mirror_gap_mirror_incremental_00.v0.2",
+      "previous_public_head_sha": "a2944821a9ad2b51e70b84f2a0fc2af56dba3fef",
+      "public_rc_exclude_scan_result": "pass",
+      "published_archive_sha256": "725020d4fefacfcc1dc1e0081438bfa9aac8aaabfd95adf08763131e7d3510ce",
+      "published_public_head_sha": "05f4ae53c59412b8f3133253d77d0287c7b36499",
+      "published_tree_sha": "a76191c2544ac64a9eab5a6d12de55e7d44ab6fc",
+      "remote_public_head_sha": "05f4ae53c59412b8f3133253d77d0287c7b36499",
+      "replay": {
+        "archive_sha256": "fe12f7b755aa08a98724e559195e5eee4f199e917ebca9f6ba501ca1108d0cd1",
+        "commit_identity_reproducibility_claimed": false,
+        "head_sha": "8b62c8b0ddfbe504c971e28a2d88c90ba2421423",
+        "note": "Incremental commit metadata is publication-event-specific; replay proves filtered tree equivalence, not commit or archive identity.",
+        "tree_diff_count": 0,
+        "tree_matches_published": true,
+        "tree_sha": "a76191c2544ac64a9eab5a6d12de55e7d44ab6fc"
+      },
+      "schema_version": "ilc.reconciliation.v0435.public_mirror_provenance.v0.1",
+      "source_private_commit": "6f23784d17d778f500e85432eb35c6f9fa00187d"
+    },
+    "readback": {
+      "append_only": true,
+      "denylist_scan": "pass",
+      "files": [
+        {
+          "http_status": 200,
+          "path": "tools/install.sh",
+          "sha256": "8f5c6ca16c69407baa486a0f6c4f67c426f39465793299b5656c3d9ec8e70a65",
+          "size_bytes": 32478,
+          "url": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/tools/install.sh",
+          "verified": true
+        },
+        {
+          "http_status": 200,
+          "path": "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "sha256": "7e453f7b7933b14521318191d1ae86436b7b8129a7412f8bd92f5728f978cf23",
+          "size_bytes": 2446,
+          "url": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "verified": true
+        },
+        {
+          "http_status": 200,
+          "path": "docs/specs/ilc_core_0435_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "sha256": "1c1289265dc19d3437673e27a0810fd403a2fbee9ce2750eb66fed9a3adb608e",
+          "size_bytes": 13684,
+          "url": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/docs/specs/ilc_core_0435_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "verified": true
+        },
+        {
+          "http_status": 200,
+          "path": "docs/specs/ilc_installable_release_manifest_ilc_core_0435_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "sha256": "159d910291ab2acf30ee02201586143c0093c94ab596f14954ae4e54e4f2d0d6",
+          "size_bytes": 2956,
+          "url": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/docs/specs/ilc_installable_release_manifest_ilc_core_0435_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "verified": true
+        },
+        {
+          "http_status": 200,
+          "path": "docs/specs/ilc_core_0435_current_policy_claim_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "sha256": "fb46a3f3483d5b2a2afc669cef4c43be6a280df4934f1827e8c6535f616d0369",
+          "size_bytes": 9282,
+          "url": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/docs/specs/ilc_core_0435_current_policy_claim_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "verified": true
+        },
+        {
+          "http_status": 200,
+          "path": "docs/specs/ilc_core_0435_current_policy_view_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "sha256": "e5326f5ac99d749b831d25d6681bcc049c8589f2f52394c4efc08b169baa7301",
+          "size_bytes": 35141,
+          "url": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/docs/specs/ilc_core_0435_current_policy_view_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "verified": true
+        },
+        {
+          "http_status": 200,
+          "path": "docs/specs/ilc_core_0435_bootstrap_policy_binding_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "sha256": "98fcb43c90eec86e8acdc688e545e1d092da121aabc90fa95aa2d2c9a2af9180",
+          "size_bytes": 1122,
+          "url": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/docs/specs/ilc_core_0435_bootstrap_policy_binding_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "verified": true
+        },
+        {
+          "http_status": 200,
+          "path": "docs/specs/ilc_core_0435_publication_receipt_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "sha256": "5caed8551a1472521fcfa2ff7a969503962fa1105715288891d29aceea4fe029",
+          "size_bytes": 7723,
+          "url": "https://raw.githubusercontent.com/jamison/ilc/05f4ae53c59412b8f3133253d77d0287c7b36499/docs/specs/ilc_core_0435_publication_receipt_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+          "verified": true
+        }
+      ],
+      "force_push": false,
+      "public_head": "05f4ae53c59412b8f3133253d77d0287c7b36499",
+      "public_rc_exclude_scan": "pass",
+      "schema_version": "ilc.reconciliation.v0435.public_mirror_readback.v0.1"
+    }
+  },
+  "r5c_disposition": {
+    "executed": false,
+    "live_host_deployment_performed": false,
+    "preserved_consensus_artifact_cid": "bafyreig4fogiwzgsqicr5r346p5mgl2uvmnsjhxs2ws3gtrizbgpbsqcfi",
+    "preserved_consensus_sha256": "9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+    "preserved_source_tree_git_oid": "db9fa9bb013a06fec07ab2d359a3e7b1ebb44a93",
+    "reason": "v0.4.34 consensus tarball and source-tree object are unchanged"
+  },
+  "release_graph": {
+    "artifact_cids": [
+      "bafyreiao3r7f3toxm7bnlwoca7pc6gq266zd6uymnebim6ypw7odfpivsu",
+      "bafyreifaki7oxj4n27vfkrwu4pp2domf5ivxurq4dzgd4osaiqe3m4ogkm"
+    ],
+    "assertion_cid": "bafyreihu2nwi37azxr6escbebnsqhiae36h4z7awzpgo2bi32abrcwinwi",
+    "native_submit_node_id": "bafyreibcmtdqzqjquncsqfysh66zvz42hkibzeut3csj2azzwmocctpm3m",
+    "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+    "schema_version": "ilc.reconciliation.v0435.release_finalization.v0.1",
+    "software_release_cid": "bafyreifhnijilskvrslhqj7rtvhuxms6nwyiztykwswy3gtgics2fxwwku",
+    "tracked_assertion": {
+      "path": "docs/specs/ilc_core_0435_release_assertion_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+      "sha256": "1c1289265dc19d3437673e27a0810fd403a2fbee9ce2750eb66fed9a3adb608e",
+      "size_bytes": 13684
+    },
+    "tracked_envelopes": {
+      "path": "docs/specs/ilc_core_0435_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00_v0.1.json",
+      "sha256": "7e453f7b7933b14521318191d1ae86436b7b8129a7412f8bd92f5728f978cf23",
+      "size_bytes": 2446
+    },
+    "verified_attestation_count": 2,
+    "version": "0.4.35"
+  },
+  "result": "pass",
+  "rollback_rejection": {
+    "authorized_upgrade_available": false,
+    "eligibility_status": "unresolved",
+    "prior_release_preserved": true,
+    "probe": "sequence_3_view_with_observer_highest_seen_sequence_4",
+    "reason": "policy_rollback_detected",
+    "schema_version": "ilc.reconciliation.v0435.rollback_rejection_receipt.v0.1",
+    "v0434_github_release_preserved": true,
+    "v0434_pypi_preserved": true
+  },
+  "schema_version": "ilc.reconciliation.v0435.sign_publish_evidence.v0.1",
+  "verification": {
+    "focused_tests": "144 passed in 105.76s",
+    "mirror_content_replay": "PASS_TREE_EQUIVALENCE",
+    "mirror_remote_readback": "PASS",
+    "production_resolver": "PASS",
+    "provider_fetchback": "PASS",
+    "remote_lmdb_readback": "PASS",
+    "rollback_rejection": "PASS",
+    "secret_leak_detected": false,
+    "sensitive_runtime_taboos": "PASS"
+  }
+}

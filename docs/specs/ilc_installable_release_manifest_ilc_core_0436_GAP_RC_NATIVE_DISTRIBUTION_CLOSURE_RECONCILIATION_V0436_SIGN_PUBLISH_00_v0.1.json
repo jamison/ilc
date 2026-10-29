@@ -1,0 +1,65 @@
+{
+  "artifacts": [
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:wheel-0436@phase-1628",
+      "artifact_type": "python_wheel",
+      "canonical_hash": "sha256:091ee1435674f5d6632480bb51c74ac5f28ad50461b8caa239bfbe6e392b7e92",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/05/13/8c61d90ac1af8268791eef77fe3f8609741bb6faf7d27e8900ad2c7e4af8/ilc_core-0.4.36-py3-none-any.whl",
+      "lineage_reference": "genesis:v0.4.36",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1628,
+      "ratification_token": "cdl_122_release_current_policy_claim_ratified",
+      "signing_status": "signed",
+      "size_bytes": 1389701
+    },
+    {
+      "arch": "any",
+      "artifact_id": "ilc-artifact:sdist-0436@phase-1628",
+      "artifact_type": "python_sdist",
+      "canonical_hash": "sha256:248e66539f97380884fe3bd917e7c0f82e2ff6a5cfd7d233dd59b7ec45ac8241",
+      "channel": "rc",
+      "download_url": "https://files.pythonhosted.org/packages/77/36/a109c838c6a6a2fa0c7cdad2f24b715cf8f550c6b7a3a1bf380fbcce6436/ilc_core-0.4.36.tar.gz",
+      "lineage_reference": "genesis:v0.4.36",
+      "min_python_version": "3.10",
+      "platform": "any",
+      "produced_phase": 1628,
+      "ratification_token": "cdl_122_release_current_policy_claim_ratified",
+      "signing_status": "signed",
+      "size_bytes": 1128579
+    },
+    {
+      "arch": "amd64",
+      "artifact_id": "ilc-artifact:ilc-consensus-linux-x86-64-0434@phase-1628",
+      "artifact_type": "cli_binary",
+      "canonical_hash": "sha256:9e7bcc2a8737a785e6ad69b9abcafc4788bc0e73150c0a82d6e51d84a8473f9f",
+      "channel": "rc",
+      "download_url": "https://github.com/jamison/ilc/releases/download/v0.4.34/ilc-consensus-linux-x86_64-v0.4.34.tar.gz",
+      "lineage_reference": "genesis:v0.4.34",
+      "platform": "linux",
+      "produced_phase": 1628,
+      "ratification_token": "cdl_122_release_current_policy_claim_ratified",
+      "signing_status": "signed",
+      "size_bytes": 5053300
+    }
+  ],
+  "channel": "rc",
+  "manifest_produced_phase": 1628,
+  "manifest_schema_version": "ilc_installable_release_manifest_GAP_PUBLIC_INSTALL_01.v0.1",
+  "non_claims": [
+    "python_release_v0436_and_consensus_release_v0434_have_separate_signed_provenance",
+    "preserved_v0434_consensus_binary_is_not_rebuilt_or_relabelled_as_v0436",
+    "provider_urls_are_non_authoritative_transport_hints",
+    "no_native_cas_dht_transport_claim",
+    "no_generic_arbitrary_agent_slice_selection_claim",
+    "no_epoch_transition",
+    "no_settlement",
+    "no_ecu_minting",
+    "no_ilc_minting"
+  ],
+  "release_envelope_ref": "https://raw.githubusercontent.com/jamison/ilc/main/docs/specs/ilc_core_0436_release_envelopes_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_V0436_SIGN_PUBLISH_00_v0.1.json",
+  "release_id": "ilc-core-0.4.36",
+  "signer_public_key_hex": "5bf71c1e0ac93f2d7414b0dc315161fc4a57462c198ba1618e2890ec89a5b15a"
+}

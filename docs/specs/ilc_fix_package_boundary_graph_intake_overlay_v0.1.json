@@ -1,0 +1,76 @@
+{
+  "entries": [
+    {
+      "graph_delta": "load_bearing_artifact_added",
+      "node_kind": "runtime_module",
+      "path": "ilc_core/epoch/economic_activation_state.py",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "canonical_public_fail_closed_activation_state"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "path": "tests/conftest.py",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "historical_v0435_snapshot_gating"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "path": "tests/test_public_rc_package_boundary.py",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "package_boundary_regression_coverage"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "path": "tests/test_phase_1545p_fix59d_atlas_lmdb_write_cli.py",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "private_atlas_helper_boundary_regression"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "test_file",
+      "path": "tests/test_phase_1545p_fix83_materialization_bootstrap.py",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "legacy_bootstrap_public_command_retirement_regression"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "tool_script",
+      "path": "tools/check_public_rc_package_boundary.py",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "deterministic_source_and_wheel_boundary_verifier"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "evidence_receipt",
+      "path": "docs/specs/ilc_public_rc_package_boundary_reconciliation_v0436_v0.1.json",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "unsigned_v0436_package_boundary_evidence"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "spec_doc",
+      "path": "docs/specs/ilc_public_rc_package_boundary_reconciliation_v0436_v0.1.md",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "unsigned_v0436_package_boundary_reconciliation"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "phase_walkthrough",
+      "path": "docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_package_fix_00_walkthrough.md",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "package_fix_execution_evidence"
+    },
+    {
+      "graph_delta": "support_only",
+      "node_kind": "graph_intake_overlay",
+      "path": "docs/specs/ilc_fix_package_boundary_graph_intake_overlay_v0.1.json",
+      "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+      "role": "phase_scoped_graph_intake_registration"
+    }
+  ],
+  "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+  "schema_version": "ilc.fix.package_boundary.graph_intake_overlay.v0.1"
+}

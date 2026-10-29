@@ -215,7 +215,7 @@ def test_smoke_evidence_exists_and_all_pass() -> None:
 
 
 def test_package_version_matches_vnext_source_lock() -> None:
-    assert ilc_core.__version__ == "0.4.35"
+    assert ilc_core.__version__ == "0.4.36"
 
 
 def test_output_token_in_status() -> None:

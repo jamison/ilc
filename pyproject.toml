@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ilc-core"
-version = "0.4.35"
+version = "0.4.36"
 description = "ILC Protocol Core Library"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -160,6 +160,7 @@ include = [
     "ilc_core",
     "ilc_core.analysis",
     "ilc_core.bundle",
+    "ilc_core.capproof",
     "ilc_core.ccss",
     "ilc_core.cli",
     "ilc_core.consensus",

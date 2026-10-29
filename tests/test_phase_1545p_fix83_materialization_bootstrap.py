@@ -4,8 +4,6 @@
 from __future__ import annotations
 
 import json
-import subprocess
-import sys
 from pathlib import Path
 
 import pytest
@@ -132,37 +130,11 @@ def test_bootstrap_cli_writes_unsigned_reconstruction_receipt(tmp_path: Path) ->
     assert (out_dir / "ilc_core" / "tiny.py").read_text(encoding="utf-8") == "VALUE = 'fix83'\n"
 
 
-def test_native_ilc_bootstrap_command_smoke(tmp_path: Path) -> None:
-    profile_path, context = _tiny_profile(tmp_path)
-    out_dir = tmp_path / "cli-out"
-    receipt_path = tmp_path / "cli-receipt.json"
-    proc = subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "ilc_core.cli.main",
-            "bootstrap",
-            "--profile",
-            str(profile_path),
-            "--out",
-            str(out_dir),
-            "--verify",
-            "--receipt",
-            str(receipt_path),
-            "--repo-root",
-            str(context["repo_root"]),
-        ],
-        check=False,
-        capture_output=True,
-        text=True,
-    )
-    assert proc.returncode == 0, proc.stderr
-    payload = json.loads(proc.stdout)
-    receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
-    assert payload["ok"] is True
-    assert payload["data"]["verification"]["ok"] is True
-    assert receipt["signed"] is False
-    assert receipt["notes"] == RECONSTRUCTION_NOTES
+def test_legacy_bootstrap_is_not_a_public_cli_command() -> None:
+    from ilc_core.cli.main import OPERATIONAL_COMMANDS
+
+    assert "bootstrap" not in OPERATIONAL_COMMANDS
+    assert "install" in OPERATIONAL_COMMANDS
 
 
 def test_verify_reports_missing_file(tmp_path: Path) -> None:

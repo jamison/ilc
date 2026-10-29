@@ -1,0 +1,188 @@
+{
+  "artifacts": {
+    "sdist": {
+      "byte_reproducible": false,
+      "member_count": 523,
+      "normalized_members_reproducible": true,
+      "path": "out/reconciliation_package_fix_v0436/artifacts/ilc_core-0.4.36.tar.gz",
+      "sha256": "248e66539f97380884fe3bd917e7c0f82e2ff6a5cfd7d233dd59b7ec45ac8241",
+      "size_bytes": 1128579
+    },
+    "wheel": {
+      "byte_reproducible": true,
+      "path": "out/reconciliation_package_fix_v0436/artifacts/ilc_core-0.4.36-py3-none-any.whl",
+      "record_member_count": 473,
+      "sha256": "091ee1435674f5d6632480bb51c74ac5f28ad50461b8caa239bfbe6e392b7e92",
+      "size_bytes": 1389701
+    }
+  },
+  "boundary_repairs": [
+    {
+      "disposition": "replace_before_export",
+      "path": "ilc_core/epoch/economic_activation_state.py",
+      "result": "canonical public fail-closed activation-state helper added"
+    },
+    {
+      "disposition": "prior_public_promotion",
+      "path": "ilc_core/epoch/epoch_emission_production_path.py",
+      "result": "stale exclusion marker removed after completed production-path authority"
+    },
+    {
+      "disposition": "prior_public_promotion",
+      "path": "ilc_core/genesis/invitation_provenance_record.py",
+      "result": "stale exclusion marker removed after completed public invitation provenance authority"
+    },
+    {
+      "disposition": "defer_public_rc",
+      "path": "ilc_core/cli/main.py",
+      "result": "private Atlas maintenance commands removed from the public CLI surface"
+    },
+    {
+      "disposition": "replace_before_export",
+      "path": "ilc_core/analysis/econ_accounting.py",
+      "result": "public-safe activation-state dependency used"
+    },
+    {
+      "disposition": "replace_before_export",
+      "path": "ilc_core/epoch/epoch_distribution_writer.py",
+      "result": "public-safe activation-state dependency used"
+    },
+    {
+      "disposition": "replace_before_export",
+      "path": "ilc_core/epoch/treasury_validator_reward_production_path.py",
+      "result": "public-safe activation-state dependency used"
+    },
+    {
+      "disposition": "package_discovery_correction",
+      "path": "pyproject.toml",
+      "result": "ilc_core.capproof declared and package version set to 0.4.36"
+    }
+  ],
+  "full_suite": {
+    "errors": 0,
+    "failures": 0,
+    "junit_sha256": "463ab8e912c1574179d349a197c4b604f058a9d4537ef5a0165e127cce815bc0",
+    "log_sha256": "49d64001e2a52950290259cd77e4f754e08d5283ca6b11b910325ab704e27e22",
+    "passed": 16405,
+    "seconds": 5038.99,
+    "skipped": 2396,
+    "tests": 18801,
+    "verdict": "pass"
+  },
+  "installed_module_census": {
+    "expected_optional_import_failures": [
+      {
+        "dependency": "scipy",
+        "module": "ilc_core.analysis.laplacian_analytics"
+      },
+      {
+        "dependency": "scipy",
+        "module": "ilc_core.analysis.local_spectral_analytics"
+      },
+      {
+        "dependency": "scipy",
+        "module": "ilc_core.analysis.spectral_trajectory"
+      }
+    ],
+    "import_pass_count": 446,
+    "metadata_version": "0.4.36",
+    "module_count": 449,
+    "runtime_version": "0.4.36"
+  },
+  "non_claims": [
+    "v0.4.36 is unsigned and unpublished",
+    "v0.4.35 bytes were not changed",
+    "no release or Genesis key was accessed",
+    "no PyPI or GitHub publication occurred",
+    "no public mirror was regenerated or pushed",
+    "no release policy or graph head was changed",
+    "no validator, wallet, graph, or LMDB state was mutated",
+    "no economic guard was activated"
+  ],
+  "phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-PACKAGE-FIX-00",
+  "private_marker_dispositions": [
+    {"path": "ilc_core/analysis/econ_accounting.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/bundle/atlas_slice_manifest.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/bundle/type_registry.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/cli/atlas_lmdb_cli.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/cli/mcp_cli.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/distribution/genesis_package_manifest.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/distribution/materialization.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/epistemic/jury_assignment_announcement_runtime.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/epistemic/jury_finality_evaluator.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/epoch/canonical_economic_event.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/epoch/cdl057_witness_gate_adapter.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/epoch/ejected_stake_distribution_production_path.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/epoch/treasury_validator_reward_production_path.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/genesis/serving_receipt.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/governance/__init__.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/governance/challenge_node_runtime.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/governance/fork_legitimacy_runtime.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/graph/sidecar_public_path_preflight.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/harness/__init__.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/harness/co_attestation_receipt.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/harness/consent_gate.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/harness/idle_capacity_scheduler.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/harness/local_immutable_store.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/harness/local_node_capture.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/harness/maintenance_task_executor.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/harness/provider_usage_adapter.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/identity/pq_agent_sign_bridge.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/ledger/cdl048_conversion_sweeper_runtime.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/ledger/claimability_proof_binding_runtime.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/ledger/conversion_candidate_runtime.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/mcp/__init__.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/mcp/node_service.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/mcp/schema.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/mcp/schemas/__init__.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/mcp/service.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/network/d2d/transport_principal_public_path_preflight.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/privacy/transfer_mixing_framework.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/genesis_v0_2_signing_ceremony_gate.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/patent_application_numbers_status.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/patent_delivery_status.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/public_rc_exclude_disposition.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/public_rc_publication_claim_gate.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/release_artifact_manifest_rehearsal.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/release_artifact_production_gate.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/release_key_envelope_rehearsal.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/release_keys_envelopes_generation_gate.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/signing_ceremony_status.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/source_allowlist_export_execution_gate.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/rc/source_allowlist_export_rehearsal.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/schema/petition_node_type.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/schema/verdict_record_schema.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/sidecars/idea_descent_rehearsal.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/sim/phase_1511p_economic_parameter_sims.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/sim/sim_fetch_01/werner_capture_sim_fetch_rerun.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_run.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/sim/sim_fetch_01/werner_topology_capture_schema.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/storage/genesis_atlas_candidate_lmdb_adapter.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/storage/genesis_atlas_lmdb_writer.py", "disposition": "strip_from_export"},
+    {"path": "ilc_core/validator/validator_admission_ejection_production_path.py", "disposition": "strip_from_export"}
+  ],
+  "schema_version": "ilc.public_rc.package_boundary_reconciliation.v0436.v0.1",
+  "source_boundary": {
+    "exported_file_count": 547,
+    "materialized_tree_sha256": "f980ae50abb9e62c79f5284cbb2fd55ac79b7ff657c29855a8c21b9746134ec8",
+    "missing_internal_edges": 0,
+    "private_marker_python_file_count": 60,
+    "public_python_file_count": 453,
+    "public_tree_marker_count": 0,
+    "required_package": "ilc_core.capproof",
+    "required_package_present": true,
+    "source_verifier_report_sha256": "7c120f678637a48e98f844d46dbbf7e92b024c170d4e9569779e4bcb3dd02927",
+    "verdict": "pass",
+    "wheel_python_file_count": 449,
+    "wheel_verifier_report_sha256": "4604adb1aaae830a36de3370475e82898963322e86233781883735aa3bd79974"
+  },
+  "source_freeze_commit": "0a7d587b1778df798bd08ba7386e6155a8d5724e",
+  "test_evidence": {
+    "focused_boundary_policy_invite_install_fetch": "93 passed",
+    "helper_environment_rerun": "24 passed",
+    "twine": "wheel and sdist passed",
+    "verdict": "pass"
+  },
+  "verdict": "unsigned_v0436_candidate_ready_for_new_sensitive_authorization"
+}

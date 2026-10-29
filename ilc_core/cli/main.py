@@ -76,11 +76,9 @@ OPERATIONAL_COMMANDS = (
     "skills",
     "wallet",
     "ccss",
-    "atlas",
     "doctor",
     "network-doctor",
     "relay",
-    "bootstrap",
     "bootstrap-census",
     "bootstrap-receipt",
     "submit",
@@ -4249,8 +4247,6 @@ def _run_top_level_command(
     stateless_commands = {
         "agent",
         "agent-bootstrap",
-        "atlas",
-        "bootstrap",
         "bootstrap-census",
         "bootstrap-receipt",
         "bundle",
@@ -4396,16 +4392,7 @@ def _run_top_level_command(
         data = run_ccss_command(args)
         return _success_payload(command, data)
     if command == "atlas":
-        try:
-            from ilc_core.cli.atlas_lmdb_cli import AtlasLmdbCliError, run_atlas_command
-        except ImportError as exc:
-            raise ValueError("atlas_lmdb_cli_not_available_public_rc") from exc
-
-        try:
-            data = run_atlas_command(args)
-        except AtlasLmdbCliError as exc:
-            raise ValueError(str(exc)) from exc
-        return _success_payload(command, data)
+        raise ValueError("atlas_lmdb_cli_not_available_public_rc")
     if command == "wallet":
         from ilc_core.cli.wallet_cli import WalletCliError, run_wallet_command
 
@@ -4415,33 +4402,7 @@ def _run_top_level_command(
             raise ValueError(str(exc)) from exc
         return _success_payload(command, data)
     if command == "bootstrap":
-        try:
-            from ilc_core.distribution.materialization import (
-                MaterializationError,
-                bootstrap,
-            )
-        except ImportError as exc:
-            raise ValueError("materialization_not_available_public_rc") from exc
-
-        try:
-            data = bootstrap(
-                profile_path=Path(args.profile),
-                out_dir=Path(args.out),
-                receipt_path=Path(args.receipt),
-                verify=bool(args.verify),
-                repo_root=Path(args.repo_root),
-                cache_dir=Path(args.cache_dir) if args.cache_dir else None,
-                tarball=Path(args.tarball) if args.tarball else None,
-                http_base_url=str(args.http_base_url or ""),
-                max_total_bytes=int(args.max_total_bytes),
-                recipe_path=Path(args.recipe) if args.recipe else None,
-                run_recipe=bool(args.run_recipe),
-                recipe_timeout_seconds=int(args.recipe_timeout),
-                overwrite=bool(args.overwrite),
-            )
-        except MaterializationError as exc:
-            raise ValueError(str(exc)) from exc
-        return _success_payload(command, data)
+        raise ValueError("materialization_not_available_public_rc")
     if command == "bootstrap-receipt":
         from ilc_core.rc.public_agent_bootstrap_receipt import (
             PublicAgentBootstrapReceiptError,

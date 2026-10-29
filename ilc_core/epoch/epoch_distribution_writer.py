@@ -41,6 +41,9 @@ from ilc_core.epoch.epoch_maturity_gate import (
     MonthlyIssuanceMaturityProof,
     require_monthly_issuance_maturity_proof,
 )
+from ilc_core.epoch.economic_activation_state import (
+    TREASURY_DISTRIBUTION_NOT_ACTIVATED,
+)
 from ilc_core.epoch.fee_burn_split_runtime import (
     EpochFeeBurnSplitQuote,
     build_fee_burn_split_quote,
@@ -617,10 +620,6 @@ def _genesis_fixed_tranche_ilc() -> Decimal:
 
 
 def _treasury_distribution_not_activated() -> bool:
-    from ilc_core.epoch.treasury_validator_reward_production_path import (
-        TREASURY_DISTRIBUTION_NOT_ACTIVATED,
-    )
-
     return TREASURY_DISTRIBUTION_NOT_ACTIVATED
 
 

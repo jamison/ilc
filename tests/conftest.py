@@ -268,6 +268,7 @@ HISTORICAL_PHASE_SNAPSHOT_TEST_NODEIDS = frozenset(
         "tests/test_phase_1575s_genesis_ilc_minting_authorization.py::test_phase_1575s_rejects_tampered_balance",
         "tests/test_phase_1575s_genesis_ilc_minting_authorization.py::test_phase_1575s_rejects_tampered_payload_hash",
         "tests/test_phase_1575s_genesis_ilc_minting_authorization.py::test_phase_1575s_run_fails_closed_after_s_infinity_change",
+        "tests/test_reconciliation_v0435_source_freeze.py::test_v0435_source_version_and_package_declaration_are_exact",
     }
 )
 

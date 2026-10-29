@@ -37,6 +37,27 @@
     {
       "annotation_method": "gap_rc_native_distribution_reconciliation_sign_publish_overlay_record",
       "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "edge_role": "EVIDENCES",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_closure_reconciliation_sign_publish_evidence_v0.1.json",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_reconciliation_sign_publish_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "edge_role": "ROLLBACK_EVIDENCE",
+      "repo_path": "docs/specs/ilc_rc_native_distribution_closure_reconciliation_sign_publish_rollback_report_v0.1.md",
+      "target": "phase:GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_reconciliation_sign_publish_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
+      "edge_role": "PHASE_WALKTHROUGH",
+      "repo_path": "docs/phases/phase_gap_rc_native_distribution_closure_reconciliation_sign_publish_00_walkthrough.md",
+      "target": "token:rc_native_distribution_closure_reconciliation_sign_publish_complete_GAP_RC_NATIVE_DISTRIBUTION_CLOSURE_RECONCILIATION_SIGN_PUBLISH_00"
+    },
+    {
+      "annotation_method": "gap_rc_native_distribution_reconciliation_sign_publish_overlay_record",
+      "annotation_phase": "GAP-RC-NATIVE-DISTRIBUTION-CLOSURE-RECONCILIATION-SIGN-PUBLISH-00",
       "edge_role": "GRAPH_INTAKE_OVERLAY",
       "repo_path": "docs/specs/ilc_fix_rc_native_distribution_reconciliation_sign_publish_graph_intake_overlay_v0.1.json",
       "target": "policy:graph_intake_new_file_coverage"

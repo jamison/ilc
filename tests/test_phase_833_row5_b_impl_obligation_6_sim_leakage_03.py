@@ -427,7 +427,7 @@ class TestObligation6IntegrationRoundtrip:
             lane = PrivacyLane(cfg, current_epoch=epoch)
             for i in range(cfg.k):
                 lane.submit(_contribution(agent=f"e{epoch}_a{i}"), current_epoch=epoch)
-            for g in lane.flush(current_epoch=epoch + 1):
+            for g in lane.flush(current_epoch=epoch + cfg.release_jitter_epochs):
                 c.record_group_settled(sealed_epoch=epoch, group=g)
         # 1 force-released with 5 transfers
         forced_group = _degraded_group(release_epoch=20, size=5)

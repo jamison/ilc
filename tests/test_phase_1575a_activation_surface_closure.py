@@ -16,7 +16,6 @@ EXCLUDED_MODULES = {
     "ilc_core/economics/productive_ecu_expansion_bounty_runtime.py",
     "ilc_core/epoch/canonical_economic_event.py",
     "ilc_core/epoch/ejected_stake_distribution_production_path.py",
-    "ilc_core/epoch/epoch_emission_production_path.py",
     "ilc_core/epoch/treasury_validator_reward_production_path.py",
     "ilc_core/ledger/conversion_candidate_runtime.py",
     "ilc_core/validator/validator_admission_ejection_production_path.py",

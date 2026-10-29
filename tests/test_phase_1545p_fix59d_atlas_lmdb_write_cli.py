@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 import json
-import os
-import subprocess
-import sys
+from argparse import Namespace
 from pathlib import Path
 
 import pytest
@@ -14,6 +12,7 @@ from ilc_core.cli.atlas_lmdb_cli import (
     handle_atlas_apply_edge_batch,
     handle_atlas_apply_node_edge_plan,
     handle_atlas_register_phase_files,
+    run_atlas_command,
 )
 from ilc_core.storage.genesis_atlas_candidate_lmdb_adapter import GenesisAtlasCandidateStore
 from ilc_core.storage.genesis_atlas_lmdb_writer import (
@@ -29,7 +28,6 @@ PROMPT_PATH = Path(
     "antigravity_prompt__phase_1545p_fix59_g10_atlas_lmdb_write_cli_fix59d.md"
 )
 CLI_HELPER_PATH = Path("ilc_core/cli/atlas_lmdb_cli.py")
-CLI_MAIN_PATH = Path("ilc_core/cli/main.py")
 
 
 def _write_json(path: Path, payload: object) -> None:
@@ -90,27 +88,6 @@ def _inspect(root: Path) -> dict[str, int]:
         return {"edges": inspection["edge_count"], "nodes": inspection["node_count"]}
     finally:
         writer.close()
-
-
-def _run_cli(*args: str, graph_path: Path, env: dict[str, str] | None = None) -> subprocess.CompletedProcess[str]:
-    active_env = dict(os.environ)
-    active_env.pop("ILC_TRUTH_GRAPH_STORE_PATH", None)
-    if env:
-        active_env.update(env)
-    return subprocess.run(
-        [
-            sys.executable,
-            "-m",
-            "ilc_core.cli.main",
-            "--graph-state",
-            str(graph_path),
-            *args,
-        ],
-        capture_output=True,
-        check=False,
-        text=True,
-        env=active_env,
-    )
 
 
 def test_fix59d_prompt_validates_required_surface() -> None:
@@ -361,7 +338,7 @@ def test_float_and_self_referential_digest_fields_fail_closed(tmp_path: Path) ->
     assert digest_exc.value.token == "atlas_self_referential_field_forbidden"
 
 
-def test_subprocess_apply_edge_batch_write_and_no_graph_state_creation(tmp_path: Path) -> None:
+def test_internal_dispatch_apply_edge_batch_write_and_no_graph_state_creation(tmp_path: Path) -> None:
     root = tmp_path / "atlas"
     graph_path = tmp_path / "graph.json"
     batch = tmp_path / "edges.json"
@@ -374,36 +351,25 @@ def test_subprocess_apply_edge_batch_write_and_no_graph_state_creation(tmp_path:
         },
     )
 
-    result = _run_cli(
-        "atlas",
-        "apply-edge-batch",
-        "--lmdb",
-        str(root),
-        "--input",
-        str(batch),
-        "--write",
-        graph_path=graph_path,
+    payload = run_atlas_command(
+        Namespace(
+            atlas_subcommand="apply-edge-batch",
+            input=str(batch),
+            lmdb=str(root),
+            receipt="",
+            write=True,
+        )
     )
 
-    assert result.returncode == 0, result.stderr
-    payload = json.loads(result.stdout)
-    assert payload["ok"] is True
-    assert payload["data"]["mutated"] is True
+    assert payload["mutated"] is True
     assert _inspect(root) == {"nodes": 3, "edges": 2}
     assert not graph_path.exists()
 
 
-def test_atlas_help_lists_write_subcommands() -> None:
-    result = subprocess.run(
-        [sys.executable, "-m", "ilc_core.cli.main", "atlas", "--help"],
-        capture_output=True,
-        check=False,
-        text=True,
-    )
-    assert result.returncode == 0
-    assert "register-phase-files" in result.stdout
-    assert "apply-edge-batch" in result.stdout
-    assert "apply-node-edge-plan" in result.stdout
+def test_atlas_is_not_a_public_cli_command() -> None:
+    from ilc_core.cli.main import OPERATIONAL_COMMANDS
+
+    assert "atlas" not in OPERATIONAL_COMMANDS
 
 
 def test_atlas_write_cli_routes_through_safe_writer_without_raw_adapter_puts() -> None:
@@ -420,10 +386,3 @@ def test_atlas_write_cli_routes_through_safe_writer_without_raw_adapter_puts() -
         assert token not in text
     assert "AtlasLmdbSafeWriter" in text
     assert "apply_plan(" in text
-
-
-def test_main_excludes_atlas_from_prototype_state_initializer() -> None:
-    text = CLI_MAIN_PATH.read_text(encoding="utf-8")
-    assert "stateless_commands = {" in text
-    assert '"atlas",' in text
-    assert "if command not in stateless_commands:" in text

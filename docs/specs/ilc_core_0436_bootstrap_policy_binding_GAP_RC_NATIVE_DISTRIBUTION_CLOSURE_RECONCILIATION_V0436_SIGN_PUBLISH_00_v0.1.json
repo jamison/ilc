@@ -1,0 +1,19 @@
+{
+  "current_policy_binding": {
+    "channel": "public_rc",
+    "network_id": "ilc-public-rc-01-testnet-harness",
+    "policy_head_cid": "bafyreihx7u7sqs75dhj3ippnarmig7zhdtc4xayrunzyxmefqi66ufprgi",
+    "policy_id": "ilc-public-rc-current-policy-v1",
+    "policy_sequence": 4,
+    "schema_version": "release_current_policy_bootstrap_binding.v0.1",
+    "validation_epoch": 0
+  },
+  "shortcode_auth": {
+    "bundle_payload_sha384": "f2c12f3e3bb3f11025c36d0d99f46890e7487d67b94af0f10579afb7a63b798d5933b31d99b5345864de7bfbb43760a6",
+    "inviting_agent_id": "a34a7e62ba97761b8339a4778f80b9abe5639acc15aa5727cc6004ada15e9e3b82e0c849a08b4d03a7c0d3c95331b538",
+    "inviting_bls_public_key_hex": "a34a7e62ba97761b8339a4778f80b9abe5639acc15aa5727cc6004ada15e9e3b82e0c849a08b4d03a7c0d3c95331b538",
+    "schema_version": "relay_invite_code_bundle_auth.v0.1",
+    "signature": "a8f6aa5fea2b25e54f71ac7082a37bc22096be6523fdf4f521b2c1c99d860231fe9bd17be39a0a4c8e9ed4b7cfa441e316a37907d60e351ab486db959eca3bc51828ab7a7da8052da83d1d5bbb0c85b6514f50f1d922e3046e001edff771ac52",
+    "signature_alg": "BLS12-381-G2-SHA-256-SSWU-RO"
+  }
+}
